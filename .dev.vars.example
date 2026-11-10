@@ -1,0 +1,7 @@
+# Copiez ce fichier en .dev.vars (jamais commité) et remplissez les valeurs vous-même.
+# En production, ces valeurs se saisissent avec : npx wrangler secret put NOM
+ANTHROPIC_API_KEY=
+BREVO_API_KEY=
+SENDER_EMAIL=
+SENDER_NAME=
+SESSION_SECRET=

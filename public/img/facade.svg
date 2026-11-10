@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 528" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Illustration originale Passation : façade d'une PME (maison + atelier à sheds), dessin au trait -->
+  <rect width="600" height="528" fill="#EEEAE0" stroke="none"/>
+  <g stroke="#9AA6A8" stroke-width="0.5" opacity="0.45">
+    <path d="M0 40H600M0 80H600M0 120H600M0 160H600M0 200H600M0 240H600M0 280H600M0 320H600M0 360H600M0 400H600M0 440H600M0 480H600"/>
+    <path d="M40 0V528M80 0V528M120 0V528M160 0V528M200 0V528M240 0V528M280 0V528M320 0V528M360 0V528M400 0V528M440 0V528M480 0V528M520 0V528M560 0V528"/>
+  </g>
+  <!-- lignes de construction -->
+  <g stroke="#9AA6A8" stroke-width="0.8" stroke-dasharray="3 5">
+    <path d="M40 222H580M40 290H580M150 96V470M540 210V470M265 70V140"/>
+  </g>
+  <!-- sol et hachures -->
+  <g stroke="#7F8C8F" stroke-width="1.4"><path d="M30 400H570"/></g>
+  <g stroke="#9AA6A8" stroke-width="0.8"><path d="M40 408l10-8M70 408l10-8M100 408l10-8M130 408l10-8M160 408l10-8M190 408l10-8M220 408l10-8M250 408l10-8M280 408l10-8M310 408l10-8M340 408l10-8M370 408l10-8M400 408l10-8M430 408l10-8M460 408l10-8M490 408l10-8M520 408l10-8M550 408l10-8"/></g>
+  <!-- maison principale -->
+  <g stroke="#6F7D80" stroke-width="1.5">
+    <path d="M150 400V222H380V400"/>
+    <path d="M138 226L265 140L392 226"/>
+    <path d="M320 177V150H336V187"/>
+    <path d="M150 300H380" stroke-width="0.8"/>
+  </g>
+  <g stroke="#7F8C8F" stroke-width="1.2">
+    <rect x="175" y="242" width="32" height="44" rx="1"/><path d="M191 242V286M175 264H207"/>
+    <rect x="249" y="242" width="32" height="44" rx="1"/><path d="M265 242V286M249 264H281"/>
+    <rect x="323" y="242" width="32" height="44" rx="1"/><path d="M339 242V286M323 264H355"/>
+    <rect x="175" y="322" width="32" height="44" rx="1"/><path d="M191 322V366M175 344H207"/>
+    <rect x="323" y="322" width="32" height="44" rx="1"/><path d="M339 322V366M323 344H355"/>
+    <circle cx="265" cy="196" r="13"/><path d="M252 196H278M265 183V209"/>
+  </g>
+  <!-- porte principale, accent sapin -->
+  <g stroke="#1F4D3D" stroke-width="1.5">
+    <path d="M245 400V344a20 20 0 0 1 40 0V400"/>
+    <path d="M265 324V400" stroke-width="0.8"/>
+  </g>
+  <circle cx="276" cy="372" r="1.8" fill="#B08D57" stroke="none"/>
+  <!-- atelier à sheds -->
+  <g stroke="#6F7D80" stroke-width="1.5">
+    <path d="M380 400V290H540V400"/>
+    <path d="M380 290V252L420 290V252L460 290V252L500 290V252L540 290"/>
+  </g>
+  <g stroke="#7F8C8F" stroke-width="1.1">
+    <path d="M384 262L384 286M400 270V288M424 262V286M440 270V288M464 262V286M480 270V288M504 262V286M520 270V288" stroke-width="0.6"/>
+    <rect x="396" y="318" width="58" height="26" rx="1"/><path d="M415 318V344M435 318V344"/>
+    <rect x="472" y="326" width="52" height="74"/>
+    <path d="M472 336H524M472 346H524M472 356H524M472 366H524M472 376H524M472 386H524" stroke-width="0.6"/>
+  </g>
+  <!-- arbre -->
+  <g stroke="#7F8C8F" stroke-width="1.2">
+    <path d="M92 400V330M92 352l-14-12M92 344l12-14"/>
+    <path d="M60 318c-10-22 8-44 28-38 6-22 40-20 42 2 20 2 24 30 8 40 6 18-14 30-30 22-12 12-36 8-40-8-14-2-18-14-8-18z"/>
+  </g>
+  <!-- cotation -->
+  <g stroke="#7F8C8F" stroke-width="0.9">
+    <path d="M150 440H540M150 434V446M380 434V446M540 434V446"/>
+    <path d="M146 444l8-8M376 444l8-8M536 444l8-8"/>
+  </g>
+  <g fill="#7F8C8F" stroke="none" font-family="Georgia, serif" font-style="italic" font-size="13">
+    <text x="258" y="462">23,0</text><text x="452" y="462">16,0</text>
+    <text x="470" y="500" font-size="11" letter-spacing="1">ÉCH. 1/200</text>
+  </g>
+  <!-- rose des vents -->
+  <g stroke="#7F8C8F" stroke-width="1">
+    <circle cx="78" cy="84" r="22"/><circle cx="78" cy="84" r="2"/>
+    <path d="M78 54V114M48 84H108"/>
+    <path d="M78 58L72 84H84Z" fill="#B08D57" fill-opacity="0.5"/>
+  </g>
+  <text x="74" y="48" fill="#7F8C8F" font-family="Georgia, serif" font-size="12">N</text>
+</svg>

@@ -1,7 +1,17 @@
 # PASSATION : plan du projet
 
-> Statut : **proposition, en attente d'accord**. Rien n'est codé avant validation.
-> Rédigé le 10/11/2026. Projet indépendant : aucun lien avec `~/Desktop/FREEDOM`.
+> Statut : **validé le 10/11/2026**. Étape 1 livrée (voir §10).
+> Projet indépendant : aucun lien avec `~/Desktop/FREEDOM`.
+
+## Décisions de l'utilisateur (10/11/2026)
+- **Sources** : je recherche les multiples, décotes et paramètres. Les sources sont citées **dans le code**
+  (`src/data/*.json`, avec URL et date de consultation), **pas affichées sur le site**.
+- **DCF** : les paramètres trouvés sont affichés au dirigeant comme **« Hypothèses Passation »**, modifiables champ par
+  champ. Si rien de fiable n'est trouvé, le champ est vide et le dirigeant le renseigne.
+- **Palette** : Ivoire `#F6F3EC` (fonds, 60 %), Encre `#14181F` (texte, boutons, section sombre, 25 %),
+  Vert sapin `#1F4D3D` (accent, valeurs, graphiques, 10 %), Pierre `#8A8780` (textes secondaires, traits, 3 %),
+  Laiton `#B08D57` (le « témoin », détails rares, 2 %).
+- **Nom** : Passation, pour l'instant.
 
 ---
 
@@ -227,8 +237,14 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
 - API Claude : **payante à l'usage**. La valorisation express publique est le principal risque de coût, d'où la limite de débit et le cache. Un plafond de dépense mensuel est à régler dans la console Anthropic.
 
 ## 9. Points à compléter par vous (suivi)
-- [ ] Source des multiples sectoriels (bloque l'étape 2)
-- [ ] Valeurs par défaut des décotes/primes et des paramètres du CMPC (étape 4), ou accord pour que je recherche des sources citées
-- [ ] Textes « À remplir » : chiffres clés, éditeur des mentions légales, hébergeur, contact
-- [ ] Couleur d'accent : vert sauge (proposé) ou bleu ardoise
+- [x] Source des multiples sectoriels : je recherche et cite dans le code (étape 2)
+- [x] Décotes/primes et paramètres du CMPC : je recherche ; affichés comme hypothèses modifiables (étape 4)
+- [x] Palette : fournie (voir en tête)
+- [ ] Textes « À remplir » : partenaires/témoignages réels, tarifs, éditeur des mentions légales, contact, droit applicable
 - [ ] Adresse d'expédition Brevo (étape 3)
+
+## 10. Journal d'avancement
+- **10/11/2026, étape 1 livrée** : dépôt privé GitHub, squelette Worker (`/api/health`, 404 JSON), migration D1 0001
+  appliquée en local, landing complète (7 sections), pages légales en brouillon, pages d'attente estimation/connexion,
+  404, polices auto-hébergées, illustrations SVG originales. `npm test` : 3 tests passent. Vérifié avec
+  `wrangler dev` et captures à 390 px et 1440 px.

@@ -1,0 +1,18 @@
+{
+  "name": "passation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Boîte à outils du dirigeant de PME qui prépare la cession de son entreprise",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate:local": "wrangler d1 migrations apply passation --local",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "vitest": "4.1.12",
+    "wrangler": "4.152.0"
+  }
+}
