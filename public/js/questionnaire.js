@@ -1,7 +1,36 @@
-// Questionnaire « Votre entreprise » : 5 écrans, sauvegarde automatique. Partagé par l'écran et le serveur.
-// Types : euros, pct (saisi en %, stocké en fraction), jours, texte, oui_non, exceptionnels (liste).
+// Questionnaire « Votre entreprise » : 8 écrans courts, sauvegarde automatique. Partagé par l'écran et le serveur.
+// Types : euros, pct (saisi en %, stocké en fraction), texte, oui_non, choix (options), exceptionnels (liste).
 
 export const ETAPES = [
+  {
+    cle: "activite", titre: "Votre activité",
+    intro: "Ces réponses servent au teaser (anonymisé) et au mémorandum. Écrivez simplement, comme à un repreneur : rien n'est inventé à votre place.",
+    questions: [
+      { cle: "description", type: "texte", libelle: "Ce que fait l'entreprise, en quelques phrases", aide: "Métier, savoir-faire, ce qui la distingue." },
+      { cle: "produits_services", type: "texte", libelle: "Produits ou services principaux" },
+      { cle: "clientele", type: "texte", libelle: "Vos clients : qui sont-ils ? (particuliers, entreprises, secteurs)" },
+      { cle: "zone", type: "choix", libelle: "Zone commerciale principale", options: ["Locale", "Régionale", "Nationale", "Internationale"] },
+      { cle: "equipe", type: "texte", libelle: "L'équipe : métiers clés, encadrement, ancienneté" },
+    ],
+  },
+  {
+    cle: "atouts", titre: "Vos atouts",
+    intro: "Ce qui fait la valeur de l'entreprise aux yeux d'un repreneur.",
+    questions: [
+      { cle: "forces", type: "texte", libelle: "Les trois principales forces de l'entreprise" },
+      { cle: "developpement", type: "texte", libelle: "Pistes de développement qu'un repreneur pourrait suivre" },
+    ],
+  },
+  {
+    cle: "operation", titre: "L'opération envisagée",
+    intro: "Ce que vous cherchez : ces éléments figurent dans le teaser et le mémorandum.",
+    questions: [
+      { cle: "part_cedee", type: "choix", libelle: "Part du capital à céder", options: ["100 %", "Majoritaire", "Minoritaire", "À définir"] },
+      { cle: "motif", type: "texte", libelle: "Motif de la cession", aide: "Par exemple : départ à la retraite, nouveau projet." },
+      { cle: "accompagnement", type: "texte", libelle: "Accompagnement proposé au repreneur", aide: "Durée et forme de la transition." },
+      { cle: "calendrier", type: "texte", libelle: "Calendrier souhaité" },
+    ],
+  },
   {
     cle: "dirigeant", titre: "Vous et votre rémunération",
     intro: "Pour comparer l'entreprise à une entreprise équivalente dirigée par un salarié, nous ramenons votre rémunération à un niveau « normal ».",

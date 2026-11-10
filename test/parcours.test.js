@@ -6,8 +6,9 @@ import { readFileSync } from "node:fs";
 vi.mock("../src/lib/claude.js", () => ({
   claudeDisponible: (env) => Boolean(env.ANTHROPIC_API_KEY),
   lireLiasse: vi.fn(),
+  redigerTeaser: vi.fn(),
 }));
-import { lireLiasse } from "../src/lib/claude.js";
+import { lireLiasse, redigerTeaser } from "../src/lib/claude.js";
 import worker from "../src/index.js";
 import { d1Memoire, r2Memoire } from "./aide/environnement.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
@@ -39,6 +40,7 @@ const pdf = (texte = "%PDF-1.4 liasse") => { const f = new FormData(); f.append(
 beforeEach(async () => {
   env = { DB: d1Memoire(), FILES: r2Memoire() };
   lireLiasse.mockReset();
+  redigerTeaser.mockReset();
   const f = JSON.parse(readFileSync(new URL(`./fixtures/${SIREN}.json`, import.meta.url)));
   const e = normaliserEntreprise(f.entreprise, SIREN);
   const d = assembler(e, normaliserExercices(f.inpi), normaliserAnnonces(f.bodacc, SIREN, e.date_creation));
@@ -171,5 +173,56 @@ describe("datapack", () => {
     expect(d.avancement.documents).toBe(33);
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/datapack`, { cookie: b.cookie })).status).toBe(404);
+  });
+});
+
+describe("teaser anonymisé", () => {
+  const propre = { accroche: "PME industrielle familiale à transmettre", activite: "Fabrication alimentaire artisanale.", chiffres: "Chiffre d'affaires entre 2 M€ et 5 M€.", atouts: ["Savoir-faire reconnu", "Clientèle fidèle"], operation: "Cession de 100 % du capital." };
+  async function prepare() {
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    const s = await seConnecter("a@exemple.fr");
+    await appel(`/api/dossiers/${s.id}/answers/activite`, { methode: "PUT", cookie: s.cookie, corps: { data: { description: "Nous fabriquons des confitures." } } });
+    return s;
+  }
+  it("503 sans clé, 409 tant que l'activité n'est pas décrite", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie })).status).toBe(503);
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    expect((await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie })).status).toBe(409);
+  });
+  it("faits envoyés à Claude sans nom, ville, SIREN ni montant exact ; teaser enregistré avec un nom de code", async () => {
+    const { cookie, id } = await prepare();
+    redigerTeaser.mockResolvedValue(propre);
+    const r = await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie });
+    expect(r.status).toBe(200);
+    const d = await r.json();
+    expect(d.nom_de_code).toMatch(/^Projet /);
+    expect(d.teaser.sections.map((x) => x.cle)).toEqual(["accroche", "activite", "chiffres", "atouts", "operation"]);
+    const faits = JSON.stringify(redigerTeaser.mock.calls[0][1]);
+    expect(faits).not.toMatch(/FRAISERAIE|319252813/i);
+    expect(faits).toContain("Industrie manufacturière");
+    expect((await (await appel(`/api/dossiers/${id}/documents/teaser`, { cookie })).json()).teaser.version).toBe(1);
+  });
+  it("première version identifiante → seconde tentative avec consigne ; si encore identifiante → 422, rien d'enregistré", async () => {
+    const { cookie, id } = await prepare();
+    redigerTeaser.mockResolvedValueOnce({ ...propre, accroche: "La Fraiseraie à vendre" }).mockResolvedValueOnce(propre);
+    expect((await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie })).status).toBe(200);
+    expect(redigerTeaser.mock.calls[1][2]).toContain("fraiseraie");
+    redigerTeaser.mockReset();
+    redigerTeaser.mockResolvedValue({ ...propre, activite: "Siège : SIREN 319 252 813" });
+    const r = await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie });
+    expect(r.status).toBe(422);
+    expect((await r.json()).problemes[0].type).toBe("identifiant");
+    expect((await (await appel(`/api/dossiers/${id}/documents/teaser`, { cookie })).json()).teaser.version).toBe(1);
+  });
+  it("modification d'une section : contrôlée, marquée « modifiée » ; dossier d'un autre : 404", async () => {
+    const { cookie, id } = await prepare();
+    redigerTeaser.mockResolvedValue(propre);
+    await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie });
+    expect((await appel(`/api/dossiers/${id}/documents/teaser/sections/accroche`, { methode: "PUT", cookie, corps: { contenu: "La Fraiseraie cherche repreneur" } })).status).toBe(422);
+    const ok = await (await appel(`/api/dossiers/${id}/documents/teaser/sections/accroche`, { methode: "PUT", cookie, corps: { contenu: "Belle PME familiale à reprendre" } })).json();
+    expect(ok.teaser.sections[0]).toMatchObject({ contenu: "Belle PME familiale à reprendre", modifie: true });
+    const b = await seConnecter("b@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/teaser`, { cookie: b.cookie })).status).toBe(404);
   });
 });

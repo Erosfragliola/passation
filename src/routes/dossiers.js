@@ -109,7 +109,7 @@ export async function supprimerDossier(env, id) {
 export async function routeDossiers(request, env, segments) {
   const [u, refus] = await exigerUtilisateur(request, env);
   if (refus) return refus;
-  const [id, sous, item] = segments;
+  const [id, sous, item, ...reste] = segments;
   const m = request.method;
 
   if (!id) {
@@ -133,7 +133,7 @@ export async function routeDossiers(request, env, segments) {
     return json({ erreur: "methode" }, 405);
   }
   if (["financials", "uploads", "answers", "valuation"].includes(sous)) return routeValorisation(request, env, row, sous, item);
-  if (sous === "documents") return routeDocuments(request, env, row, item);
+  if (sous === "documents") return routeDocuments(request, env, row, item, reste[0], reste[1]);
   if (sous === "checklist" && item && m === "PUT") {
     if (!CLES_CHECKLIST.has(item)) return json({ erreur: "element_inconnu" }, 400);
     let corps; try { corps = await request.json(); } catch { corps = {}; }

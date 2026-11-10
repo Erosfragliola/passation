@@ -74,3 +74,42 @@ export async function lireLiasse(env, pdfBase64) {
   const donnees = JSON.parse(texte);
   return { ...donnees, usage: { entree: reponse.usage.input_tokens, sortie: reponse.usage.output_tokens } };
 }
+
+// ---------------------------------------------------------------- Teaser anonymisé
+const SCHEMA_TEASER = {
+  type: "object", additionalProperties: false,
+  required: ["accroche", "activite", "chiffres", "atouts", "operation"],
+  properties: {
+    accroche: { type: "string", description: "Une phrase de titre, sans nom ni lieu précis" },
+    activite: { type: "string", description: "Présentation de l'activité, 3 à 5 phrases" },
+    chiffres: { type: "string", description: "Chiffres clés en fourchettes, 2 à 3 phrases" },
+    atouts: { type: "array", items: { type: "string" }, description: "3 à 5 atouts, une phrase chacun" },
+    operation: { type: "string", description: "L'opération recherchée, 2 à 3 phrases" },
+  },
+};
+const CONSIGNE_TEASER = `Tu rédiges le teaser anonymisé d'une PME française à céder, en français, à la troisième personne, sur un ton sobre et factuel (pas de superlatifs).
+Règles absolues :
+- Utilise uniquement les faits fournis. N'invente aucun chiffre, aucun client, aucune certification, aucun projet.
+- Si une information manque pour une partie, écris exactement « À compléter ».
+- Anonymat : ne cite jamais de nom d'entreprise, de marque, de produit nommé, de personne, de ville ni de département ; seulement la région fournie.
+- Chiffres : uniquement les fourchettes fournies, recopiées telles quelles. Jamais de montant précis.
+- 250 à 350 mots au total.`;
+
+/** @param faits objet de faits anonymes ; @param corrections termes à retirer (seconde tentative) */
+export async function redigerTeaser(env, faits, corrections = []) {
+  const consigne = corrections.length
+    ? `${CONSIGNE_TEASER}\nUne première version contenait des éléments identifiants à supprimer absolument : ${corrections.join(", ")}.`
+    : CONSIGNE_TEASER;
+  const reponse = await client(env).beta.messages.create({
+    model: MODELS.deep,
+    max_tokens: 16000,
+    system: consigne,
+    messages: [{ role: "user", content: `Faits disponibles (JSON) :\n${JSON.stringify(faits, null, 2)}` }],
+    output_config: { format: { type: "json_schema", schema: SCHEMA_TEASER } },
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+  });
+  if (reponse.stop_reason === "refusal") throw new Error("redaction_refusee");
+  if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
+  return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
+}

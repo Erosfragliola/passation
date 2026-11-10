@@ -169,12 +169,13 @@ function champQuestion(e, q) {
   const idq = `q-${e.cle}-${q.cle}`;
   const aide = q.aide ? el("span", { class: "petit aide-q", id: `${idq}-aide`, text: q.aide }) : null;
   const sauver = (val) => { (reponses[e.cle] ??= {})[q.cle] = val; programmerSauvegarde(e.cle); };
-  if (q.type === "oui_non") {
+  if (q.type === "oui_non" || q.type === "choix") {
     const fs = el("fieldset", { class: "q" }, el("legend", { text: q.libelle }), aide);
-    for (const [val, lib] of [["oui", "Oui"], ["non", "Non"]]) {
-      const r = el("input", { type: "radio", name: idq, value: val, id: `${idq}-${val}`, checked: v === val });
+    const options = q.type === "choix" ? q.options.map((o, i) => [o, o, i]) : [["oui", "Oui"], ["non", "Non"]];
+    for (const [val, lib, i] of options.map((o, i) => [o[0], o[1], i])) {
+      const r = el("input", { type: "radio", name: idq, value: val, id: `${idq}-${i}`, checked: v === val });
       r.addEventListener("change", () => sauver(val));
-      fs.append(el("label", { class: "choix", for: `${idq}-${val}` }, r, ` ${lib}`));
+      fs.append(el("label", { class: "choix", for: `${idq}-${i}` }, r, ` ${lib}`));
     }
     return fs;
   }

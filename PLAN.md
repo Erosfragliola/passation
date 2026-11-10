@@ -364,3 +364,17 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     les résultats et le tableau de bord.
   - Tests : 154.
   - Reste : ouverture dans Excel et Numbers par le dirigeant.
+- **10/11/2026, étape 6a (teaser anonymisé)** :
+  - Questionnaire étendu (activité, atouts, opération) : 8 écrans.
+  - Faits anonymes calculés par le code (`src/documents/teaser.js`) :
+    - secteur (section NAF) et région (INSEE, régions de 2016) ;
+    - ancienneté arrondie et tranche d'effectif ;
+    - fourchettes de CA et de marge, tendance.
+  - Rédaction par Claude Sonnet 5.5 (JSON contraint, repli automatique en cas de refus).
+  - Contrôle d'anonymat par le code (`src/documents/anonymat.js`) sur chaque version et chaque modification. Il refuse :
+    - le nom et ses mots distinctifs, la ville, le code postal, le SIREN ;
+    - les montants exacts, à 1 % près, sous toutes leurs formes ;
+    - les termes issus du site.
+  - Deux essais au plus, sinon refus sans enregistrement.
+  - Nom de code (« Projet … ») ; versions dans R2 ; page imprimable `/espace/documents/teaser/`.
+  - Tests : 172.

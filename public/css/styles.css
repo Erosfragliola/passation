@@ -501,3 +501,26 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 .resultat-tete > *, .resultat-detail > *, .reglages-grille > *, .decote > * { min-width: 0; } /* les tableaux larges défilent au lieu d'élargir la page */
 .tableau-resultat tbody th { font-weight: 400; }
 @media (max-width: 700px) { .carte { padding: 20px; } .valeur-centrale { white-space: normal; } }
+
+/* ---------- Documents imprimables (teaser, mémorandum) ---------- */
+.document-zone { padding: 120px 0 72px; }
+.document-outils { display: grid; gap: 16px; margin-bottom: 28px; }
+.document-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.feuille-document { background: #fff; color: var(--espresso); border-radius: 6px; box-shadow: 0 20px 60px rgba(35, 30, 24, .14); padding: clamp(24px, 6vw, 64px); max-width: 794px; margin: 0 auto; }
+.doc-tete { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--trait-fort); padding-bottom: 12px; margin-bottom: 36px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.doc-marque { font-weight: 600; }
+.doc-confidentiel { color: #8B4A22; }
+.doc-titre { font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 400; margin: 4px 0 18px; }
+.doc-accroche { font-size: 1.25rem; line-height: 1.5; margin-bottom: 26px; }
+.doc-section { margin: 22px 0; padding: 0; break-inside: avoid; }
+.doc-section h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 6px; color: var(--vert); }
+.doc-section ul { margin: 0; padding-left: 20px; }
+.doc-section textarea { width: 100%; border-radius: 10px; border: 1px solid var(--trait-fort); padding: 10px 12px; font: inherit; }
+.doc-edition { display: flex; gap: 12px; align-items: center; margin-top: 6px; }
+.doc-pied { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-top: 1px solid var(--trait-fort); margin-top: 40px; padding-top: 12px; font-size: .78rem; color: #696155; }
+@media print {
+  .pas-imprime, .pied, .lien-evitement { display: none !important; }
+  body, .document-zone { background: #fff; padding: 0; }
+  .feuille-document { box-shadow: none; max-width: none; padding: 0; }
+  @page { size: A4; margin: 18mm; }
+}

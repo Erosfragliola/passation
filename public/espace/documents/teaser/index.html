@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr" class="sans-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teaser · Passation</title>
+  <meta name="theme-color" content="#FBF6EC">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="page-document">
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<header class="nav-zone pas-imprime">
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a></div>
+  </nav>
+</header>
+<main id="contenu" class="document-zone" aria-busy="true">
+  <div class="conteneur conteneur-moyen">
+    <div class="document-outils pas-imprime">
+      <div>
+        <p class="etiquette">Vos documents</p>
+        <h1>Teaser <em>anonymisé</em></h1>
+        <p class="chapo-petit">Une page pour éveiller l'intérêt d'un repreneur sans révéler l'identité de l'entreprise. Chaque texte est contrôlé : nom, ville, SIREN, montants exacts et marques sont refusés.</p>
+      </div>
+      <div class="document-actions">
+        <button class="btn btn-noir" type="button" id="btn-generer">Rédiger le teaser</button>
+        <button class="btn btn-contour" type="button" id="btn-imprimer" hidden>Imprimer ou enregistrer en PDF</button>
+      </div>
+      <p class="message-carte" id="message" role="status" aria-live="polite" hidden></p>
+    </div>
+    <article class="feuille-document" id="teaser" hidden aria-labelledby="teaser-titre"></article>
+  </div>
+</main>
+<script src="/js/site.js" defer></script>
+<script type="module" src="/js/teaser.js"></script>
+</body>
+</html>
