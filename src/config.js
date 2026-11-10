@@ -9,8 +9,10 @@ export const MODELS = {
 /** Limites d'usage du chat, par utilisateur et par jour. */
 export const CHAT_LIMITS = { messagesParJour: 30, tokensParJour: 150_000 };
 
-/** Limite de débit de la valorisation express publique. */
+/** Limites de débit des routes publiques (requêtes non servies par le cache, par heure et par IP). */
 export const EXPRESS_RATE_LIMIT = { requetesParHeureParIP: 10 };
+export const MAQUETTE_RATE_LIMIT = { requetesParHeureParIP: 20 };
+export const SEARCH_RATE_LIMIT = { requetesParHeureParIP: 120 };
 
 /** Durées (en secondes). */
 export const DURATIONS = {

@@ -1,0 +1,285 @@
+{
+  "version": "2026-11-10",
+  "regle": "Multiples VE / EBE obtenus par croisement de trois sources citées (src/data/multiples-sources.json, scripts/multiples.mjs). Aucun chiffre saisi à la main. Ordres de grandeur pour une estimation indicative, non contractuelle.",
+  "methode": "central = moyenne de E1 (milieu du barème PME Captain), E2 (moyenne Dealsuite du secteur, ou moyenne tous secteurs × niveau relatif Damodaran) et E3 (Argos mid-market × niveau relatif Damodaran × 3,9/6,9) ; bas/haut = barème PME, élargi au central ; sans barème, fourchette dérivée des écarts moyens du barème. Pas de multiple de CA : EBE négatif ou absent → estimation express non calculable.",
+  "sources": {
+    "croisement-2026-11": [
+      {
+        "titre": "Argos Index mid-market, 2e trimestre 2026 (Argos Wityu / Epsilon Research)",
+        "url": "https://argos.fund/wp-content/uploads/2026/09/ARGOS-INDEX-Q2-2026_FR.pdf",
+        "consulte_le": "2026-11-10"
+      },
+      {
+        "titre": "Dealsuite, Rapport Fusac France, février 2026 (S2 2025), repris par Capital Stack (18/08/2026)",
+        "url": "https://www.capitalstack.fr/blog/valoriser-pme-multiple-ebe-methode",
+        "consulte_le": "2026-11-10"
+      },
+      {
+        "titre": "Dealsuite, Rapport Fusac France, août 2026 (S1 2026, 104 cabinets M&A, sociétés de 1 à 200 M€ de CA), repris par Capital Stack",
+        "url": "https://www.capitalstack.fr/blog/valoriser-pme-multiple-ebe-methode",
+        "consulte_le": "2026-11-10"
+      },
+      {
+        "titre": "Captain, « Multiples de valorisation par secteur : le barème complet 2026 » (28/05/2026), PME de 1 à 50 M€ de CA",
+        "url": "https://captain.fr/blog/comptabilite/multiples-de-valorisation-par-secteur-bareme-2026",
+        "consulte_le": "2026-11-10"
+      },
+      {
+        "titre": "A. Damodaran (NYU Stern), Enterprise Value Multiples by Industry, Europe, mise à jour du 05/01/2026 ; colonne EV/EBITDA, entreprises à EBITDA positif",
+        "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/vebitdaEurope.xls",
+        "consulte_le": "2026-11-10"
+      }
+    ]
+  },
+  "secteurs": [
+    {
+      "cle": "industrie",
+      "sections": [
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "ebe": {
+        "bas": 4,
+        "central": 5.6,
+        "haut": 7
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.087,
+        "E1_bareme_pme": 5.5,
+        "E2_dealsuite": 5.8,
+        "E3_argos_ajuste": 5.4,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "construction",
+      "sections": [
+        "F"
+      ],
+      "ebe": {
+        "bas": 3,
+        "central": 4.7,
+        "haut": 5
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 0.969,
+        "E1_bareme_pme": 4,
+        "E2_dealsuite": 5.1,
+        "E3_argos_ajuste": 4.8,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "commerce",
+      "sections": [
+        "G"
+      ],
+      "ebe": {
+        "bas": 3.3,
+        "central": 4.5,
+        "haut": 5.5
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.047,
+        "E1_bareme_pme": 4.4,
+        "E2_dealsuite": 4,
+        "E3_argos_ajuste": 5.2,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "transport",
+      "sections": [
+        "H"
+      ],
+      "ebe": {
+        "bas": 4,
+        "central": 5.1,
+        "haut": 6
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.01,
+        "E1_bareme_pme": 5,
+        "E2_dealsuite": 5.4,
+        "E3_argos_ajuste": 5,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "hotellerie-restauration",
+      "sections": [
+        "I"
+      ],
+      "ebe": {
+        "bas": 3.5,
+        "central": 5.3,
+        "haut": 6.2
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.071,
+        "E1_bareme_pme": 4.8,
+        "E2_dealsuite": 5.7,
+        "E3_argos_ajuste": 5.3,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "information-communication",
+      "sections": [
+        "J"
+      ],
+      "ebe": {
+        "bas": 4.5,
+        "central": 6.8,
+        "haut": 8.5
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.278,
+        "E1_bareme_pme": 6.5,
+        "E2_dealsuite": 7.6,
+        "E3_argos_ajuste": 6.4,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "services-entreprises",
+      "sections": [
+        "K",
+        "L",
+        "M",
+        "N"
+      ],
+      "ebe": {
+        "bas": 4.5,
+        "central": 5.3,
+        "haut": 7.5
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 0.964,
+        "E1_bareme_pme": 6,
+        "E2_dealsuite": 5.1,
+        "E3_argos_ajuste": 4.8,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "sante-social",
+      "sections": [
+        "Q"
+      ],
+      "ebe": {
+        "bas": 5,
+        "central": 6.5,
+        "haut": 8
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.059,
+        "E1_bareme_pme": 6.5,
+        "E2_dealsuite": 7.7,
+        "E3_argos_ajuste": 5.3,
+        "fourchette_derivee": false
+      }
+    },
+    {
+      "cle": "agriculture",
+      "sections": [
+        "A"
+      ],
+      "ebe": {
+        "bas": 4.3,
+        "central": 5.9,
+        "haut": 7.4
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.143,
+        "E2_dealsuite": 6.1,
+        "E3_argos_ajuste": 5.7,
+        "fourchette_derivee": true
+      }
+    },
+    {
+      "cle": "autres",
+      "sections": [
+        "O",
+        "P",
+        "R",
+        "S",
+        "T",
+        "U"
+      ],
+      "ebe": {
+        "bas": 4.2,
+        "central": 5.7,
+        "haut": 7.2
+      },
+      "ca": {
+        "bas": null,
+        "central": null,
+        "haut": null
+      },
+      "source": "croisement-2026-11",
+      "detail": {
+        "niveau_relatif_damodaran": 1.113,
+        "E2_dealsuite": 5.9,
+        "E3_argos_ajuste": 5.5,
+        "fourchette_derivee": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,322 @@
+{
+ "enregistre_le": "2026-11-10",
+ "entreprise": {
+  "results": [
+   {
+    "siren": "512803552",
+    "nom_complet": "CRISTAL'ID (CRISTAL'ID)",
+    "nom_raison_sociale": "CRISTAL'ID",
+    "siege": {
+     "libelle_commune": "VILLENEUVE D ASCQ",
+     "code_postal": "59491"
+    },
+    "activite_principale": "62.01Z",
+    "section_activite_principale": "J",
+    "date_creation": "2009-06-01",
+    "tranche_effectif_salarie": "21",
+    "annee_tranche_effectif_salarie": "2024",
+    "etat_administratif": "A",
+    "categorie_entreprise": "PME"
+   }
+  ]
+ },
+ "inpi": {
+  "total_count": 8,
+  "results": [
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2024-12-31",
+    "chiffre_d_affaires": 7838692,
+    "ebe": 1158279,
+    "ebit": 940873,
+    "resultat_net": 595305,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2023-12-31",
+    "chiffre_d_affaires": 9057768,
+    "ebe": 1552575,
+    "ebit": 1153011,
+    "resultat_net": 515448,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2021-12-31",
+    "chiffre_d_affaires": 0,
+    "ebe": 0,
+    "ebit": 0,
+    "resultat_net": 947115,
+    "confidentiality": "Partiellement confidentiel",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2020-12-31",
+    "chiffre_d_affaires": 0,
+    "ebe": 0,
+    "ebit": 0,
+    "resultat_net": 835428,
+    "confidentiality": "Partiellement confidentiel",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2019-12-31",
+    "chiffre_d_affaires": 0,
+    "ebe": 0,
+    "ebit": 0,
+    "resultat_net": 718048,
+    "confidentiality": "Partiellement confidentiel",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2018-12-31",
+    "chiffre_d_affaires": 2796051,
+    "ebe": 618377,
+    "ebit": 522113,
+    "resultat_net": 378619,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2017-12-31",
+    "chiffre_d_affaires": 0,
+    "ebe": 0,
+    "ebit": 0,
+    "resultat_net": 245923,
+    "confidentiality": "Partiellement confidentiel",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "512803552",
+    "date_cloture_exercice": "2016-12-31",
+    "chiffre_d_affaires": 0,
+    "ebe": 0,
+    "ebit": 0,
+    "resultat_net": 196214,
+    "confidentiality": "Partiellement confidentiel",
+    "type_bilan": "C"
+   }
+  ]
+ },
+ "bodacc": {
+  "results": [
+   {
+    "dateparution": "2009-06-25",
+    "familleavis_lib": "Créations",
+    "commercant": "CRISTAL'ID",
+    "ville": "Neuville-en-Ferrain",
+    "modificationsgenerales": null,
+    "acte": "{\"creation\":{\"categorieCreation\":\"Immatriculation d'une personne morale (B, C, D) suite à création d'un établissement principal\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Roubaix-Tourcoing\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Neuville-en-Ferrain\"}}}"
+   },
+   {
+    "dateparution": "2010-04-02",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "CRISTAL'ID",
+    "ville": "Neuville-en-Ferrain",
+    "modificationsgenerales": "{\"descriptif\":\"Départ de co-gérant\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Roubaix-Tourcoing\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2011-07-04",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Lezennes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2012-10-02",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Lezennes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2013-09-16",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Lezennes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2014-08-23",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Lezennes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2015-09-05",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Lezennes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2016-10-26",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Lezennes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2017-12-13",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-10-23",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-06-03",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-11-30",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-04-18",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur la forme juridique et l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-10-07",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-12-21",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'adresse du siège, l'adresse de l'établissement\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-12-01",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2023-04-11",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2024-08-16",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2025-01-14",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2025-07-27",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-09-18",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "CRISTAL'ID",
+    "ville": "Villeneuve d'Ascq",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"CRISTAL'ID\",\"numeroImmatriculation\":{\"numeroIdentification\":\"512 803 552\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Lille Métropole\"}}}",
+    "listeetablissements": null
+   }
+  ]
+ }
+}

@@ -10,3 +10,6 @@ backup*.sql
 
 # Originaux photo/vidéo (lourds) : seules les versions optimisées de public/img/photos sont publiées
 public/img/source/
+
+# Vidéos sources (lourdes)
+video/

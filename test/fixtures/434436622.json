@@ -1,0 +1,282 @@
+{
+ "enregistre_le": "2026-11-10",
+ "entreprise": {
+  "results": [
+   {
+    "siren": "434436622",
+    "nom_complet": "HABI PRO' (HAB)",
+    "nom_raison_sociale": "HABI PRO'",
+    "siege": {
+     "libelle_commune": "CANNES",
+     "code_postal": "06400"
+    },
+    "activite_principale": "47.71Z",
+    "section_activite_principale": "G",
+    "date_creation": "2001-02-02",
+    "tranche_effectif_salarie": "02",
+    "annee_tranche_effectif_salarie": "2024",
+    "etat_administratif": "A",
+    "categorie_entreprise": "PME"
+   }
+  ]
+ },
+ "inpi": {
+  "total_count": 6,
+  "results": [
+   {
+    "siren": "434436622",
+    "date_cloture_exercice": "2024-12-31",
+    "chiffre_d_affaires": 1115853,
+    "ebe": 88859,
+    "ebit": 81992,
+    "resultat_net": 61909,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "434436622",
+    "date_cloture_exercice": "2021-12-31",
+    "chiffre_d_affaires": 746603,
+    "ebe": 94512,
+    "ebit": 64226,
+    "resultat_net": 51478,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "434436622",
+    "date_cloture_exercice": "2019-12-31",
+    "chiffre_d_affaires": 875248,
+    "ebe": 58356,
+    "ebit": 4179,
+    "resultat_net": 1687,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "434436622",
+    "date_cloture_exercice": "2018-12-31",
+    "chiffre_d_affaires": 847247,
+    "ebe": 63907,
+    "ebit": 22207,
+    "resultat_net": 9739,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "434436622",
+    "date_cloture_exercice": "2017-12-31",
+    "chiffre_d_affaires": 741973,
+    "ebe": 73374,
+    "ebit": 21824,
+    "resultat_net": 17452,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "434436622",
+    "date_cloture_exercice": "2016-12-31",
+    "chiffre_d_affaires": 827536,
+    "ebe": 73894,
+    "ebit": 86093,
+    "resultat_net": 61754,
+    "confidentiality": "Public",
+    "type_bilan": "S"
+   }
+  ]
+ },
+ "bodacc": {
+  "results": [
+   {
+    "dateparution": "2008-08-12",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2009-08-14",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2010-02-02",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "HABI PRO",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification de la forme juridique. Modification de représentant. Modification de l'activité.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2010-09-13",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2011-12-20",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2012-08-14",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2013-08-18",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2014-10-31",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2015-11-19",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2017-01-11",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2017-10-04",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-09-18",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2019-11-13",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO'",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO'\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-11-08",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO'",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO'\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-11-22",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "HABI PRO'",
+    "ville": "Cannes",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'activité.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO'\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2023-03-09",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO'",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO'\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2024-04-07",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO'",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO'\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-04-24",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "HABI PRO'",
+    "ville": "Cannes",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO'\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-11-02",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "HABI PRO'",
+    "ville": "Cannes",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration, la forme juridique.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"HABI PRO'\",\"numeroImmatriculation\":{\"numeroIdentification\":\"434 436 622\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Cannes\"}}}",
+    "listeetablissements": null
+   }
+  ]
+ }
+}

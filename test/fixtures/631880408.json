@@ -1,0 +1,392 @@
+{
+ "enregistre_le": "2026-11-10",
+ "entreprise": {
+  "results": [
+   {
+    "siren": "631880408",
+    "nom_complet": "BONGARD BAZOT ET FILS",
+    "nom_raison_sociale": "BONGARD BAZOT ET FILS",
+    "siege": {
+     "libelle_commune": "SAINT-PEREUSE",
+     "code_postal": "58110"
+    },
+    "activite_principale": "02.20Z",
+    "section_activite_principale": "A",
+    "date_creation": "1963-01-01",
+    "tranche_effectif_salarie": "22",
+    "annee_tranche_effectif_salarie": "2024",
+    "etat_administratif": "A",
+    "categorie_entreprise": "PME"
+   }
+  ]
+ },
+ "inpi": {
+  "total_count": 7,
+  "results": [
+   {
+    "siren": "631880408",
+    "date_cloture_exercice": "2024-12-31",
+    "chiffre_d_affaires": 23685555,
+    "ebe": 506193,
+    "ebit": 259467,
+    "resultat_net": 94466,
+    "confidentiality": "Publication simplifiee",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "631880408",
+    "date_cloture_exercice": "2023-12-31",
+    "chiffre_d_affaires": 25977485,
+    "ebe": 575996,
+    "ebit": 503931,
+    "resultat_net": 232257,
+    "confidentiality": "Publication simplifiee",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "631880408",
+    "date_cloture_exercice": "2022-12-31",
+    "chiffre_d_affaires": 25635761,
+    "ebe": 1176933,
+    "ebit": 496401,
+    "resultat_net": 351969,
+    "confidentiality": "Publication simplifiee",
+    "type_bilan": "S"
+   },
+   {
+    "siren": "631880408",
+    "date_cloture_exercice": "2020-12-31",
+    "chiffre_d_affaires": 19725085,
+    "ebe": 704184,
+    "ebit": 575912,
+    "resultat_net": 584456,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "631880408",
+    "date_cloture_exercice": "2019-12-31",
+    "chiffre_d_affaires": 21821427,
+    "ebe": 408127,
+    "ebit": 330550,
+    "resultat_net": 199899,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "631880408",
+    "date_cloture_exercice": "2018-12-31",
+    "chiffre_d_affaires": 20450202,
+    "ebe": 142647,
+    "ebit": -85019,
+    "resultat_net": 117734,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "631880408",
+    "date_cloture_exercice": "2016-12-31",
+    "chiffre_d_affaires": 18965261,
+    "ebe": 53571,
+    "ebit": 255365,
+    "resultat_net": 152479,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   }
+  ]
+ },
+ "bodacc": {
+  "results": [
+   {
+    "dateparution": "2008-06-04",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2008-08-31",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2009-09-03",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2009-10-06",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2010-09-14",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2011-08-22",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2012-09-04",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2012-10-21",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "BBF RESEAUX, SA BONGARD BAZOT ET FILS",
+    "ville": "Lachassagne, Nevers",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BBF RESEAUX\",\"numeroImmatriculation\":{\"numeroIdentification\":\"754 012 953\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Villefranche / Tarare\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Nevers\"}}}"
+   },
+   {
+    "dateparution": "2012-11-02",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "BBF RESEAUX, SA BONGARD BAZOT ET FILS",
+    "ville": "Lachassagne, Nevers",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un fonds par une personne morale (insertion provisoire)\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BBF RESEAUX\",\"numeroImmatriculation\":{\"numeroIdentification\":\"754 012 953\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Villefranche / Tarare\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Nevers\"}}}"
+   },
+   {
+    "dateparution": "2014-02-15",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2014-10-10",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2015-08-26",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2016-08-26",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2017-05-24",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2017-10-21",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-09-27",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-12-27",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2019-10-18",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-04-02",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-09-24",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-09-21",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "SA BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"SA BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-10-19",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration, la dénomination, la forme juridique.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-11-09",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-10-04",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "BONGARD BAZOT ET FILS, CHAUSSARD SARL",
+    "ville": "Saint-Péreuse, Moulins-Engilbert",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Moulins-Engilbert\"}}}"
+   },
+   {
+    "dateparution": "2022-10-18",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2024-03-26",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2024-09-24",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-06-11",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-10-29",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "BONGARD BAZOT ET FILS",
+    "ville": "Saint-Péreuse",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"BONGARD BAZOT ET FILS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"631 880 408\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nevers\"}}}",
+    "listeetablissements": null
+   }
+  ]
+ }
+}

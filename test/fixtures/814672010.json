@@ -1,0 +1,192 @@
+{
+ "enregistre_le": "2026-11-10",
+ "entreprise": {
+  "results": [
+   {
+    "siren": "814672010",
+    "nom_complet": "ELEVATION ALPS",
+    "nom_raison_sociale": "ELEVATION ALPS",
+    "siege": {
+     "libelle_commune": "MORZINE",
+     "code_postal": "74110"
+    },
+    "activite_principale": "55.20Z",
+    "section_activite_principale": "I",
+    "date_creation": "2015-11-09",
+    "tranche_effectif_salarie": "11",
+    "annee_tranche_effectif_salarie": "2024",
+    "etat_administratif": "A",
+    "categorie_entreprise": "PME"
+   }
+  ]
+ },
+ "inpi": {
+  "total_count": 1,
+  "results": [
+   {
+    "siren": "814672010",
+    "date_cloture_exercice": "2025-09-30",
+    "chiffre_d_affaires": 0,
+    "ebe": 0,
+    "ebit": 0,
+    "resultat_net": 85201,
+    "confidentiality": "Partiellement confidentiel",
+    "type_bilan": "C"
+   }
+  ]
+ },
+ "bodacc": {
+  "results": [
+   {
+    "dateparution": "2015-11-30",
+    "familleavis_lib": "Créations",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": "{\"creation\":{\"categorieCreation\":\"Immatriculation d'une personne morale (B, C, D) suite à création d'un établissement principal\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Morzine\"}}}"
+   },
+   {
+    "dateparution": "2017-08-29",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-02-02",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "ELEVATION ALPS",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'activité, l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-04-24",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2019-04-02",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": "{\"descriptif\":\"Transfert du siège social, transfert de l'établissement principal\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-10-11",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-10-11",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-06-10",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-02-24",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "ELEVATION ALPS",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification de l'administration.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-07-19",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2023-04-27",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2024-05-12",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2025-04-24",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-05-04",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "ELEVATION ALPS",
+    "ville": "Morzine",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-08-23",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "ELEVATION ALPS",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification de l'activité.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ELEVATION ALPS\",\"numeroImmatriculation\":{\"numeroIdentification\":\"814 672 010\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Thonon-les-Bains\"}}}",
+    "listeetablissements": null
+   }
+  ]
+ }
+}

@@ -39,6 +39,7 @@
 @media (min-width: 768px) { :root { --gouttiere: 32px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 96px; }
 body {
   margin: 0; background: var(--creme); color: var(--espresso);
@@ -298,3 +299,46 @@ section { padding: 88px 0; }
   .apparait { opacity: 1; transform: none; transition: none; }
   .btn, .btn .fleche, .faq summary .plus { transition: none; }
 }
+
+/* ---------- Autocomplétion ---------- */
+.suggestions {
+  list-style: none; margin: 8px 0 0; padding: 6px; text-align: left; position: absolute; left: 0; right: 0; z-index: 20;
+  background: var(--creme); color: var(--espresso); border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+.suggestions li { padding: 10px 14px; border-radius: 14px; cursor: pointer; display: grid; gap: 2px; }
+.suggestions li:hover, .suggestions li[aria-selected="true"] { background: var(--sable); }
+.sugg-nom { font-weight: 500; }
+.sugg-info { font-family: var(--mono); font-size: 12px; color: var(--pierre-texte); }
+
+/* ---------- Votre maquette : frise, estimation, actions ---------- */
+.frise { list-style: none; margin: 0; padding: 0 0 0 22px; border-left: 1px solid var(--trait-nuit); display: grid; gap: 14px; }
+.frise li { position: relative; display: grid; gap: 2px; opacity: 0; transform: translateY(6px); transition: opacity .5s ease, transform .5s ease; }
+.frise li.visible { opacity: 1; transform: none; }
+.frise li::before { content: ""; position: absolute; left: -26px; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--espresso); border: 1px solid var(--pierre-nuit); }
+.frise li:last-child::before { background: var(--cuivre); border-color: var(--cuivre); }
+.frise-date { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--cuivre-clair); }
+.frise-texte { font-family: var(--serif); font-size: 1.45rem; line-height: 1.2; color: var(--creme); }
+.estimation { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--trait-nuit); }
+.estimation-valeur { font-family: var(--serif); font-size: clamp(2.8rem, 6vw, 4.4rem); line-height: 1; color: var(--creme); margin: 8px 0 10px; }
+.estimation-mention { font-size: 0.85rem; color: var(--pierre-nuit); margin-top: 8px; }
+.maquette-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 32px; }
+.btn-contour-nuit { background: transparent; color: var(--creme); border-color: rgba(251, 246, 236, 0.35); }
+.btn-contour-nuit:hover { border-color: var(--creme); }
+.lien-nuit { background: none; border: 0; padding: 4px 0; color: var(--creme); font: inherit; font-size: .95rem; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.maquette-message { margin-top: 20px; padding: 12px 16px; border-radius: 14px; background: var(--espresso-2); color: var(--creme); }
+.comptes-absents { margin-top: 24px; padding: 20px; border-radius: 20px; background: var(--espresso-2); display: grid; gap: 14px; }
+.form-comptes { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.form-comptes label { display: grid; gap: 6px; font-size: .9rem; flex: 1 1 140px; }
+.form-comptes input { min-height: 46px; border-radius: 12px; border: 1px solid var(--trait-nuit); background: var(--creme); color: var(--espresso); padding: 0 12px; font: inherit; }
+.scene-3d.sans-3d { display: grid; place-items: center; }
+.facade-svg { width: 80%; }
+@media (prefers-reduced-motion: reduce) { .frise li { transition: none; } }
+/* Mobile : la maquette d'abord, la frise en dessous */
+@media (max-width: 979px) { #maquette .scene-3d { order: -1; } }
+
+/* Vidéo du hero : posée sur l'image de couverture, fondu à la lecture */
+.hero-fond { position: absolute; }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: var(--etalonnage); opacity: 0; transition: opacity .8s ease; }
+.hero-video.lue { opacity: 1; }
+/* Photos portrait dans des cadres paysage : cadrage sur le haut (les visages) */
+.etape .photo img, .m-portrait img { object-position: center 30%; }

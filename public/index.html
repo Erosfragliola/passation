@@ -7,7 +7,7 @@
   <meta name="description" content="Valorisation express à partir de votre SIREN, valorisation approfondie, datapack Excel, teaser, mémorandum d'information et chat expert : la boîte à outils du dirigeant qui prépare sa cession.">
   <meta name="theme-color" content="#231E18">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="/img/photos/texture-sombre-1600.webp" imagesrcset="/img/photos/texture-sombre-800.webp 800w, /img/photos/texture-sombre-1600.webp 1600w, /img/photos/texture-sombre-2400.webp 2400w" imagesizes="100vw" fetchpriority="high">
+  <link rel="preload" as="image" href="/img/photos/hero-poster-1600.webp" imagesrcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w" imagesizes="100vw" fetchpriority="high">
   <link rel="preload" href="/fonts/instrument-serif-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/inter-tight-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/styles.css">
@@ -46,9 +46,12 @@
        en attendant, la texture peinte originale. -->
   <section class="hero" aria-labelledby="titre-hero">
     <div class="hero-fond">
-      <img src="/img/photos/texture-sombre-1600.webp"
-           srcset="/img/photos/texture-sombre-800.webp 800w, /img/photos/texture-sombre-1600.webp 1600w, /img/photos/texture-sombre-2400.webp 2400w"
-           sizes="100vw" alt="" width="2400" height="1600" fetchpriority="high">
+      <img src="/img/photos/hero-poster-1600.webp"
+           srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
+           sizes="100vw" alt="" width="2400" height="1350" fetchpriority="high">
+      <!-- Vidéo chargée par site.js sur grand écran seulement, jamais avec « réduire les animations » -->
+      <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" hidden
+             data-sources='[["/video/hero.webm","video/webm"],["/video/hero.mp4","video/mp4"]]'></video>
     </div>
     <div class="conteneur hero-contenu">
       <p class="etiquette">Préparer la cession de votre PME</p>
@@ -57,9 +60,11 @@
       <form class="recherche" action="/estimation" method="get" role="search">
         <div class="recherche-champ">
           <label for="q">SIREN ou nom de votre société</label>
-          <input id="q" name="q" type="search" autocomplete="off" required minlength="2" placeholder="SIREN ou nom de votre société" aria-describedby="note-recherche">
+          <input id="q" name="q" type="search" autocomplete="off" required minlength="2" placeholder="SIREN ou nom de votre société" aria-describedby="note-recherche"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions">
           <button class="btn btn-vert" type="submit">Estimer ma valeur <span class="fleche" aria-hidden="true">→</span></button>
         </div>
+        <ul class="suggestions" id="suggestions" role="listbox" aria-label="Sociétés correspondantes" hidden></ul>
         <p class="recherche-note" id="note-recherche">Gratuit, sans compte. <strong>Estimation indicative, non contractuelle.</strong></p>
       </form>
     </div>
@@ -73,20 +78,47 @@
     </div>
   </section>
 
-  <!-- 2. Le témoin : scène 3D (nuit) -->
-  <section class="nuit" aria-labelledby="titre-temoin">
+  <!-- 2. Votre maquette : la maquette 3D de l'entreprise et la frise « Vous avez bâti » (nuit) -->
+  <section id="maquette" class="nuit" aria-labelledby="titre-maquette">
     <div class="conteneur temoin-grille">
-      <div class="apparait">
-        <p class="etiquette">Le témoin</p>
-        <h2 id="titre-temoin">Ce que vous avez bâti mérite d'être <em>transmis</em>.</h2>
-        <p class="chapo" style="margin-top:20px">Une cession, c'est un relais. Celui qui part transmet un savoir-faire, des équipes, des clients. Celui qui arrive doit comprendre vite ce qu'il reprend.</p>
-        <ol class="temoin-points">
-          <li><span>01</span>Vous montrez ce que vaut votre entreprise, chiffres à l'appui.</li>
-          <li><span>02</span>Vous racontez son histoire, sans rien laisser au hasard.</li>
-          <li><span>03</span>Vous choisissez quand, et à qui, vous dévoiler.</li>
-        </ol>
+      <div class="maquette-texte">
+        <p class="etiquette" id="maquette-etiquette">Le témoin</p>
+        <h2 id="titre-maquette">Ce que vous avez bâti mérite d'être <em>transmis</em>.</h2>
+        <div id="maquette-intro">
+          <p class="chapo" style="margin-top:20px">Saisissez votre SIREN : votre entreprise se construit sous vos yeux, à partir de ses données publiques. Hauteur, lumières, arbres : chaque détail raconte quelque chose de vrai.</p>
+          <ol class="temoin-points">
+            <li><span>01</span>Les étages suivent votre chiffre d'affaires.</li>
+            <li><span>02</span>Les fenêtres allumées, votre équipe.</li>
+            <li><span>03</span>Les arbres, votre rentabilité. La pierre, votre histoire.</li>
+          </ol>
+        </div>
+        <div id="maquette-resultat" hidden aria-live="polite">
+          <p class="etiquette" style="margin:28px 0 14px">Son histoire</p>
+          <ol class="frise" id="frise"></ol>
+          <div id="comptes-absents" class="comptes-absents" hidden>
+            <p>Vos comptes ne sont pas publics. Indiquez votre chiffre d'affaires pour terminer votre maquette.</p>
+            <form id="form-comptes" class="form-comptes">
+              <label>Chiffre d'affaires <span class="petit">(k€)</span><input id="saisie-ca" type="number" inputmode="numeric" min="1" step="1" required></label>
+              <label>EBE <span class="petit">(k€, facultatif)</span><input id="saisie-ebe" type="number" inputmode="numeric" step="1"></label>
+              <button class="btn btn-sable" type="submit">Terminer ma maquette</button>
+            </form>
+            <p class="petit">Ces chiffres ne sont pas enregistrés tant que vous n'avez pas créé de compte.</p>
+          </div>
+          <div id="estimation" class="estimation" hidden>
+            <p class="petit" id="estimation-legende"></p>
+            <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
+            <p class="petit" id="estimation-note"></p>
+            <p class="estimation-mention">Estimation indicative, non contractuelle.</p>
+          </div>
+          <div class="maquette-actions">
+            <a class="btn btn-vert" href="/connexion">Affiner ma valorisation <span class="fleche" aria-hidden="true">→</span></a>
+            <button class="btn btn-contour-nuit" type="button" id="btn-telecharger">Télécharger ma maquette</button>
+            <button class="lien-nuit" type="button" id="btn-autre">Rechercher une autre entreprise</button>
+          </div>
+        </div>
+        <p class="maquette-message" id="maquette-message" role="status" hidden></p>
       </div>
-      <div class="scene-3d apparait" data-maquette>
+      <div class="scene-3d" data-maquette>
         <p class="legende" aria-hidden="true">Maquette · le témoin passe le seuil</p>
       </div>
     </div>
@@ -100,9 +132,8 @@
         <h2 id="titre-mission">Une entreprise ne se vend pas. Elle se <em>transmet</em>.</h2>
       </div>
       <div class="mosaique">
-        <figure class="photo photo-attente m-portrait apparait" style="margin:0">
-          <img src="/img/photos/texture-sombre-800.webp" alt="" loading="lazy" width="800" height="533">
-          <figcaption>Photo d'illustration à venir · portrait de dirigeant</figcaption>
+        <figure class="photo m-portrait apparait" style="margin:0">
+          <img src="/img/photos/portrait-dirigeant-800.webp" alt="Un dirigeant relit et signe un document à son bureau (photo d'illustration)" loading="lazy" width="500" height="540">
         </figure>
         <div class="m-citation apparait">
           <blockquote>« Trente ans de travail ne tiennent pas dans un multiple. Ils tiennent dans un dossier qui <em>raconte</em>, chiffre et convainc. »</blockquote>
@@ -128,19 +159,19 @@
       </div>
       <ol class="etapes">
         <li class="etape apparait">
-          <figure class="photo photo-attente" style="margin:0"><img src="/img/photos/texture-sombre-800.webp" alt="" loading="lazy" width="800" height="533"><figcaption>Photo à venir · dirigeant devant ses comptes</figcaption></figure>
+          <figure class="photo" style="margin:0"><img src="/img/photos/etape-bureau-800.webp" alt="Un dirigeant au téléphone dans son bureau (photo d'illustration)" loading="lazy" width="500" height="749"></figure>
           <span class="etape-num">01 · Votre SIREN</span>
           <h3>Une première <em>valeur</em></h3>
           <p>Nous lisons les registres publics : identité, activité, derniers comptes déposés. Vous obtenez une fourchette en quelques secondes.</p>
         </li>
         <li class="etape apparait">
-          <figure class="photo photo-attente" style="margin:0"><img src="/img/photos/texture-clair-800.webp" alt="" loading="lazy" width="800" height="533"><figcaption>Photo à venir · un atelier transmis</figcaption></figure>
+          <figure class="photo" style="margin:0"><img src="/img/photos/etape-atelier-800.webp" alt="Un artisan au travail dans un atelier, dans une gerbe d'étincelles (photo d'illustration)" loading="lazy" width="800" height="1422"></figure>
           <span class="etape-num">02 · Vos chiffres</span>
           <h3>Une valeur <em>argumentée</em></h3>
           <p>Questionnaire court, import de votre liasse, retraitements de l'EBE. Trois méthodes croisées, des hypothèses que vous gardez en main.</p>
         </li>
         <li class="etape apparait">
-          <figure class="photo photo-attente" style="margin:0"><img src="/img/photos/texture-sombre-800.webp" alt="" loading="lazy" width="800" height="533"><figcaption>Photo à venir · poignée de main</figcaption></figure>
+          <figure class="photo" style="margin:0"><img src="/img/photos/etape-equipe-800.webp" alt="Une équipe en cuisine, au travail (photo d'illustration)" loading="lazy" width="422" height="750"></figure>
           <span class="etape-num">03 · Vos documents</span>
           <h3>Un dossier <em>prêt</em></h3>
           <p>Datapack Excel, teaser anonymisé, mémorandum d'information. Vous relisez, vous ajustez, vous partagez.</p>
@@ -293,5 +324,6 @@
 </footer>
 
 <script src="/js/site.js" defer></script>
+<script type="module" src="/js/votre-maquette.js"></script>
 </body>
 </html>

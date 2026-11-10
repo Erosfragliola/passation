@@ -1,0 +1,263 @@
+{
+  "note": "Données d'entrée du croisement des multiples (scripts/multiples.mjs). Chaque chiffre est recopié de sa source, avec URL et date de consultation. Multiples VE / EBE (EBE assimilé à l'EBITDA pour les PME françaises, comme le font les sources).",
+  "consulte_le": "2026-11-10",
+  "argos": {
+    "titre": "Argos Index mid-market, 2e trimestre 2026 (Argos Wityu / Epsilon Research)",
+    "url": "https://argos.fund/wp-content/uploads/2026/09/ARGOS-INDEX-Q2-2026_FR.pdf",
+    "mediane_ve_ebitda": 8.8,
+    "perimetre": "Transactions non cotées zone euro, 15 à 500 M€ de valeur des titres, médiane sur 6 mois glissants"
+  },
+  "taille_dealsuite": {
+    "titre": "Dealsuite, Rapport Fusac France, février 2026 (S2 2025), repris par Capital Stack (18/08/2026)",
+    "url": "https://www.capitalstack.fr/blog/valoriser-pme-multiple-ebe-methode",
+    "multiple_ebitda_200k": 3.9,
+    "multiple_ebitda_10m": 6.9,
+    "usage": "Rapport 3,9 / 6,9 : passage d'un multiple de grande transaction à celui d'une PME d'environ 200 k€ d'EBITDA"
+  },
+  "dealsuite_secteurs": {
+    "titre": "Dealsuite, Rapport Fusac France, août 2026 (S1 2026, 104 cabinets M&A, sociétés de 1 à 200 M€ de CA), repris par Capital Stack",
+    "url": "https://www.capitalstack.fr/blog/valoriser-pme-multiple-ebe-methode",
+    "moyenne_tous_secteurs": 5.3,
+    "secteurs": {
+      "Développement de logiciels": 7.9,
+      "Services de santé et produits pharmaceutiques": 7.7,
+      "Services informatiques": 7.2,
+      "Commerce de gros": 4.0
+    }
+  },
+  "bareme_pme": {
+    "titre": "Captain, « Multiples de valorisation par secteur : le barème complet 2026 » (28/05/2026), PME de 1 à 50 M€ de CA",
+    "url": "https://captain.fr/blog/comptabilite/multiples-de-valorisation-par-secteur-bareme-2026",
+    "lignes": {
+      "Industrie manufacturière": [
+        4,
+        7
+      ],
+      "BTP / second œuvre": [
+        3,
+        5
+      ],
+      "Distribution / négoce B2B": [
+        4,
+        6
+      ],
+      "E-commerce généraliste": [
+        3,
+        6
+      ],
+      "Logistique / transport": [
+        4,
+        6
+      ],
+      "Restauration assise / brasserie": [
+        2.5,
+        4.5
+      ],
+      "Restauration rapide / franchise": [
+        3,
+        5
+      ],
+      "Hôtellerie indépendante": [
+        5,
+        9
+      ],
+      "ESN / SSII / services informatiques": [
+        5,
+        10
+      ],
+      "Agence marketing / communication digitale": [
+        4,
+        7
+      ],
+      "Cabinet conseil / audit": [
+        4,
+        7
+      ],
+      "Cabinet d'expertise comptable": [
+        5,
+        8
+      ],
+      "Cabinet dentaire / médical": [
+        4,
+        7
+      ],
+      "Pharmacie d'officine": [
+        6,
+        9
+      ],
+      "Salon de coiffure": [
+        2,
+        4
+      ],
+      "Garage / réparation auto": [
+        3,
+        4.5
+      ]
+    }
+  },
+  "damodaran": {
+    "titre": "A. Damodaran (NYU Stern), Enterprise Value Multiples by Industry, Europe, mise à jour du 05/01/2026 ; colonne EV/EBITDA, entreprises à EBITDA positif",
+    "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/vebitdaEurope.xls",
+    "marche_hors_financieres": 10.77,
+    "industries": {
+      "Machinery": 14.98,
+      "Food Processing": 12.43,
+      "Electrical Equipment": 18.94,
+      "Auto Parts": 5.81,
+      "Chemical (Specialty)": 12.76,
+      "Building Materials": 14.34,
+      "Packaging & Container": 8.34,
+      "Steel": 8.27,
+      "Furn/Home Furnishings": 9.45,
+      "Engineering/Construction": 9.71,
+      "Homebuilding": 10.6,
+      "Construction Supplies": 11.01,
+      "Retail (Special Lines)": 14.06,
+      "Retail (Distributors)": 11.64,
+      "Retail (Grocery and Food)": 9.73,
+      "Retail (Building Supply)": 9.28,
+      "Retail (Automotive)": 12.36,
+      "Food Wholesalers": 10.57,
+      "Transportation": 12.6,
+      "Trucking": 9.15,
+      "Restaurant/Dining": 12.15,
+      "Hotel/Gaming": 10.92,
+      "Computer Services": 12.03,
+      "Software (System & Application)": 20.85,
+      "Advertising": 8.41,
+      "Business & Consumer Services": 12.81,
+      "Office Equipment & Services": 7.96,
+      "Environmental & Waste Services": 10.37,
+      "Healthcare Support Services": 12.59,
+      "Hospitals/Healthcare Facilities": 10.23,
+      "Farming/Agriculture": 12.31,
+      "Education": 10.45,
+      "Recreation": 13.52
+    }
+  },
+  "correspondances": {
+    "industrie": {
+      "damodaran": [
+        "Machinery",
+        "Food Processing",
+        "Electrical Equipment",
+        "Auto Parts",
+        "Chemical (Specialty)",
+        "Building Materials",
+        "Packaging & Container",
+        "Steel",
+        "Furn/Home Furnishings"
+      ],
+      "bareme": [
+        "Industrie manufacturière"
+      ],
+      "dealsuite": []
+    },
+    "construction": {
+      "damodaran": [
+        "Engineering/Construction",
+        "Homebuilding",
+        "Construction Supplies"
+      ],
+      "bareme": [
+        "BTP / second œuvre"
+      ],
+      "dealsuite": []
+    },
+    "commerce": {
+      "damodaran": [
+        "Retail (Special Lines)",
+        "Retail (Distributors)",
+        "Retail (Grocery and Food)",
+        "Retail (Building Supply)",
+        "Retail (Automotive)",
+        "Food Wholesalers"
+      ],
+      "bareme": [
+        "Distribution / négoce B2B",
+        "E-commerce généraliste",
+        "Garage / réparation auto"
+      ],
+      "dealsuite": [
+        "Commerce de gros"
+      ]
+    },
+    "transport": {
+      "damodaran": [
+        "Transportation",
+        "Trucking"
+      ],
+      "bareme": [
+        "Logistique / transport"
+      ],
+      "dealsuite": []
+    },
+    "hotellerie-restauration": {
+      "damodaran": [
+        "Restaurant/Dining",
+        "Hotel/Gaming"
+      ],
+      "bareme": [
+        "Restauration assise / brasserie",
+        "Restauration rapide / franchise",
+        "Hôtellerie indépendante"
+      ],
+      "dealsuite": []
+    },
+    "information-communication": {
+      "damodaran": [
+        "Computer Services",
+        "Software (System & Application)",
+        "Advertising"
+      ],
+      "bareme": [
+        "ESN / SSII / services informatiques",
+        "Agence marketing / communication digitale"
+      ],
+      "dealsuite": [
+        "Développement de logiciels",
+        "Services informatiques"
+      ]
+    },
+    "services-entreprises": {
+      "damodaran": [
+        "Business & Consumer Services",
+        "Office Equipment & Services",
+        "Environmental & Waste Services"
+      ],
+      "bareme": [
+        "Cabinet conseil / audit",
+        "Cabinet d'expertise comptable"
+      ],
+      "dealsuite": []
+    },
+    "sante-social": {
+      "damodaran": [
+        "Healthcare Support Services",
+        "Hospitals/Healthcare Facilities"
+      ],
+      "bareme": [
+        "Cabinet dentaire / médical",
+        "Pharmacie d'officine"
+      ],
+      "dealsuite": [
+        "Services de santé et produits pharmaceutiques"
+      ]
+    },
+    "agriculture": {
+      "damodaran": [
+        "Farming/Agriculture"
+      ],
+      "bareme": [],
+      "dealsuite": []
+    },
+    "autres": {
+      "damodaran": [
+        "Education",
+        "Recreation"
+      ],
+      "bareme": [],
+      "dealsuite": []
+    }
+  }
+}

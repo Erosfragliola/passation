@@ -10,7 +10,9 @@
     "test:watch": "vitest",
     "db:migrate:local": "wrangler d1 migrations apply passation --local",
     "deploy": "wrangler deploy",
-    "images": "node scripts/images.mjs"
+    "images": "node scripts/images.mjs",
+    "fixtures": "node scripts/fixtures.mjs",
+    "multiples": "node scripts/multiples.mjs"
   },
   "devDependencies": {
     "sharp": "0.35.5",

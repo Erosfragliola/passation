@@ -38,13 +38,17 @@
     });
   });
 
-  // Scène 3D chargée seulement à l'approche de sa section (Three.js pèse ~200 Ko)
-  const scene = document.querySelector("[data-maquette]");
-  if (scene && "IntersectionObserver" in window) {
-    const obs3d = new IntersectionObserver((entrees) => {
-      if (entrees.some((e) => e.isIntersecting)) { obs3d.disconnect(); import("/js/maquette3d.js"); }
-    }, { rootMargin: "400px 0px" });
-    obs3d.observe(scene);
+  // Vidéo du hero : grand écran seulement, et jamais si l'utilisateur réduit les animations
+  const video = document.querySelector(".hero-video");
+  if (video && window.matchMedia("(min-width: 768px)").matches && !reduit) {
+    JSON.parse(video.dataset.sources).forEach(([src, type]) => {
+      const s = document.createElement("source");
+      s.src = src; s.type = type;
+      video.append(s);
+    });
+    video.hidden = false;
+    video.addEventListener("playing", () => video.classList.add("lue"), { once: true });
+    video.play().catch(() => { video.hidden = true; });
   }
 
   document.querySelectorAll("[data-annee]").forEach((el) => { el.textContent = new Date().getFullYear(); });

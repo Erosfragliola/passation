@@ -1,0 +1,392 @@
+{
+ "enregistre_le": "2026-11-10",
+ "entreprise": {
+  "results": [
+   {
+    "siren": "319252813",
+    "nom_complet": "LA FRAISERAIE SAS",
+    "nom_raison_sociale": "LA FRAISERAIE SAS",
+    "siege": {
+     "libelle_commune": "PORNIC",
+     "code_postal": "44210"
+    },
+    "activite_principale": "10.52Z",
+    "section_activite_principale": "C",
+    "date_creation": "1980-04-01",
+    "tranche_effectif_salarie": "12",
+    "annee_tranche_effectif_salarie": "2024",
+    "etat_administratif": "A",
+    "categorie_entreprise": "PME"
+   }
+  ]
+ },
+ "inpi": {
+  "total_count": 7,
+  "results": [
+   {
+    "siren": "319252813",
+    "date_cloture_exercice": "2023-12-31",
+    "chiffre_d_affaires": 6545936,
+    "ebe": 165807,
+    "ebit": 151737,
+    "resultat_net": 108338,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "319252813",
+    "date_cloture_exercice": "2022-12-31",
+    "chiffre_d_affaires": 7141793,
+    "ebe": 384235,
+    "ebit": 369446,
+    "resultat_net": 373514,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "319252813",
+    "date_cloture_exercice": "2021-12-31",
+    "chiffre_d_affaires": 6181724,
+    "ebe": 297051,
+    "ebit": 117887,
+    "resultat_net": 53171,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "319252813",
+    "date_cloture_exercice": "2020-12-31",
+    "chiffre_d_affaires": 5259290,
+    "ebe": 197997,
+    "ebit": 142788,
+    "resultat_net": 106524,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "319252813",
+    "date_cloture_exercice": "2019-12-31",
+    "chiffre_d_affaires": 0,
+    "ebe": 0,
+    "ebit": 0,
+    "resultat_net": 211982,
+    "confidentiality": "Partiellement confidentiel (RAPCAC)",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "319252813",
+    "date_cloture_exercice": "2018-12-31",
+    "chiffre_d_affaires": 5723197,
+    "ebe": 859011,
+    "ebit": 468384,
+    "resultat_net": 124950,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "319252813",
+    "date_cloture_exercice": "2017-12-31",
+    "chiffre_d_affaires": 5412928,
+    "ebe": 503359,
+    "ebit": 89000,
+    "resultat_net": 46636,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   }
+  ]
+ },
+ "bodacc": {
+  "results": [
+   {
+    "dateparution": "2008-08-14",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Nantes\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2009-06-30",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": "{\"descriptif\":\"Nomination de directeur général\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2009-07-30",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2010-07-23",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": "{\"descriptif\":\"Changement dans le conseil d'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2010-08-30",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2011-08-02",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2012-07-30",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2013-09-16",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2014-08-05",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2015-05-13",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2015-08-26",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2015-10-30",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "LA FRAISERAIE, DUBOIS, Christophe",
+    "ville": "Pornic, Noirmoutier-en-l'Île",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Autre achat, apport, attribution\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"La roche sur yon\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Noirmoutier-en-l'Île\"}}}"
+   },
+   {
+    "dateparution": "2016-03-13",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "LA FRAISERAIE, SARL GIL BAR",
+    "ville": "Pornic, les Sables d'Olonne",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"La roche sur yon\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"les Sables d'Olonne\"}}}"
+   },
+   {
+    "dateparution": "2016-06-24",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2016-07-01",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'activité de l'établissement principal\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2016-08-03",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-11-22",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-11-25",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "LA FRAISERAIE, Joguet, Thierry Gustave Jacques",
+    "ville": "Pornic, Clisson",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Clisson\"}}}"
+   },
+   {
+    "dateparution": "2019-03-17",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "LA FRAISERAIE, L'ENCASD'RETZ, Aguille, Corinne",
+    "ville": "Pornic, La Bernerie en Retz",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"La Bernerie en Retz\"}}}"
+   },
+   {
+    "dateparution": "2019-04-03",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "LA FRAISERAIE, ALIZIA",
+    "ville": "Pornic, Le Pouliguen",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Le Pouliguen\"}}}"
+   },
+   {
+    "dateparution": "2019-04-12",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "EURL MULLIGAN'S, LA FRAISERAIE",
+    "ville": "LES SABLES D OLONNE, Les Sables-d'Olonne",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un fonds par une personne morale (insertion provisoire)\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"EURL MULLIGAN'S\",\"numeroImmatriculation\":{\"numeroIdentification\":\"443 360 961\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"La Roche-sur-Yon\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Les Sables-d'Olonne\"}}}"
+   },
+   {
+    "dateparution": "2019-05-09",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "EURL MULLIGAN'S, LA FRAISERAIE, LE BLUE BELL",
+    "ville": "LES SABLES D OLONNE, Les Sables-d'Olonne",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"EURL MULLIGAN'S\",\"numeroImmatriculation\":{\"numeroIdentification\":\"443 360 961\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"La Roche-sur-Yon\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Les Sables-d'Olonne\"}}}"
+   },
+   {
+    "dateparution": "2019-08-06",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-11-05",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-09-12",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-07-22",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2023-09-24",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2024-07-23",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"LA FRAISERAIE\",\"numeroImmatriculation\":{\"numeroIdentification\":\"319 252 813\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-06-18",
+    "familleavis_lib": "Immatriculations",
+    "commercant": "ÀNATÀ, LA FRAISERAIE",
+    "ville": "Pornic",
+    "modificationsgenerales": null,
+    "acte": "{\"immatriculation\":{\"categorieImmatriculation\":\"Immatriculation d'une personne morale suite à transfert de son siège social\",\"dateEffet\":\"2026-02-13\"},\"descriptif\":\"Immatriculation d'une personne morale suite au transfert du siège hors ressort\"}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"ÀNATÀ\",\"numeroImmatriculation\":{\"numeroIdentification\":\"909 672 008\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Nazaire\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Pornic\"}}}"
+   }
+  ]
+ }
+}

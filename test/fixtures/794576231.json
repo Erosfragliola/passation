@@ -1,0 +1,442 @@
+{
+ "enregistre_le": "2026-11-10",
+ "entreprise": {
+  "results": [
+   {
+    "siren": "794576231",
+    "nom_complet": "MK ENERGIES",
+    "nom_raison_sociale": "MK ENERGIES",
+    "siege": {
+     "libelle_commune": "SAINT-LEONARD",
+     "code_postal": "51500"
+    },
+    "activite_principale": "43.21A",
+    "section_activite_principale": "F",
+    "date_creation": "2013-07-31",
+    "tranche_effectif_salarie": "22",
+    "annee_tranche_effectif_salarie": "2024",
+    "etat_administratif": "A",
+    "categorie_entreprise": "PME"
+   }
+  ]
+ },
+ "inpi": {
+  "total_count": 10,
+  "results": [
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2025-12-31",
+    "chiffre_d_affaires": 42150668,
+    "ebe": 3984036,
+    "ebit": 3163058,
+    "resultat_net": 1988076,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2024-12-31",
+    "chiffre_d_affaires": 46859519,
+    "ebe": 3729013,
+    "ebit": 3342270,
+    "resultat_net": 2112752,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2023-12-31",
+    "chiffre_d_affaires": 41934732,
+    "ebe": 3527310,
+    "ebit": 2888389,
+    "resultat_net": 1751837,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2022-12-31",
+    "chiffre_d_affaires": 26261093,
+    "ebe": 1295251,
+    "ebit": 1061068,
+    "resultat_net": 579044,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2021-12-31",
+    "chiffre_d_affaires": 22096741,
+    "ebe": 1101095,
+    "ebit": 790087,
+    "resultat_net": 401706,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2020-12-31",
+    "chiffre_d_affaires": 17570718,
+    "ebe": 392628,
+    "ebit": 247560,
+    "resultat_net": 129958,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2019-12-31",
+    "chiffre_d_affaires": 20481470,
+    "ebe": 909952,
+    "ebit": 794758,
+    "resultat_net": 519272,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2018-12-31",
+    "chiffre_d_affaires": 20897704,
+    "ebe": 856435,
+    "ebit": 686731,
+    "resultat_net": 545724,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2017-12-31",
+    "chiffre_d_affaires": 24388674,
+    "ebe": 107785,
+    "ebit": -79566,
+    "resultat_net": 939645,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   },
+   {
+    "siren": "794576231",
+    "date_cloture_exercice": "2016-12-31",
+    "chiffre_d_affaires": 12397595,
+    "ebe": -409633,
+    "ebit": -614037,
+    "resultat_net": -645918,
+    "confidentiality": "Public",
+    "type_bilan": "C"
+   }
+  ]
+ },
+ "bodacc": {
+  "results": [
+   {
+    "dateparution": "2013-08-16",
+    "familleavis_lib": "Créations",
+    "commercant": "MK ENERGIES",
+    "ville": "Charmes",
+    "modificationsgenerales": null,
+    "acte": "{\"creation\":{\"categorieCreation\":\"Immatriculation d'une personne morale (B, C, D) suite à création d'un établissement principal\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Quentin\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Charmes\"}}}"
+   },
+   {
+    "dateparution": "2014-02-28",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Charmes",
+    "modificationsgenerales": "{\"descriptif\":\"modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Saint-Quentin\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2014-03-26",
+    "familleavis_lib": "Immatriculations",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": "{\"immatriculation\":{\"categorieImmatriculation\":\"Immatriculation d'une personne morale suite à transfert de son siège social\"},\"descriptif\":\"Immatriculation suite à transfert de son siège social hors ressort.\"}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Reims\"}}}"
+   },
+   {
+    "dateparution": "2014-08-27",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2015-07-26",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "MK ENERGIES, SARL PEIXOTO SIGLE : S.E.G.P. (SOCIETE D'ELECTRICITE GENERALE PEIXOTO)",
+    "ville": "Reims, Origny Sainte Benoite",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Origny Sainte Benoite\"}}}"
+   },
+   {
+    "dateparution": "2015-09-21",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2016-06-03",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration et transfert du siège social, transfert de l'établissement principal\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2016-07-21",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2016-08-18",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2017-09-01",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-01-03",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur le capital\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-03-08",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2018-07-25",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2019-01-15",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": null,
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur la forme juridique\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2019-07-17",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2019-12-17",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-03-03",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-07-09",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2020-09-15",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-02-09",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2021-07-28",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Reims",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-04-24",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur la forme juridique, transfert du siège social.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2022-07-22",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2023-08-03",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2023-08-31",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2024-02-13",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "MK ENERGIES, DUPONT, Henri, Didier",
+    "ville": "Saint-Léonard, La Bouteille",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un établissement secondaire ou complémentaire par une personne morale\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"La Bouteille\"}}}"
+   },
+   {
+    "dateparution": "2024-07-09",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2025-02-09",
+    "familleavis_lib": "Modifications diverses",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": "{\"descriptif\":\"Modification survenue sur l'administration.\"}",
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2025-08-28",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   },
+   {
+    "dateparution": "2026-02-10",
+    "familleavis_lib": "Ventes et cessions",
+    "commercant": "MK ENERGIES, SOCIETE NOUVELLE SA3E",
+    "ville": "Saint-Léonard, Les Hautes Rivieres",
+    "modificationsgenerales": null,
+    "acte": "{\"vente\":{\"categorieVente\":\"Achat d'un fonds par une personne morale (insertion provisoire)\"}}",
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": "{\"etablissement\":{\"adresse\":{\"ville\":\"Les Hautes Rivieres\"}}}"
+   },
+   {
+    "dateparution": "2026-07-16",
+    "familleavis_lib": "Dépôts des comptes",
+    "commercant": "MK ENERGIES",
+    "ville": "Saint-Léonard",
+    "modificationsgenerales": null,
+    "acte": null,
+    "listepersonnes": "{\"personne\":{\"typePersonne\":\"pm\",\"denomination\":\"MK ENERGIES\",\"numeroImmatriculation\":{\"numeroIdentification\":\"794 576 231\",\"codeRCS\":\"RCS\",\"nomGreffeImmat\":\"Reims\"}}}",
+    "listeetablissements": null
+   }
+  ]
+ }
+}

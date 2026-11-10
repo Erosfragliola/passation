@@ -236,7 +236,10 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
 - API Claude : **payante à l'usage**. La valorisation express publique est le principal risque de coût, d'où la limite de débit et le cache. Un plafond de dépense mensuel est à régler dans la console Anthropic.
 
 ## 9. Points à compléter par vous (suivi)
-- [x] Source des multiples sectoriels : je recherche et cite dans le code (étape 2)
+- [x] Multiples sectoriels : croisement de trois sources décidé par l'utilisateur le 10/11/2026 (Argos Q2 2026,
+      Dealsuite/Fusac 2026 via Capital Stack, barème Captain 2026, niveaux relatifs Damodaran Europe 01/2026).
+      Entrées citées : `src/data/multiples-sources.json` ; calcul : `npm run multiples`. Agriculture et « autres » :
+      fourchette dérivée (pas de ligne de barème). Pas de multiple de CA.
 - [x] Décotes/primes et paramètres du CMPC : je recherche ; affichés comme hypothèses modifiables (étape 4)
 - [x] Palette : fournie (voir en tête)
 - [ ] Textes « À remplir » : partenaires/témoignages réels, tarifs, éditeur des mentions légales, contact, droit applicable
@@ -253,3 +256,12 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
   3D chargée à la demande. Contrastes AA : pierre `#8A7F70` réservé aux traits ; texte secondaire `#696155`
   (clair) et `#A39886` (sombre). Lighthouse : mobile perf 99 / a11y 98, bureau perf 93. Photos réelles en attente
   (`public/img/source/`, crédits dans `public/img/CREDITS.md`).
+- **10/11/2026, « Votre maquette » et frise « Vous avez bâti »** (en attente d'accord avant commit) :
+  `GET /api/maquette/:siren` (cache D1 24 h, 20 req/h/IP), `GET /api/company/search` (autocomplétion),
+  `POST /api/estimation` (sans enregistrement). Règles pures partagées `public/js/regles.js` ; normalisation des
+  3 sources sur réponses réelles (`test/fixtures/`, 7 entreprises, données personnelles retirées).
+  Constats : exercice confidentiel = CA 0 dans la source (traité comme absent) ; ventes de fonds par l'entreprise
+  exclues (seule l'acheteuse est retenue) ; changement de forme juridique ≠ changement de nom.
+  Formule des étages conservée : 8 étages à partir d'environ 178 M€ (décision utilisateur).
+  9 archétypes, animation 6 s interruptible, export PNG sans valeur, repli SVG sans WebGL.
+  Tests : 81 ; Lighthouse mobile perf 99 / a11y 100. Vidéo Pexels en fond de hero (grand écran), photos d'illustration.

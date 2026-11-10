@@ -14,7 +14,10 @@ const LARGEURS = [800, 1600, 2400];
 const MAX_OCTETS = 250 * 1024;
 
 async function versWebp(entree, nom) {
-  for (const l of LARGEURS) {
+  const { width } = await sharp(entree).metadata();
+  // Jamais d'agrandissement : on ne produit que les largeurs utiles (au moins la plus petite).
+  const largeurs = LARGEURS.filter((l, i) => i === 0 || l <= width);
+  for (const l of largeurs) {
     let q = 78, info;
     do {
       info = await sharp(entree).resize({ width: l, withoutEnlargement: true }).webp({ quality: q, effort: 6 })

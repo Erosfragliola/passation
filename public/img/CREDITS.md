@@ -6,7 +6,16 @@
 | `favicon.svg`, `logo-seuil.svg` | Création originale Passation | Propriété du projet |
 | Maquette 3D du hero | Construite en code (`public/js/maquette3d.js`) avec Three.js 0.186.1 | Three.js : MIT (`public/vendor/LICENSE-three.txt`) |
 
-## Photos à venir
-Aucune photo tierce n'est encore utilisée. Pour chaque photo ajoutée dans `public/img/source/`, ajouter une ligne :
-fichier, auteur, URL de la page source, licence, date de téléchargement. Une photo de personne n'est jamais
-présentée comme un client ou un témoignage réel.
+## Photos et vidéos tierces
+Aucune personne photographiée n'est présentée comme un client ou un témoignage réel (textes alternatifs :
+« photo d'illustration »).
+
+| Fichier publié | Origine | Licence | À faire |
+|---|---|---|---|
+| `../video/hero.mp4`, `../video/hero.webm`, `photos/hero-poster-*.webp` | Vidéo Pexels n° 6023467 (dirigeante dans sa boutique), https://www.pexels.com/video/6023467/ | Licence Pexels (usage commercial autorisé, sans attribution obligatoire) | Confirmer l'auteur |
+| `photos/etape-atelier-800.webp` | Image extraite de la vidéo Pexels n° 12938242 (artisan, meuleuse), https://www.pexels.com/video/12938242/ | Licence Pexels | Confirmer l'auteur |
+| `photos/portrait-dirigeant-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 (recadrée pour retirer un logo tiers) | **À confirmer** | Lien source et licence |
+| `photos/etape-bureau-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 | **À confirmer** | Lien source et licence |
+| `photos/etape-equipe-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 | **À confirmer** | Lien source et licence |
+
+Vidéos non utilisées à ce jour (dossier `video/`, non publié) : Pexels n° 14132505, n° 15783299.
