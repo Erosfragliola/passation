@@ -426,3 +426,6 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   - Essai de bout en bout avec un Claude simulé (`ANTHROPIC_BASE_URL`, réglage de développement absent en
     production) : **21 actions du dirigeant après le SIREN** (contre environ 110), ordinateur et mobile, sans erreur.
   - Tests : 197.
+- **10/11/2026, 3D « La cloche » mise en ligne** (accord du dirigeant) : la branche `3d-v2-cloche` est fusionnée sans
+  conflit. Tests : 211. Cloche et fenêtre de connexion vérifiées en local. Mesure d'images par seconde non probante ce
+  jour-là (machine de test très chargée : charge moyenne de 21) ; à confirmer sur un vrai MacBook avec `?debug`.

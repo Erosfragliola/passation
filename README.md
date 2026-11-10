@@ -26,3 +26,8 @@ npm test
 - `migrations/` : schéma de la base D1
 - `content/` : fiches de ressources en Markdown (étape 7)
 - `test/` : tests automatisés
+
+## 3D « La cloche »
+- Code : `public/js/cloche/` (scène, rendu, vitrine, diorama, matériaux, textures calculées dans un Web Worker, passation).
+- Bibliothèques de rendu assemblées dans `public/vendor/rendu3d.js` par `npm run vendor:3d` (postprocessing, n8ao).
+- Mode `?debug` : compteur d'images par seconde et palier de qualité adaptative.

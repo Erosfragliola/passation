@@ -4,7 +4,9 @@
 |---|---|---|
 | `photos/texture-clair-*.webp`, `photos/texture-sombre-*.webp` | Création originale Passation, générée par `scripts/art/texture-peinte.html` (`npm run images`) | Propriété du projet |
 | `favicon.svg`, `logo-seuil.svg` | Création originale Passation | Propriété du projet |
-| Maquette 3D du hero | Construite en code (`public/js/maquette3d.js`) avec Three.js 0.186.1 | Three.js : MIT (`public/vendor/LICENSE-three.txt`) |
+| Maquette 3D « La cloche » | Construite en code (`public/js/cloche/`) avec Three.js 0.186.1, postprocessing 6.39.5, n8ao 2.0.1 ; textures procédurales générées en code | Three.js : MIT (`public/vendor/LICENSE-three.txt`) ; postprocessing : Zlib (`LICENSE-postprocessing.md`) ; n8ao : ISC (`LICENSE-n8ao.txt`) |
+| `photos/cloche-repos-*.webp` | Capture de la cloche (rendu du site), image d'attente | Propriété du projet |
+| Mains au trait de la passation | Dessin SVG original (`public/js/cloche/passation.js`) | Propriété du projet |
 
 | Carte des régions (mémorandum, `public/js/carte-france.js`) | IGN Admin Express, contours simplifiés par github.com/gregoiredavid/france-geojson ; converti par `scripts/carte-france.mjs` | Licence ouverte Etalab (mention de la source) |
 | Pictogrammes et logo Passation des diapositives | Dessins SVG originaux (`public/js/memo.js`) | Propriété du projet |

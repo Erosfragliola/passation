@@ -12,10 +12,14 @@
     "deploy": "wrangler deploy",
     "images": "node scripts/images.mjs",
     "fixtures": "node scripts/fixtures.mjs",
-    "multiples": "node scripts/multiples.mjs"
+    "multiples": "node scripts/multiples.mjs",
+    "vendor:3d": "node scripts/vendor-3d.mjs"
   },
   "devDependencies": {
+    "n8ao": "2.0.1",
+    "postprocessing": "6.39.5",
     "sharp": "0.35.5",
+    "three": "0.186.1",
     "vitest": "4.1.12",
     "wrangler": "4.152.0"
   },
