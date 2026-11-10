@@ -4,13 +4,15 @@
 // collectives, radiations, dépôts de comptes, dirigeants, ventes par l'entreprise…) est écarté sans le signaler.
 // Les noms de personnes et les prix ne sont jamais conservés.
 
+import { USER_AGENT } from "../config.js";
+
 export const URL_BODACC = "https://bodacc-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/annonces-commerciales/records";
 const CHAMPS = "dateparution,familleavis_lib,commercant,ville,modificationsgenerales,acte,listepersonnes,listeetablissements";
 
 export async function annoncesBrutes(siren, { fetch: f = fetch } = {}) {
   const where = encodeURIComponent(`registre like "${siren}"`);
   const url = `${URL_BODACC}?select=${CHAMPS}&where=${where}&order_by=dateparution%20asc&limit=100`;
-  const res = await f(url, { headers: { accept: "application/json" } });
+  const res = await f(url, { headers: { accept: "application/json", "user-agent": USER_AGENT } });
   if (!res.ok) throw new Error(`BODACC : HTTP ${res.status}`);
   return res.json();
 }

@@ -1,11 +1,13 @@
 // Annuaire des entreprises (recherche-entreprises.api.gouv.fr) : identité, NAF, effectif, siège.
 // Normalisation construite sur des réponses réelles (voir test/fixtures/). Les dirigeants ne sont jamais conservés.
 
+import { USER_AGENT } from "../config.js";
+
 export const URL_RECHERCHE = "https://recherche-entreprises.api.gouv.fr/search";
 
 export async function rechercherBrut(q, { fetch: f = fetch, parPage = 1 } = {}) {
   const url = `${URL_RECHERCHE}?q=${encodeURIComponent(q)}&per_page=${parPage}`;
-  const res = await f(url, { headers: { accept: "application/json" } });
+  const res = await f(url, { headers: { accept: "application/json", "user-agent": USER_AGENT } });
   if (!res.ok) throw new Error(`recherche-entreprises : HTTP ${res.status}`);
   return res.json();
 }

@@ -15,7 +15,8 @@ export async function routeRecherche(request, env) {
     if (!debit.autorise) return json({ erreur: "trop_de_requetes", suggestions: [] }, 429);
     try {
       suggestions = normaliserSuggestions(await rechercherBrut(q, { parPage: 6 })).filter((s) => s.actif);
-    } catch {
+    } catch (e) {
+      console.warn("source indisponible :", e.message);
       return json({ erreur: "source_indisponible", suggestions: [] }, 502);
     }
     await ecrireCache(env.DB, cle, suggestions);

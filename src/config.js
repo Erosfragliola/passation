@@ -21,3 +21,6 @@ export const DURATIONS = {
   signedUrl: 10 * 60,
   apiCache: 24 * 3600,
 };
+
+/** Identifiant envoyé aux API publiques (certaines refusent les requêtes anonymes). Aucune donnée personnelle. */
+export const USER_AGENT = "Passation/0.1 (outil de preparation de cession de PME)";

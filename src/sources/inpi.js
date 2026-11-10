@@ -2,13 +2,15 @@
 // Constats sur données réelles : un exercice confidentiel renvoie CA = 0 et EBE = 0 (et non null) ;
 // une même année peut exister en comptes complets (C) et simplifiés (S) ; des années manquent.
 
+import { USER_AGENT } from "../config.js";
+
 export const URL_INPI = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/ratios_inpi_bce/records";
 const CHAMPS = "siren,date_cloture_exercice,chiffre_d_affaires,ebe,ebit,resultat_net,confidentiality,type_bilan";
 
 export async function exercicesBruts(siren, { fetch: f = fetch } = {}) {
   const where = encodeURIComponent(`siren="${siren}"`);
   const url = `${URL_INPI}?select=${CHAMPS}&where=${where}&order_by=date_cloture_exercice%20desc&limit=30`;
-  const res = await f(url, { headers: { accept: "application/json" } });
+  const res = await f(url, { headers: { accept: "application/json", "user-agent": USER_AGENT } });
   if (!res.ok) throw new Error(`ratios INPI : HTTP ${res.status}`);
   return res.json();
 }

@@ -10,12 +10,12 @@ not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
 run_worker_first = ["/api/*"]
 
-# Base créée à l'étape 8 (npx wrangler d1 create passation) : remplacer l'identifiant ci-dessous.
-# En local, wrangler dev utilise une base SQLite locale, l'identifiant n'a pas besoin d'exister.
+# Base D1 de production créée le 10/11/2026 (npx wrangler d1 create passation).
+# En local, wrangler dev utilise une copie SQLite locale de cette base.
 [[d1_databases]]
 binding = "DB"
 database_name = "passation"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "a33eabb7-625c-41a7-bc47-5a682e276fe6"
 migrations_dir = "migrations"
 
 [[r2_buckets]]

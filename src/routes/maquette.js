@@ -22,7 +22,8 @@ export async function routeMaquette(request, env, sirenBrut) {
     }
     try {
       donnees = await chargerMaquette(siren);
-    } catch {
+    } catch (e) {
+      console.warn("source indisponible :", e.message);
       return json({ erreur: "source_indisponible", message: "Les registres publics ne répondent pas pour le moment. Réessayez dans quelques minutes." }, 502);
     }
     if (!donnees) return json({ erreur: "introuvable", message: "Nous ne trouvons pas d'entreprise avec ce SIREN." }, 404);

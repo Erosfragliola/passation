@@ -265,3 +265,8 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
   Formule des étages conservée : 8 étages à partir d'environ 178 M€ (décision utilisateur).
   9 archétypes, animation 6 s interruptible, export PNG sans valeur, repli SVG sans WebGL.
   Tests : 81 ; Lighthouse mobile perf 99 / a11y 100. Vidéo Pexels en fond de hero (grand écran), photos d'illustration.
+- **10/11/2026, mise en ligne** : https://passation.eros-fragliola-freedom.workers.dev (Worker `passation`, D1
+  `passation` a33eabb7…, R2 `passation-fichiers`, secret `SESSION_SECRET` généré sans affichage). Correctif : les API
+  publiques refusent les requêtes sans User-Agent depuis Cloudflare → en-tête générique ajouté (`config.js`).
+  Non publiés : `marque.html`, `img/source/`, `CREDITS.md` (`public/.assetsignore`). Secrets ANTHROPIC/BREVO non
+  requis à ce stade (étapes 3 et suivantes).
