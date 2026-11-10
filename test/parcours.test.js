@@ -9,6 +9,8 @@ vi.mock("../src/lib/claude.js", () => ({
   redigerTeaser: vi.fn(),
   extraireSite: vi.fn(),
   redigerSectionMemo: vi.fn(),
+  cleRefusee: (e) => e?.status === 401 || e?.status === 403,
+  MESSAGE_CLE_REFUSEE: "clé refusée",
 }));
 import { lireLiasse, redigerTeaser, extraireSite, redigerSectionMemo } from "../src/lib/claude.js";
 import worker from "../src/index.js";
@@ -367,5 +369,17 @@ describe("mémorandum : rédactions en parallèle", () => {
     await Promise.all(cles.map((k) => appel(`/api/dossiers/${id}/documents/memo/sections/${k}`, { methode: "POST", cookie })));
     expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM documents WHERE dossier_id = ? AND kind = 'memo'").get(id).n).toBe(1);
     expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM document_sections").get().n).toBe(8);
+  });
+});
+
+describe("clé de l'API Claude refusée", () => {
+  it("message explicite (503 « clé refusée ») au lieu de « document illisible »", async () => {
+    env.ANTHROPIC_API_KEY = "cle-invalide";
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    lireLiasse.mockRejectedValue(Object.assign(new Error("401 authentication_error"), { status: 401 }));
+    const f = new FormData(); f.append("fichier", new File(["%PDF-1.4 x"], "l.pdf", { type: "application/pdf" }));
+    const r = await appel(`/api/dossiers/${id}/uploads`, { methode: "POST", cookie, brut: f });
+    expect(r.status).toBe(503);
+    expect((await r.json()).erreur).toBe("cle_refusee");
   });
 });

@@ -179,3 +179,7 @@ export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
   return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
 }
+
+/** Erreur d'authentification de l'API Claude (clé absente, mal copiée ou d'un autre type) : message explicite. */
+export const cleRefusee = (e) => e?.status === 401 || e?.status === 403;
+export const MESSAGE_CLE_REFUSEE = "La lecture et la rédaction automatiques sont momentanément indisponibles : la clé de l'API Claude du site est refusée. L'administrateur du site doit la remplacer.";

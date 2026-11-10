@@ -11,7 +11,7 @@ import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { calculer, lireReponses } from "./valorisation.js";
 import { construireDatapack } from "../documents/datapack.js";
-import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo } from "../lib/claude.js";
+import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
 import { lireSite, adressePublique } from "../documents/site.js";
 import { SECTIONS_MEMO, donneesSection, tableauFinancier, memoDeverrouille, profilMemo } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat } from "../documents/anonymat.js";
@@ -85,6 +85,7 @@ async function genererTeaser(env, row) {
     }
   } catch (e) {
     console.log(`Rédaction du teaser impossible : ${e.message}`);
+    if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
     return json({ erreur: "redaction_echouee", message: "La rédaction a échoué. Réessayez dans un instant." }, 502);
   }
   if (problemes.length) {
@@ -170,6 +171,7 @@ async function lireSiteRoute(request, env, row) {
   } catch (e) {
     const messages = { robots_refuse: "Ce site interdit la lecture automatique (robots.txt) : nous le respectons.", site_injoignable: "Le site ne répond pas ou ne renvoie pas de page lisible.", adresse_invalide: "Adresse de site invalide." };
     console.log(`Lecture du site impossible : ${e.message}`);
+    if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
     return json({ erreur: e.message, message: messages[e.message] || "Lecture du site impossible. Réessayez plus tard." }, 422);
   }
   const ancien = (await lireReponses(env, row.id)).site || {};
@@ -295,7 +297,7 @@ async function genererSection(env, row, cle) {
   const { resultat, entree } = await calculer(env, row);
   let r;
   try { r = await redigerSectionMemo(env, section, donneesSection(section, { entreprise, entree, resultat, reponses })); }
-  catch (e) { console.log(`Rédaction du mémorandum impossible : ${e.message}`); return json({ erreur: "redaction_echouee", message: "La rédaction a échoué. Réessayez dans un instant." }, 502); }
+  catch (e) { console.log(`Rédaction du mémorandum impossible : ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "redaction_echouee", message: "La rédaction a échoué. Réessayez dans un instant." }, 502); }
   await ecrireSection(env, await documentMemo(env, row), cle, { contenu: String(r.contenu || ""), a_completer: r.a_completer || [] }, false);
   return json(await lireMemo(env, row));
 }

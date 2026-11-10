@@ -21,6 +21,8 @@ const el = (tag, attrs = {}, ...enfants) => {
 const fmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const court = (v) => (v == null || !Number.isFinite(v) ? "–" : Math.abs(v) >= 1e6 ? `${(v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} M€` : `${Math.round(v / 1e3).toLocaleString("fr-FR")} k€`);
 const lireNombre = (s) => { const t = String(s ?? "").replace(/[\s  €%]/g, "").replace(",", "."); if (t === "" || t === "-") return null; const n = Number(t); return Number.isFinite(n) ? n : NaN; };
+/** Remplit l'écran en ignorant les emplacements vides (jamais de « null » affiché). */
+const remplir = (...enfants) => $("#ecran").replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
@@ -76,7 +78,7 @@ function comptes() {
   });
   const site = el("input", { type: "text", id: "site-url", inputmode: "url", value: proposition, placeholder: "www.votre-entreprise.fr" });
   const etatSite = el("p", { class: "petit", id: "etat-site", text: S.reponses.site?.url ? `Site lu : ${S.reponses.site.url}` : "" });
-  $("#ecran").replaceChildren(...titre("Déposez votre dernière liasse fiscale", "C'est le seul document nécessaire. Nous lisons les chiffres ; vous n'aurez qu'à les confirmer."),
+  remplir(...titre("Déposez votre dernière liasse fiscale", "C'est le seul document nécessaire. Nous lisons les chiffres ; vous n'aurez qu'à les confirmer."),
     el("div", { class: "depot depot-grand", id: "zone-depot" },
       el("div", { class: "depot-texte" }, el("strong", { text: "Liasse fiscale en PDF" }), el("span", { class: "petit", text: "Formulaires 2033 ou 2050 à 2059, 10 Mo au plus. Elle contient en général deux exercices." })),
       el("label", { class: "btn btn-noir", for: "liasse" }, "Choisir le PDF"), fichier),
@@ -120,7 +122,7 @@ function chiffres() {
         catch (e) { message(e.message, true); }
       } }, alertes.length ? "Confirmer les autres lignes" : "Ces chiffres sont justes"));
   });
-  $("#ecran").replaceChildren(...titre("Vos chiffres sont-ils justes ?", "Comparez avec votre liasse. Nos contrôles automatiques signalent ce qui mérite votre attention ; le reste se confirme d'un clic."),
+  remplir(...titre("Vos chiffres sont-ils justes ?", "Comparez avec votre liasse. Nos contrôles automatiques signalent ce qui mérite votre attention ; le reste se confirme d'un clic."),
     ...cartes,
     el("p", { class: "petit" }, el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Voir ou corriger le détail ligne par ligne" }), " · ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, "Déposer une autre liasse")),
     el("button", { type: "button", class: "btn btn-vert", disabled: !exercicesComplets(), onclick: () => aller(etapeCourante()) }, exercicesComplets() ? "Continuer" : "Confirmez au moins un exercice complet pour continuer"));
@@ -218,7 +220,7 @@ function questions() {
   const q = QUESTIONS[S.q];
   const champs = [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])];
   const seulChoix = q.champs.length === 1 && ["choix", "valeurs"].includes(q.champs[0].type) && !q.suite?.si(S.reponses);
-  $("#ecran").replaceChildren(
+  remplir(
     el("p", { class: "etiquette", text: `Question ${S.q + 1} sur ${QUESTIONS.length}` }),
     ...titre(q.titre, q.aide),
     ...champs.map((c) => champ(c, q)),
@@ -239,7 +241,7 @@ async function site() {
   if (!s.url || !((s.faits || []).length || (s.logos || []).length)) { aller(etapeCourante() === "site" ? "redaction" : etapeCourante()); return; }
   const faits = (s.faits || []).map((f) => ({ ...f, valide: f.valide || !s.confirme }));
   let logo = s.logos?.[0]?.url ?? null;
-  $("#ecran").replaceChildren(...titre("Ce que nous avons retenu de votre site", "Tout est coché : décochez ce qui est inexact. Seuls les faits cochés seront utilisés dans le mémorandum."),
+  remplir(...titre("Ce que nous avons retenu de votre site", "Tout est coché : décochez ce qui est inexact. Seuls les faits cochés seront utilisés dans le mémorandum."),
     el("fieldset", { class: "faits" }, el("legend", { class: "visuellement-cache", text: "Faits relevés" }),
       ...faits.map((f) => { const cb = el("input", { type: "checkbox", id: `f-${f.id}`, checked: f.valide }); cb.addEventListener("change", () => { f.valide = cb.checked; }); return el("label", { class: "fait", for: `f-${f.id}` }, cb, el("span", { text: f.fait })); })),
     (s.logos || []).length ? el("div", {}, el("p", { class: "guide-lib", text: "Votre logo" }),
@@ -279,7 +281,7 @@ async function redaction() {
     for (const x of m.sections || []) if (x.redigee) deja.add(`memo-${x.cle}`);
   } catch { /* on refait tout */ }
   const lignes = Object.fromEntries(taches.map(([k, t]) => [k, el("li", { class: deja.has(k) ? "fait" : null }, el("span", { class: "etat", "aria-hidden": "true" }), t)]));
-  $("#ecran").replaceChildren(...titre("Nous rédigeons votre dossier", "Une à deux minutes. Vous pouvez quitter cette page : la rédaction reprendra à votre retour."),
+  remplir(...titre("Nous rédigeons votre dossier", "Une à deux minutes. Vous pouvez quitter cette page : la rédaction reprendra à votre retour."),
     el("ul", { class: "guide-taches" }, ...Object.values(lignes)));
   const erreurs = [];
   const executer = async ([k, , f]) => {
@@ -309,7 +311,7 @@ async function pret() {
   const [val, memo] = await Promise.all([api(`${base}/valuation`), api(`${base}/documents/memo`)]);
   const s = val.resultat?.synthese;
   const aCompleter = [...(memo.sections || []).flatMap((x) => (x.a_completer || []).map((t) => `${x.titre} : ${t}`)), ...(s?.alertes || []).filter((a) => !/en option/.test(a))];
-  $("#ecran").replaceChildren(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
+  remplir(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
     s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${court(s.bas)} – ${court(s.haut)}` })) : null,
     el("div", { class: "guide-docs" },
       ...[["Valorisation détaillée", "Méthodes, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],

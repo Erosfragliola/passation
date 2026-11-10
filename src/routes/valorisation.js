@@ -12,7 +12,7 @@ import { maintenant } from "../lib/auth.js";
 import { LIASSE } from "../config.js";
 import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants } from "../../public/js/champs-financiers.js";
 import { ETAPES } from "../../public/js/questionnaire.js";
-import { claudeDisponible, lireLiasse } from "../lib/claude.js";
+import { claudeDisponible, lireLiasse, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
 import { assemblerEntree } from "../valuation/entree.js";
 import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
@@ -117,6 +117,7 @@ async function deposerLiasse(request, env, row) {
     console.log(`Lecture de liasse impossible : ${e.message}`);
     await env.DB.prepare("INSERT INTO uploads (id, dossier_id, r2_key, filename, mime, size, extracted_json, created_at) VALUES (?, ?, ?, ?, 'application/pdf', ?, ?, ?)")
       .bind(id, row.id, cle, String(fichier.name || "liasse.pdf").slice(0, 200), octets.length, JSON.stringify({ erreur: e.message }), maintenant()).run();
+    if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
     return json({ erreur: "lecture_echouee", message: "Nous n'avons pas pu lire ce document. Vérifiez qu'il s'agit bien d'une liasse fiscale lisible, ou saisissez vos chiffres à la main." }, 502);
   }
   await env.DB.prepare("INSERT INTO uploads (id, dossier_id, r2_key, filename, mime, size, extracted_json, created_at) VALUES (?, ?, ?, ?, 'application/pdf', ?, ?, ?)")
