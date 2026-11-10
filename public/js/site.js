@@ -40,8 +40,13 @@
 
   // Vidéo du hero : grand écran seulement, et jamais si l'utilisateur réduit les animations
   const video = document.querySelector(".hero-video");
-  if (video && window.matchMedia("(min-width: 768px)").matches && !reduit) {
-    JSON.parse(video.dataset.sources).forEach(([src, type]) => {
+  const connexion = navigator.connection || {};
+  if (video && window.matchMedia("(min-width: 768px)").matches && !reduit && !connexion.saveData) {
+    // 4K pour les écrans qui en profitent (Retina, 4K) avec une connexion rapide ; Full HD sinon
+    const pixels = window.innerWidth * (window.devicePixelRatio || 1);
+    const rapide = !connexion.effectiveType || connexion.effectiveType === "4g";
+    const sources = pixels >= 2200 && rapide ? video.dataset.sourcesUhd : video.dataset.sourcesHd;
+    JSON.parse(sources).forEach(([src, type]) => {
       const s = document.createElement("source");
       s.src = src; s.type = type;
       video.append(s);

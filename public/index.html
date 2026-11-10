@@ -48,10 +48,11 @@
     <div class="hero-fond">
       <img src="/img/photos/hero-poster-1600.webp"
            srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
-           sizes="100vw" alt="" width="2400" height="1350" fetchpriority="high">
+           sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
       <!-- Vidéo chargée par site.js sur grand écran seulement, jamais avec « réduire les animations » -->
       <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" hidden
-             data-sources='[["/video/hero.webm","video/webm"],["/video/hero.mp4","video/mp4"]]'></video>
+             data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
+             data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'></video>
     </div>
     <div class="conteneur hero-contenu">
       <p class="etiquette">Préparer la cession de votre PME</p>
@@ -133,7 +134,7 @@
       </div>
       <div class="mosaique">
         <figure class="photo m-portrait apparait" style="margin:0">
-          <img src="/img/photos/portrait-dirigeant-800.webp" alt="Un dirigeant relit et signe un document à son bureau (photo d'illustration)" loading="lazy" width="500" height="540">
+          <img src="/img/photos/portrait-artisan-800.webp" sizes="(min-width: 900px) 33vw, 100vw" alt="Un horloger concentré à son établi, sous sa lampe (image d'illustration)" loading="lazy" width="1500" height="1800">
         </figure>
         <div class="m-citation apparait">
           <blockquote>« Trente ans de travail ne tiennent pas dans un multiple. Ils tiennent dans un dossier qui <em>raconte</em>, chiffre et convainc. »</blockquote>
@@ -159,19 +160,19 @@
       </div>
       <ol class="etapes">
         <li class="etape apparait">
-          <figure class="photo" style="margin:0"><img src="/img/photos/etape-bureau-800.webp" alt="Un dirigeant au téléphone dans son bureau (photo d'illustration)" loading="lazy" width="500" height="749"></figure>
+          <figure class="photo" style="margin:0"><img src="/img/photos/etape-boutique-800.webp" srcset="/img/photos/etape-boutique-800.webp 800w, /img/photos/etape-boutique-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Une dirigeante au téléphone dans sa boutique (image d'illustration)" loading="lazy" width="2400" height="1350"></figure>
           <span class="etape-num">01 · Votre SIREN</span>
           <h3>Une première <em>valeur</em></h3>
           <p>Nous lisons les registres publics : identité, activité, derniers comptes déposés. Vous obtenez une fourchette en quelques secondes.</p>
         </li>
         <li class="etape apparait">
-          <figure class="photo" style="margin:0"><img src="/img/photos/etape-atelier-800.webp" alt="Un artisan au travail dans un atelier, dans une gerbe d'étincelles (photo d'illustration)" loading="lazy" width="800" height="1422"></figure>
+          <figure class="photo" style="margin:0"><img src="/img/photos/etape-artisane-800.webp" srcset="/img/photos/etape-artisane-800.webp 800w, /img/photos/etape-artisane-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Une artisane à son établi, dans un atelier éclairé par une lampe (image d'illustration)" loading="lazy" width="2400" height="1350"></figure>
           <span class="etape-num">02 · Vos chiffres</span>
           <h3>Une valeur <em>argumentée</em></h3>
           <p>Questionnaire court, import de votre liasse, retraitements de l'EBE. Trois méthodes croisées, des hypothèses que vous gardez en main.</p>
         </li>
         <li class="etape apparait">
-          <figure class="photo" style="margin:0"><img src="/img/photos/etape-equipe-800.webp" alt="Une équipe en cuisine, au travail (photo d'illustration)" loading="lazy" width="422" height="750"></figure>
+          <figure class="photo" style="margin:0"><img src="/img/photos/etape-atelier-hd-800.webp" srcset="/img/photos/etape-atelier-hd-800.webp 800w, /img/photos/etape-atelier-hd-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Un artisan à sa perceuse dans un atelier (image d'illustration)" loading="lazy" width="1920" height="1080"></figure>
           <span class="etape-num">03 · Vos documents</span>
           <h3>Un dossier <em>prêt</em></h3>
           <p>Datapack Excel, teaser anonymisé, mémorandum d'information. Vous relisez, vous ajustez, vous partagez.</p>

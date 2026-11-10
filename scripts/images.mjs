@@ -18,7 +18,7 @@ async function versWebp(entree, nom) {
   // Jamais d'agrandissement : on ne produit que les largeurs utiles (au moins la plus petite).
   const largeurs = LARGEURS.filter((l, i) => i === 0 || l <= width);
   for (const l of largeurs) {
-    let q = 78, info;
+    let q = nom.startsWith("texture") ? 78 : 90, info; // photos : qualité élevée
     do {
       info = await sharp(entree).resize({ width: l, withoutEnlargement: true }).webp({ quality: q, effort: 6 })
         .toFile(join(sortie, `${nom}-${l}.webp`));

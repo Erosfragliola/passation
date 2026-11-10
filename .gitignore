@@ -12,4 +12,4 @@ backup*.sql
 public/img/source/
 
 # Vidéos sources (lourdes)
-video/
+/video/

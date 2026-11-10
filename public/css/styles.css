@@ -153,7 +153,7 @@ section { padding: 88px 0; }
   background: var(--espresso); color: var(--creme);
 }
 .hero-fond { position: absolute; inset: 0; z-index: -2; }
-.hero-fond img, .hero-fond video { width: 100%; height: 100%; object-fit: cover; filter: var(--etalonnage); }
+.hero-fond img, .hero-fond video { width: 100%; height: 100%; object-fit: cover; } /* hero en noir et blanc : pas d'étalonnage sépia */
 .hero::before { /* voile espresso à 45 %, puis dégradé plus sombre en bas pour les chiffres */
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
@@ -338,7 +338,7 @@ section { padding: 88px 0; }
 
 /* Vidéo du hero : posée sur l'image de couverture, fondu à la lecture */
 .hero-fond { position: absolute; }
-.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: var(--etalonnage); opacity: 0; transition: opacity .8s ease; }
+.hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s ease; }
 .hero-video.lue { opacity: 1; }
 /* Photos portrait dans des cadres paysage : cadrage sur le haut (les visages) */
 .etape .photo img, .m-portrait img { object-position: center 30%; }
