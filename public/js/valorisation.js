@@ -2,7 +2,7 @@
 // 2. Votre entreprise (questionnaire, sauvegarde automatique), 3. Votre valorisation (calcul du serveur, réglages).
 // Aucun calcul de valeur ici : tout vient de l'API (code testé). Cette page affiche et recueille.
 import { CHAMPS } from "/js/champs-financiers.js";
-import { ETAPES } from "/js/questionnaire.js";
+import { ETAPES, REGIONS } from "/js/questionnaire.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -177,6 +177,16 @@ function champQuestion(e, q) {
       r.addEventListener("change", () => sauver(val));
       fs.append(el("label", { class: "choix", for: `${idq}-${i}` }, r, ` ${lib}`));
     }
+    return fs;
+  }
+  if (q.type === "regions") {
+    const choisies = new Set(Array.isArray(v) ? v : []);
+    const fs = el("fieldset", { class: "q regions-choix" }, el("legend", { text: q.libelle }), aide);
+    REGIONS.forEach((r, i) => {
+      const cb = el("input", { type: "checkbox", id: `${idq}-${i}`, checked: choisies.has(r) });
+      cb.addEventListener("change", () => { if (cb.checked) choisies.add(r); else choisies.delete(r); sauver([...choisies]); });
+      fs.append(el("label", { class: "choix", for: `${idq}-${i}` }, cb, ` ${r}`));
+    });
     return fs;
   }
   if (q.type === "exceptionnels") {

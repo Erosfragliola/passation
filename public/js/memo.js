@@ -1,5 +1,6 @@
 // Page du mémorandum : site et logo (faits validés un par un), sections rédigées à la demande, impression.
 const $ = (s) => document.querySelector(s);
+import { CARTE } from "/js/carte-france.js";
 const id = new URLSearchParams(location.search).get("dossier") || "";
 const base = `/api/dossiers/${id}/documents/memo`;
 const el = (tag, attrs = {}, ...enfants) => {
@@ -95,16 +96,38 @@ const NS = "http://www.w3.org/2000/svg";
 const svg = (tag, attrs = {}, ...enfants) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); e.append(...enfants.filter(Boolean)); return e; };
 const COURTS = { synthese: "Synthèse", histoire: "Histoire", activite: "Activité", marche: "Marché et clients", organisation: "Organisation", finances: "Finances", perspectives: "Perspectives", operation: "Opération" };
 
-// Pictogrammes au trait (originaux), pour les cartes de mise en avant
-const PICTOS = [
-  "M5 12l4 4 10-10", // validé
-  "M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20c0-3 3-5 6-5s6 2 6 5m2-5c3 0 6 2 6 5", // équipe
-  "M4 20V10m6 10V4m6 16v-8m6 8V7", // croissance
-  "M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.9 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z", // qualité
-  "M3 12h4l3-8 4 16 3-8h4", // activité
-  "M4 7h16v12H4zM9 7V4h6v3", // métier
-];
-const picto = (i) => svg("svg", { viewBox: "0 0 24 24", class: "dp-picto", "aria-hidden": "true" }, svg("path", { d: PICTOS[i % PICTOS.length] }));
+// Pictogrammes au trait (originaux, 24 × 24), pour les indicateurs et les cartes
+const ICONES = {
+  valide: "M5 12l4 4 10-10",
+  equipe: "M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20c0-3 3-5 6-5s6 2 6 5m2-5c3 0 6 2 6 5",
+  croissance: "M3 17l6-6 4 4 8-8M15 7h6v6",
+  qualite: "M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.9 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z",
+  activite: "M3 12h4l3-8 4 16 3-8h4",
+  metier: "M4 7h16v12H4zM9 7V4h6v3",
+  euro: "M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9",
+  pourcent: "M6 18L18 6M7.5 9.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm9 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  calendrier: "M4 6h16v14H4zM4 10h16M8 3v4m8-4v4",
+  lieu: "M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
+  poignee: "M3 12l4-4 5 3 4-3 5 4-5 5-4-3-4 3z",
+  horloge: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-13v5l3 2",
+  document: "M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7",
+  loupe: "M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM15.5 15.5L21 21",
+  signature: "M3 17c3-1 4-8 6-8s0 7 3 7 3-4 5-4 2 3 4 3M3 21h18",
+  cadenas: "M6 11h12v10H6zM8 11V7a4 4 0 1 1 8 0v4",
+  globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18",
+};
+const ORDRE_CARTES = ["valide", "equipe", "croissance", "qualite", "activite", "metier"];
+const icone = (nom, classe = "dp-picto") => svg("svg", { viewBox: "0 0 24 24", class: classe, "aria-hidden": "true" }, svg("path", { d: ICONES[nom] || ICONES.valide }));
+const picto = (i) => icone(ORDRE_CARTES[i % ORDRE_CARTES.length]);
+
+/** Indicateur à pictogramme : icône, valeur, libellé, précision éventuelle. */
+const kpi = (nom, valeur, libelle, precision) => el("div", { class: "dp-kpi" }, icone(nom, "dp-kpi-icone"), el("div", {}, el("span", { class: "dp-kpi-val", text: valeur }), el("span", { class: "dp-kpi-lib", text: libelle }), precision ? el("span", { class: "dp-kpi-plus", text: precision }) : null));
+const rangeeKpi = (...k) => el("div", { class: "dp-kpis-ligne" }, ...k.filter(Boolean));
+
+/** Logo Passation (symbole « Le Seuil » + nom), en bas à droite de chaque diapositive. */
+const logoPassation = (clair = false) => el("span", { class: `dp-logo-passation${clair ? " clair" : ""}` },
+  svg("svg", { viewBox: "0 0 32 32", "aria-hidden": "true" }, svg("path", { d: "M9 27V15a7 7 0 0 1 14 0v12", fill: "none", stroke: "currentColor", "stroke-width": "2.4" }), svg("path", { d: "M5 27h22", stroke: "currentColor", "stroke-width": "2.4" }), svg("circle", { cx: "16", cy: "21", r: "2.8", fill: "#A8653A" })),
+  "Passation");
 
 /** Texte → paragraphes et puces séparés (pour placer les puces en cartes). */
 function decouperTexte(texte) {
@@ -130,15 +153,25 @@ const derniere = (cle) => etat.tableau.lignes.find((l) => l.cle === cle)?.valeur
 function tuiles(liste) {
   return el("div", { class: "dp-tuiles" }, ...liste.map(([l, x]) => el("div", { class: "dp-tuile" }, el("span", { class: "dp-tuile-val", text: x }), el("span", { class: "dp-tuile-lib", text: l }))));
 }
+const serie = (cle) => etat.tableau.lignes.find((l) => l.cle === cle)?.valeurs || [];
+function tcam() {
+  const ca = serie("chiffre_affaires"), an = etat.tableau.annees;
+  if (an.length < 2 || !(ca[0] > 0) || !(ca.at(-1) > 0)) return null;
+  return Math.pow(ca.at(-1) / ca[0], 1 / (an.at(-1) - an[0])) - 1;
+}
+const signe = (x) => (x == null ? null : `${x >= 0 ? "+" : ""}${(x * 100).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %`);
 function chiffresCles() {
-  const ca = derniere("chiffre_affaires"), ebe = derniere("ebe"), an = etat.tableau.annees.at(-1);
-  return tuiles([[`Chiffre d'affaires ${an ?? ""}`, court(ca)], ["EBE", court(ebe)], ["Marge d'EBE", ca > 0 && ebe != null ? `${((ebe / ca) * 100).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %` : "–"], ["Salariés", effectifCourt()]]);
+  const ca = derniere("chiffre_affaires"), ebe = derniere("ebe"), an = etat.tableau.annees.at(-1), t = tcam();
+  return rangeeKpi(
+    kpi("euro", court(ca), `Chiffre d'affaires ${an ?? ""}`, t != null ? `${signe(t)} par an depuis ${etat.tableau.annees[0]}` : null),
+    kpi("activite", court(ebe), "EBE", null),
+    kpi("pourcent", ca > 0 && ebe != null ? `${((ebe / ca) * 100).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %` : "–", "Marge d'EBE"),
+    kpi("equipe", effectifCourt(), "Salariés"));
 }
 
-/** Graphique : chiffre d'affaires (barres) et EBE (barres) par exercice, valeurs écrites. */
+/** Graphique : chiffre d'affaires et EBE (barres) par exercice, valeurs écrites. */
 function graphiqueFinances() {
-  const t = etat.tableau;
-  const ca = t.lignes.find((l) => l.cle === "chiffre_affaires")?.valeurs || [], ebe = t.lignes.find((l) => l.cle === "ebe")?.valeurs || [];
+  const t = etat.tableau, ca = serie("chiffre_affaires"), ebe = serie("ebe");
   if (!t.annees.length) return null;
   const L = 520, H = 250, bas = 214, max = Math.max(...ca.filter(Number.isFinite), 1);
   const g = svg("svg", { viewBox: `0 0 ${L} ${H}`, class: "dp-graph", role: "img", "aria-label": `Chiffre d'affaires et EBE : ${t.annees.map((a, i) => `${a} : ${court(ca[i])} et ${court(ebe[i])}`).join(" ; ")}` });
@@ -153,7 +186,75 @@ function graphiqueFinances() {
     const t2 = svg("text", { x: x0 + w * 1.5 + 4, y: bas - h2 - 6, class: "dp-graph-val", "text-anchor": "middle" }); t2.textContent = court(ebe[i]); g.append(t2);
     const ta = svg("text", { x: x0 + w + 2, y: bas + 22, class: "dp-graph-an", "text-anchor": "middle" }); ta.textContent = String(a); g.append(ta);
   });
-  return el("figure", { class: "dp-figure" }, g, el("figcaption", { class: "dp-legende" }, el("span", { class: "dp-pastille ca" }), "Chiffre d'affaires", el("span", { class: "dp-pastille ebe" }), "EBE"));
+  return el("figure", { class: "dp-figure" }, el("p", { class: "dp-mini-titre", text: "Chiffre d'affaires et EBE" }), g, el("figcaption", { class: "dp-legende" }, el("span", { class: "dp-pastille ca" }), "Chiffre d'affaires", el("span", { class: "dp-pastille ebe" }), "EBE"));
+}
+/** Évolution de la marge d'EBE (ligne et points, valeurs écrites). */
+function graphiqueMarge() {
+  const t = etat.tableau, ca = serie("chiffre_affaires"), ebe = serie("ebe");
+  const m = t.annees.map((_, i) => (ca[i] > 0 && Number.isFinite(ebe[i]) ? ebe[i] / ca[i] : null));
+  if (m.filter((x) => x != null).length < 2) return null;
+  const L = 360, H = 250, bas = 214, haut = 40, vals = m.filter((x) => x != null), mn = Math.min(0, ...vals), mx = Math.max(...vals) * 1.25;
+  const x = (i) => 30 + (i * (L - 60)) / Math.max(1, t.annees.length - 1), y = (v) => bas - ((v - mn) / (mx - mn)) * (bas - haut);
+  const g = svg("svg", { viewBox: `0 0 ${L} ${H}`, class: "dp-graph", role: "img", "aria-label": `Marge d'EBE : ${t.annees.map((a, i) => `${a} : ${m[i] == null ? "non disponible" : `${(m[i] * 100).toFixed(1)} %`}`).join(" ; ")}` });
+  g.append(svg("line", { x1: 0, x2: L, y1: bas, y2: bas, class: "dp-axe" }));
+  const pts = m.map((v, i) => (v == null ? null : [x(i), y(v)])).filter(Boolean);
+  g.append(svg("polyline", { points: pts.map((p) => p.join(",")).join(" "), class: "dp-ligne" }));
+  m.forEach((v, i) => {
+    const ta = svg("text", { x: x(i), y: bas + 22, class: "dp-graph-an", "text-anchor": "middle" }); ta.textContent = String(t.annees[i]); g.append(ta);
+    if (v == null) return;
+    g.append(svg("circle", { cx: x(i), cy: y(v), r: 6, class: "dp-point" }));
+    const tv = svg("text", { x: x(i), y: y(v) - 14, class: "dp-graph-val", "text-anchor": "middle" }); tv.textContent = `${(v * 100).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %`; g.append(tv);
+  });
+  return el("figure", { class: "dp-figure" }, el("p", { class: "dp-mini-titre", text: "Marge d'EBE" }), g);
+}
+
+/** Carte des régions : siège, régions des clients, reste du territoire. */
+function carteFrance() {
+  const p = etat.profil || {};
+  const clients = new Set(p.clients?.regions || []);
+  const zone = (p.zone || "").toLowerCase();
+  const nationale = zone.startsWith("nationale") || zone.startsWith("internationale");
+  const g = svg("svg", { viewBox: `-10 -10 ${CARTE.largeur + 20} ${CARTE.hauteur + 20}`, class: "dp-carte-svg", role: "img",
+    "aria-label": `Carte de France : siège en ${p.region || "région non renseignée"}${clients.size ? `, clients en ${[...clients].join(", ")}` : ""}${nationale ? ", présence nationale" : ""}` });
+  for (const [nom, r] of Object.entries(CARTE.regions)) {
+    const classe = nom === p.region ? "siege" : clients.has(nom) ? "clients" : nationale ? "national" : "autre";
+    g.append(svg("path", { d: r.d, class: `dp-region ${classe}` }));
+  }
+  if (p.region && CARTE.regions[p.region]) {
+    const [cx, cy] = CARTE.regions[p.region].centre;
+    g.append(svg("circle", { cx, cy, r: 16, class: "dp-carte-siege" }));
+    const t = svg("text", { x: cx, y: cy - 28, class: "dp-carte-txt", "text-anchor": "middle" }); t.textContent = p.ville || "Siège"; g.append(t);
+  }
+  return el("figure", { class: "dp-figure dp-carte-zone" }, g,
+    el("figcaption", { class: "dp-legende" },
+      el("span", { class: "dp-pastille siege" }), "Siège",
+      clients.size ? [el("span", { class: "dp-pastille clients" }), "Régions clientes"] : null,
+      nationale ? [el("span", { class: "dp-pastille national" }), "Présence nationale"] : null),
+    el("p", { class: "dp-source", text: "Fond de carte : IGN Admin Express, Licence ouverte." }));
+}
+
+/** Répartition du chiffre d'affaires en anneau, à partir de puces du type « Libellé : environ 45 % ». */
+function repartitionAnneau(puces) {
+  const items = puces.map((p) => { const m = /^(.*?)\s*[:–-]\s*(?:environ\s*)?(\d{1,3})\s*%/i.exec(p); return m ? { lib: m[1].replace(/\s*\(.*?\)\s*/g, " ").trim(), v: Number(m[2]) } : null; }).filter(Boolean);
+  if (items.length < 2) return null;
+  const teintes = ["#1E3A2E", "#4E7A63", "#9DB8A8", "#C9A37E", "#E3D4BC"];
+  const r = 70, c = 2 * Math.PI * r, total = items.reduce((a, x) => a + x.v, 0) || 1;
+  const g = svg("svg", { viewBox: "0 0 200 200", class: "dp-donut", role: "img", "aria-label": `Répartition du chiffre d'affaires : ${items.map((x) => `${x.lib} ${x.v} %`).join(", ")}` });
+  let cumul = 0;
+  items.forEach((x, i) => {
+    const part = x.v / total;
+    g.append(svg("circle", { cx: 100, cy: 100, r, fill: "none", stroke: teintes[i % teintes.length], "stroke-width": 34, "stroke-dasharray": `${Math.max(0, c * part - 3)} ${c}`, "stroke-dashoffset": String(-c * cumul), transform: "rotate(-90 100 100)" }));
+    cumul += part;
+  });
+  return el("div", { class: "dp-repart-donut" }, el("p", { class: "dp-mini-titre", text: "Répartition du chiffre d'affaires" }),
+    el("div", { class: "dp-donut-grille" }, g, el("ul", { class: "dp-donut-legende" }, ...items.map((x, i) => el("li", {}, el("span", { class: "dp-pastille", style: `background:${teintes[i % teintes.length]}` }), el("span", { text: x.lib }), el("strong", { text: `${x.v} %` }))))));
+}
+
+/** Étapes indicatives d'un processus de cession (diagramme en chevrons). */
+function processus() {
+  const etapes = [["cadenas", "Engagement de confidentialité"], ["document", "Mémorandum et échanges"], ["poignee", "Offres indicatives"], ["loupe", "Audits d'acquisition"], ["signature", "Signature et transmission"]];
+  return el("div", { class: "dp-processus" }, el("p", { class: "dp-mini-titre", text: "Déroulement indicatif du processus" }),
+    el("ol", {}, ...etapes.map(([ic, t], k) => el("li", {}, icone(ic, "dp-kpi-icone"), el("span", { class: "dp-etape-num", text: String(k + 1) }), el("span", { text: t })))));
 }
 
 /** Anneau de pourcentage (concentration clients, récurrence). */
@@ -202,7 +303,7 @@ function cadre(s, i, contenu, { suite = false } = {}) {
     el("div", { class: "dp-corps" },
       el("header", { class: "dp-entete" }, el("span", { class: "dp-kicker", text: `${String(i + 1).padStart(2, "0")} · ${COURTS[s.cle] || ""}` }), el("h3", { text: s.titre + (suite ? " (suite)" : "") })),
       el("div", { class: "dp-zone" }, ...contenu),
-      el("footer", { class: "dp-pied" }, el("span", { text: `Mémorandum d'information · ${etat.entreprise || ""}` }), el("span", { class: "dp-passation", text: "Passation" }), el("span", { class: "dp-num" }))));
+      el("footer", { class: "dp-pied" }, el("span", { text: `Mémorandum d'information · ${etat.entreprise || ""} · Strictement confidentiel` }), el("span", { class: "dp-num" }), logoPassation())));
 }
 
 /** Contenu propre à chaque chapitre ; le texte courant est dans .dp-flux (découpé si trop long). */
@@ -211,35 +312,34 @@ function contenuSection(s) {
   const { paragraphes, puces } = decouperTexte(s.contenu);
   const flux = (l = paragraphes) => el("div", { class: "dp-flux" }, ...paras(l));
   const p = etat.profil || {};
+  const age = p.creation ? `${new Date().getFullYear() - p.creation} ans` : "–";
   switch (s.cle) {
     case "synthese":
-      return [el("div", { class: "dp-intro" }, ...paras(paragraphes.slice(0, 1))),
+      return [chiffresCles(), el("div", { class: "dp-intro" }, ...paras(paragraphes.slice(0, 1))),
         el("p", { class: "dp-mini-titre", text: "Points clés de l'investissement" }),
         el("div", { class: "dp-cartes" }, ...(puces.length ? puces : paragraphes.slice(1, 4)).slice(0, 6).map((t, k) => el("div", { class: "dp-carte" }, picto(k), el("p", { text: t })))),
-        chiffresCles(),
         el("div", { class: "dp-flux" }, ...paras(puces.length ? paragraphes.slice(1) : paragraphes.slice(4)))];
     case "histoire":
-      return [frise(s.contenu), el("div", { class: "dp-flux dp-deux-col" }, ...paras(paragraphes), ...(puces.length ? [el("ul", {}, ...puces.map((t) => el("li", { text: t })))] : []))];
+      return [rangeeKpi(kpi("calendrier", p.creation ? String(p.creation) : "–", "Année de création"), kpi("horloge", age, "D'existence"), kpi("lieu", p.ville || p.region || "–", "Siège")),
+        frise(s.contenu), el("div", { class: "dp-flux dp-deux-col" }, ...paras(paragraphes), ...(puces.length ? [el("ul", {}, ...puces.map((t) => el("li", { text: t })))] : []))];
     case "activite":
-      return [el("div", { class: "dp-split" }, el("div", {}, flux(), repartition(puces) || (puces.length ? el("ul", { class: "dp-puces" }, ...puces.map((t) => el("li", { text: t }))) : null)), photo(0))];
+      return [el("div", { class: "dp-split" }, el("div", {}, flux(), repartitionAnneau(puces) || repartition(puces) || (puces.length ? el("ul", { class: "dp-puces" }, ...puces.map((t) => el("li", { text: t }))) : null)), photo(0))];
     case "marche":
-      return [el("div", { class: "dp-split dp-split-inverse" },
-        el("div", { class: "dp-kpis" }, anneau(p.clients?.premier, "Premier client"), anneau(p.clients?.cinq, "Cinq premiers clients"), anneau(p.clients?.recurrent, "Chiffre d'affaires récurrent"),
-          el("div", { class: "dp-kpi-texte" }, el("span", { class: "dp-tuile-val", text: p.zone || "–" }), el("span", { class: "dp-tuile-lib", text: "Zone commerciale" }))),
-        flux())];
+      return [el("div", { class: "dp-split dp-split-carte" }, carteFrance(),
+        el("div", {}, rangeeKpi(kpi("poignee", pct(p.clients?.premier), "Premier client"), kpi("equipe", pct(p.clients?.cinq), "Cinq premiers"), kpi("croissance", pct(p.clients?.recurrent), "CA récurrent"), kpi("globe", p.zone || "–", "Zone commerciale")), flux()))];
     case "organisation":
-      return [el("div", { class: "dp-split" }, el("div", {}, tuiles([["Salariés", effectifCourt()], ["Création", p.creation ? String(p.creation) : "–"]]), flux(), puces.length ? el("ul", { class: "dp-puces" }, ...puces.map((t) => el("li", { text: t }))) : null), photo(1))];
+      return [el("div", { class: "dp-split" }, el("div", {}, rangeeKpi(kpi("equipe", effectifCourt(), "Salariés"), kpi("calendrier", p.creation ? String(p.creation) : "–", "Création"), kpi("lieu", p.ville || "–", "Site")), flux(), puces.length ? el("ul", { class: "dp-puces" }, ...puces.map((t) => el("li", { text: t }))) : null), photo(1))];
     case "finances":
-      return [el("div", { class: "dp-split dp-split-fin" }, graphiqueFinances(), el("div", {}, chiffresCles(), tableauFinancier())), flux()];
+      return [chiffresCles(), el("div", { class: "dp-split dp-split-graph" }, graphiqueFinances(), graphiqueMarge())];
     case "perspectives":
       return [el("div", { class: "dp-split" }, flux(), el("div", { class: "dp-cartes dp-cartes-col" }, ...puces.slice(0, 5).map((t, k) => el("div", { class: "dp-carte" }, picto(k + 2), el("p", { text: t })))))];
     case "operation":
       return [el("div", { class: "dp-operation" },
         el("div", { class: "dp-gros" }, el("span", { class: "dp-gros-val", text: p.operation?.part_cedee || "À compléter" }), el("span", { class: "dp-tuile-lib", text: "du capital proposé à la cession" })),
-        el("div", { class: "dp-carte" }, picto(1), el("p", {}, el("strong", { text: "Motif : " }), p.operation?.motif || "À compléter")),
-        el("div", { class: "dp-carte" }, picto(5), el("p", {}, el("strong", { text: "Accompagnement : " }), p.operation?.accompagnement || "À compléter")),
-        el("div", { class: "dp-carte" }, picto(2), el("p", {}, el("strong", { text: "Calendrier : " }), p.operation?.calendrier || "À compléter"))),
-        flux()];
+        el("div", { class: "dp-carte" }, icone("equipe"), el("p", {}, el("strong", { text: "Motif : " }), p.operation?.motif || "À compléter")),
+        el("div", { class: "dp-carte" }, icone("poignee"), el("p", {}, el("strong", { text: "Accompagnement : " }), p.operation?.accompagnement || "À compléter")),
+        el("div", { class: "dp-carte" }, icone("calendrier"), el("p", {}, el("strong", { text: "Calendrier : " }), p.operation?.calendrier || "À compléter"))),
+        processus(), flux()];
     default:
       return [flux(), puces.length ? el("ul", { class: "dp-puces" }, ...puces.map((t) => el("li", { text: t }))) : null];
   }
@@ -256,7 +356,7 @@ function dessinerMemo() {
     el("div", { class: "dp-couv-panneau" },
       el("div", { class: "dp-couv-haut" }, logoBloc("dp-logo dp-logo-grand"), el("span", { class: "dp-ruban", text: "Strictement confidentiel" })),
       el("div", { class: "dp-couv-centre" }, el("p", { class: "dp-etiquette", text: "Mémorandum d'information" }), el("h2", { text: etat.entreprise || "Entreprise" }), el("p", { class: "dp-sous-titre", text: sousTitre }), el("span", { class: "dp-filet" })),
-      el("div", { class: "dp-couv-bas" }, el("span", { text: date }), el("span", { class: "dp-passation", text: "Passation" }))),
+      el("div", { class: "dp-couv-bas" }, el("span", { text: date }), logoPassation(true))),
     photoUrl(0) ? el("div", { class: "dp-couv-photo", style: `background-image:url('${photoUrl(0)}')`, role: "img", "aria-label": etat.photos[0].legende || "Photo de l'entreprise" }) : el("div", { class: "dp-couv-photo dp-couv-texture" })));
   // Sommaire : photo + chapitres
   enfants.push(el("div", { class: "diapo dp-sommaire" },
@@ -265,6 +365,10 @@ function dessinerMemo() {
       el("ol", {}, ...etat.sections.map((s, i) => el("li", {}, el("span", { class: "dp-li-num", text: String(i + 1).padStart(2, "0") }), el("a", { href: `#s-${s.cle}`, text: s.titre })))))));
   etat.sections.forEach((s, i) => {
     enfants.push(cadre(s, i, contenuSection(s)));
+    if (s.cle === "finances") {
+      const { paragraphes } = decouperTexte(s.contenu);
+      enfants.push(cadre({ ...s, titre: "Comptes de synthèse" }, i, [tableauFinancier(), el("div", { class: "dp-flux" }, ...paras(s.redigee ? paragraphes : []))], { suite: true }));
+    }
     const outils = el("div", { class: "dp-outils pas-imprime", "data-outils": s.cle },
       s.modifie ? el("span", { class: "petit", text: "Modifié par vous" }) : null,
       s.a_completer?.length ? el("span", { class: "notes-completer" }, el("strong", { text: "À compléter : " }), s.a_completer.join(" ; ")) : null,
@@ -277,11 +381,12 @@ function dessinerMemo() {
     el("div", { class: "dp-fin-texte" }, logoBloc("dp-logo dp-logo-grand"), el("p", { class: "dp-etiquette", text: "Avertissement" }),
       el("p", { text: "Ce mémorandum a été établi à partir d'informations fournies par le dirigeant et de données publiques. Il n'a fait l'objet d'aucun audit. Il ne constitue ni une offre, ni un engagement, et ne remplace pas les vérifications d'usage (audit comptable, juridique, social et fiscal)." }),
       el("p", { text: "Il est remis sous engagement de confidentialité : toute reproduction ou diffusion, totale ou partielle, est interdite." }),
-      el("p", { class: "dp-contact", text: "Contact : par l'intermédiaire de Passation" })),
+      el("p", { class: "dp-contact", text: "Contact : par l'intermédiaire de Passation" }), logoPassation()),
     photoUrl(2) ? el("div", { class: "dp-fin-photo", style: `background-image:url('${photoUrl(2)}')` }) : el("div", { class: "dp-fin-photo dp-couv-texture" })));
   $("#memo").replaceChildren(...enfants);
   decouper();
   $("#memo").querySelectorAll(".dp-num").forEach((n, k) => { n.textContent = String(k + 3); });
+  $("#memo").querySelectorAll(".dp-page").forEach((d) => { if (d.querySelector(".dp-entete h3")?.textContent.endsWith("(suite)") && d.querySelector(".dp-entete h3").textContent.startsWith("Comptes")) d.querySelector(".dp-entete h3").textContent = "Comptes de synthèse"; });
 }
 
 /** Chapitre trop long : les derniers paragraphes du texte courant passent sur une diapositive « (suite) ». */

@@ -64,7 +64,7 @@ export function profilMemo(entreprise = {}, reponses = {}) {
     creation: entreprise.date_creation ? Number(String(entreprise.date_creation).slice(0, 4)) : null,
     effectif: libelleEffectif(entreprise.tranche_effectif?.code),
     zone: a.zone ?? null,
-    clients: { premier: c.part_premier_client ?? null, cinq: c.part_cinq_clients ?? null, recurrent: c.part_recurrente ?? null },
+    clients: { premier: c.part_premier_client ?? null, cinq: c.part_cinq_clients ?? null, recurrent: c.part_recurrente ?? null, regions: Array.isArray(c.regions) ? c.regions : [] },
     operation: { part_cedee: o.part_cedee ?? null, motif: o.motif ?? null, accompagnement: o.accompagnement ?? null, calendrier: o.calendrier ?? null },
     frise: (entreprise.evenements || []).map((e) => ({ annee: Number(String(e.date || "").slice(0, 4)) || null, type: e.type })).filter((e) => e.annee),
   };

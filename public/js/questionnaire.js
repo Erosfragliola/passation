@@ -1,5 +1,5 @@
 // Questionnaire « Votre entreprise » : 8 écrans courts, sauvegarde automatique. Partagé par l'écran et le serveur.
-// Types : euros, pct (saisi en %, stocké en fraction), texte, oui_non, choix (options), exceptionnels (liste).
+// Types : euros, pct (saisi en %, stocké en fraction), texte, oui_non, choix (options), regions (cases), exceptionnels (liste).
 
 export const ETAPES = [
   {
@@ -56,6 +56,7 @@ export const ETAPES = [
       { cle: "part_premier_client", type: "pct", libelle: "Part du premier client dans le chiffre d'affaires" },
       { cle: "part_cinq_clients", type: "pct", libelle: "Part des cinq premiers clients" },
       { cle: "part_recurrente", type: "pct", libelle: "Part du chiffre d'affaires récurrent (contrats, abonnements, clients fidèles)" },
+      { cle: "regions", type: "regions", libelle: "Régions où se trouvent vos principaux clients", aide: "Elles seront marquées sur la carte du mémorandum." },
     ],
   },
   {
@@ -93,3 +94,6 @@ export function avancementQuestionnaire(reponses = {}) {
   }
   return { faits, total, pct: Math.round((faits / total) * 100) };
 }
+
+/** Régions métropolitaines (découpage de 2016), pour la question « regions » et la carte du mémorandum. */
+export const REGIONS = ["Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté", "Bretagne", "Centre-Val de Loire", "Corse", "Grand Est", "Hauts-de-France", "Île-de-France", "Normandie", "Nouvelle-Aquitaine", "Occitanie", "Pays de la Loire", "Provence-Alpes-Côte d'Azur"];
