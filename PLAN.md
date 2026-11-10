@@ -316,3 +316,6 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   utilisateur : e-mail plus tard ; Brevo à configurer avant la mise en ligne de l'étape 3.
   Note : après l'ajout de l'identifiant D1 de production, la base locale doit être recréée
   (`npm run db:migrate:local`).
+- **10/11/2026, étape 3 publiée** : secrets BREVO_API_KEY, SENDER_EMAIL, SENDER_NAME saisis par l'utilisateur.
+  Contrôles en production : routes privées 401 sans connexion, requête d'un autre site 403, adresse invalide 400,
+  lien invalide → retour à /connexion. Premier envoi réel d'e-mail : test par l'utilisateur.
