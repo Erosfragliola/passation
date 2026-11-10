@@ -129,6 +129,8 @@ async function lancer(siren) {
     return message(err.message === "Failed to fetch" ? "Connexion impossible. Vérifiez votre réseau et réessayez." : err.message, true);
   }
   etat.donnees = d;
+  // « Affiner ma valorisation » ouvre le dossier de cette entreprise
+  document.querySelector('#maquette-resultat a[href^="/connexion"]').href = `/connexion?siren=${siren}`;
   afficher(d, scene);
 }
 

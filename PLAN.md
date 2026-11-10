@@ -308,3 +308,11 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   en-tête du memo, couverture du datapack), avec la mention « Strictement confidentiel ».
 - **Teaser** : jamais de logo, de nom, ni de terme issu du site (marques, produits) ; le contrôle
   d'anonymisation inclut ces termes.
+- **10/11/2026, étape 3 (local, non publiée)** : lien magique (jeton haché, 15 min, usage unique, consommation
+  atomique), session en cookie HttpOnly/Secure/SameSite=Lax, contrôle d'origine sur toute requête qui modifie,
+  limites de débit par IP et par e-mail. Sans clé Brevo : lien affiché dans le terminal en local uniquement,
+  refus 503 en production. Dossier créé depuis le SIREN de la landing, tableau de bord 4 blocs + avancement,
+  checklist de 19 pièces, suppression complète (base + R2). Tests : 101 (base SQLite en mémoire). Choix
+  utilisateur : e-mail plus tard ; Brevo à configurer avant la mise en ligne de l'étape 3.
+  Note : après l'ajout de l'identifiant D1 de production, la base locale doit être recréée
+  (`npm run db:migrate:local`).

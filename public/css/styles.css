@@ -341,3 +341,50 @@ section { padding: 88px 0; }
 .hero-video.lue { opacity: 1; }
 /* Photos portrait dans des cadres paysage : cadrage sur le haut (les visages) */
 .etape .photo img, .m-portrait img { object-position: center 30%; }
+
+/* ---------- Connexion et espace dirigeant ---------- */
+.conteneur-etroit { max-width: 640px; }
+.form-carte { margin-top: 28px; padding: 28px; border-radius: var(--r-carte); background: var(--sable); display: grid; gap: 12px; }
+.form-carte label { font-weight: 500; }
+.form-carte input { min-height: 50px; border-radius: 14px; border: 1px solid var(--trait-fort); background: var(--creme); padding: 0 16px; font: inherit; color: var(--espresso); }
+.form-carte input:focus { outline: 2px solid var(--vert); outline-offset: 1px; }
+.form-carte .btn { justify-self: start; }
+.message-carte { margin-top: 20px; padding: 16px 20px; border-radius: 16px; background: var(--sable); }
+.message-carte.erreur, .maquette-message.erreur { border-left: 4px solid var(--espresso); }
+.espace { padding-top: 0; }
+.dossier-tete { padding: 140px 0 56px; }
+.dossier-tete h1 { font-size: clamp(2.2rem, 5.5vw, 4rem); }
+.dossier-meta { margin-top: 12px; color: var(--pierre-nuit); font-family: var(--mono); font-size: 13px; letter-spacing: .04em; }
+.dossier-synthese { margin-top: 40px; display: grid; gap: 24px; padding-top: 24px; border-top: 1px solid var(--trait-nuit); }
+@media (min-width: 800px) { .dossier-synthese { grid-template-columns: 1fr 1fr; } }
+.dossier-synthese strong { display: block; font-weight: 300; font-size: clamp(2rem, 4.5vw, 3rem); letter-spacing: -0.04em; color: var(--creme); margin: 6px 0 10px; white-space: nowrap; }
+.jauge { height: 6px; border-radius: 3px; background: var(--trait-fort); overflow: hidden; }
+.nuit .jauge { background: var(--trait-nuit); }
+.jauge span { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--vert); transition: width .6s ease; }
+.nuit .jauge span { background: var(--cuivre-clair); }
+.dossier-blocs { padding: 56px 0 104px; }
+.blocs { display: grid; gap: 16px; }
+@media (min-width: 760px) { .blocs { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) { .blocs { grid-template-columns: repeat(4, 1fr); } }
+.bloc { display: flex; flex-direction: column; gap: 12px; }
+.bloc .etiquette { margin: 0; }
+.bloc h2 { font-size: 1.6rem; }
+.bientot { margin-top: auto; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--pierre-texte); }
+.checklist-zone { margin-top: 72px; }
+.checklist-zone h2 { margin-bottom: 10px; }
+#checklist-groupes { margin-top: 24px; display: grid; gap: 16px; }
+@media (min-width: 900px) { #checklist-groupes { grid-template-columns: repeat(3, 1fr); } }
+.checklist-groupe { border: 1px solid var(--trait-fort); border-radius: 20px; padding: 18px 20px 20px; margin: 0; display: grid; gap: 10px; align-content: start; }
+.checklist-groupe legend { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--pierre-texte); padding: 0 6px; }
+.checklist-groupe label { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; cursor: pointer; font-size: .95rem; }
+.checklist-groupe input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--vert); }
+.dossier-actions { margin-top: 56px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
+.btn-danger { background: transparent; color: var(--espresso); border-color: var(--espresso); }
+.btn-danger:hover { background: var(--espresso); color: var(--creme); }
+dialog { border: 0; border-radius: var(--r-carte); padding: 28px; max-width: 460px; background: var(--creme); color: var(--espresso); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+dialog::backdrop { background: rgba(35, 30, 24, 0.6); }
+dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+
+.message-flottant { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60; max-width: calc(100% - 32px);
+  padding: 14px 22px; border-radius: var(--r-pilule); background: var(--espresso); color: var(--creme); box-shadow: 0 12px 40px rgba(0,0,0,.3); }

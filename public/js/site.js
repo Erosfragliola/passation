@@ -56,5 +56,16 @@
     video.play().catch(() => { video.hidden = true; });
   }
 
+  // Confirmation après suppression d'un dossier
+  if (new URLSearchParams(location.search).has("dossier-supprime")) {
+    const m = document.createElement("p");
+    m.className = "message-flottant";
+    m.setAttribute("role", "status");
+    m.textContent = "Votre dossier et ses fichiers ont été supprimés.";
+    document.body.append(m);
+    setTimeout(() => m.remove(), 6000);
+    history.replaceState(null, "", location.pathname);
+  }
+
   document.querySelectorAll("[data-annee]").forEach((el) => { el.textContent = new Date().getFullYear(); });
 })();

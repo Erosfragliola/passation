@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr" class="sans-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Votre dossier · Passation</title>
+  <meta name="theme-color" content="#FBF6EC">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<header class="nav-zone">
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" href="/">Retour à l'accueil</a></div>
+  </nav>
+</header>
+<main id="contenu" class="espace" aria-busy="true">
+  <section class="nuit dossier-tete">
+    <div class="conteneur">
+      <p class="etiquette">Votre dossier</p>
+      <h1 id="dossier-nom">Chargement…</h1>
+      <p class="dossier-meta" id="dossier-meta"></p>
+      <div class="dossier-synthese">
+        <div><span class="petit">Avancement</span><strong class="chiffre" id="avancement-global">–</strong>
+          <div class="jauge" role="progressbar" aria-labelledby="avancement-global" aria-valuemin="0" aria-valuemax="100" id="jauge-globale"><span></span></div></div>
+        <div><span class="petit" id="estimation-legende">Valorisation express</span><strong class="chiffre" id="estimation-valeur">–</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dossier-blocs">
+    <div class="conteneur">
+      <div class="blocs">
+        <article class="carte bloc" id="bloc-chiffres">
+          <p class="etiquette">01 · Vos chiffres</p><h2>Vos <em>chiffres</em></h2>
+          <div class="jauge"><span></span></div>
+          <p>Déposez votre liasse fiscale : nous en extrayons les chiffres, vous validez chaque ligne.</p>
+          <p class="bientot">Disponible à la prochaine étape</p>
+        </article>
+        <article class="carte bloc" id="bloc-valorisation">
+          <p class="etiquette">02 · Votre valorisation</p><h2>Votre <em>valorisation</em></h2>
+          <div class="jauge"><span></span></div>
+          <p>La valorisation express est faite. La valorisation approfondie croise trois méthodes à partir de vos chiffres.</p>
+          <p class="bientot">Approfondie : disponible à la prochaine étape</p>
+        </article>
+        <article class="carte bloc" id="bloc-documents">
+          <p class="etiquette">03 · Vos documents</p><h2>Vos <em>documents</em></h2>
+          <div class="jauge"><span></span></div>
+          <p>Datapack Excel, teaser anonymisé, mémorandum d'information personnalisé.</p>
+          <p class="bientot">Disponibles après la valorisation</p>
+        </article>
+        <article class="carte bloc" id="bloc-preparation">
+          <p class="etiquette">04 · Votre préparation</p><h2>Votre <em>préparation</em></h2>
+          <div class="jauge"><span></span></div>
+          <p>Les pièces qu'un repreneur vous demandera. Cochez-les au fur et à mesure.</p>
+          <a class="lien-discret" href="#checklist">Voir la liste</a>
+        </article>
+      </div>
+
+      <div class="checklist-zone" id="checklist">
+        <h2>Pièces à <em>réunir</em></h2>
+        <p class="petit">Liste indicative des documents habituellement demandés lors d'un audit d'acquisition. Votre avocat ou votre expert-comptable peut la compléter.</p>
+        <div id="checklist-groupes"></div>
+      </div>
+
+      <div class="dossier-actions">
+        <button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button>
+        <button class="btn btn-danger" type="button" id="btn-supprimer">Supprimer mon dossier</button>
+      </div>
+    </div>
+  </section>
+
+  <dialog id="dialog-supprimer" aria-labelledby="titre-supprimer">
+    <h2 id="titre-supprimer">Supprimer ce dossier ?</h2>
+    <p>Toutes ses données et tous ses fichiers seront effacés définitivement. Cette action est irréversible.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-contour" type="button" id="annuler-supprimer">Annuler</button>
+      <button class="btn btn-danger" type="button" id="confirmer-supprimer">Supprimer définitivement</button>
+    </div>
+  </dialog>
+  <p class="message-carte" id="espace-message" role="status" hidden></p>
+</main>
+<footer class="pied">
+  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0">
+    <span>© <span data-annee>2026</span> Passation</span>
+    <span><a href="/mentions-legales">Mentions légales</a> · <a href="/cgu">CGU</a> · <a href="/confidentialite">Confidentialité</a></span>
+  </div>
+</footer>
+<script src="/js/site.js" defer></script>
+<script type="module" src="/js/espace.js"></script>
+</body>
+</html>

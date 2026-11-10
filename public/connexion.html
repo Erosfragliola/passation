@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Espace dirigeant · Passation</title>
+  <title>Connexion · Passation</title>
   <meta name="theme-color" content="#FBF6EC">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/styles.css">
@@ -17,11 +17,18 @@
   </nav>
 </header>
 <main id="contenu" class="page-texte">
-  <div class="conteneur">
+  <div class="conteneur conteneur-etroit">
     <p class="etiquette">Espace dirigeant</p>
-    <h1>Bientôt <em>disponible</em>.</h1>
-    <p class="chapo">La connexion par lien sécurisé arrive à l’étape 3 du projet.</p>
-    <p style="margin-top:24px"><a class="btn btn-noir" href="/">Retour à l’accueil</a></p>
+    <h1>Ouvrez votre <em>dossier</em>.</h1>
+    <p class="chapo">Indiquez votre adresse e-mail : nous vous envoyons un lien de connexion, valable 15 minutes. Pas de mot de passe.</p>
+    <p class="petit" id="rappel-siren" hidden></p>
+    <form id="form-connexion" class="form-carte" novalidate>
+      <label for="email">Adresse e-mail professionnelle</label>
+      <input id="email" name="email" type="email" autocomplete="email" required placeholder="prenom@entreprise.fr">
+      <button class="btn btn-noir" type="submit">Recevoir mon lien <span class="fleche" aria-hidden="true">→</span></button>
+      <p class="petit">Vos chiffres restent confidentiels. Vous pourrez supprimer votre dossier à tout moment.</p>
+    </form>
+    <div id="connexion-message" class="message-carte" role="status" hidden></div>
   </div>
 </main>
 <footer class="pied">
@@ -31,5 +38,6 @@
   </div>
 </footer>
 <script src="/js/site.js" defer></script>
+<script type="module" src="/js/connexion.js"></script>
 </body>
 </html>

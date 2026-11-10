@@ -10,6 +10,7 @@ npm install
 cp .dev.vars.example .dev.vars        # puis remplir les valeurs vous-même (jamais commité)
 npm run db:migrate:local              # crée la base D1 locale
 npm run dev                           # http://127.0.0.1:8787
+# Connexion en local : sans clé Brevo, le lien magique s'affiche dans ce terminal.
 ```
 
 ## Tests

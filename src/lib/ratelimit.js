@@ -5,12 +5,16 @@ async function empreinte(texte) {
   return [...new Uint8Array(octets)].slice(0, 16).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-/** Retourne { autorise, restant }. Incrémente le compteur de la fenêtre horaire courante. */
+/** Limite par adresse IP (empreinte). Retourne { autorise, restant }. */
 export async function verifierDebit(db, request, env, nom, maxParHeure) {
-  const ip = request.headers.get("cf-connecting-ip") || "local";
+  return verifierDebitCle(db, env, nom, request.headers.get("cf-connecting-ip") || "local", maxParHeure);
+}
+
+/** Limite par clé quelconque (IP, e-mail…), jamais stockée en clair. Incrémente la fenêtre horaire courante. */
+export async function verifierDebitCle(db, env, nom, cle, maxParHeure) {
   const heure = Math.floor(Date.now() / 3_600_000);
   const sel = env.SESSION_SECRET || "sel-de-developpement-local";
-  const bucket = `${nom}:${await empreinte(sel + ip)}:${heure}`;
+  const bucket = `${nom}:${await empreinte(sel + cle)}:${heure}`;
   let ligne;
   try {
     ligne = await db.prepare(
