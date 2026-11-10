@@ -12,10 +12,10 @@ Aucune personne photographiée n'est présentée comme un client ou un témoigna
 
 | Fichier publié | Origine | Licence | À faire |
 |---|---|---|---|
-| `../video/hero.mp4`, `../video/hero.webm`, `photos/hero-poster-*.webp` | Vidéo Pexels n° 6023467 (dirigeante dans sa boutique), https://www.pexels.com/video/6023467/ | Licence Pexels (usage commercial autorisé, sans attribution obligatoire) | Confirmer l'auteur |
+| `../video/hero.mp4`, `../video/hero.webm` | Montage de 4 vidéos Pexels (3 s chacune, fondus, étalonnage chaud commun) : n° 6023467 (dirigeante dans sa boutique), n° 14132505 (machine industrielle), n° 12938242 (artisan, recadré en 16:9), n° 15783299 (chantier) — https://www.pexels.com/video/<n°>/ | Licence Pexels (usage commercial autorisé, sans attribution obligatoire) | Confirmer les auteurs |
+| `photos/hero-poster-*.webp` | Image de la vidéo Pexels n° 6023467 | Licence Pexels | Confirmer l'auteur |
 | `photos/etape-atelier-800.webp` | Image extraite de la vidéo Pexels n° 12938242 (artisan, meuleuse), https://www.pexels.com/video/12938242/ | Licence Pexels | Confirmer l'auteur |
 | `photos/portrait-dirigeant-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 (recadrée pour retirer un logo tiers) | **À confirmer** | Lien source et licence |
 | `photos/etape-bureau-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 | **À confirmer** | Lien source et licence |
 | `photos/etape-equipe-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 | **À confirmer** | Lien source et licence |
 
-Vidéos non utilisées à ce jour (dossier `video/`, non publié) : Pexels n° 14132505, n° 15783299.
