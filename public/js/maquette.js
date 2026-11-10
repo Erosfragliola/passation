@@ -86,9 +86,9 @@ export function construireMaquette(params, { mobile = false } = {}) {
     ctx.fillStyle = "#F3EADB"; ctx.fillRect(0, 0, 512, 192);
     ctx.strokeStyle = "#8A7F70"; ctx.lineWidth = 4; ctx.strokeRect(14, 14, 484, 164);
     ctx.fillStyle = "#231E18"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.font = '400 30px "IBM Plex Mono", monospace';
+    ctx.font = '500 30px "Geist Mono", monospace';
     ctx.fillText("D E P U I S", 256, 62);
-    ctx.font = '400 84px "Instrument Serif", Georgia, serif';
+    ctx.font = '500 80px "Geist", sans-serif';
     ctx.fillText(String(params.depuis), 256, 128);
     const tex = garder(new THREE.CanvasTexture(toile));
     tex.colorSpace = THREE.SRGBColorSpace;

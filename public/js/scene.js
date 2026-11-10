@@ -199,17 +199,17 @@ export function creerScene(conteneur) {
       ctx.drawImage(img, 560, 40, 1000, 820);
 
       ctx.fillStyle = "#A39886";
-      ctx.font = '500 20px "IBM Plex Mono", monospace';
+      ctx.font = '500 20px "Geist Mono", monospace';
       ctx.fillText("M A Q U E T T E", 96, 300);
       ctx.fillStyle = "#FBF6EC";
       let corps = 92;
-      ctx.font = `400 ${corps}px "Instrument Serif", Georgia, serif`;
-      while (ctx.measureText(nom).width > 520 && corps > 44) { corps -= 4; ctx.font = `400 ${corps}px "Instrument Serif", Georgia, serif`; }
+      ctx.font = `500 ${corps}px "Geist", sans-serif`;
+      while (ctx.measureText(nom).width > 520 && corps > 44) { corps -= 4; ctx.font = `500 ${corps}px "Geist", sans-serif`; }
       const lignes = couper(ctx, nom, 520);
       lignes.slice(0, 3).forEach((l, i) => ctx.fillText(l, 96, 390 + i * corps * 1.02));
       if (depuis) {
         ctx.fillStyle = "#E9C9A4";
-        ctx.font = 'italic 400 52px "Instrument Serif", Georgia, serif';
+        ctx.font = 'italic 400 46px "Geist", sans-serif';
         ctx.fillText(`depuis ${depuis}`, 96, 390 + Math.min(3, lignes.length) * corps * 1.02 + 30);
       }
       // Logo « Le Seuil » et adresse du site, en bas à droite
@@ -219,9 +219,9 @@ export function creerScene(conteneur) {
       ctx.beginPath(); ctx.moveTo(9, 27); ctx.lineTo(9, 15); ctx.arc(16, 15, 7, Math.PI, 0); ctx.lineTo(23, 27); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(5, 27); ctx.lineTo(27, 27); ctx.stroke();
       ctx.fillStyle = "#A8653A"; ctx.beginPath(); ctx.arc(16, 21, 2.8, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#FBF6EC"; ctx.font = '400 34px "Instrument Serif", Georgia, serif';
+      ctx.fillStyle = "#FBF6EC"; ctx.font = '500 30px "Geist", sans-serif';
       ctx.fillText("Passation", 40, 28);
-      ctx.fillStyle = "#A39886"; ctx.font = '400 18px "IBM Plex Mono", monospace';
+      ctx.fillStyle = "#A39886"; ctx.font = '400 18px "Geist Mono", monospace';
       ctx.fillText(location.host, 42, 58);
       ctx.restore();
       return new Promise((ok) => toile.toBlob(ok, "image/png"));

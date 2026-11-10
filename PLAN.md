@@ -73,7 +73,7 @@ Choix techniques à vérifier pendant le développement (étape indiquée) :
 - **Liens signés** : le Worker signe une URL `/api/files/:id?exp=…&sig=…` (HMAC avec `SESSION_SECRET`, validité 10 minutes) et lit le fichier dans R2. Pas besoin de clés R2 supplémentaires.
 - **Limite de débit** de la valorisation express : compteur dans D1 par empreinte d'IP (hachée, jamais l'IP en clair) et par heure.
 - **Tests** : `vitest` sur les modules de calcul (purs, sans Cloudflare). Tests des routes avec `@cloudflare/vitest-pool-workers` à partir de l'étape 3 (droits d'accès, 401).
-- **Polices** auto-hébergées : Instrument Serif et Inter (licence SIL Open Font, libres), fichiers .woff2 dans `public/fonts/`.
+- **Polices** auto-hébergées : Geist (titres et texte, avec italique) et Geist Mono (étiquettes), licence SIL Open Font, fichiers .woff2 dans `public/fonts/` (choix utilisateur du 10/11/2026).
 
 Dépendances prévues : `wrangler`, `vitest` (dév.) ; `exceljs` ou `fflate`, `docx`, `marked` (Markdown → HTML, au build seulement). Rien d'autre sans accord.
 
@@ -273,3 +273,4 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
   parcours navigateur 434436622 OK (293 k€ – 489 k€), Lighthouse prod mobile perf 93 / a11y 100 / BP 100 / SEO 100.
   Non publiés : `marque.html`, `img/source/`, `CREDITS.md` (`public/.assetsignore`). Secrets ANTHROPIC/BREVO non
   requis à ce stade (étapes 3 et suivantes).
+- **10/11/2026, typographie** : Geist partout (titres 500, interlettrage serré, mots clés en italique ; chiffres en 300), Geist Mono pour les étiquettes ; remplace Instrument Serif, Inter Tight et IBM Plex Mono (y compris maquette 3D et image téléchargeable).
