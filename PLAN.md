@@ -178,7 +178,7 @@ Tout le calcul est du **code déterministe testé**. Claude ne calcule jamais : 
 6. **Méthode 3 : actif net comptable corrigé (ANCC)** — capitaux propres + plus-values latentes déclarées (immobilier, fonds de commerce) − actifs sans valeur (frais d'établissement, créances douteuses) ; donne directement une valeur des titres.
 7. **Décotes et primes** sur la valeur issue des multiples et du DCF : dépendance au dirigeant, concentration clients, récurrence du chiffre d'affaires, croissance, taille. Chaque facteur a une note (faible / moyen / fort) et un pourcentage **réglable**, accompagné d'une justification écrite. Les pourcentages par défaut seront sourcés ou laissés « À compléter ».
 8. **Passage VE → valeur des titres** = VE − dette nette ± (BFR réel − BFR normatif) + actifs hors exploitation (trésorerie excédentaire, immobilier non utilisé).
-9. **Synthèse** : fourchette par méthode, graphique « football field », valeur centrale = moyenne pondérée des méthodes (pondération réglable, égale par défaut), justification rédigée par Sonnet, **sensibilités** : multiple ± 1×, CMPC ± 1 point, croissance terminale ± 0,5 point.
+9. **Synthèse** : fourchette par méthode, graphique « football field ». **Valeur centrale = multiples (méthode principale) et DCF (recoupement), pondérés 60 / 40 par défaut et modifiables ; l'ANCC est présenté à part comme valeur plancher** (décision du 10/11/2026, remplace la moyenne à poids égaux). Justification rédigée par Sonnet, **sensibilités** : multiple ± 1×, CMPC ± 1 point, croissance terminale ± 0,5 point.
 
 ### 5.3 Cas limites couverts par les tests
 EBE négatif ou nul ; comptes absents ou confidentiels ; un seul exercice ; dette nette négative (trésorerie nette) ; CMPC ≤ g ; capitaux propres négatifs ; secteur sans multiple ; exercices non consécutifs.
@@ -274,3 +274,37 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
   Non publiés : `marque.html`, `img/source/`, `CREDITS.md` (`public/.assetsignore`). Secrets ANTHROPIC/BREVO non
   requis à ce stade (étapes 3 et suivantes).
 - **10/11/2026, typographie** : Geist partout (titres 500, interlettrage serré, mots clés en italique ; chiffres en 300), Geist Mono pour les étiquettes ; remplace Instrument Serif, Inter Tight et IBM Plex Mono (y compris maquette 3D et image téléchargeable).
+
+## 11. Parcours après le SIREN et livrables (décisions du 10/11/2026)
+
+**Parcours validé**
+1. Landing : maquette, frise, fourchette express (fait).
+2. Ouverture du dossier : e-mail + lien magique **avant toute saisie de chiffres privés** ; dossier pré-rempli
+   (identité, exercices INPI, fourchette express). Tableau de bord en 4 blocs avec avancement : Vos chiffres,
+   Votre valorisation, Vos documents, Votre préparation.
+3. Vos chiffres : **import de la liasse PDF en chemin principal** (extraction Claude, validation ligne à ligne),
+   saisie guidée en repli ; 3 exercices ; éléments de bilan pour dette nette et BFR obligatoires.
+4. Votre entreprise : **questionnaire court (≈ 15 questions, 5 écrans, sauvegarde auto)** : dirigeant et
+   rémunération, retraitements, clients (concentration, récurrence), perspectives 3-5 ans, opération.
+5. Votre valorisation : pont EBE comptable → normatif, 3 méthodes, football field, décotes/primes par curseurs,
+   pont VE → titres, sensibilités, hypothèses Passation modifiables.
+6. Vos documents : **datapack automatique** ; **teaser** après validation de l'anonymisation ; **info memo**
+   débloqué quand le questionnaire est suffisamment rempli, généré **section par section à la demande**.
+7. Votre préparation : checklist des pièces, ressources liées, chat expert.
+
+Hors première version : partage avec l'expert-comptable (le datapack exporté suffit). **Gratuit pour l'instant** ;
+modèle économique défini plus tard par l'utilisateur (business plan en cours).
+
+**Enrichissement par le site internet de l'entreprise (étape 6, pour l'info memo)**
+- Adresse du site **saisie ou confirmée par le dirigeant** (pas de recherche automatique : risque d'homonyme).
+- Lecture côté Worker : accueil + pages clés du même domaine, 8 pages au plus, `robots.txt` respecté ;
+  ni LinkedIn ni avis en ligne.
+- Extraction par Claude (clé `ANTHROPIC_API_KEY` de l'utilisateur) en faits structurés avec la page source ;
+  **validation fait par fait** par le dirigeant avant tout usage.
+- **Logo** : candidats détectés (icône déclarée, en-tête, image de partage), choix du dirigeant, dépôt manuel en
+  secours ; stocké dans R2, supprimé avec le dossier.
+- **Photos du site** utilisables dans le memo **si le dirigeant atteste qu'elles appartiennent à l'entreprise**.
+- **Présentation 100 % Passation** : aucune couleur de marque client ; seul le logo apparaît (couverture et
+  en-tête du memo, couverture du datapack), avec la mention « Strictement confidentiel ».
+- **Teaser** : jamais de logo, de nom, ni de terme issu du site (marques, produits) ; le contrôle
+  d'anonymisation inclut ces termes.
