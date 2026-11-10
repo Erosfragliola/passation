@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   etages, fenetresAllumees, arbres, archetype, croissance3ans, echafaudage, paliersCA,
-  redigerFrise, casseVille, aVille, parametresMaquette, libelleEffectif,
+  redigerFrise, casseVille, aVille, parametresMaquette, libelleEffectif, personnages,
 } from "../public/js/regles.js";
 
 describe("étages (CA)", () => {
@@ -157,5 +157,25 @@ describe("paramètres de maquette : cas limites", () => {
   it("entreprise créée cette année", () => {
     const p = parametresMaquette({ section_naf: "M", date_creation: "2026-01-15", ca: [], ebe: [] });
     expect(p.depuis).toBe(2026);
+  });
+});
+
+describe("personnages de maquette (effectif)", () => {
+  // Règle : 1 personnage par tranche entamée de 10 salariés, sur la borne basse de la tranche INSEE ;
+  // au moins 1 (le dirigeant), au plus 8 (4 sur mobile).
+  it.each([
+    ["NN", 1], ["00", 1], ["01", 1], ["02", 1], ["03", 1], // 0 à 9 salariés → 1
+    ["11", 1],  // 10 à 19 : borne basse 10 → 10/10 = 1
+    ["12", 2],  // 20 à 49 : 20/10 = 2
+    ["21", 5],  // 50 à 99 : 50/10 = 5
+    ["22", 8],  // 100 à 199 : 10, plafonné à 8
+    ["53", 8],
+  ])("tranche %s → %i", (code, n) => expect(personnages(code)).toBe(n));
+  it("tranche inconnue → 1 (le dirigeant)", () => expect(personnages(undefined)).toBe(1));
+  it("plafond mobile", () => expect(personnages("21", 4)).toBe(4));
+  it("parametresMaquette transmet le nombre et le libellé", () => {
+    const p = parametresMaquette({ section_naf: "C", tranche_effectif: { code: "12" }, ca: [], ebe: [] });
+    expect(p.personnages).toBe(2);
+    expect(p.effectif).toBe("de 20 à 49 personnes");
   });
 });

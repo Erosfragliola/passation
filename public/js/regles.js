@@ -111,6 +111,8 @@ export function parametresMaquette(d, totalFenetres = 24) {
     echafaudage: echafaudage(d.ca),
     depuis: d.date_creation ? Number(d.date_creation.slice(0, 4)) : null,
     comptesManquants: ca == null,
+    personnages: personnages(d.tranche_effectif?.code),
+    effectif: libelleEffectif(d.tranche_effectif?.code),
   };
 }
 
@@ -159,6 +161,12 @@ export function paliersCA(serie) {
     }
   }
   return ev;
+}
+
+/** Personnages de maquette : 1 par tranche entamée de 10 salariés (borne basse INSEE), entre 1 et max. */
+export function personnages(code, max = 8) {
+  const t = TRANCHES[code];
+  return clamp(Math.ceil((t?.min ?? 0) / 10), 1, max);
 }
 
 export function libelleEffectif(code) {

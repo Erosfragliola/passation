@@ -22,14 +22,20 @@ const etat = { scene: null, sceneChargee: null, donnees: null, suggestion: null,
 // ------------------------------------------------------------------ Chargement de la scène 3D
 function chargerScene() {
   if (!etat.sceneChargee) {
-    etat.sceneChargee = import("/js/scene.js")
-      .then(({ creerScene }) => { etat.scene = creerScene(conteneur3d); if (!etat.scene) sansWebGL(); return etat.scene; })
+    etat.sceneChargee = import("/js/cloche/scene.js")
+      .then(({ creerScene }) => creerScene(conteneur3d))
+      .then((scene) => { etat.scene = scene; if (!scene) sansWebGL(); return scene; })
       .catch(() => { sansWebGL(); return null; });
   }
   return etat.sceneChargee;
 }
 if (conteneur3d && "IntersectionObserver" in window) {
-  const obs = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) { obs.disconnect(); chargerScene(); } }, { rootMargin: "400px 0px" });
+  // Chargement quand la section devient visible (au quart), pendant un moment calme : la page d'accueil reste légère.
+  const obs = new IntersectionObserver((e) => {
+    if (!e.some((x) => x.isIntersecting)) return;
+    obs.disconnect();
+    (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(() => chargerScene(), { timeout: 1500 });
+  }, { threshold: 0.25 });
   obs.observe(conteneur3d);
 }
 function sansWebGL() {
@@ -168,12 +174,14 @@ function afficher(d, scene, { depuisEtages = false } = {}) {
   const blocEstimation = $("#estimation");
   blocEstimation.hidden = true;
 
+  // La frise s'écrit pendant la construction ; la fourchette apparaît à la fin de la chorégraphie
+  const [c0, c1] = scene?.temps?.construction ?? [2, 5];
   const evenements = animer && !depuisEtages
-    ? items.map((li, i) => ({ t: 1.2 + (i / Math.max(1, items.length - 1)) * 3.3, f: () => li.classList.add("visible") }))
+    ? items.map((li, i) => ({ t: c0 + (i / Math.max(1, items.length - 1)) * (c1 - c0), f: () => li.classList.add("visible") }))
     : [];
   const montrerEstimation = () => afficherEstimation(d.estimation, !!animer);
   if (scene) {
-    scene.construire({ ...p }, { evenements: [...evenements, { t: 5.5, f: montrerEstimation }], depuisEtages });
+    scene.construire({ ...p, nom: d.nom }, { evenements: [...evenements, { t: scene.temps?.valeur ?? 8, f: montrerEstimation }], depuisEtages });
   } else {
     dessinerSansWebGL(p);
     montrerEstimation();
@@ -206,11 +214,14 @@ function afficherEstimation(est, animer) {
   if (est.avertissement) note.textContent += " " + est.avertissement;
   const fin = [est.bas, est.haut];
   if (!animer) { valeur.textContent = `${euros(fin[0])} – ${euros(fin[1])}`; return; }
+  // Défilement « split-flap » : les chiffres tournent puis se fixent de gauche à droite
+  const texte = `${euros(fin[0])} – ${euros(fin[1])}`;
+  const signes = [...texte];
   const t0 = performance.now();
   const pas = (t) => {
-    const p = Math.min(1, (t - t0) / 600);
-    const e = 1 - Math.pow(1 - p, 3);
-    valeur.textContent = `${euros(fin[0] * e)} – ${euros(fin[1] * e)}`;
+    const p = (t - t0) / 950;
+    valeur.textContent = p >= 1 ? texte : signes.map((ch, i) => (/\d/.test(ch) && p < 0.25 + (i / signes.length) * 0.75
+      ? String(Math.floor(Math.random() * 10)) : ch)).join("");
     if (p < 1) requestAnimationFrame(pas);
   };
   requestAnimationFrame(pas);
@@ -276,7 +287,7 @@ function dessinerSansWebGL(p) {
   s += `<circle cx="${x0 + l / 2}" cy="${sol - 8}" r="6" fill="#A8653A"/></svg>`;
   conteneur3d.querySelector(".facade-svg")?.remove();
   const div = document.createElement("div");
-  div.className = "facade-svg";
+  div.className = "facade-svg cadre-dore";
   div.innerHTML = s; // contenu entièrement généré ici (nombres), sans donnée externe
   conteneur3d.prepend(div);
 }
