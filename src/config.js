@@ -14,9 +14,12 @@ export const EXPRESS_RATE_LIMIT = { requetesParHeureParIP: 10 };
 export const MAQUETTE_RATE_LIMIT = { requetesParHeureParIP: 20 };
 export const SEARCH_RATE_LIMIT = { requetesParHeureParIP: 120 };
 
+/** Connexion par code : essais faux tolérés avant blocage du code. */
+export const CODE_ESSAIS_MAX = 5;
+
 /** Durées (en secondes). */
 export const DURATIONS = {
-  magicLink: 15 * 60,
+  codeConnexion: 10 * 60,
   session: 30 * 24 * 3600,
   signedUrl: 10 * 60,
   apiCache: 24 * 3600,

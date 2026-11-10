@@ -130,7 +130,9 @@ async function lancer(siren) {
   }
   etat.donnees = d;
   // « Affiner ma valorisation » ouvre le dossier de cette entreprise
-  document.querySelector('#maquette-resultat a[href^="/connexion"]').href = `/connexion?siren=${siren}`;
+  const affiner = document.querySelector("#maquette-resultat a[data-connexion]");
+  affiner.href = `/connexion?siren=${siren}`;
+  affiner.dataset.siren = siren;
   afficher(d, scene);
 }
 

@@ -19,20 +19,24 @@ function appel(chemin, { methode = "GET", corps, cookie, origine = BASE } = {}) 
   return worker.fetch(new Request(BASE + chemin, { method: methode, headers, body: corps ? JSON.stringify(corps) : undefined, redirect: "manual" }), env);
 }
 
-/** Demande un lien et récupère, dans le journal de développement, l'URL envoyée. */
-async function demanderLien(email, siren = SIREN) {
+/** Demande un code et le récupère dans le journal de développement (mode local sans Brevo). */
+async function demanderCode(email) {
   const espion = vi.spyOn(console, "log").mockImplementation(() => {});
-  const r = await appel("/api/auth/request", { methode: "POST", corps: { email, siren } });
+  const r = await appel("/api/auth/request", { methode: "POST", corps: { email } });
   const texte = espion.mock.calls.flat().join("\n");
   espion.mockRestore();
-  const lien = texte.match(/http:\/\/127\.0\.0\.1:8787\/api\/auth\/verify\?[^\s]+/)?.[0];
-  return { r, lien };
+  return { r, code: texte.match(/Code de connexion pour \S+ : (\d{6})/)?.[1] };
 }
+const verifier = (email, code, siren = SIREN) => appel("/api/auth/code", { methode: "POST", corps: { email, code, siren } });
+/** Code faux garanti différent du vrai. */
+const autreCode = (code) => String((Number(code) + 1) % 1e6).padStart(6, "0");
+
 async function seConnecter(email) {
-  const { lien } = await demanderLien(email);
-  const r = await appel(new URL(lien).pathname + new URL(lien).search);
+  const { code } = await demanderCode(email);
+  const r = await verifier(email, code);
+  const d = await r.json();
   const cookie = r.headers.get("set-cookie").split(";")[0];
-  return { r, cookie };
+  return { r, d, cookie, id: new URL(d.destination, BASE).searchParams.get("dossier") };
 }
 
 beforeEach(async () => {
@@ -44,50 +48,87 @@ beforeEach(async () => {
   await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(`maquette:v1:${SIREN}`, JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
 });
 
-describe("lien magique", () => {
+describe("connexion par code", () => {
   it("refuse une requête venant d'un autre site (CSRF)", async () => {
     expect((await appel("/api/auth/request", { methode: "POST", corps: { email: "a@b.fr" }, origine: "https://pirate.example" })).status).toBe(403);
     expect((await appel("/api/auth/request", { methode: "POST", corps: { email: "a@b.fr" }, origine: null })).status).toBe(403);
+    expect((await appel("/api/auth/code", { methode: "POST", corps: { email: "a@b.fr", code: "123456" }, origine: "https://pirate.example" })).status).toBe(403);
   });
   it("refuse une adresse invalide", async () => {
     expect((await appel("/api/auth/request", { methode: "POST", corps: { email: "pas-une-adresse" } })).status).toBe(400);
   });
-  it("stocke seulement l'empreinte du jeton, jamais le jeton", async () => {
-    const { r, lien } = await demanderLien("Dirigeant@Exemple.fr");
+  it("envoie un code à 6 chiffres et ne stocke que son empreinte", async () => {
+    const { r, code } = await demanderCode("Dirigeant@Exemple.fr");
     expect(r.status).toBe(200);
-    const jeton = new URL(lien).searchParams.get("token");
-    const ligne = env.DB.sqlite.prepare("SELECT token_hash, email FROM magic_tokens").get();
+    expect(code).toMatch(/^\d{6}$/);
+    const ligne = env.DB.sqlite.prepare("SELECT code_hash, email FROM login_codes").get();
     expect(ligne.email).toBe("dirigeant@exemple.fr");
-    expect(ligne.token_hash).toMatch(/^[0-9a-f]{64}$/);
-    expect(ligne.token_hash).not.toContain(jeton);
+    expect(ligne.code_hash).toMatch(/^[0-9a-f]{64}$/);
+    expect(JSON.stringify(env.DB.sqlite.prepare("SELECT * FROM login_codes").all())).not.toContain(`"${code}"`);
   });
-  it("ouvre une session avec un cookie HttpOnly, Secure, SameSite=Lax et crée le dossier du SIREN", async () => {
-    const { r } = await seConnecter("dirigeant@exemple.fr");
-    expect(r.status).toBe(302);
+  it("le bon code ouvre une session (cookie HttpOnly, Secure, SameSite=Lax) et crée le dossier du SIREN", async () => {
+    const { r, d } = await seConnecter("dirigeant@exemple.fr");
+    expect(r.status).toBe(200);
     const c = r.headers.get("set-cookie");
     expect(c).toMatch(/HttpOnly/); expect(c).toMatch(/Secure/); expect(c).toMatch(/SameSite=Lax/);
-    expect(r.headers.get("location")).toMatch(/^\/espace\/\?dossier=[0-9a-f-]{36}$/);
+    expect(d.destination).toMatch(/^\/espace\/\?dossier=[0-9a-f-]{36}$/);
   });
-  it("le lien ne sert qu'une fois", async () => {
-    const { lien } = await demanderLien("x@exemple.fr");
-    const chemin = new URL(lien).pathname + new URL(lien).search;
-    expect((await appel(chemin)).status).toBe(302);
-    const second = await appel(chemin);
-    expect(second.headers.get("location")).toContain("/connexion?erreur=lien_expire");
+  it("un code faux ne connecte pas et indique les essais restants", async () => {
+    const { code } = await demanderCode("x@exemple.fr");
+    const r = await verifier("x@exemple.fr", autreCode(code));
+    expect(r.status).toBe(400);
+    expect(r.headers.get("set-cookie")).toBeNull();
+    expect(await r.json()).toMatchObject({ erreur: "code_incorrect", restants: 4 });
+  });
+  it("un code ne sert pas pour une autre adresse", async () => {
+    const { code } = await demanderCode("x@exemple.fr");
+    await demanderCode("y@exemple.fr");
+    expect((await verifier("y@exemple.fr", code)).headers.get("set-cookie")).toBeNull();
+  });
+  it("après 5 essais faux, le code est bloqué, même le bon", async () => {
+    const { code } = await demanderCode("x@exemple.fr");
+    for (let i = 0; i < 4; i++) expect((await (await verifier("x@exemple.fr", autreCode(code))).json()).erreur).toBe("code_incorrect");
+    expect((await (await verifier("x@exemple.fr", autreCode(code))).json()).erreur).toBe("code_bloque");
+    const r = await verifier("x@exemple.fr", code);
+    expect(r.status).toBe(400);
+    expect(r.headers.get("set-cookie")).toBeNull();
+  });
+  it("le code ne sert qu'une fois", async () => {
+    const { code } = await demanderCode("x@exemple.fr");
+    expect((await verifier("x@exemple.fr", code)).status).toBe(200);
+    const second = await verifier("x@exemple.fr", code);
+    expect((await second.json()).erreur).toBe("code_expire");
     expect(second.headers.get("set-cookie")).toBeNull();
   });
-  it("le lien expire après 15 minutes", async () => {
-    const { lien } = await demanderLien("y@exemple.fr");
-    env.DB.sqlite.exec("UPDATE magic_tokens SET expires_at = 1");
-    const r = await appel(new URL(lien).pathname + new URL(lien).search);
-    expect(r.headers.get("location")).toContain("erreur=lien_expire");
+  it("un nouveau code remplace l'ancien", async () => {
+    const ancien = (await demanderCode("x@exemple.fr")).code;
+    const nouveau = (await demanderCode("x@exemple.fr")).code;
+    if (ancien !== nouveau) expect((await verifier("x@exemple.fr", ancien)).status).toBe(400);
+    expect((await verifier("x@exemple.fr", nouveau)).status).toBe(200);
   });
-  it("en production sans service d'e-mail configuré, aucun lien n'est affiché ni envoyé", async () => {
+  it("le code expire après 10 minutes", async () => {
+    const { code } = await demanderCode("y@exemple.fr");
+    env.DB.sqlite.exec("UPDATE login_codes SET expires_at = 1");
+    expect((await (await verifier("y@exemple.fr", code)).json()).erreur).toBe("code_expire");
+  });
+  it("refuse un code mal formé", async () => {
+    expect((await verifier("y@exemple.fr", "12ab56")).status).toBe(400);
+    expect((await verifier("y@exemple.fr", "12345")).status).toBe(400);
+  });
+  it("le code dépend du secret serveur : une copie de la base ne permet pas de le retrouver par une empreinte simple", async () => {
+    env.SESSION_SECRET = "secret-de-test";
+    const { code } = await demanderCode("z@exemple.fr");
+    const { id, code_hash } = env.DB.sqlite.prepare("SELECT id, code_hash FROM login_codes").get();
+    const { empreinte } = await import("../src/lib/auth.js");
+    expect(code_hash).not.toBe(await empreinte(`|${id}|${code}`));
+    expect((await verifier("z@exemple.fr", code)).status).toBe(200);
+  });
+  it("en production sans service d'e-mail configuré, aucun code n'est affiché ni envoyé", async () => {
     const espion = vi.spyOn(console, "log").mockImplementation(() => {});
     const r = await worker.fetch(new Request("https://passation.example/api/auth/request", { method: "POST",
       headers: { origin: "https://passation.example", "content-type": "application/json" }, body: JSON.stringify({ email: "z@exemple.fr" }) }), env);
     expect(r.status).toBe(503);
-    expect(espion.mock.calls.flat().join(" ")).not.toContain("verify?token");
+    expect(espion.mock.calls.flat().join(" ")).not.toMatch(/\d{6}/);
     espion.mockRestore();
   });
 });
@@ -108,7 +149,7 @@ describe("routes privées", () => {
 
   it("un dirigeant ne peut ni lire, ni modifier, ni supprimer le dossier d'un autre", async () => {
     const a = await seConnecter("a@exemple.fr");
-    const idA = new URL(a.r.headers.get("location"), BASE).searchParams.get("dossier");
+    const idA = a.id;
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${idA}`, { cookie: b.cookie })).status).toBe(404);
     expect((await appel(`/api/dossiers/${idA}/checklist/kbis`, { methode: "PUT", corps: { done: true }, cookie: b.cookie })).status).toBe(404);
@@ -117,8 +158,7 @@ describe("routes privées", () => {
   });
 
   it("la checklist fait progresser l'avancement", async () => {
-    const { r, cookie } = await seConnecter("a@exemple.fr");
-    const id = new URL(r.headers.get("location"), BASE).searchParams.get("dossier");
+    const { id, cookie } = await seConnecter("a@exemple.fr");
     const avant = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
     expect(avant.avancement.preparation).toBe(0);
     expect(avant.avancement.valorisation).toBe(25); // estimation express disponible
@@ -129,8 +169,7 @@ describe("routes privées", () => {
   });
 
   it("supprimer le dossier efface les données et les fichiers", async () => {
-    const { r, cookie } = await seConnecter("a@exemple.fr");
-    const id = new URL(r.headers.get("location"), BASE).searchParams.get("dossier");
+    const { id, cookie } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/checklist/kbis`, { methode: "PUT", corps: { done: true }, cookie });
     await env.FILES.put(`dossiers/${id}/liasse.pdf`, "x");
     await env.FILES.put(`dossiers/autre/liasse.pdf`, "y");

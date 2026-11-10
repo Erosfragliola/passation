@@ -1,5 +1,5 @@
-// Authentification : jetons de lien magique, sessions, cookies, contrôle d'origine.
-// Les jetons et identifiants de session ne sont jamais stockés en clair : seule leur empreinte SHA-256 l'est.
+// Authentification : codes de connexion, sessions, cookies, contrôle d'origine.
+// Les codes et identifiants de session ne sont jamais stockés en clair : seule leur empreinte SHA-256 l'est.
 import { DURATIONS } from "../config.js";
 import { json } from "../http.js";
 
@@ -17,6 +17,16 @@ export async function empreinte(texte) {
 }
 
 export const maintenant = () => Math.floor(Date.now() / 1000);
+
+/** Code à 6 chiffres, tiré uniformément (rejet des valeurs qui biaiseraient le modulo). */
+export function codeAleatoire() {
+  const b = new Uint32Array(1);
+  do crypto.getRandomValues(b); while (b[0] >= 4_294_000_000);
+  return String(b[0] % 1_000_000).padStart(6, "0");
+}
+
+/** Empreinte d'un code : sel propre à la ligne + secret serveur, pour qu'une copie de la base ne suffise pas. */
+export const empreinteCode = (env, sel, code) => empreinte(`${env.SESSION_SECRET || ""}|${sel}|${code}`);
 
 export function emailValide(e) {
   return typeof e === "string" && e.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);

@@ -2,7 +2,7 @@ import { json } from "./http.js";
 import { routeMaquette } from "./routes/maquette.js";
 import { routeRecherche } from "./routes/company.js";
 import { routeEstimation } from "./routes/estimation.js";
-import { routeDemandeLien, routeVerification, routeDeconnexion, routeMoi } from "./routes/auth.js";
+import { routeDemandeCode, routeVerificationCode, routeDeconnexion, routeMoi } from "./routes/auth.js";
 import { routeDossiers } from "./routes/dossiers.js";
 import { origineAutorisee } from "./lib/auth.js";
 
@@ -27,12 +27,12 @@ export default {
       const r = p.match(/^\/api\/maquette\/([^/]+)$/);
       if (r) return routeMaquette(request, env, decodeURIComponent(r[1]));
       if (p === "/api/company/search") return routeRecherche(request, env);
-      if (p === "/api/auth/verify") return routeVerification(request, env);
       if (p === "/api/me") return routeMoi(request, env);
     }
     if (m === "POST") {
       if (p === "/api/estimation") return routeEstimation(request, env);
-      if (p === "/api/auth/request") return routeDemandeLien(request, env);
+      if (p === "/api/auth/request") return routeDemandeCode(request, env);
+      if (p === "/api/auth/code") return routeVerificationCode(request, env);
       if (p === "/api/auth/logout") return routeDeconnexion(request, env);
     }
     if (p === "/api/dossiers" || p.startsWith("/api/dossiers/")) {

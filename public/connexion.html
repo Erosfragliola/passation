@@ -20,15 +20,9 @@
   <div class="conteneur conteneur-etroit">
     <p class="etiquette">Espace dirigeant</p>
     <h1>Ouvrez votre <em>dossier</em>.</h1>
-    <p class="chapo">Indiquez votre adresse e-mail : nous vous envoyons un lien de connexion, valable 15 minutes. Pas de mot de passe.</p>
-    <p class="petit" id="rappel-siren" hidden></p>
-    <form id="form-connexion" class="form-carte" novalidate>
-      <label for="email">Adresse e-mail professionnelle</label>
-      <input id="email" name="email" type="email" autocomplete="email" required placeholder="prenom@entreprise.fr">
-      <button class="btn btn-noir" type="submit">Recevoir mon lien <span class="fleche" aria-hidden="true">→</span></button>
-      <p class="petit">Vos chiffres restent confidentiels. Vous pourrez supprimer votre dossier à tout moment.</p>
-    </form>
-    <div id="connexion-message" class="message-carte" role="status" hidden></div>
+    <p class="chapo">Indiquez votre adresse e-mail : nous vous envoyons un code à 6 chiffres, valable 10 minutes. Pas de mot de passe.</p>
+    <div id="zone-connexion"><p class="petit">Chargement…</p></div>
+    <noscript><p class="message-carte">La connexion nécessite JavaScript.</p></noscript>
   </div>
 </main>
 <footer class="pied">

@@ -1,12 +1,16 @@
-// Envoi du lien de connexion. Brevo en production ; en local (127.0.0.1 / localhost) sans clé Brevo,
-// le lien est affiché dans le terminal de développement. En production sans clé : refus explicite.
+// Envoi du code de connexion. Brevo en production ; en local (127.0.0.1 / localhost) sans clé Brevo,
+// le code est affiché dans le terminal de développement. En production sans clé : refus explicite.
 const LOCAL = new Set(["127.0.0.1", "localhost"]);
 
-export async function envoyerLienConnexion(env, email, lien, { fetch: f = fetch } = {}) {
-  const hote = new URL(lien).hostname;
+/**
+ * @param {string} code  six chiffres
+ * @param {string} urlSite  adresse de la requête (sert à reconnaître le mode local)
+ */
+export async function envoyerCodeConnexion(env, email, code, urlSite, { fetch: f = fetch } = {}) {
+  const hote = new URL(urlSite).hostname;
   if (!env.BREVO_API_KEY) {
     if (LOCAL.has(hote)) {
-      console.log(`\n[Passation, développement] Lien de connexion pour ${email} :\n${lien}\n`);
+      console.log(`\n[Passation, développement] Code de connexion pour ${email} : ${code}\n`);
       return { envoye: true, mode: "console" };
     }
     return { envoye: false, raison: "envoi_non_configure" };
@@ -17,9 +21,12 @@ export async function envoyerLienConnexion(env, email, lien, { fetch: f = fetch 
     body: JSON.stringify({
       sender: { email: env.SENDER_EMAIL, name: env.SENDER_NAME || "Passation" },
       to: [{ email }],
-      subject: "Votre lien de connexion à Passation",
-      htmlContent: `<p>Bonjour,</p><p>Voici votre lien pour ouvrir votre dossier Passation. Il est valable 15 minutes et ne fonctionne qu'une fois.</p><p><a href="${lien}">Ouvrir mon dossier</a></p><p>Si vous n'avez rien demandé, ignorez ce message.</p>`,
-      textContent: `Votre lien de connexion à Passation (valable 15 minutes, usage unique) : ${lien}`,
+      subject: `${code} : votre code de connexion Passation`,
+      htmlContent: `<p>Bonjour,</p><p>Voici votre code pour ouvrir votre dossier Passation :</p>`
+        + `<p style="font-size:30px;font-weight:600;letter-spacing:6px;font-family:monospace">${code}</p>`
+        + `<p>Il est valable 10 minutes et ne sert qu'une fois. Tapez-le dans la fenêtre de connexion restée ouverte.</p>`
+        + `<p>Si vous n'avez rien demandé, ignorez ce message : personne ne peut se connecter sans ce code.</p>`,
+      textContent: `Votre code de connexion Passation : ${code} (valable 10 minutes, usage unique). Si vous n'avez rien demandé, ignorez ce message.`,
     }),
   });
   return res.ok ? { envoye: true, mode: "brevo" } : { envoye: false, raison: `brevo_${res.status}` };

@@ -24,7 +24,7 @@
       <li><a href="#faq">Questions</a></li>
     </ul>
     <div class="nav-actions">
-      <a class="btn btn-noir btn-espace" href="/connexion">Espace dirigeant</a>
+      <a class="btn btn-noir btn-espace" href="/connexion" data-connexion>Espace dirigeant</a>
       <button class="nav-bouton" type="button" aria-expanded="false" aria-controls="nav-mobile" aria-label="Ouvrir le menu">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 5h14M2 9h14M2 13h14"/></svg>
       </button>
@@ -35,7 +35,7 @@
     <a href="#outils">La boîte à outils</a>
     <a href="#confidentialite">Confidentialité</a>
     <a href="#faq">Questions</a>
-    <a href="/connexion">Espace dirigeant</a>
+    <a href="/connexion" data-connexion>Espace dirigeant</a>
   </div>
 </header>
 
@@ -73,7 +73,7 @@
         <div><strong>3</strong><span>méthodes de valorisation croisées</span></div>
         <div><strong>9</strong><span>onglets de datapack, formules vivantes</span></div>
         <div><strong>6</strong><span>outils réunis dans un seul espace</span></div>
-        <div><strong><em>0</em></strong><span>mot de passe : connexion par lien sécurisé</span></div>
+        <div><strong><em>0</em></strong><span>mot de passe : un code à usage unique par e-mail</span></div>
       </div>
     </div>
   </section>
@@ -111,7 +111,7 @@
             <p class="estimation-mention">Estimation indicative, non contractuelle.</p>
           </div>
           <div class="maquette-actions">
-            <a class="btn btn-vert" href="/connexion">Affiner ma valorisation <span class="fleche" aria-hidden="true">→</span></a>
+            <a class="btn btn-vert" href="/connexion" data-connexion>Affiner ma valorisation <span class="fleche" aria-hidden="true">→</span></a>
             <button class="btn btn-contour-nuit" type="button" id="btn-telecharger">Télécharger ma maquette</button>
             <button class="lien-nuit" type="button" id="btn-autre">Rechercher une autre entreprise</button>
           </div>
@@ -242,7 +242,7 @@
         <div class="garanties">
           <div class="garantie">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-            <h3>Accès réservé</h3><p>Connexion par lien à usage unique. Vous seul voyez votre dossier.</p>
+            <h3>Accès réservé</h3><p>Connexion par code à usage unique, envoyé par e-mail. Vous seul voyez votre dossier.</p>
           </div>
           <div class="garantie">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
@@ -325,5 +325,6 @@
 
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/votre-maquette.js"></script>
+<script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>

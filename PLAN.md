@@ -40,7 +40,7 @@ Cloudflare Worker (src/)  ── run_worker_first = ["/api/*"], le reste est ser
    ├── D1  « passation »            : utilisateurs, sessions, dossiers, chiffres, valorisations, chat, cache API, limites
    ├── R2  « passation-fichiers »   : liasses importées, .xlsx / .docx générés
    ├── API Claude                   : extraction PDF, commentaires, rédaction, chat (streaming)
-   ├── Brevo                        : e-mails de lien magique et notifications
+   ├── Brevo                        : e-mails du code de connexion et notifications
    └── API publiques (sans clé)     : recherche-entreprises, ratios INPI, BODACC
 ```
 
@@ -83,7 +83,7 @@ Dépendances prévues : `wrangler`, `vitest` (dév.) ; `exceljs` ou `fflate`, `d
 
 ```sql
 users            (id TEXT PK, email TEXT UNIQUE, created_at, last_login_at)
-magic_tokens     (token_hash TEXT PK, email, expires_at, used_at)              -- 15 min, usage unique, hash SHA-256 seulement
+login_codes      (id PK = sel, email, code_hash, created_at, expires_at, attempts, used_at) -- code 6 chiffres, 10 min, 5 essais, empreinte salée + secret
 sessions         (id_hash TEXT PK, user_id FK, expires_at, created_at)          -- cookie HttpOnly Secure SameSite=Lax
 dossiers         (id TEXT PK, user_id FK, siren, company_json, code_name,
                   status, created_at, updated_at)
@@ -132,8 +132,8 @@ Suppression du dossier (un clic) : effacement en cascade de toutes les lignes du
 | `GET /api/company/search?q=` | autocomplétion (cache 24 h) | public |
 | `GET /api/company/:siren` | fiche + exercices INPI + annonces BODACC normalisés | public |
 | `POST /api/express` | valorisation express + commentaire Haiku | public, limité en débit |
-| `POST /api/auth/request` | envoie le lien magique (réponse identique que l'e-mail existe ou non) | public, limité |
-| `GET /api/auth/verify?token=` | consomme le jeton, crée la session, redirige vers `/espace/` | public |
+| `POST /api/auth/request` | envoie un code à 6 chiffres (réponse identique que l'e-mail existe ou non) | public, limité |
+| `POST /api/auth/code` | vérifie le code (5 essais), crée la session et le dossier du SIREN, renvoie la destination | public, limité |
 | `POST /api/auth/logout`, `GET /api/me` | session | privé |
 | `GET/POST /api/dossiers`, `GET/DELETE /api/dossiers/:id` | dossier (suppression complète) | privé + propriétaire |
 | `GET/PUT /api/dossiers/:id/answers/:step` | questionnaire, sauvegarde auto | privé + propriétaire |
@@ -219,7 +219,7 @@ export const EXPRESS_RATE_LIMIT = { parHeureParIP: 10 };                       /
 |---|---|---|---|
 | 1 | Squelette et landing | Git + dépôt privé GitHub, wrangler.toml, migration 0001, landing statique complète (DA, SVG originaux, FAQ, emplacements « À remplir »), pages légales en brouillon | `npm test` (test fumée), `wrangler dev`, contrôle visuel mobile et bureau |
 | 2 | Recherche et valorisation express | autocomplétion, normalisation des 3 API, cache 24 h, calcul express, commentaire Haiku, limite de débit, page résultat | tests calcul + normalisation (sur réponses réelles enregistrées), essai sur 434436622 |
-| 3 | Comptes et espace dirigeant | lien magique Brevo, sessions, contrôle de propriété, tableau de bord, checklist, suppression du dossier | tests 401 / accès à un dossier d'autrui, parcours complet |
+| 3 | Comptes et espace dirigeant | code de connexion Brevo (fenêtre sur la landing), sessions, contrôle de propriété, tableau de bord, checklist, suppression du dossier | tests 401 / accès à un dossier d'autrui, parcours complet |
 | 4 | Valorisation approfondie | questionnaire en étapes, import PDF + validation, retraitements, 3 méthodes, décotes, VE → titres, football field, sensibilités | tests des 3 méthodes, du passage VE → titres et des cas limites, avec valeurs attendues calculées à la main |
 | 5 | Datapack Excel | 9 onglets, formules vivantes, mise en forme | ouverture dans Excel/Numbers, recalcul identique au moteur |
 | 6 | Teaser et info memo | génération, relecture, édition, régénération par section, .docx + vue imprimable, R2, liens signés | contrôle d'anonymisation automatisé, liens expirés refusés |
@@ -279,7 +279,7 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
 
 **Parcours validé**
 1. Landing : maquette, frise, fourchette express (fait).
-2. Ouverture du dossier : e-mail + lien magique **avant toute saisie de chiffres privés** ; dossier pré-rempli
+2. Ouverture du dossier : e-mail + code à 6 chiffres, dans une fenêtre sans quitter la page, **avant toute saisie de chiffres privés** ; dossier pré-rempli
    (identité, exercices INPI, fourchette express). Tableau de bord en 4 blocs avec avancement : Vos chiffres,
    Votre valorisation, Vos documents, Votre préparation.
 3. Vos chiffres : **import de la liasse PDF en chemin principal** (extraction Claude, validation ligne à ligne),
@@ -319,3 +319,10 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
 - **10/11/2026, étape 3 publiée** : secrets BREVO_API_KEY, SENDER_EMAIL, SENDER_NAME saisis par l'utilisateur.
   Contrôles en production : routes privées 401 sans connexion, requête d'un autre site 403, adresse invalide 400,
   lien invalide → retour à /connexion. Premier envoi réel d'e-mail : test par l'utilisateur.
+- **10/11/2026, connexion par code (publiée)** : le lien magique est remplacé par un code à 6 chiffres saisi dans une
+  fenêtre par-dessus la landing (ou sur `/connexion`) : on ne quitte plus la page. Code tiré uniformément, 10 min,
+  usage unique, 5 essais comptés de façon atomique, un seul code actif par adresse, empreinte salée + `SESSION_SECRET`,
+  limites 10 demandes/h par IP, 5/h par adresse, 30 essais/h par IP. Migration `0002` (supprime `magic_tokens`).
+  Tests 107/107 ; parcours navigateur vérifié en local (1440 px et 390 px) ; contrôles en production (400, 403, 401).
+  Parcours suivant validé par le dirigeant : ① entreprise → ② liasse PDF lue par Claude + validation ligne par ligne
+  (3 ans max, 10 Mo, plafond de coût) → ③ questionnaire → ④ retraitements → ⑤ valorisation → ⑥ livrables.
