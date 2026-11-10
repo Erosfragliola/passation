@@ -761,3 +761,72 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 .dp-split-carte .dp-kpis-ligne { grid-template-columns: 1fr 1fr; }
 .dp-pied .dp-logo-passation { font-family: var(--sans, inherit); text-transform: none; letter-spacing: -.01em; font-size: 1.1cqw; color: var(--espresso); }
 .dp-corps { min-width: 0; overflow: hidden; }
+
+/* ---------- Parcours guidé (/espace/demarrer/) ---------- */
+.guide { padding: 120px 0 80px; min-height: 80vh; }
+.guide-etapes { list-style: none; padding: 0; margin: 10px 0 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: #696155; }
+.guide-etapes li { display: inline-flex; align-items: center; gap: 6px; }
+.guide-etapes li span { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-family: var(--mono); font-size: 11px; border: 1px solid var(--trait-fort); }
+.guide-etapes li.fait span { background: var(--vert); color: var(--creme); border-color: var(--vert); }
+.guide-etapes li.actif { color: var(--espresso); font-weight: 600; }
+.guide-etapes li.actif span { border-color: var(--espresso); }
+.guide-barre { height: 4px; background: var(--trait-fort); border-radius: 2px; overflow: hidden; margin-bottom: 36px; }
+.guide-barre span { display: block; height: 100%; width: 0; background: var(--vert); transition: width .5s ease; }
+.guide-ecran { display: grid; gap: 18px; }
+.guide-titre { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.12; outline: none; }
+.depot-grand { padding: 30px 28px; }
+.guide-site { display: grid; gap: 10px; }
+.guide-exercice { display: grid; gap: 12px; }
+.guide-exercice header { display: flex; justify-content: space-between; align-items: center; }
+.guide-exercice h2 { font-size: 1.3rem; }
+.guide-exercice.valide { background: #E3EBE6; }
+.pastille-ok { color: var(--vert); font-weight: 600; font-size: .9rem; }
+.guide-resume { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 0; }
+.guide-resume div { background: var(--creme); border-radius: 12px; padding: 10px 12px; }
+.guide-resume dt { font-size: .78rem; color: #696155; }
+.guide-resume dd { margin: 0; font-size: 1.25rem; font-variant-numeric: tabular-nums; color: var(--vert); }
+.controle { margin: 0; padding: 10px 14px; border-radius: 10px; font-size: .9rem; }
+.controle.alerte { background: #F6DDD3; border-left: 4px solid #8B2E1F; }
+.controle.attention { background: #F3E3CF; border-left: 4px solid #A8653A; }
+.guide-lignes { display: grid; gap: 8px; }
+.guide-ligne { display: grid; grid-template-columns: 1fr 160px auto; gap: 10px; align-items: center; }
+.guide-ligne input, .guide-champ input[type="text"], .guide-champ textarea { min-height: 46px; border-radius: 12px; border: 1px solid var(--trait-fort); background: var(--creme); padding: 10px 14px; font: inherit; width: 100%; }
+@media (max-width: 600px) { .guide-ligne { grid-template-columns: 1fr; } }
+.guide-champ { display: grid; gap: 8px; border: 0; padding: 0; margin: 0; }
+.guide-lib { font-weight: 500; margin: 0; }
+.puces-choix { display: flex; flex-wrap: wrap; gap: 10px; }
+.puce { min-height: 48px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--trait-fort); background: var(--creme); font: inherit; cursor: pointer; color: var(--espresso); }
+.puce:hover { border-color: var(--espresso); }
+.puce.choisie { background: var(--vert); color: var(--creme); border-color: var(--vert); }
+.puce:focus-visible { outline: 2px solid var(--vert); outline-offset: 2px; }
+.guide-curseur { display: flex; gap: 14px; align-items: center; }
+.guide-curseur input { flex: 1; }
+.guide-curseur output { min-width: 4ch; font-weight: 600; color: var(--vert); font-variant-numeric: tabular-nums; }
+.logo-choix:has(input:checked) { outline: 3px solid var(--vert); outline-offset: 2px; }
+.logo-aucun { display: grid; place-items: center; font-size: .9rem; color: #696155; }
+.guide-taches { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.guide-taches li { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-radius: 12px; background: var(--sable); color: #696155; }
+.guide-taches .etat { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--trait-fort); flex: 0 0 auto; }
+.guide-taches li.en-cours { color: var(--espresso); }
+.guide-taches li.en-cours .etat { border-color: var(--vert); border-top-color: transparent; animation: tourne .8s linear infinite; }
+.guide-taches li.fait { color: var(--espresso); background: #E3EBE6; }
+.guide-taches li.fait .etat { background: var(--vert); border-color: var(--vert); }
+.guide-taches li.erreur { background: #F6DDD3; color: #8B2E1F; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .guide-taches li.en-cours .etat { animation: none; } }
+.guide-valeur .valeur-centrale { white-space: normal; }
+.guide-docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.guide-doc { display: grid; gap: 4px; text-decoration: none; color: var(--espresso); position: relative; padding-right: 48px; }
+.guide-doc:hover { background: #E1D3BA; }
+.guide-doc .fleche { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); font-size: 1.3rem; }
+.guide-todo h2 { font-size: 1.15rem; margin-bottom: 8px; }
+.guide-todo ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.prochaine-etape { display: grid; gap: 4px; margin-bottom: 20px; text-decoration: none; color: var(--creme); background: var(--vert); position: relative; padding-right: 64px; }
+.prochaine-etape .etiquette, .prochaine-etape .petit { color: #CFDAD3; }
+.prochaine-etape strong { font-size: 1.5rem; font-weight: 500; }
+.prochaine-etape .fleche { position: absolute; right: 28px; top: 50%; transform: translateY(-50%); font-size: 1.6rem; }
+.prochaine-etape:hover { background: #24463A; }
+.guide-titre { margin: 0; }
+.guide-barre { margin-bottom: 24px; }
+.guide-ecran { padding: 0; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }

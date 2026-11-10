@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr" class="sans-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Votre dossier · Passation</title>
+  <meta name="theme-color" content="#FBF6EC">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="page-guidee">
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<header class="nav-zone">
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Tableau de bord</a></div>
+  </nav>
+</header>
+<main id="contenu" class="guide" aria-busy="true">
+  <div class="conteneur conteneur-etroit">
+    <p class="etiquette" id="guide-entreprise">Votre dossier</p>
+    <ol class="guide-etapes" id="guide-etapes" aria-label="Étapes"></ol>
+    <div class="guide-barre" role="progressbar" aria-label="Avancement" aria-valuemin="0" aria-valuemax="100" id="guide-barre"><span></span></div>
+    <section class="guide-ecran" id="ecran" aria-live="polite"></section>
+    <p class="message-carte" id="message" role="status" aria-live="polite" hidden></p>
+  </div>
+</main>
+<script src="/js/site.js" defer></script>
+<script type="module" src="/js/demarrer.js"></script>
+</body>
+</html>

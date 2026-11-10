@@ -5,6 +5,7 @@ import { routeEstimation } from "./routes/estimation.js";
 import { routeDemandeCode, routeVerificationCode, routeDeconnexion, routeMoi } from "./routes/auth.js";
 import { routeDossiers } from "./routes/dossiers.js";
 import { origineAutorisee } from "./lib/auth.js";
+import { relancer } from "./routes/suivi.js";
 
 /**
  * Point d'entrée du Worker.
@@ -42,5 +43,9 @@ export default {
 
     if (p.startsWith("/api/")) return json({ erreur: "route_inconnue" }, 404);
     return env.ASSETS.fetch(request);
+  },
+  /** Tâche planifiée quotidienne : rappel unique des dossiers interrompus depuis 3 jours. */
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(relancer(env).then((n) => console.log(`Rappels envoyés : ${n}`)));
   },
 };

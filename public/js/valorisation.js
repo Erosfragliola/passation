@@ -385,8 +385,8 @@ function dessinerResultat() {
   const modeEbe = el("select", { id: "reg-mode-ebe" }, el("option", { value: "moyenne", selected: reg.mode_ebe !== "dernier", text: "Moyenne des exercices retraités" }), el("option", { value: "dernier", selected: reg.mode_ebe === "dernier", text: "Dernier exercice retraité" }));
   modeEbe.addEventListener("change", () => { reg.mode_ebe = modeEbe.value; });
 
-  const reglages = el("details", { class: "carte reglages", open: d.statut === "a_completer" ? true : null },
-    el("summary", {}, el("strong", { text: "Hypothèses et réglages" }), el("span", { class: "petit", text: " · modifiables, chacune avec sa source" })),
+  const reglages = el("details", { class: "carte reglages" },
+    el("summary", {}, el("strong", { text: "Affiner (pour votre conseil)" }), el("span", { class: "petit", text: " · hypothèses, prime de taille, décotes, pondération : chacune avec sa source" })),
     el("div", { class: "reglages-grille" },
       champPct("prime_taille", "Prime de taille et de risque spécifique (DCF)", reg.prime_taille, el("span", { class: "petit aide-q", text: H.prime_taille.note }), { min: 0, max: 20 }),
       champPct("taux_sans_risque", "Taux sans risque", reg.taux_sans_risque ?? H.taux_sans_risque.valeur, sourceH(H.taux_sans_risque)),
@@ -398,9 +398,10 @@ function dessinerResultat() {
     el("h4", { text: "Décotes et primes" }), el("p", { class: "petit", text: H.decotes_primes.note }),
     el("div", { class: "decotes" }, ...decotes),
     el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
-      ev.currentTarget.disabled = true;
+      const bouton = ev.currentTarget; // vidé après « await »
+      bouton.disabled = true;
       try { reponses.reglages = reg; await api(`${base}/answers/reglages`, { method: "PUT", body: JSON.stringify({ data: reg }) }); await calculer(); }
-      catch (e) { message(e.message, true); } finally { ev.currentTarget && (ev.currentTarget.disabled = false); }
+      catch (e) { message(e.message, true); } finally { bouton.disabled = false; }
     } }, "Recalculer"));
 
   // --- Pont EBE

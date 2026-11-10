@@ -310,3 +310,62 @@ describe("photos du mémorandum", () => {
     expect([...env.FILES.objets.keys()].some((k) => k.includes("/photos/"))).toBe(false);
   });
 });
+
+describe("validation d'un exercice en bloc", () => {
+  it("valide toutes les lignes remplies sauf celles en alerte ; contrôles renvoyés", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    await appel(`/api/dossiers/${id}/financials`, { cookie });
+    await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2030, valeurs: { chiffre_affaires: 1_000_000, achats_consommes: 400_000, charges_externes: 200_000, charges_personnel: 250_000, stocks: -10, creances_clients: 100_000, tresorerie: 80_000, capitaux_propres: 300_000, emprunts: 50_000, dettes_fournisseurs: 60_000, dettes_fiscales_sociales: 40_000 }, valider: false } });
+    const avant = await (await appel(`/api/dossiers/${id}/financials`, { cookie })).json();
+    expect(avant.controles["2030"].some((c) => c.code === "negatif")).toBe(true);
+    const v = await (await appel(`/api/dossiers/${id}/financials/2030/valider`, { methode: "POST", cookie })).json();
+    expect(v.exercices["2030"].chiffre_affaires.valide).toBe(true);
+    expect(v.exercices["2030"].stocks.valide).toBe(false); // en alerte : à valider à part
+    const b = await seConnecter("b@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/financials/2030/valider`, { methode: "POST", cookie: b.cookie })).status).toBe(404);
+  });
+});
+
+import { dossiersARelancer, relancer, DELAI_RAPPEL } from "../src/routes/suivi.js";
+describe("suivi : dossier prêt et rappel unique", () => {
+  async function completer(id, cookie) {
+    const t = Math.floor(Date.now() / 1000), doc = "doc-memo-" + id;
+    env.DB.sqlite.exec(`INSERT INTO valuations (id, dossier_id, kind, inputs_json, result_json, created_at) VALUES ('v-${id}', '${id}', 'approfondie', '{}', '{}', ${t});
+      INSERT INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES ('d-${id}', '${id}', 'datapack', 1, '', ${t}), ('t-${id}', '${id}', 'teaser', 1, '', ${t}), ('${doc}', '${id}', 'memo', 1, '', ${t});`);
+    for (const k of ["synthese", "histoire", "activite", "marche", "organisation", "finances", "perspectives", "operation"]) env.DB.sqlite.exec(`INSERT INTO document_sections (document_id, section_key, content_md, edited_by_user, updated_at) VALUES ('${doc}', '${k}', '{}', 0, ${t});`);
+  }
+  it("« dossier prêt » : 409 tant que tout n'est pas généré, puis un seul envoi", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/termine`, { methode: "POST", cookie })).status).toBe(409);
+    await completer(id);
+    const espion = vi.spyOn(console, "log").mockImplementation(() => {});
+    expect(await (await appel(`/api/dossiers/${id}/termine`, { methode: "POST", cookie })).json()).toMatchObject({ envoye: true });
+    expect(await (await appel(`/api/dossiers/${id}/termine`, { methode: "POST", cookie })).json()).toMatchObject({ deja: true });
+    expect(espion.mock.calls.flat().join(" ").match(/est prêt/g)).toHaveLength(1);
+    espion.mockRestore();
+  });
+  it("rappel : seulement les dossiers inactifs depuis 3 jours et incomplets, une seule fois", async () => {
+    const a = await seConnecter("a@exemple.fr");
+    expect(await dossiersARelancer(env)).toHaveLength(0); // actif à l'instant
+    env.DB.sqlite.exec(`UPDATE dossiers SET updated_at = ${Math.floor(Date.now() / 1000) - DELAI_RAPPEL - 60}`);
+    expect((await dossiersARelancer(env)).map((d) => d.id)).toEqual([a.id]);
+    const espion = vi.spyOn(console, "log").mockImplementation(() => {});
+    expect(await relancer(env, "http://127.0.0.1:8787")).toBe(1);
+    expect(await relancer(env, "http://127.0.0.1:8787")).toBe(0);
+    espion.mockRestore();
+  });
+});
+
+describe("mémorandum : rédactions en parallèle", () => {
+  it("8 sections lancées en même temps → un seul document, 8 sections ; le dossier peut être déclaré complet", async () => {
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
+    await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    redigerSectionMemo.mockResolvedValue({ contenu: "Texte.", a_completer: [] });
+    const cles = ["synthese", "histoire", "activite", "marche", "organisation", "finances", "perspectives", "operation"];
+    await Promise.all(cles.map((k) => appel(`/api/dossiers/${id}/documents/memo/sections/${k}`, { methode: "POST", cookie })));
+    expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM documents WHERE dossier_id = ? AND kind = 'memo'").get(id).n).toBe(1);
+    expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM document_sections").get().n).toBe(8);
+  });
+});

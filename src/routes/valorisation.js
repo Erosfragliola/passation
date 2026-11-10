@@ -14,6 +14,7 @@ import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants } from "../../public/js/c
 import { ETAPES } from "../../public/js/questionnaire.js";
 import { claudeDisponible, lireLiasse } from "../lib/claude.js";
 import { assemblerEntree } from "../valuation/entree.js";
+import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
 import HYPOTHESES from "../data/hypotheses.json";
 
@@ -44,12 +45,21 @@ async function preremplir(env, row) {
   if (stmts.length) await env.DB.batch(stmts);
 }
 
+function controles(row, lignes) {
+  const e = JSON.parse(row.company_json || "{}");
+  return Object.fromEntries(Object.entries(lignes).map(([a, l]) => [a, controlerExercice(l, {
+    caPublic: (e.ca || []).find((x) => x.annee === Number(a))?.valeur ?? null,
+    precedent: lignes[Number(a) - 1] ?? null,
+  })]));
+}
+
 async function vueChiffres(env, row) {
   const lignes = await lireChiffres(env, row.id);
   const lectures = await env.DB.prepare("SELECT COUNT(*) AS n FROM uploads WHERE dossier_id = ?").bind(row.id).first();
   return {
     champs: CHAMPS, exercices: lignes,
     manquants: Object.fromEntries(Object.entries(lignes).map(([a, l]) => [a, manquants(l)])),
+    controles: controles(row, lignes),
     lecture_automatique: claudeDisponible(env),
     lectures_restantes: Math.max(0, LIASSE.lecturesMaxParDossier - (lectures?.n ?? 0)),
   };
@@ -151,6 +161,18 @@ export async function routeValorisation(request, env, row, sous, item) {
       const lignes = await lireChiffres(env, row.id);
       if (!lignes[annee] && Object.keys(lignes).length >= EXERCICES_MAX + 1) return json({ erreur: "trop_d_exercices", message: "Trois exercices suffisent ; retirez-en un avant d'en ajouter." }, 400);
       await enregistrerLignes(env, row.id, annee, c.valeurs, { valider: Boolean(c.valider), source: "dirigeant" });
+      await toucher();
+      return json(await vueChiffres(env, row));
+    }
+    if (m === "POST" && /^\d{4}\/valider$/.test(item || "")) {
+      // Validation de l'exercice en bloc : toutes les lignes remplies, sauf celles en alerte (à valider une par une)
+      const annee = Number(item.slice(0, 4));
+      const lignes = await lireChiffres(env, row.id);
+      if (!lignes[annee]) return json({ erreur: "introuvable", message: "Exercice introuvable." }, 404);
+      const bloquees = lignesBloquees(controles(row, lignes)[annee]);
+      const stmts = Object.entries(lignes[annee]).filter(([k, x]) => x.valeur !== null && !bloquees.has(k))
+        .map(([k]) => env.DB.prepare("UPDATE financials SET validated = 1 WHERE dossier_id = ? AND year = ? AND field = ?").bind(row.id, annee, k));
+      if (stmts.length) await env.DB.batch(stmts);
       await toucher();
       return json(await vueChiffres(env, row));
     }

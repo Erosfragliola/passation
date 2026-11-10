@@ -397,3 +397,32 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     - export .docx (la vue imprimable sert de PDF) ;
     - photos du site attestées par le dirigeant ;
     - liens signés de partage.
+- **10/11/2026, parcours guidé (« Passation fait, le dirigeant confirme »)**, décidé par le dirigeant le même jour :
+  - Page `/espace/demarrer/` : une étape à la fois, reprise automatique. Après le code de connexion, le dirigeant y arrive
+    directement.
+  - **Validation par exercice** : contrôles automatiques (`src/valuation/controles.js`), qui remplacent la validation
+    ligne par ligne :
+    - bilan équilibré ;
+    - EBE cohérent avec le résultat d'exploitation et les dotations ;
+    - chiffre d'affaires conforme aux comptes publics ;
+    - valeurs impossibles et variation suspecte ;
+    - lignes manquantes.
+
+    Les lignes en alerte se valident à part. Les exercices INPI incomplets ne sont plus présentés une fois la liasse
+    lue.
+  - **Site proposé depuis le domaine de l'e-mail** professionnel, à confirmer ; jamais pour une messagerie grand public.
+  - **8 questions**, une par écran, en choix rapides, et sautées quand elles ne s'appliquent pas. « Je ne sais pas » au
+    capital détenu par des personnes physiques vaut « non » (taux normal d'IS, prudent).
+  - **Faits du site pré-cochés** (le dirigeant décoche ce qui est faux) et logo proposé.
+  - **Rédaction groupée** : valorisation, datapack, teaser, 8 sections, 4 à la fois ; reprise sans refaire ce qui
+    existe.
+  - E-mail « dossier prêt » envoyé une fois. **Rappel unique** à 3 jours (tâche planifiée quotidienne, 8 h UTC).
+  - Prime de taille et décotes déplacées dans « Affiner (pour votre conseil) ».
+  - Carte « Prochaine étape » sur le tableau de bord.
+  - Corrections :
+    - concurrence à la création du document memo (identifiant fixe, `INSERT OR IGNORE`) ;
+    - `ev.currentTarget` vidé après `await` (choix enregistrés sans passage à l'écran suivant ; bouton « Recalculer »
+      resté grisé).
+  - Essai de bout en bout avec un Claude simulé (`ANTHROPIC_BASE_URL`, réglage de développement absent en
+    production) : **21 actions du dirigeant après le SIREN** (contre environ 110), ordinateur et mobile, sans erreur.
+  - Tests : 197.

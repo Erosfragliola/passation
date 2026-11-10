@@ -21,7 +21,7 @@ const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 const slug = (s) => String(s || "entreprise").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "entreprise";
 const NOMS_DE_CODE = ["Cèdre", "Atlas", "Orme", "Saule", "Granit", "Boréal", "Héron", "Ancre", "Ivoire", "Rivage", "Mistral", "Sextant", "Tilleul", "Basalte", "Fanal", "Aubier"];
 
-async function datapack(env, row) {
+async function datapack(env, row, { stocker = false } = {}) {
   const { resultat, entree, hypotheses } = await calculer(env, row);
   if (resultat.statut !== "ok") {
     return json({ erreur: "chiffres_absents", message: "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack." }, 409);
@@ -33,6 +33,7 @@ async function datapack(env, row) {
   await env.FILES.put(cle, octets, { httpMetadata: { contentType: XLSX } });
   await env.DB.prepare("INSERT INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES (?, ?, 'datapack', ?, ?, ?)")
     .bind(crypto.randomUUID(), row.id, version, cle, maintenant()).run();
+  if (stocker) return json({ ok: true, version });
   const nom = `datapack-${slug(entreprise.nom)}-v${version}.xlsx`;
   return new Response(octets, {
     headers: { "content-type": XLSX, "content-disposition": `attachment; filename="${nom}"`, "cache-control": "no-store", "x-content-type-options": "nosniff" },
@@ -272,8 +273,9 @@ async function servirPhoto(env, row, n) {
 async function documentMemo(env, row) {
   const doc = await env.DB.prepare("SELECT id FROM documents WHERE dossier_id = ? AND kind = 'memo' ORDER BY version DESC LIMIT 1").bind(row.id).first();
   if (doc) return doc.id;
-  const id = crypto.randomUUID();
-  await env.DB.prepare("INSERT INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES (?, ?, 'memo', 1, '', ?)").bind(id, row.id, maintenant()).run();
+  // Identifiant fixe par dossier + INSERT OR IGNORE : des rédactions lancées en parallèle partagent le même document
+  const id = `memo-${row.id}`;
+  await env.DB.prepare("INSERT OR IGNORE INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES (?, ?, 'memo', 1, '', ?)").bind(id, row.id, maintenant()).run();
   return id;
 }
 async function ecrireSection(env, docId, cle, valeur, parDirigeant) {
@@ -309,6 +311,7 @@ async function modifierSectionMemo(request, env, row, cle) {
 export async function routeDocuments(request, env, row, type, sous, cle) {
   const m = request.method;
   if (type === "datapack" && m === "GET" && !sous) return datapack(env, row);
+  if (type === "datapack" && m === "POST" && !sous) return datapack(env, row, { stocker: true });
   if (type === "teaser" && !sous) {
     if (m === "GET") return json(await lireTeaser(env, row));
     if (m === "POST") return genererTeaser(env, row);

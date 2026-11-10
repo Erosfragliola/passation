@@ -209,7 +209,7 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   let dcfR;
   if (c.statut !== "ok") {
     dcfR = { statut: "a_completer", manquant: c.manquant, hypotheses: hyp };
-    alertes.push(`DCF à compléter : ${c.manquant.join(", ")}.`);
+    if (!(c.manquant.length === 1 && c.manquant[0] === "prime de taille")) alertes.push(`DCF à compléter : ${c.manquant.join(", ")}.`);
   } else if (!(caD > 0)) {
     dcfR = { statut: "non_applicable", hypotheses: hyp };
   } else {
@@ -240,7 +240,7 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   // Synthèse : 60 / 40 par défaut, multiples seuls si le DCF manque, DCF seul si les multiples ne s'appliquent pas
   let poids = { ...(e.ponderation || { multiples: H.ponderation.multiples, dcf: H.ponderation.dcf }) };
   const okM = multiples.statut === "ok", okD = dcfR.statut === "ok";
-  if (okM && !okD) { poids = { multiples: 1, dcf: 0 }; alertes.push("Synthèse sur les multiples seuls : renseignez la prime de taille pour ajouter le DCF."); }
+  if (okM && !okD) { poids = { multiples: 1, dcf: 0 }; alertes.push("Synthèse sur les multiples. Le DCF est proposé en option : renseignez la prime de taille dans « Affiner » si votre conseil le souhaite."); }
   if (!okM && okD) poids = { multiples: 0, dcf: 1 };
   const comb = (cle) => {
     if (!okM && !okD) return null;

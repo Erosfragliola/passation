@@ -71,7 +71,7 @@ describe("connexion par code", () => {
     expect(r.status).toBe(200);
     const c = r.headers.get("set-cookie");
     expect(c).toMatch(/HttpOnly/); expect(c).toMatch(/Secure/); expect(c).toMatch(/SameSite=Lax/);
-    expect(d.destination).toMatch(/^\/espace\/\?dossier=[0-9a-f-]{36}$/);
+    expect(d.destination).toMatch(/^\/espace\/demarrer\/\?dossier=[0-9a-f-]{36}$/);
   });
   it("un code faux ne connecte pas et indique les essais restants", async () => {
     const { code } = await demanderCode("x@exemple.fr");

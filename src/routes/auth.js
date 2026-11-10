@@ -102,7 +102,7 @@ export async function routeVerificationCode(request, env) {
   const siren = nettoyerSiren(corps.siren);
   if (sirenValide(siren)) {
     const dossier = await creerDossierPourSiren(env, user.id, siren).catch(() => null);
-    if (dossier) destination = `/espace/?dossier=${dossier.id}`;
+    if (dossier) destination = `/espace/demarrer/?dossier=${dossier.id}`; // parcours guidé, repris là où il s'est arrêté
   }
   return json({ ok: true, destination }, 200, { "set-cookie": cookieSession(secret), "cache-control": "no-store" });
 }

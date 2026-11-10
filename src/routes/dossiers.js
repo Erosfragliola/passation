@@ -17,6 +17,7 @@ import { manquants, EXERCICES_MAX } from "../../public/js/champs-financiers.js";
 import { avancementQuestionnaire } from "../../public/js/questionnaire.js";
 import { routeValorisation, lireChiffres, lireReponses } from "./valorisation.js";
 import { routeDocuments } from "./documents.js";
+import { routeTermine } from "./suivi.js";
 
 const resume = (row) => {
   const c = JSON.parse(row.company_json || "{}");
@@ -132,8 +133,9 @@ export async function routeDossiers(request, env, segments) {
     if (m === "DELETE") { await supprimerDossier(env, id); return json({ ok: true }); }
     return json({ erreur: "methode" }, 405);
   }
-  if (["financials", "uploads", "answers", "valuation"].includes(sous)) return routeValorisation(request, env, row, sous, item);
+  if (["financials", "uploads", "answers", "valuation"].includes(sous)) return routeValorisation(request, env, row, sous, reste.length ? [item, ...reste].join("/") : item);
   if (sous === "documents") return routeDocuments(request, env, row, item, reste[0], reste[1]);
+  if (sous === "termine" && m === "POST") return routeTermine(request, env, row, u);
   if (sous === "checklist" && item && m === "PUT") {
     if (!CLES_CHECKLIST.has(item)) return json({ erreur: "element_inconnu" }, 400);
     let corps; try { corps = await request.json(); } catch { corps = {}; }

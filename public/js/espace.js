@@ -56,6 +56,13 @@ function afficher({ checklist = true } = {}) {
   $("#lien-memo").href = `/espace/documents/memo/?dossier=${dossier.id}`;
   if (dossier.documents?.datapack) $("#detail-documents").textContent = `Datapack : version ${dossier.documents.datapack.version}.`;
   const parcours = dossier.parcours;
+  $("#prochaine-etape").href = `/espace/demarrer/?dossier=${dossier.id}`;
+  const complet = dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && parcours?.valorisation;
+  const [texte, detail] = !parcours?.exercices_complets ? ["Déposer votre liasse fiscale", "Le seul document à fournir. Nous lisons les chiffres, vous confirmez."]
+    : parcours.questionnaire.pct < 40 ? ["Répondre à quelques questions", "Huit écrans courts, la plupart en un clic."]
+    : !complet ? ["Lancer la rédaction de votre dossier", "Valorisation, datapack, teaser et mémorandum, d'un coup."]
+    : ["Relire votre dossier", "Tout est rédigé : relisez avant de diffuser."];
+  $("#prochaine-texte").textContent = texte; $("#prochaine-detail").textContent = detail;
   if (parcours) {
     $("#detail-chiffres").textContent = `${parcours.exercices_complets} exercice${parcours.exercices_complets > 1 ? "s" : ""} complet${parcours.exercices_complets > 1 ? "s" : ""} sur ${parcours.exercices_attendus}.`;
     $("#detail-valorisation").textContent = `Questionnaire : ${parcours.questionnaire.pct} %.`;

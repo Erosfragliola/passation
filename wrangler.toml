@@ -22,5 +22,9 @@ migrations_dir = "migrations"
 binding = "FILES"
 bucket_name = "passation-fichiers"
 
+# Rappel quotidien (8 h UTC) des dossiers interrompus depuis 3 jours : un seul rappel par dossier.
+[triggers]
+crons = ["0 8 * * *"]
+
 [vars]
 APP_NAME = "Passation"

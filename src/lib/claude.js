@@ -6,7 +6,8 @@ import { MODELS } from "../config.js";
 import { CHAMPS } from "../../public/js/champs-financiers.js";
 
 export const claudeDisponible = (env) => Boolean(env.ANTHROPIC_API_KEY);
-const client = (env) => new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 2 });
+// ANTHROPIC_BASE_URL : réglage de développement uniquement (serveur simulé pour les essais locaux), absent en production.
+const client = (env) => new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 2, ...(env.ANTHROPIC_BASE_URL ? { baseURL: env.ANTHROPIC_BASE_URL } : {}) });
 
 const SCHEMA_LIASSE = {
   type: "object",
