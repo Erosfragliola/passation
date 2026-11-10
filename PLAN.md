@@ -268,5 +268,8 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
 - **10/11/2026, mise en ligne** : https://passation.eros-fragliola-freedom.workers.dev (Worker `passation`, D1
   `passation` a33eabb7…, R2 `passation-fichiers`, secret `SESSION_SECRET` généré sans affichage). Correctif : les API
   publiques refusent les requêtes sans User-Agent depuis Cloudflare → en-tête générique ajouté (`config.js`).
+  2e correctif : l'annuaire renvoie HTTP 429 depuis les IP partagées de Cloudflare → nouvelles tentatives
+  espacées (`src/lib/requete.js`, Retry-After respecté). Contrôle final : 6/6 maquettes et 4/4 recherches en 200,
+  parcours navigateur 434436622 OK (293 k€ – 489 k€), Lighthouse prod mobile perf 93 / a11y 100 / BP 100 / SEO 100.
   Non publiés : `marque.html`, `img/source/`, `CREDITS.md` (`public/.assetsignore`). Secrets ANTHROPIC/BREVO non
   requis à ce stade (étapes 3 et suivantes).
