@@ -13,7 +13,7 @@ import { calculer, lireReponses } from "./valorisation.js";
 import { construireDatapack } from "../documents/datapack.js";
 import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo } from "../lib/claude.js";
 import { lireSite, adressePublique } from "../documents/site.js";
-import { SECTIONS_MEMO, donneesSection, tableauFinancier, memoDeverrouille } from "../documents/memo.js";
+import { SECTIONS_MEMO, donneesSection, tableauFinancier, memoDeverrouille, profilMemo } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat } from "../documents/anonymat.js";
 import { faitsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
 
@@ -144,6 +144,8 @@ async function lireMemo(env, row) {
   return {
     deverrouille: memoDeverrouille(reponses),
     entreprise: JSON.parse(row.company_json || "{}").nom ?? null,
+    profil: profilMemo(JSON.parse(row.company_json || "{}"), reponses),
+    photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "" })),
     site, logo: Boolean(site?.logo),
     tableau: tableauFinancier(entree, resultat),
     memo: doc ? { id: doc.id, version: doc.version, cree_le: doc.created_at } : null,
@@ -175,6 +177,7 @@ async function lireSiteRoute(request, env, row) {
     faits: (faits.faits || []).slice(0, 40).map((f, i) => ({ id: i + 1, ...f, valide: false })),
     termes: (faits.termes_identifiants || []).slice(0, 60),
     logos: lecture.logos, logo: ancien.logo ?? null,
+    photos_candidates: lecture.photos || [], photos: ancien.photos || [],
   };
   await enregistrerSite(env, row, site);
   return json(await lireMemo(env, row));
@@ -214,6 +217,56 @@ async function servirLogo(env, row) {
   const obj = site?.logo ? await env.FILES.get(site.logo.cle) : null;
   if (!obj) return json({ erreur: "introuvable" }, 404);
   return new Response(obj.body, { headers: { "content-type": site.logo.type, "cache-control": "private, max-age=300", "x-content-type-options": "nosniff", "content-security-policy": "default-src 'none'" } });
+}
+
+// Photos de l'entreprise : 6 au plus, 3 Mo chacune, PNG/JPEG/WebP, avec attestation du dirigeant.
+const PHOTOS_MAX = 6;
+async function ajouterPhoto(request, env, row) {
+  let octets, attestation = false, legende = "";
+  if ((request.headers.get("content-type") || "").startsWith("multipart/form-data")) {
+    const fd = await request.formData();
+    const f = fd.get("fichier");
+    attestation = fd.get("attestation") === "oui"; legende = String(fd.get("legende") || "").slice(0, 120);
+    if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: "Aucun fichier reçu." }, 400);
+    if (f.size > 3_000_000) return json({ erreur: "trop_lourd", message: "La photo dépasse 3 Mo." }, 413);
+    octets = new Uint8Array(await f.arrayBuffer());
+  } else {
+    let corps; try { corps = await request.json(); } catch { corps = null; }
+    attestation = corps?.attestation === true; legende = String(corps?.legende || "").slice(0, 120);
+    const u = adressePublique(corps?.url || "");
+    if (!u) return json({ erreur: "adresse_invalide", message: "Adresse d'image invalide." }, 400);
+    try {
+      const r = await fetch(u, { signal: AbortSignal.timeout(10_000) });
+      octets = new Uint8Array(await r.arrayBuffer());
+      if (!r.ok || octets.length > 3_000_000) throw new Error("image");
+    } catch { return json({ erreur: "image_injoignable", message: "Image introuvable ou trop lourde (3 Mo au plus)." }, 422); }
+  }
+  if (!attestation) return json({ erreur: "attestation", message: "Confirmez que cette photo appartient à l'entreprise (ou que vous avez le droit de l'utiliser)." }, 400);
+  const ext = typeImage(octets);
+  if (!ext) return json({ erreur: "format", message: "Format accepté : PNG, JPEG ou WebP." }, 415);
+  const site = (await lireReponses(env, row.id)).site || {};
+  site.photos ||= [];
+  if (site.photos.length >= PHOTOS_MAX) return json({ erreur: "trop_de_photos", message: `${PHOTOS_MAX} photos au plus.` }, 400);
+  const cle = `dossiers/${row.id}/photos/${crypto.randomUUID()}.${ext}`;
+  await env.FILES.put(cle, octets, { httpMetadata: { contentType: MIME[ext] } });
+  site.photos.push({ cle, type: MIME[ext], legende, attestee_le: maintenant() });
+  await enregistrerSite(env, row, site);
+  return json(await lireMemo(env, row));
+}
+async function retirerPhoto(env, row, n) {
+  const site = (await lireReponses(env, row.id)).site || {};
+  const p = site.photos?.[Number(n)];
+  if (!p) return json({ erreur: "introuvable" }, 404);
+  await env.FILES.delete(p.cle);
+  site.photos.splice(Number(n), 1);
+  await enregistrerSite(env, row, site);
+  return json(await lireMemo(env, row));
+}
+async function servirPhoto(env, row, n) {
+  const p = (await lireReponses(env, row.id)).site?.photos?.[Number(n)];
+  const obj = p ? await env.FILES.get(p.cle) : null;
+  if (!obj) return json({ erreur: "introuvable" }, 404);
+  return new Response(obj.body, { headers: { "content-type": p.type, "cache-control": "private, max-age=300", "x-content-type-options": "nosniff", "content-security-policy": "default-src 'none'" } });
 }
 
 async function documentMemo(env, row) {
@@ -266,6 +319,9 @@ export async function routeDocuments(request, env, row, type, sous, cle) {
     if (sous === "site" && !cle && m === "POST") return lireSiteRoute(request, env, row);
     if (sous === "logo" && !cle && m === "POST") return deposerLogo(request, env, row);
     if (sous === "logo" && !cle && m === "GET") return servirLogo(env, row);
+    if (sous === "photos" && !cle && m === "POST") return ajouterPhoto(request, env, row);
+    if (sous === "photos" && /^\d$/.test(cle || "") && m === "GET") return servirPhoto(env, row, cle);
+    if (sous === "photos" && /^\d$/.test(cle || "") && m === "DELETE") return retirerPhoto(env, row, cle);
     if (sous === "sections" && cle && m === "POST") return genererSection(env, row, cle);
     if (sous === "sections" && cle && m === "PUT") return modifierSectionMemo(request, env, row, cle);
   }

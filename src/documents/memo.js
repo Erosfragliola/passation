@@ -1,6 +1,6 @@
 // Mémorandum d'information : sections, données transmises à Claude pour chacune, tableau financier calculé par le code.
 // Présentation 100 % Passation ; seul le logo de l'entreprise apparaît (couverture, en-tête).
-import { SECTEURS_NAF, anciennete } from "./anonymat.js";
+import { SECTEURS_NAF, anciennete, regionDe } from "./anonymat.js";
 import { libelleEffectif } from "../../public/js/regles.js";
 
 export const SECTIONS_MEMO = [
@@ -53,4 +53,19 @@ export function memoDeverrouille(reponses = {}) {
   if (!reponses.activite?.description?.trim()) manque.push("Décrire votre activité (questionnaire, « Votre activité »)");
   if (!reponses.operation?.part_cedee) manque.push("Préciser l'opération envisagée (questionnaire, « L'opération envisagée »)");
   return { ok: manque.length === 0, manque };
+}
+
+/** Profil affiché dans les mises en avant des diapositives (données publiques + réponses du dirigeant). */
+export function profilMemo(entreprise = {}, reponses = {}) {
+  const c = reponses.clients || {}, o = reponses.operation || {}, a = reponses.activite || {};
+  return {
+    secteur: SECTEURS_NAF[entreprise.section_naf] ?? null,
+    ville: entreprise.ville ?? null, region: regionDe(entreprise.code_postal),
+    creation: entreprise.date_creation ? Number(String(entreprise.date_creation).slice(0, 4)) : null,
+    effectif: libelleEffectif(entreprise.tranche_effectif?.code),
+    zone: a.zone ?? null,
+    clients: { premier: c.part_premier_client ?? null, cinq: c.part_cinq_clients ?? null, recurrent: c.part_recurrente ?? null },
+    operation: { part_cedee: o.part_cedee ?? null, motif: o.motif ?? null, accompagnement: o.accompagnement ?? null, calendrier: o.calendrier ?? null },
+    frise: (entreprise.evenements || []).map((e) => ({ annee: Number(String(e.date || "").slice(0, 4)) || null, type: e.type })).filter((e) => e.annee),
+  };
 }

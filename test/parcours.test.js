@@ -293,3 +293,20 @@ describe("mémorandum", () => {
     expect(e.sections.find((x) => x.cle === "histoire")).toMatchObject({ contenu: "Texte revu.", modifie: true });
   });
 });
+
+describe("photos du mémorandum", () => {
+  const JPG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0]);
+  const photo = (attestation) => { const f = new FormData(); f.append("fichier", new File([JPG], "atelier.jpg", { type: "image/jpeg" })); if (attestation) f.append("attestation", "oui"); f.append("legende", "L'atelier"); return f; };
+  it("attestation obligatoire ; photo servie au seul propriétaire ; retrait efface le fichier", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(false) })).status).toBe(400);
+    const m = await (await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(true) })).json();
+    expect(m.photos).toEqual([{ n: 0, legende: "L'atelier" }]);
+    expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie })).headers.get("content-type")).toBe("image/jpeg");
+    const b = await seConnecter("b@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie: b.cookie })).status).toBe(404);
+    const r = await (await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { methode: "DELETE", cookie })).json();
+    expect(r.photos).toEqual([]);
+    expect([...env.FILES.objets.keys()].some((k) => k.includes("/photos/"))).toBe(false);
+  });
+});

@@ -69,6 +69,20 @@ export function candidatsLogo(html, base) {
   return res.slice(0, 6);
 }
 
+/** Photos candidates : grandes images de contenu (ni logo, ni icône, ni pictogramme). */
+export function candidatsPhotos(html, base) {
+  const res = [];
+  for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
+    const tag = m[0];
+    const src = /\s(?:data-src|src)\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1];
+    if (!src || /^data:/i.test(src) || /logo|icon|picto|sprite|avatar|flag|badge/i.test(tag) || /\.svg(\?|$)/i.test(src)) continue;
+    const l = Number(/\swidth\s*=\s*["']?(\d+)/i.exec(tag)?.[1] || 0), h = Number(/\sheight\s*=\s*["']?(\d+)/i.exec(tag)?.[1] || 0);
+    if ((l && l < 300) || (h && h < 200)) continue;
+    try { const u = new URL(src, base); if (/^https?:$/.test(u.protocol) && !res.includes(u.href)) res.push(u.href); } catch { /* ignoré */ }
+  }
+  return res;
+}
+
 /** robots.txt : le chemin est-il autorisé pour tous les robots (« User-agent: * ») ? */
 export function robotsAutorise(robots, chemin) {
   if (!robots) return true;
@@ -94,7 +108,7 @@ async function lire(url, f) {
   return texte.length > TAILLE_MAX ? texte.slice(0, TAILLE_MAX) : texte;
 }
 
-/** Lit l'accueil puis les pages internes les plus utiles. @returns { pages: [{url, titre, texte}], logos } */
+/** Lit l'accueil puis les pages internes les plus utiles. @returns { pages: [{url, titre, texte}], logos, photos } */
 export async function lireSite(adresse, { fetch: f = fetch } = {}) {
   const base = adressePublique(adresse);
   if (!base) throw new Error("adresse_invalide");
@@ -105,10 +119,14 @@ export async function lireSite(adresse, { fetch: f = fetch } = {}) {
   if (!accueil) throw new Error("site_injoignable");
   const pages = [{ url: base.href, ...texteDepuisHtml(accueil) }];
   const logos = candidatsLogo(accueil, base);
+  const photos = candidatsPhotos(accueil, base);
   for (const url of liensInternes(accueil, base)) {
     if (pages.length >= PAGES_MAX) break;
     if (!robotsAutorise(robots, new URL(url).pathname)) continue;
-    try { const html = await lire(url, f); if (html) pages.push({ url, ...texteDepuisHtml(html) }); } catch { /* page ignorée */ }
+    try {
+      const html = await lire(url, f);
+      if (html) { pages.push({ url, ...texteDepuisHtml(html) }); for (const p of candidatsPhotos(html, new URL(url))) if (!photos.includes(p)) photos.push(p); }
+    } catch { /* page ignorée */ }
   }
-  return { url: base.href, pages, logos };
+  return { url: base.href, pages, logos, photos: photos.slice(0, 16) };
 }
