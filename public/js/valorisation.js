@@ -333,7 +333,8 @@ function dessinerResultat() {
       ? [el("p", { class: "valeur-centrale chiffre", text: euros(s.central) }), el("p", { class: "fourchette", text: `Fourchette : ${euros(s.bas)} – ${euros(s.haut)}` })]
       : el("p", { class: "valeur-centrale", text: "À compléter" }),
     el("p", { class: "petit", text: `Pondération : multiples ${pct(s.ponderation.multiples, 0)}, DCF ${pct(s.ponderation.dcf, 0)}. Actif net corrigé (plancher, présenté à part) : ${euros(s.plancher_ancc)}.` }),
-    el("p", { class: "estimation-mention", text: "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable ou d'un conseil en cession." }));
+    el("p", { class: "estimation-mention", text: "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable ou d'un conseil en cession." }),
+    el("a", { class: "btn btn-sable", href: `${base}/documents/datapack`, download: "" }, "Télécharger le datapack Excel ", el("span", { class: "fleche", "aria-hidden": "true", text: "↓" })));
   const alertes = s.alertes.length ? el("ul", { class: "alertes" }, ...s.alertes.map((a) => el("li", { text: a }))) : null;
 
   const m = r.multiples, d = r.dcf;

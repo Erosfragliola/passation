@@ -153,3 +153,23 @@ describe("questionnaire et calcul", () => {
     expect((await (await appel(`/api/dossiers/${id}/valuation`, { cookie })).json()).resultat.synthese.central).toBeCloseTo(v.resultat.synthese.central, 2);
   });
 });
+
+describe("datapack", () => {
+  it("409 tant qu'aucun exercice n'est validé ; ensuite fichier Excel versionné, rangé dans le dossier, compté dans l'avancement", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/datapack`, { cookie })).status).toBe(409);
+    await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2025, valeurs: { chiffre_affaires: 1_000_000, achats_consommes: 400_000, charges_externes: 200_000, charges_personnel: 250_000, stocks: 50_000, creances_clients: 100_000, tresorerie: 80_000, capitaux_propres: 300_000, emprunts: 50_000, dettes_fournisseurs: 60_000, dettes_fiscales_sociales: 40_000 }, valider: true } });
+    const r = await appel(`/api/dossiers/${id}/documents/datapack`, { cookie });
+    expect(r.status).toBe(200);
+    expect(r.headers.get("content-type")).toContain("spreadsheetml");
+    expect(r.headers.get("content-disposition")).toMatch(/datapack-.*-v1\.xlsx/);
+    const octets = new Uint8Array(await r.arrayBuffer());
+    expect([octets[0], octets[1]]).toEqual([0x50, 0x4b]); // signature zip « PK »
+    expect([...env.FILES.objets.keys()]).toContain(`dossiers/${id}/documents/datapack-v1.xlsx`);
+    const d = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
+    expect(d.documents.datapack.version).toBe(1);
+    expect(d.avancement.documents).toBe(33);
+    const b = await seConnecter("b@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/datapack`, { cookie: b.cookie })).status).toBe(404);
+  });
+});

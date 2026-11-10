@@ -351,3 +351,16 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   - En attente : la clé `ANTHROPIC_API_KEY` à saisir par le dirigeant pour activer la lecture des liasses.
 - **10/11/2026, 3D « La cloche »** : réalisée sur la branche locale `3d-v2-cloche` (non poussée), en attente de validation
   des captures.
+- **10/11/2026, étape 5 (datapack Excel)** :
+  - `.xlsx` écrit par nos soins : `src/documents/xlsx.js`, zip par `fflate` 0.8.3 (MIT). Pas d'`exceljs`, trop lourd pour
+    un Worker.
+  - 9 onglets : Couverture, Comptes, Retraitements, Hypothèses, Passage aux titres, Multiples, DCF, ANCC, Synthèse.
+  - Formules vivantes et valeurs en cache ; Excel recalcule tout à l'ouverture.
+  - Cellules jaunes = hypothèses modifiables, avec leurs sources.
+  - Contrôle : un évaluateur de formules (`src/documents/formules.js`) vérifie dans les tests que le classeur redonne au
+    centime les chiffres du moteur (synthèse 2 244 253,18 €, CMPC ± 1 pt, g ± 0,5 pt, taux réduit, DCF à compléter).
+  - Relecture indépendante par SheetJS : formules et valeurs conformes.
+  - Route `GET /api/dossiers/:id/documents/datapack` : version conservée dans R2 et supprimée avec le dossier. Boutons sur
+    les résultats et le tableau de bord.
+  - Tests : 154.
+  - Reste : ouverture dans Excel et Numbers par le dirigeant.

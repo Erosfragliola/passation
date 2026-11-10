@@ -51,6 +51,8 @@ function afficher({ checklist = true } = {}) {
     $("#estimation-valeur").textContent = "À affiner";
   }
   document.querySelectorAll(".lien-parcours").forEach((l) => { l.href = `/espace/valorisation/?dossier=${dossier.id}#${l.dataset.ancre}`; });
+  $("#lien-datapack").href = `/api/dossiers/${dossier.id}/documents/datapack`;
+  if (dossier.documents?.datapack) $("#detail-documents").textContent = `Datapack : version ${dossier.documents.datapack.version}.`;
   const parcours = dossier.parcours;
   if (parcours) {
     $("#detail-chiffres").textContent = `${parcours.exercices_complets} exercice${parcours.exercices_complets > 1 ? "s" : ""} complet${parcours.exercices_complets > 1 ? "s" : ""} sur ${parcours.exercices_attendus}.`;
