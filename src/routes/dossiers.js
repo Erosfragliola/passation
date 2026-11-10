@@ -5,6 +5,7 @@
 //   GET    /api/dossiers/:id                      détail + avancement
 //   DELETE /api/dossiers/:id                      suppression complète (base + fichiers R2)
 //   PUT    /api/dossiers/:id/checklist/:item { done }
+//   financials, uploads, answers, valuation : voir routes/valorisation.js
 import { json } from "../http.js";
 import { exigerUtilisateur, maintenant } from "../lib/auth.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
@@ -12,6 +13,9 @@ import { sirenValide, nettoyerSiren } from "../lib/siren.js";
 import { chargerMaquette } from "../maquette/donnees.js";
 import { estimationExpress } from "../valuation/express.js";
 import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
+import { manquants, EXERCICES_MAX } from "../../public/js/champs-financiers.js";
+import { avancementQuestionnaire } from "../../public/js/questionnaire.js";
+import { routeValorisation, lireChiffres, lireReponses } from "./valorisation.js";
 
 const resume = (row) => {
   const c = JSON.parse(row.company_json || "{}");
@@ -52,6 +56,11 @@ async function detail(env, row) {
   const { results } = await env.DB.prepare("SELECT item_key FROM checklist WHERE dossier_id = ? AND done = 1").bind(row.id).all();
   const coches = new Set(results.map((r) => r.item_key));
   const entreprise = JSON.parse(row.company_json || "{}");
+  const lignes = await lireChiffres(env, row.id);
+  const complets = Object.values(lignes).filter((l) => manquants(l).length === 0).length;
+  const approfondie = await env.DB.prepare("SELECT result_json FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();
+  const synthese = approfondie ? JSON.parse(approfondie.result_json).synthese ?? null : null;
+  const questionnaire = avancementQuestionnaire(await lireReponses(env, row.id));
   return {
     id: row.id, siren: row.siren, cree_le: row.created_at, statut: row.status,
     entreprise: {
@@ -61,7 +70,11 @@ async function detail(env, row) {
     },
     estimation: entreprise.estimation ?? null,
     checklist: [...coches],
-    avancement: avancement({ estimation_express: entreprise.estimation?.statut === "ok", checklist: coches }),
+    parcours: { exercices_complets: complets, exercices_attendus: EXERCICES_MAX, questionnaire, valorisation: synthese },
+    avancement: avancement({
+      estimation_express: entreprise.estimation?.statut === "ok", checklist: coches,
+      chiffres_valides: complets / EXERCICES_MAX, valorisation_approfondie: synthese?.central != null,
+    }),
   };
 }
 
@@ -116,6 +129,7 @@ export async function routeDossiers(request, env, segments) {
     if (m === "DELETE") { await supprimerDossier(env, id); return json({ ok: true }); }
     return json({ erreur: "methode" }, 405);
   }
+  if (["financials", "uploads", "answers", "valuation"].includes(sous)) return routeValorisation(request, env, row, sous, item);
   if (sous === "checklist" && item && m === "PUT") {
     if (!CLES_CHECKLIST.has(item)) return json({ erreur: "element_inconnu" }, 400);
     let corps; try { corps = await request.json(); } catch { corps = {}; }

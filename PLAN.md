@@ -326,3 +326,28 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   Tests 107/107 ; parcours navigateur vérifié en local (1440 px et 390 px) ; contrôles en production (400, 403, 401).
   Parcours suivant validé par le dirigeant : ① entreprise → ② liasse PDF lue par Claude + validation ligne par ligne
   (3 ans max, 10 Mo, plafond de coût) → ③ questionnaire → ④ retraitements → ⑤ valorisation → ⑥ livrables.
+- **10/11/2026, étape 4 (valorisation approfondie)** :
+  - Moteur pur et testé : `src/valuation/approfondie.js`. Il couvre le pont EBE, l'EBE normatif, le BFR normatif, la dette
+    nette, l'IS (taux réduit), le CMPC, le DCF sur 5 ans, l'ANCC, les décotes, le passage VE → titres, la synthèse 60/40,
+    les sensibilités et les cas limites.
+  - Valeurs attendues calculées indépendamment en Python : `docs/valorisation-calculs.md`, `scripts/reference-valorisation.py`.
+  - Hypothèses sourcées et datées : `src/data/hypotheses.json`.
+    - taux sans risque BCE AAA 10 ans : 3,27 % au 09/11/2026 ;
+    - prime de risque France (Damodaran) : 5,01 % au 05/01/2026 ;
+    - coût de la dette des PME (Banque de France, août 2026) : 3,71 % ;
+    - IS 25 % / 15 % jusqu'à 42 500 € (service-public, vérifié le 17/02/2026) ;
+    - croissance terminale 2 % (objectif BCE) ;
+    - bêtas sectoriels Damodaran Europe de l'Ouest (05/01/2026) ;
+    - prime de taille et décotes : « À compléter », réglées par le dirigeant.
+  - Routes (`src/routes/valorisation.js`) :
+    - chiffres pré-remplis INPI puis validés ligne par ligne ;
+    - dépôt de liasse PDF → R2 → lecture par Claude (`src/lib/claude.js`, SDK officiel 1.3.0, `claude-haiku-5-5`, JSON
+      contraint par un schéma), propositions jamais validées automatiquement, 6 lectures au plus par dossier ;
+    - questionnaire (5 écrans) ;
+    - calcul enregistré.
+  - Page `/espace/valorisation/` : chiffres, questionnaire, résultats (football field, ponts, DCF, sensibilités, réglages
+    avec sources).
+  - Tests : 146 ; parcours navigateur vérifié en 1440 et 390 px.
+  - En attente : la clé `ANTHROPIC_API_KEY` à saisir par le dirigeant pour activer la lecture des liasses.
+- **10/11/2026, 3D « La cloche »** : réalisée sur la branche locale `3d-v2-cloche` (non poussée), en attente de validation
+  des captures.

@@ -18,7 +18,7 @@ Répondre en français, au vouvoiement dans l'interface. Commits en français.
 - D1 `passation` (migrations dans `migrations/`), R2 `passation-fichiers`.
 - Modèles centralisés dans `src/config.js` : `claude-sonnet-5-5` (approfondie, memo, teaser, chat), `claude-haiku-5-5`
   (commentaire express, extraction de chiffres). Limites d'usage dans la même constante.
-- Brevo : uniquement liens de connexion et notifications.
+- Brevo : uniquement codes de connexion et notifications.
 - Dépendance nouvelle : seulement si nécessaire et compatible Workers.
 - Données publiques : recherche-entreprises, ratios INPI/BCE, BODACC, cache D1 24 h. Normalisation fondée sur les
   réponses réelles.
@@ -40,7 +40,7 @@ Répondre en français, au vouvoiement dans l'interface. Commits en français.
 - Direction artistique : s'inspirer, ne rien copier (texte, logo, nom, photo, visuel). Illustrations SVG originales.
 
 ## Sécurité et RGPD
-- Lien magique : jeton à usage unique, 15 min, stocké haché. Cookie de session `HttpOnly; Secure; SameSite=Lax`.
+- Connexion par code à 6 chiffres : usage unique, 10 min, 5 essais, stocké haché (sel + secret serveur). Cookie de session `HttpOnly; Secure; SameSite=Lax`.
 - Chaque route privée vérifie que le dossier appartient à l'utilisateur connecté.
 - Données du dirigeant envoyées uniquement à l'API Claude, pour le traitement demandé.
 - Suppression du dossier et des fichiers R2 en un clic. Limite de débit sur la valorisation express.

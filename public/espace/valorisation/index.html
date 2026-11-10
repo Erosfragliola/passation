@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr" class="sans-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Valorisation · Passation</title>
+  <meta name="theme-color" content="#FBF6EC">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<header class="nav-zone">
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a></div>
+  </nav>
+</header>
+<main id="contenu" class="espace parcours" aria-busy="true">
+  <section class="nuit dossier-tete parcours-tete">
+    <div class="conteneur">
+      <p class="etiquette">Valorisation approfondie</p>
+      <h1 id="dossier-nom">Chargement…</h1>
+      <nav class="etapes" aria-label="Étapes du parcours">
+        <a href="#chiffres" data-etape="chiffres"><span class="etape-num">1</span> Vos chiffres <span class="etape-etat" id="etat-chiffres"></span></a>
+        <a href="#entreprise" data-etape="entreprise"><span class="etape-num">2</span> Votre entreprise <span class="etape-etat" id="etat-entreprise"></span></a>
+        <a href="#valorisation" data-etape="valorisation"><span class="etape-num">3</span> Votre valorisation <span class="etape-etat" id="etat-valorisation"></span></a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- 1. Vos chiffres -->
+  <section class="panneau" id="chiffres" aria-labelledby="titre-chiffres" hidden>
+    <div class="conteneur">
+      <h2 id="titre-chiffres">Vos <em>chiffres</em></h2>
+      <p class="chapo-petit">Trois exercices suffisent. Déposez votre liasse fiscale : nous lisons les montants, <strong>vous validez chaque ligne</strong>. Rien n'entre dans le calcul sans votre validation.</p>
+
+      <div class="depot" id="depot">
+        <input type="file" id="fichier-liasse" accept="application/pdf" hidden>
+        <div class="depot-texte">
+          <strong>Déposer une liasse fiscale (PDF)</strong>
+          <span class="petit">Formulaires 2033 ou 2050 à 2059, 10 Mo au plus. Une liasse contient en général deux exercices.</span>
+        </div>
+        <button class="btn btn-noir" type="button" id="btn-liasse">Choisir un PDF</button>
+      </div>
+      <p class="message-carte" id="message-liasse" role="status" aria-live="polite" hidden></p>
+
+      <div class="tableau-defile" tabindex="0" aria-label="Tableau des chiffres par exercice">
+        <table class="tableau-chiffres" id="tableau-chiffres">
+          <thead><tr><th scope="col">Poste</th><th scope="col" class="col-ligne">Ligne</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="chiffres-actions">
+        <label class="petit" for="nouvel-exercice">Ajouter un exercice</label>
+        <input id="nouvel-exercice" type="number" min="1990" max="2100" step="1" placeholder="2025" inputmode="numeric">
+        <button class="btn btn-contour" type="button" id="btn-exercice">Ajouter</button>
+      </div>
+      <p class="petit legende-sources"><span class="source source-inpi">INPI</span> comptes publics · <span class="source source-liasse">Liasse</span> lu dans votre PDF · <span class="source source-dirigeant">Vous</span> saisi par vous · <span class="valide-marque">✓</span> ligne validée</p>
+      <div class="suite"><a class="btn btn-vert" href="#entreprise">Continuer : votre entreprise <span class="fleche" aria-hidden="true">→</span></a></div>
+    </div>
+  </section>
+
+  <!-- 2. Votre entreprise -->
+  <section class="panneau" id="entreprise" aria-labelledby="titre-entreprise" hidden>
+    <div class="conteneur conteneur-moyen">
+      <h2 id="titre-entreprise">Votre <em>entreprise</em></h2>
+      <p class="chapo-petit">Cinq écrans courts. Vos réponses sont enregistrées au fil de la saisie ; vous pouvez revenir à tout moment.</p>
+      <ol class="sous-etapes" id="sous-etapes"></ol>
+      <form class="form-carte questionnaire" id="questionnaire" novalidate></form>
+      <p class="petit enregistre" id="etat-enregistrement" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- 3. Votre valorisation -->
+  <section class="panneau" id="valorisation" aria-labelledby="titre-valorisation" hidden>
+    <div class="conteneur">
+      <h2 id="titre-valorisation">Votre <em>valorisation</em></h2>
+      <div id="resultat" aria-live="polite"></div>
+    </div>
+  </section>
+  <p class="message-carte" id="parcours-message" role="status" hidden></p>
+</main>
+<footer class="pied">
+  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0">
+    <span>© <span data-annee>2026</span> Passation</span>
+    <span><a href="/mentions-legales">Mentions légales</a> · <a href="/cgu">CGU</a> · <a href="/confidentialite">Confidentialité</a></span>
+  </div>
+</footer>
+<script src="/js/site.js" defer></script>
+<script type="module" src="/js/valorisation.js"></script>
+</body>
+</html>

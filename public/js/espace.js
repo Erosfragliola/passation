@@ -50,6 +50,16 @@ function afficher({ checklist = true } = {}) {
   } else {
     $("#estimation-valeur").textContent = "À affiner";
   }
+  document.querySelectorAll(".lien-parcours").forEach((l) => { l.href = `/espace/valorisation/?dossier=${dossier.id}#${l.dataset.ancre}`; });
+  const parcours = dossier.parcours;
+  if (parcours) {
+    $("#detail-chiffres").textContent = `${parcours.exercices_complets} exercice${parcours.exercices_complets > 1 ? "s" : ""} complet${parcours.exercices_complets > 1 ? "s" : ""} sur ${parcours.exercices_attendus}.`;
+    $("#detail-valorisation").textContent = `Questionnaire : ${parcours.questionnaire.pct} %.`;
+    if (parcours.valorisation?.central != null) {
+      $("#estimation-legende").textContent = "Valorisation approfondie · valeur des titres";
+      $("#estimation-valeur").textContent = `${euros(parcours.valorisation.bas)} – ${euros(parcours.valorisation.haut)}`;
+    }
+  }
   const a = dossier.avancement;
   $("#avancement-global").textContent = `${a.global} %`;
   jauge($("#jauge-globale"), a.global);
