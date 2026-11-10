@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Passation · Préparez la cession de votre entreprise</title>
   <meta name="description" content="Valorisation express à partir de votre SIREN, valorisation approfondie, datapack Excel, teaser, mémorandum d'information et chat expert : la boîte à outils du dirigeant qui prépare sa cession.">
-  <meta name="theme-color" content="#F6F3EC">
+  <meta name="theme-color" content="#231E18">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="/img/photos/texture-sombre-1600.webp" imagesrcset="/img/photos/texture-sombre-800.webp 800w, /img/photos/texture-sombre-1600.webp 1600w, /img/photos/texture-sombre-2400.webp 2400w" imagesizes="100vw" fetchpriority="high">
   <link rel="preload" href="/fonts/instrument-serif-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="modulepreload" href="/vendor/three.core.js">
+  <link rel="preload" href="/fonts/inter-tight-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
 
 <header class="nav-zone">
   <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg>Passation</a>
+    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
     <ul class="nav-liens">
       <li><a href="#comment">Comment ça marche</a></li>
       <li><a href="#outils">La boîte à outils</a></li>
@@ -42,214 +42,188 @@
 
 <main id="contenu">
 
-  <!-- 1. Hero : valorisation express -->
+  <!-- 1. Hero plein écran. Le fond accueillera la photo/vidéo d'un dirigeant (public/img/source) ;
+       en attendant, la texture peinte originale. -->
   <section class="hero" aria-labelledby="titre-hero">
-    <div class="conteneur hero-grille">
-      <div>
-        <p class="accroche">Préparer la cession de votre PME</p>
-        <h1 id="titre-hero">Vous avez bâti. Préparez votre <em>transmission</em>.</h1>
-        <p class="chapo">Une première valeur de votre entreprise en quelques secondes. Puis la valorisation argumentée, le datapack, le teaser et le mémorandum, prêts pour vos conseils et vos repreneurs.</p>
-
-        <form class="recherche" action="/estimation" method="get" role="search" aria-describedby="note-recherche">
-          <div class="recherche-champ">
-            <label for="q">SIREN ou nom de votre société</label>
-            <input id="q" name="q" type="search" autocomplete="off" inputmode="search" required minlength="2"
-                   placeholder="SIREN ou nom de votre société">
-            <button class="btn btn-noir" type="submit">Estimer ma valeur <span class="fleche" aria-hidden="true">→</span></button>
-          </div>
-          <p class="recherche-note petit" id="note-recherche">Gratuit, sans compte. <span class="mention">Estimation indicative, non contractuelle.</span></p>
-        </form>
-
-        <div class="hero-ctas">
-          <a class="lien-discret" href="#comment">Voir comment ça marche</a>
-        </div>
-      </div>
-
-      <div class="visuel" data-maquette>
-        <img src="/img/facade.svg" alt="" width="600" height="528">
-        <div class="carte-verre" aria-label="Exemple de carte de valorisation, chiffres fictifs">
-          <div class="mock-titre"><span>Valeur d'entreprise</span><span class="etiquette-exemple">Exemple</span></div>
-          <p class="mock-montant chiffre">1,4 <small>M€</small></p>
-          <p class="mock-fourchette chiffre">Fourchette 1,1 – 1,7 M€ · comptes N-1</p>
-          <div class="barres">
-            <div class="barre"><span>CA</span><span class="barre-piste"><span class="encre" style="width:92%"></span></span><b class="chiffre">4,2 M€</b></div>
-            <div class="barre"><span>EBE</span><span class="barre-piste"><span style="width:38%"></span></span><b class="chiffre">380 k€</b></div>
-            <div class="barre"><span>Dette nette</span><span class="barre-piste"><span class="pierre" style="width:18%"></span></span><b class="chiffre">220 k€</b></div>
-          </div>
-        </div>
-      </div>
+    <div class="hero-fond">
+      <img src="/img/photos/texture-sombre-1600.webp"
+           srcset="/img/photos/texture-sombre-800.webp 800w, /img/photos/texture-sombre-1600.webp 1600w, /img/photos/texture-sombre-2400.webp 2400w"
+           sizes="100vw" alt="" width="2400" height="1600" fetchpriority="high">
     </div>
-  </section>
-
-  <!-- 2. Chiffres clés (faits sur l'outil, pas de statistiques d'usage) -->
-  <section class="chiffres" aria-label="Passation en chiffres">
+    <div class="conteneur hero-contenu">
+      <p class="etiquette">Préparer la cession de votre PME</p>
+      <h1 id="titre-hero">Vous avez bâti. Préparez votre <em>transmission</em>.</h1>
+      <p class="chapo">Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.</p>
+      <form class="recherche" action="/estimation" method="get" role="search">
+        <div class="recherche-champ">
+          <label for="q">SIREN ou nom de votre société</label>
+          <input id="q" name="q" type="search" autocomplete="off" required minlength="2" placeholder="SIREN ou nom de votre société" aria-describedby="note-recherche">
+          <button class="btn btn-vert" type="submit">Estimer ma valeur <span class="fleche" aria-hidden="true">→</span></button>
+        </div>
+        <p class="recherche-note" id="note-recherche">Gratuit, sans compte. <strong>Estimation indicative, non contractuelle.</strong></p>
+      </form>
+    </div>
     <div class="conteneur">
-      <div class="chiffres-grille apparait">
-        <div class="chiffre-bloc"><strong>3</strong><span>méthodes de valorisation croisées</span></div>
-        <div class="chiffre-bloc"><strong>9</strong><span>onglets dans le datapack, formules vivantes</span></div>
-        <div class="chiffre-bloc"><strong>6</strong><span>outils réunis dans un seul espace</span></div>
-        <div class="chiffre-bloc"><strong><em>0</em></strong><span>mot de passe : connexion par lien sécurisé</span></div>
+      <div class="hero-chiffres" aria-label="Passation en chiffres">
+        <div><strong>3</strong><span>méthodes de valorisation croisées</span></div>
+        <div><strong>9</strong><span>onglets de datapack, formules vivantes</span></div>
+        <div><strong>6</strong><span>outils réunis dans un seul espace</span></div>
+        <div><strong><em>0</em></strong><span>mot de passe : connexion par lien sécurisé</span></div>
       </div>
     </div>
   </section>
 
-  <!-- 3. Comment ça marche -->
-  <section id="comment" aria-labelledby="titre-comment">
+  <!-- 2. Le témoin : scène 3D (nuit) -->
+  <section class="nuit" aria-labelledby="titre-temoin">
+    <div class="conteneur temoin-grille">
+      <div class="apparait">
+        <p class="etiquette">Le témoin</p>
+        <h2 id="titre-temoin">Ce que vous avez bâti mérite d'être <em>transmis</em>.</h2>
+        <p class="chapo" style="margin-top:20px">Une cession, c'est un relais. Celui qui part transmet un savoir-faire, des équipes, des clients. Celui qui arrive doit comprendre vite ce qu'il reprend.</p>
+        <ol class="temoin-points">
+          <li><span>01</span>Vous montrez ce que vaut votre entreprise, chiffres à l'appui.</li>
+          <li><span>02</span>Vous racontez son histoire, sans rien laisser au hasard.</li>
+          <li><span>03</span>Vous choisissez quand, et à qui, vous dévoiler.</li>
+        </ol>
+      </div>
+      <div class="scene-3d apparait" data-maquette>
+        <p class="legende" aria-hidden="true">Maquette · le témoin passe le seuil</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Mission : mosaïque -->
+  <section aria-labelledby="titre-mission">
     <div class="conteneur">
       <div class="entete-section apparait">
-        <p class="accroche">Comment ça marche ?</p>
-        <h2 id="titre-comment">Trois étapes. Une cession <em>mieux préparée</em>.</h2>
-        <p class="chapo">Vous partez de données publiques. Vous les complétez avec les vôtres. Vous repartez avec des documents prêts à partager.</p>
+        <p class="etiquette">Notre parti pris</p>
+        <h2 id="titre-mission">Une entreprise ne se vend pas. Elle se <em>transmet</em>.</h2>
       </div>
+      <div class="mosaique">
+        <figure class="photo photo-attente m-portrait apparait" style="margin:0">
+          <img src="/img/photos/texture-sombre-800.webp" alt="" loading="lazy" width="800" height="533">
+          <figcaption>Photo d'illustration à venir · portrait de dirigeant</figcaption>
+        </figure>
+        <div class="m-citation apparait">
+          <blockquote>« Trente ans de travail ne tiennent pas dans un multiple. Ils tiennent dans un dossier qui <em>raconte</em>, chiffre et convainc. »</blockquote>
+          <p class="petit">Le parti pris de Passation</p>
+        </div>
+        <figure class="photo apparait" style="margin:0">
+          <img src="/img/photos/texture-clair-800.webp" srcset="/img/photos/texture-clair-800.webp 800w, /img/photos/texture-clair-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Peinture abstraite aux tons vert, cuivre et crème" loading="lazy" width="800" height="533">
+        </figure>
+        <div class="m-texte apparait">
+          <p class="etiquette" style="margin:0">Pour qui</p>
+          <p>Les dirigeants de PME qui pensent à céder dans les deux à cinq ans, et veulent arriver prêts devant leurs conseils et leurs repreneurs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <ol class="etapes" role="list" style="list-style:none;margin:0;padding:0">
-        <li class="carte etape apparait">
-          <span class="etape-num">01</span>
-          <h3>Saisissez votre <em>SIREN</em></h3>
-          <p>Nous lisons les registres publics : identité, activité, derniers comptes déposés. Vous obtenez une première fourchette de valeur.</p>
-          <div class="etape-visuel" aria-hidden="true">
-            <div class="mini-champ">123 456 789<span class="curseur"></span></div>
-            <div class="mini-fiche">
-              <div><span>Activité</span><span>Menuiserie</span></div>
-              <div><span>Effectif</span><span>10 à 19 salariés</span></div>
-              <div><span>Derniers comptes</span><span>2024</span></div>
-            </div>
-          </div>
+  <!-- 4. Comment ça marche -->
+  <section id="comment" aria-labelledby="titre-comment" style="padding-top:0">
+    <div class="conteneur">
+      <div class="entete-section apparait">
+        <p class="etiquette">Comment ça marche</p>
+        <h2 id="titre-comment">Trois étapes. Une cession <em>mieux préparée</em>.</h2>
+      </div>
+      <ol class="etapes">
+        <li class="etape apparait">
+          <figure class="photo photo-attente" style="margin:0"><img src="/img/photos/texture-sombre-800.webp" alt="" loading="lazy" width="800" height="533"><figcaption>Photo à venir · dirigeant devant ses comptes</figcaption></figure>
+          <span class="etape-num">01 · Votre SIREN</span>
+          <h3>Une première <em>valeur</em></h3>
+          <p>Nous lisons les registres publics : identité, activité, derniers comptes déposés. Vous obtenez une fourchette en quelques secondes.</p>
         </li>
-        <li class="carte etape apparait">
-          <span class="etape-num">02</span>
-          <h3>Affinez avec <em>vos chiffres</em></h3>
-          <p>Questionnaire court, import de votre liasse, retraitements de l'EBE. Trois méthodes croisées donnent une valeur argumentée.</p>
-          <div class="etape-visuel" aria-hidden="true">
-            <div class="mock-titre" style="margin-bottom:12px"><span>Synthèse par méthode</span><span class="etiquette-exemple">Exemple</span></div>
-            <div class="ff">
-              <div class="ff-ligne"><span>Multiples</span><span class="ff-piste"><span style="left:22%;width:42%"></span></span></div>
-              <div class="ff-ligne"><span>DCF</span><span class="ff-piste"><span class="encre" style="left:30%;width:46%"></span></span></div>
-              <div class="ff-ligne"><span>Patrimoniale</span><span class="ff-piste"><span class="pierre" style="left:12%;width:28%"></span></span></div>
-            </div>
-          </div>
+        <li class="etape apparait">
+          <figure class="photo photo-attente" style="margin:0"><img src="/img/photos/texture-clair-800.webp" alt="" loading="lazy" width="800" height="533"><figcaption>Photo à venir · un atelier transmis</figcaption></figure>
+          <span class="etape-num">02 · Vos chiffres</span>
+          <h3>Une valeur <em>argumentée</em></h3>
+          <p>Questionnaire court, import de votre liasse, retraitements de l'EBE. Trois méthodes croisées, des hypothèses que vous gardez en main.</p>
         </li>
-        <li class="carte etape apparait">
-          <span class="etape-num">03</span>
-          <h3>Générez vos <em>documents</em></h3>
+        <li class="etape apparait">
+          <figure class="photo photo-attente" style="margin:0"><img src="/img/photos/texture-sombre-800.webp" alt="" loading="lazy" width="800" height="533"><figcaption>Photo à venir · poignée de main</figcaption></figure>
+          <span class="etape-num">03 · Vos documents</span>
+          <h3>Un dossier <em>prêt</em></h3>
           <p>Datapack Excel, teaser anonymisé, mémorandum d'information. Vous relisez, vous ajustez, vous partagez.</p>
-          <div class="etape-visuel" aria-hidden="true">
-            <div class="docs-mini">
-              <div class="doc-mini bas"><b>Teaser</b><i class="v"></i><i></i><i class="c"></i></div>
-              <div class="doc-mini haut"><b>Info memo</b><i class="v"></i><i></i><i class="c"></i><i></i><i class="c"></i><i></i></div>
-              <div class="doc-mini moyen"><b>Datapack</b><i class="v"></i><i></i><i></i><i class="c"></i></div>
-            </div>
-          </div>
         </li>
       </ol>
     </div>
   </section>
 
-  <!-- 4. La boîte à outils -->
+  <!-- 5. La boîte à outils -->
   <section id="outils" aria-labelledby="titre-outils" style="padding-top:0">
     <div class="conteneur">
       <div class="entete-section apparait">
-        <p class="accroche">La boîte à outils</p>
+        <p class="etiquette">Votre boîte à outils</p>
         <h2 id="titre-outils">Tout ce qu'un repreneur vous <em>demandera</em>.</h2>
-        <p class="chapo">Chaque outil s'appuie sur votre dossier. Vous saisissez une information une fois, elle sert partout.</p>
+        <p class="chapo">Vous saisissez une information une fois. Elle sert partout.</p>
       </div>
-
       <div class="outils">
         <article class="carte outil apparait">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
           <h3>Valorisation</h3>
-          <ul>
-            <li>Express, dès votre SIREN</li>
-            <li>Approfondie : multiples, DCF, actif net corrigé</li>
-            <li>Retraitements, décotes, valeur des titres</li>
-          </ul>
-          <p class="outil-forme">Fourchette, graphique de synthèse, sensibilités</p>
+          <ul><li>Express, dès votre SIREN</li><li>Approfondie : multiples, DCF, actif net corrigé</li><li>Retraitements, décotes, valeur des titres</li></ul>
+          <p class="outil-forme">Fourchette · synthèse · sensibilités</p>
         </article>
         <article class="carte outil apparait">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18"/></svg></div>
           <h3>Datapack Excel</h3>
-          <ul>
-            <li>Comptes, bilan, BFR, dette nette</li>
-            <li>Les trois méthodes et leurs hypothèses</li>
-            <li>Formules vivantes, sources citées</li>
-          </ul>
-          <p class="outil-forme">Fichier .xlsx, 9 onglets</p>
+          <ul><li>Comptes, bilan, BFR, dette nette</li><li>Les trois méthodes et leurs hypothèses</li><li>Formules vivantes, sources citées</li></ul>
+          <p class="outil-forme">Fichier .xlsx · 9 onglets</p>
         </article>
         <article class="carte outil apparait">
-          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h4"/><circle cx="18" cy="18" r="0.5"/></svg></div>
+          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h4"/></svg></div>
           <h3>Teaser</h3>
-          <ul>
-            <li>Une à deux pages, anonymisées</li>
-            <li>Nom de code, activité, chiffres arrondis</li>
-            <li>Points forts et raison de la cession</li>
-          </ul>
-          <p class="outil-forme">Word et version à imprimer en PDF</p>
+          <ul><li>Une à deux pages, anonymisées</li><li>Nom de code, activité, chiffres arrondis</li><li>Points forts et raison de la cession</li></ul>
+          <p class="outil-forme">Word · version imprimable PDF</p>
         </article>
         <article class="carte outil apparait">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-4a2 2 0 0 0-2 2"/><path d="M20 4v14h-6"/></svg></div>
           <h3>Mémorandum</h3>
-          <ul>
-            <li>Activité, marché, clients, équipes</li>
-            <li>Données financières et perspectives</li>
-            <li>Rien d'inventé : les manques sont signalés</li>
-          </ul>
-          <p class="outil-forme">15 à 25 pages, section par section</p>
+          <ul><li>Activité, marché, clients, équipes</li><li>Données financières et perspectives</li><li>Rien d'inventé : les manques sont signalés</li></ul>
+          <p class="outil-forme">15 à 25 pages · section par section</p>
         </article>
         <article class="carte outil apparait">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4h10l4 4v12H5z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></div>
           <h3>Ressources</h3>
-          <ul>
-            <li>Préparer, valoriser, trouver un repreneur</li>
-            <li>Négocier, fiscalité, après la cession</li>
-            <li>Sources officielles, fiches datées</li>
-          </ul>
+          <ul><li>Préparer, valoriser, trouver un repreneur</li><li>Négocier, fiscalité, après la cession</li><li>Sources officielles, fiches datées</li></ul>
           <p class="outil-forme">Fiches classées par étape</p>
         </article>
         <article class="carte outil apparait">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></div>
           <h3>Chat expert</h3>
-          <ul>
-            <li>Connaît votre dossier et vos chiffres</li>
-            <li>Cite ses sources</li>
-            <li>Vous oriente vers le bon conseil</li>
-          </ul>
-          <p class="outil-forme">Cession, transmission, valorisation</p>
+          <ul><li>Connaît votre dossier et vos chiffres</li><li>Cite ses sources</li><li>Vous oriente vers le bon conseil</li></ul>
+          <p class="outil-forme">Cession · transmission · valorisation</p>
         </article>
       </div>
     </div>
   </section>
 
-  <!-- 5. Confidentialité et réassurance (section sombre) -->
-  <section id="confidentialite" class="sombre" aria-labelledby="titre-confid">
-    <img class="illus-sombre" src="/img/plan.svg" alt="" width="520" height="520">
-    <div class="conteneur sombre-grille">
+  <!-- 6. Confidentialité (nuit) -->
+  <section id="confidentialite" class="nuit" aria-labelledby="titre-confid">
+    <div class="conteneur confid-grille">
       <div class="apparait">
-        <p class="accroche">Confidentialité</p>
+        <p class="etiquette">Confidentialité</p>
         <h2 id="titre-confid">Vos chiffres restent <em>les vôtres</em>.</h2>
-        <p class="chapo" style="margin-top:16px">Préparer une cession demande de la discrétion. Passation est conçu pour la protéger.</p>
-        <p style="margin-top:24px"><a class="btn btn-ivoire" href="/confidentialite">Lire notre politique</a></p>
+        <p class="chapo" style="margin-top:20px">Préparer une cession demande de la discrétion. Passation est conçu pour la protéger.</p>
+        <p style="margin-top:28px"><a class="btn btn-sable" href="/confidentialite">Lire notre politique</a></p>
       </div>
       <div class="apparait">
         <div class="garanties">
           <div class="garantie">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-            <h3>Accès réservé</h3>
-            <p>Connexion par lien à usage unique. Vous seul voyez votre dossier.</p>
+            <h3>Accès réservé</h3><p>Connexion par lien à usage unique. Vous seul voyez votre dossier.</p>
           </div>
           <div class="garantie">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
-            <h3>Aucune revente</h3>
-            <p>Vos données servent uniquement aux traitements que vous demandez.</p>
+            <h3>Aucune revente</h3><p>Vos données servent uniquement aux traitements que vous demandez.</p>
           </div>
           <div class="garantie">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
-            <h3>Suppression en un clic</h3>
-            <p>Dossier, chiffres et fichiers : vous effacez tout quand vous le décidez.</p>
+            <h3>Suppression en un clic</h3><p>Dossier, chiffres et fichiers : vous effacez tout quand vous le décidez.</p>
           </div>
           <div class="garantie">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
-            <h3>Teaser anonymisé</h3>
-            <p>Ni nom, ni ville, ni chiffre identifiant. Vous choisissez quand vous dévoiler.</p>
+            <h3>Teaser anonymisé</h3><p>Ni nom, ni ville, ni chiffre identifiant. Vous choisissez quand vous dévoiler.</p>
           </div>
         </div>
         <div class="a-remplir">À remplir : partenaires, labels ou témoignages réels (aucun n'est inventé).</div>
@@ -257,87 +231,61 @@
     </div>
   </section>
 
-  <!-- 6. FAQ -->
+  <!-- 7. FAQ -->
   <section id="faq" aria-labelledby="titre-faq">
     <div class="conteneur faq-grille">
       <div class="apparait">
-        <p class="accroche">Questions fréquentes</p>
+        <p class="etiquette">Questions fréquentes</p>
         <h2 id="titre-faq">Ce que les dirigeants nous <em>demandent</em>.</h2>
       </div>
       <div class="faq apparait">
-        <details>
-          <summary>L'estimation express est-elle fiable ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse">
-            <p>C'est un premier ordre de grandeur. Elle applique des multiples sectoriels aux derniers comptes publiés de votre société.</p>
-            <p>Elle ignore vos retraitements, votre dette et vos spécificités. La valorisation approfondie les prend en compte.</p>
-          </div>
-        </details>
-        <details>
-          <summary>D'où viennent les chiffres de ma société ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Des registres publics : l'annuaire des entreprises de l'État, les comptes annuels déposés et le BODACC. Nous indiquons toujours l'exercice utilisé.</p></div>
-        </details>
-        <details>
-          <summary>Mes comptes sont confidentiels. Que se passe-t-il ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Nous vous le signalons. Vous saisissez alors votre chiffre d'affaires et votre EBE, ou vous importez votre liasse fiscale.</p></div>
-        </details>
-        <details>
-          <summary>Qui a accès à mes données ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Vous seul. Pour rédiger ou analyser, vos données sont transmises au modèle d'IA qui exécute la demande, et à lui seul. Vous pouvez tout supprimer à tout moment.</p></div>
-        </details>
-        <details>
-          <summary>Passation remplace-t-il mon expert-comptable ou mon avocat ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Non. Passation vous fait gagner du temps et prépare le terrain. Pour les décisions juridiques et fiscales, faites-vous accompagner par un professionnel.</p></div>
-        </details>
-        <details>
-          <summary>Quels documents puis-je générer ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Un datapack Excel, un teaser anonymisé et un mémorandum d'information. Vous relisez et modifiez chaque section avant de partager.</p></div>
-        </details>
-        <details>
-          <summary>Combien cela coûte-t-il ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p class="a-remplir">À remplir : tarifs et conditions.</p></div>
-        </details>
+        <details><summary>L'estimation express est-elle fiable ?<span class="plus" aria-hidden="true">+</span></summary>
+          <div class="reponse"><p>C'est un premier ordre de grandeur. Elle applique des multiples sectoriels aux derniers comptes publiés de votre société.</p><p>Elle ignore vos retraitements, votre dette et vos spécificités. La valorisation approfondie les prend en compte.</p></div></details>
+        <details><summary>D'où viennent les chiffres de ma société ?<span class="plus" aria-hidden="true">+</span></summary>
+          <div class="reponse"><p>Des registres publics : l'annuaire des entreprises de l'État, les comptes annuels déposés et le BODACC. Nous indiquons toujours l'exercice utilisé.</p></div></details>
+        <details><summary>Mes comptes sont confidentiels. Que se passe-t-il ?<span class="plus" aria-hidden="true">+</span></summary>
+          <div class="reponse"><p>Nous vous le signalons. Vous saisissez alors votre chiffre d'affaires et votre EBE, ou vous importez votre liasse fiscale.</p></div></details>
+        <details><summary>Qui a accès à mes données ?<span class="plus" aria-hidden="true">+</span></summary>
+          <div class="reponse"><p>Vous seul. Pour rédiger ou analyser, vos données sont transmises au modèle d'IA qui exécute la demande, et à lui seul. Vous pouvez tout supprimer à tout moment.</p></div></details>
+        <details><summary>Passation remplace-t-il mon expert-comptable ou mon avocat ?<span class="plus" aria-hidden="true">+</span></summary>
+          <div class="reponse"><p>Non. Passation vous fait gagner du temps et prépare le terrain. Pour les décisions juridiques et fiscales, faites-vous accompagner par un professionnel.</p></div></details>
+        <details><summary>Quels documents puis-je générer ?<span class="plus" aria-hidden="true">+</span></summary>
+          <div class="reponse"><p>Un datapack Excel, un teaser anonymisé et un mémorandum d'information. Vous relisez et modifiez chaque section avant de partager.</p></div></details>
+        <details><summary>Combien cela coûte-t-il ?<span class="plus" aria-hidden="true">+</span></summary>
+          <div class="reponse"><p class="a-remplir">À remplir : tarifs et conditions.</p></div></details>
       </div>
     </div>
   </section>
 
-  <!-- Appel final -->
-  <section class="appel" aria-labelledby="titre-appel">
-    <div class="conteneur">
-      <div class="appel-carte apparait">
-        <h2 id="titre-appel">Commencez par une <em>première valeur</em>.</h2>
-        <p>Votre SIREN suffit. Le reste viendra à votre rythme.</p>
-        <a class="btn btn-ivoire" href="#titre-hero" data-focus="#q">Estimer ma valeur <span class="fleche" aria-hidden="true">→</span></a>
-      </div>
+  <!-- 8. Appel final (nuit) -->
+  <section class="nuit final" aria-labelledby="titre-final">
+    <div class="fond-peint"><img src="/img/photos/texture-sombre-1600.webp" alt="" loading="lazy" width="1600" height="1067"></div>
+    <div class="conteneur apparait">
+      <p class="etiquette">Premier pas</p>
+      <h2 id="titre-final">Commencez par une <em>première valeur</em>.</h2>
+      <p class="chapo">Votre SIREN suffit. Le reste viendra à votre rythme.</p>
+      <a class="btn btn-vert" href="#titre-hero" data-focus="#q">Estimer ma valeur <span class="fleche" aria-hidden="true">→</span></a>
     </div>
   </section>
 </main>
 
-<!-- 7. Pied de page -->
 <footer class="pied">
   <div class="conteneur">
     <div class="pied-grille">
       <div>
-        <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg>Passation</a>
+        <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
         <p class="petit" style="margin-top:12px;max-width:22rem">La boîte à outils du dirigeant qui prépare la cession de son entreprise.</p>
       </div>
       <div>
-        <h4>Produit</h4>
-        <ul>
-          <li><a href="#comment">Comment ça marche</a></li>
-          <li><a href="#outils">La boîte à outils</a></li>
-          <li><a href="#faq">Questions fréquentes</a></li>
-        </ul>
+        <h3 class="pied-titre">Produit</h3>
+        <ul><li><a href="#comment">Comment ça marche</a></li><li><a href="#outils">La boîte à outils</a></li><li><a href="#faq">Questions fréquentes</a></li></ul>
       </div>
       <div>
-        <h4>Informations</h4>
-        <ul>
-          <li><a href="/mentions-legales">Mentions légales</a></li>
-          <li><a href="/cgu">Conditions d'utilisation</a></li>
-          <li><a href="/confidentialite">Confidentialité</a></li>
-        </ul>
+        <h3 class="pied-titre">Informations</h3>
+        <ul><li><a href="/mentions-legales">Mentions légales</a></li><li><a href="/cgu">Conditions d'utilisation</a></li><li><a href="/confidentialite">Confidentialité</a></li></ul>
       </div>
     </div>
-    <div class="pied-bas petit">
+    <div class="pied-bas">
       <span>© <span data-annee>2026</span> Passation</span>
       <span>Estimations indicatives, non contractuelles. Ne constitue pas un conseil juridique, fiscal ou financier.</span>
     </div>
@@ -345,6 +293,5 @@
 </footer>
 
 <script src="/js/site.js" defer></script>
-<script type="module" src="/js/maquette3d.js"></script>
 </body>
 </html>

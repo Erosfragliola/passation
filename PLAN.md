@@ -8,9 +8,8 @@
   (`src/data/*.json`, avec URL et date de consultation), **pas affichées sur le site**.
 - **DCF** : les paramètres trouvés sont affichés au dirigeant comme **« Hypothèses Passation »**, modifiables champ par
   champ. Si rien de fiable n'est trouvé, le champ est vide et le dirigeant le renseigne.
-- **Palette** : Ivoire `#F6F3EC` (fonds, 60 %), Encre `#14181F` (texte, boutons, section sombre, 25 %),
-  Vert sapin `#1F4D3D` (accent, valeurs, graphiques, 10 %), Pierre `#8A8780` (textes secondaires, traits, 3 %),
-  Laiton `#B08D57` (le « témoin », détails rares, 2 %).
+- **Palette (DA v2, remplace la v1)** : crème `#FBF6EC`, espresso `#231E18`, sable `#EADFCB`, pierre `#8A7F70`,
+  vert `#1E3A2E`, cuivre `#A8653A` (le témoin, jamais en texte), cuivre clair `#E9C9A4` (italique sur fond sombre).
 - **Nom** : Passation, pour l'instant.
 
 ---
@@ -248,3 +247,9 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
   appliquée en local, landing complète (7 sections), pages légales en brouillon, pages d'attente estimation/connexion,
   404, polices auto-hébergées, illustrations SVG originales. `npm test` : 3 tests passent. Vérifié avec
   `wrangler dev` et captures à 390 px et 1440 px.
+- **10/11/2026, 3D et marque** : maquette 3D (Three.js 0.186.1 auto-hébergé), logo « Le Seuil », planche `/marque`.
+- **10/11/2026, DA v2** : palette chaude (crème, espresso, sable, vert, cuivre), Instrument Serif + Inter Tight +
+  IBM Plex Mono, hero plein écran, 3 sections espresso, mosaïque, texture peinte originale (`npm run images`),
+  3D chargée à la demande. Contrastes AA : pierre `#8A7F70` réservé aux traits ; texte secondaire `#696155`
+  (clair) et `#A39886` (sombre). Lighthouse : mobile perf 99 / a11y 98, bureau perf 93. Photos réelles en attente
+  (`public/img/source/`, crédits dans `public/img/CREDITS.md`).

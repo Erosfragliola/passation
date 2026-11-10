@@ -7,3 +7,6 @@ backup*.sql
 *.backup.sql
 *.dump.sql
 .DS_Store
+
+# Originaux photo/vidéo (lourds) : seules les versions optimisées de public/img/photos sont publiées
+public/img/source/

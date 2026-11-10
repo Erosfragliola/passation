@@ -8,21 +8,21 @@
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/styles.css">
   <style>
-    .planche { padding: 48px 0 96px; }
+    .planche { padding: 140px 0 96px; }
     .planche h1 { font-size: clamp(2.4rem, 6vw, 4rem); margin-bottom: 16px; }
     .planche h2 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 72px 0 24px; }
     .pistes { display: grid; gap: 20px; }
     @media (min-width: 900px) { .pistes { grid-template-columns: repeat(3, 1fr); } }
     .piste { display: flex; flex-direction: column; gap: 16px; position: relative; }
-    .piste.reco { border-color: var(--sapin); box-shadow: 0 0 0 1px var(--sapin), var(--ombre); }
-    .badge { position: absolute; top: -13px; left: 24px; font-size: .75rem; font-weight: 500; background: var(--sapin); color: var(--ivoire); border-radius: 999px; padding: 4px 10px; }
+    .piste.reco { border-color: var(--vert); box-shadow: 0 0 0 1px var(--vert), var(--ombre); }
+    .badge { position: absolute; top: -13px; left: 24px; font-size: .75rem; font-weight: 500; background: var(--vert); color: var(--creme); border-radius: 999px; padding: 4px 10px; }
     .scene { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .scene > div { border-radius: 18px; display: grid; place-items: center; aspect-ratio: 1; }
-    .scene .clair { background: var(--ivoire); border: 1px solid var(--trait); color: var(--encre); }
-    .scene .fonce { background: var(--encre); color: var(--ivoire); }
+    .scene .clair { background: var(--creme); border: 1px solid var(--trait); color: var(--espresso); }
+    .scene .fonce { background: var(--espresso); color: var(--creme); }
     .scene svg { width: 46%; height: auto; }
-    .tailles { display: flex; align-items: flex-end; gap: 16px; color: var(--encre); padding: 8px 0; }
-    .verrou { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 1.9rem; color: var(--encre); padding: 12px 0; border-top: 1px solid var(--trait); }
+    .tailles { display: flex; align-items: flex-end; gap: 16px; color: var(--espresso); padding: 8px 0; }
+    .verrou { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 1.9rem; color: var(--espresso); padding: 12px 0; border-top: 1px solid var(--trait); }
     .verrou svg { width: 30px; height: 30px; }
     .piste h3 { font-size: 1.7rem; }
     .piste p { font-size: .95rem; }
@@ -30,21 +30,21 @@
     @media (min-width: 900px) { .grille2 { grid-template-columns: 1fr 1fr; } }
     .nuancier { display: grid; grid-template-columns: repeat(5, 1fr); border-radius: var(--r-carte); overflow: hidden; border: 1px solid var(--trait); }
     .nuancier div { padding: 64px 12px 14px; font-size: .75rem; line-height: 1.4; }
-    .signatures li { font-family: var(--serif); font-size: 1.6rem; line-height: 1.25; color: var(--encre); margin-bottom: 12px; }
-    .signatures li em { color: var(--sapin); }
+    .signatures li { font-family: var(--serif); font-size: 1.6rem; line-height: 1.25; color: var(--espresso); margin-bottom: 12px; }
+    .signatures li em { color: var(--vert); }
     .signatures { list-style: none; padding: 0; margin: 0; }
   </style>
 </head>
 <body>
 <header class="nav-zone">
   <nav class="nav" aria-label="Navigation">
-    <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-clair" href="/">Voir le site</a></div>
+    <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" href="/">Voir le site</a></div>
   </nav>
 </header>
 <main class="planche">
   <div class="conteneur">
-    <p class="accroche">Planche de marque · document de travail, non indexé</p>
+    <p class="etiquette">Planche de marque · document de travail, non indexé</p>
     <h1>Passation, une marque de <em>passage</em>.</h1>
     <p class="chapo">Le dirigeant ne vend pas seulement une entreprise : il transmet ce qu'il a bâti. La marque raconte ce passage, avec la sobriété d'un dossier bien tenu.</p>
 
@@ -54,82 +54,82 @@
       <article class="carte piste reco">
         <span class="badge">Recommandé</span>
         <div class="scene">
-          <div class="clair"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg></div>
-          <div class="fonce"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg></div>
+          <div class="clair"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg></div>
+          <div class="fonce"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg></div>
         </div>
         <div class="tailles" aria-hidden="true">
-          <svg width="48" height="48" viewBox="0 0 32 32"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg>
-          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.6"/><circle cx="16" cy="21" r="3" fill="#B08D57"/></svg>
-          <svg width="16" height="16" viewBox="0 0 32 32"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="3.2"/><circle cx="16" cy="21" r="3.6" fill="#B08D57"/></svg>
+          <svg width="48" height="48" viewBox="0 0 32 32"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>
+          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.6"/><circle cx="16" cy="21" r="3" fill="#A8653A"/></svg>
+          <svg width="16" height="16" viewBox="0 0 32 32"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="3.2"/><circle cx="16" cy="21" r="3.6" fill="#A8653A"/></svg>
         </div>
         <h3>Le <em>Seuil</em></h3>
-        <p>Une porte en arc, et le témoin laiton qui la franchit. C'est la porte verte de la maquette 3D, le seuil que passe l'entreprise d'une génération à l'autre.</p>
+        <p>Une porte en arc, et le témoin cuivre qui la franchit. C'est la porte verte de la maquette 3D, le seuil que passe l'entreprise d'une génération à l'autre.</p>
         <p class="petit">Pourquoi : il relie le logo, l'illustration et la 3D en un seul récit. Lisible à 16 px. Aucun cliché du secteur (ni poignée de main, ni flèche, ni graphique).</p>
-        <div class="verrou"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg>Passation</div>
+        <div class="verrou"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</div>
       </article>
 
       <article class="carte piste">
         <div class="scene">
-          <div class="clair"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1F4D3D" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#B08D57"/></svg></div>
-          <div class="fonce"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#6FA38E" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#B08D57"/></svg></div>
+          <div class="clair"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1E3A2E" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#A8653A"/></svg></div>
+          <div class="fonce"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#7FA893" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#A8653A"/></svg></div>
         </div>
         <div class="tailles" aria-hidden="true">
-          <svg width="48" height="48" viewBox="0 0 32 32"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1F4D3D" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#B08D57"/></svg>
-          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1F4D3D" stroke-width="2.6"/><circle cx="16" cy="16" r="2.8" fill="#B08D57"/></svg>
-          <svg width="16" height="16" viewBox="0 0 32 32"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1F4D3D" stroke-width="3.2"/><circle cx="16" cy="16" r="3.4" fill="#B08D57"/></svg>
+          <svg width="48" height="48" viewBox="0 0 32 32"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1E3A2E" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#A8653A"/></svg>
+          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1E3A2E" stroke-width="2.6"/><circle cx="16" cy="16" r="2.8" fill="#A8653A"/></svg>
+          <svg width="16" height="16" viewBox="0 0 32 32"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1E3A2E" stroke-width="3.2"/><circle cx="16" cy="16" r="3.4" fill="#A8653A"/></svg>
         </div>
         <h3>Le <em>Relais</em></h3>
         <p>Deux demi-cercles décalés, le cédant et le repreneur, et le témoin entre eux au moment du passage.</p>
         <p class="petit">Plus abstrait, plus « fintech ». Risque : à petite taille, il peut se lire comme un œil ou une cible.</p>
-        <div class="verrou"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1F4D3D" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#B08D57"/></svg>Passation</div>
+        <div class="verrou"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M14 6a8 8 0 0 0 0 16" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M18 10a8 8 0 0 1 0 16" fill="none" stroke="#1E3A2E" stroke-width="2.2"/><circle cx="16" cy="16" r="2.4" fill="#A8653A"/></svg>Passation</div>
       </article>
 
       <article class="carte piste">
         <div class="scene">
-          <div class="clair"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#B08D57"/></svg></div>
-          <div class="fonce"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#B08D57"/></svg></div>
+          <div class="clair"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#A8653A"/></svg></div>
+          <div class="fonce"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#A8653A"/></svg></div>
         </div>
         <div class="tailles" aria-hidden="true">
-          <svg width="48" height="48" viewBox="0 0 32 32"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#B08D57"/></svg>
-          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="17" cy="13" r="2.8" fill="#B08D57"/></svg>
-          <svg width="16" height="16" viewBox="0 0 32 32"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="3.2"/><circle cx="17" cy="13" r="3.4" fill="#B08D57"/></svg>
+          <svg width="48" height="48" viewBox="0 0 32 32"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#A8653A"/></svg>
+          <svg width="32" height="32" viewBox="0 0 32 32"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="17" cy="13" r="2.8" fill="#A8653A"/></svg>
+          <svg width="16" height="16" viewBox="0 0 32 32"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="3.2"/><circle cx="17" cy="13" r="3.4" fill="#A8653A"/></svg>
         </div>
         <h3>Le <em>P</em> témoin</h3>
-        <p>Un monogramme P au trait fin, le témoin laiton logé dans sa boucle.</p>
+        <p>Un monogramme P au trait fin, le témoin cuivre logé dans sa boucle.</p>
         <p class="petit">Le plus sobre et le plus « cabinet ». Moins de récit : le P seul est très répandu.</p>
-        <div class="verrou"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#B08D57"/></svg>Passation</div>
+        <div class="verrou"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 28V6h7a7 7 0 0 1 0 14h-7" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17" cy="13" r="2.4" fill="#A8653A"/></svg>Passation</div>
       </article>
     </div>
 
     <h2>Plateforme de <em>marque</em></h2>
     <div class="grille2">
       <div class="carte">
-        <p class="accroche">Promesse</p>
-        <p style="font-family:var(--serif);font-size:1.7rem;line-height:1.2;color:var(--encre)">Préparer sa cession avec la rigueur d'un dossier de banque d'affaires, à son rythme et en toute discrétion.</p>
-        <p class="accroche" style="margin-top:28px">Le fil rouge</p>
-        <p>Le <strong>témoin</strong> laiton : un seul point de couleur précieuse, rare, qui passe de main en main. Il apparaît dans le logo, devant la porte de la maquette 3D, et dans les accroches. Jamais plus d'un par écran.</p>
-        <p class="accroche" style="margin-top:28px">Ton</p>
+        <p class="etiquette">Promesse</p>
+        <p style="font-family:var(--serif);font-size:1.7rem;line-height:1.2;color:var(--espresso)">Préparer sa cession avec la rigueur d'un dossier de banque d'affaires, à son rythme et en toute discrétion.</p>
+        <p class="etiquette" style="margin-top:28px">Le fil rouge</p>
+        <p>Le <strong>témoin</strong> cuivre : un seul point de couleur précieuse, rare, qui passe de main en main. Il apparaît dans le logo, devant la porte de la maquette 3D, et dans les accroches. Jamais plus d'un par écran.</p>
+        <p class="etiquette" style="margin-top:28px">Ton</p>
         <p>Vouvoiement. Phrases courtes et affirmatives. Le vocabulaire du métier (EBE, dette nette, info memo), expliqué une fois, puis assumé. Ni jargon gratuit, ni enthousiasme de start-up.</p>
       </div>
       <div class="carte">
-        <p class="accroche">Signatures possibles</p>
+        <p class="etiquette">Signatures possibles</p>
         <ul class="signatures">
           <li>Vous avez bâti. Préparez votre <em>transmission</em>.</li>
           <li>Le relais, <em>préparé</em>.</li>
           <li>Transmettre, en toute <em>clarté</em>.</li>
         </ul>
-        <p class="accroche" style="margin-top:28px">Typographie</p>
-        <p><span style="font-family:var(--serif);font-size:1.6rem;color:var(--encre)">Instrument Serif <em>italique</em></span> pour les titres et un mot clé par titre. <strong>Inter</strong> pour tout le reste.</p>
+        <p class="etiquette" style="margin-top:28px">Typographie</p>
+        <p><span style="font-family:var(--serif);font-size:1.6rem;color:var(--espresso)">Instrument Serif <em>italique</em></span> pour les titres et un mot clé par titre. <strong>Inter Tight</strong> pour le texte, <strong>IBM Plex Mono</strong> pour les étiquettes, pour tout le reste.</p>
       </div>
     </div>
 
     <h2>Palette</h2>
     <div class="nuancier">
-      <div style="background:#F6F3EC;color:#14181F">Ivoire<br>#F6F3EC · 60 %</div>
-      <div style="background:#14181F;color:#F6F3EC">Encre<br>#14181F · 25 %</div>
-      <div style="background:#1F4D3D;color:#F6F3EC">Vert sapin<br>#1F4D3D · 10 %</div>
-      <div style="background:#8A8780;color:#F6F3EC">Pierre<br>#8A8780 · 3 %</div>
-      <div style="background:#B08D57;color:#14181F">Laiton<br>#B08D57 · 2 %</div>
+      <div style="background:#FBF6EC;color:#231E18">Crème<br>#FBF6EC · 50 %</div>
+      <div style="background:#231E18;color:#FBF6EC">Espresso<br>#231E18 · 30 %</div>
+      <div style="background:#EADFCB;color:#231E18">Sable<br>#EADFCB · 15 %</div>
+      <div style="background:#1E3A2E;color:#FBF6EC">Vert<br>#1E3A2E</div>
+      <div style="background:#A8653A;color:#FBF6EC">Cuivre<br>#A8653A · témoin</div>
     </div>
   </div>
 </main>

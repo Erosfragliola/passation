@@ -38,5 +38,14 @@
     });
   });
 
+  // Scène 3D chargée seulement à l'approche de sa section (Three.js pèse ~200 Ko)
+  const scene = document.querySelector("[data-maquette]");
+  if (scene && "IntersectionObserver" in window) {
+    const obs3d = new IntersectionObserver((entrees) => {
+      if (entrees.some((e) => e.isIntersecting)) { obs3d.disconnect(); import("/js/maquette3d.js"); }
+    }, { rootMargin: "400px 0px" });
+    obs3d.observe(scene);
+  }
+
   document.querySelectorAll("[data-annee]").forEach((el) => { el.textContent = new Date().getFullYear(); });
 })();
