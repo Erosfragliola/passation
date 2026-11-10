@@ -9,6 +9,7 @@
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="/fonts/instrument-serif-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="modulepreload" href="/vendor/three.core.js">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
@@ -16,7 +17,7 @@
 
 <header class="nav-zone">
   <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil">Passation<span class="point" aria-hidden="true"></span></a>
+    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg>Passation</a>
     <ul class="nav-liens">
       <li><a href="#comment">Comment ça marche</a></li>
       <li><a href="#outils">La boîte à outils</a></li>
@@ -64,7 +65,7 @@
         </div>
       </div>
 
-      <div class="visuel">
+      <div class="visuel" data-maquette>
         <img src="/img/facade.svg" alt="" width="600" height="528">
         <div class="carte-verre" aria-label="Exemple de carte de valorisation, chiffres fictifs">
           <div class="mock-titre"><span>Valeur d'entreprise</span><span class="etiquette-exemple">Exemple</span></div>
@@ -316,7 +317,7 @@
   <div class="conteneur">
     <div class="pied-grille">
       <div>
-        <a class="logo" href="/">Passation<span class="point" aria-hidden="true"></span></a>
+        <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#B08D57"/></svg>Passation</a>
         <p class="petit" style="margin-top:12px;max-width:22rem">La boîte à outils du dirigeant qui prépare la cession de son entreprise.</p>
       </div>
       <div>
@@ -344,5 +345,6 @@
 </footer>
 
 <script src="/js/site.js" defer></script>
+<script type="module" src="/js/maquette3d.js"></script>
 </body>
 </html>
