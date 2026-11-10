@@ -543,3 +543,56 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 .notes-completer { background: #F3E3CF; border-radius: 10px; padding: 10px 14px; font-size: .85rem; margin-top: 8px; }
 .doc-tableau { margin: 8px 0 14px; }
 @media print { .memo-couverture { min-height: 60vh; break-after: page; } .memo-sommaire { break-after: page; } .doc-section { break-inside: auto; } }
+
+/* ---------- Mémorandum en diapositives 16:9 (format PowerPoint 33,87 × 19,05 cm) ---------- */
+.feuille-document.memo { background: transparent; box-shadow: none; padding: 0; max-width: 1100px; container-type: inline-size; }
+.diapo { position: relative; aspect-ratio: 16 / 9; background: #fff; color: var(--espresso); box-shadow: 0 18px 50px rgba(35, 30, 24, .14); border-radius: 4px; margin: 0 0 14px; overflow: hidden;
+  display: grid; grid-template-rows: auto 1fr auto; padding: 3.2cqw 4.4cqw 2.4cqw; font-size: 1.3cqw; line-height: 1.5; page: diapo; }
+.dp-tete { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .75cqw; letter-spacing: .12em; text-transform: uppercase; color: #696155; border-bottom: 1px solid var(--trait-fort); padding-bottom: .9cqw; }
+.dp-marque { color: var(--vert); font-weight: 600; }
+.dp-grille { display: grid; grid-template-columns: 27% 1fr; gap: 4cqw; padding-top: 2.6cqw; min-height: 0; }
+.dp-titre { display: flex; flex-direction: column; gap: .6cqw; }
+.dp-numero { font-size: 5.2cqw; font-weight: 300; line-height: 1; color: var(--vert); letter-spacing: -.03em; }
+.dp-titre h3 { font-size: 2.3cqw; line-height: 1.15; font-weight: 500; letter-spacing: -.01em; }
+.dp-suite { font-size: 1cqw; color: #696155; font-style: italic; }
+.dp-contenu { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 1cqw; }
+.dp-contenu p, .dp-contenu ul { margin: 0; }
+.dp-contenu ul { padding-left: 1.6cqw; display: grid; gap: .4cqw; }
+.dp-contenu li::marker { color: var(--vert); }
+.dp-pied { display: flex; justify-content: space-between; font-size: .72cqw; color: #696155; border-top: 1px solid var(--trait-fort); padding-top: .8cqw; font-family: var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.dp-tuiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1cqw; }
+.dp-tuile { background: var(--sable); border-radius: .8cqw; padding: 1.1cqw 1.2cqw; display: grid; gap: .2cqw; }
+.dp-tuile-val { font-size: 2.1cqw; font-weight: 300; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--vert); }
+.dp-tuile-lib { font-size: .85cqw; color: #696155; }
+.dp-tableau { width: 100%; border-collapse: collapse; font-size: 1.05cqw; }
+.dp-tableau th, .dp-tableau td { padding: .45cqw .6cqw; border-bottom: 1px solid var(--trait-fort); text-align: left; font-weight: 400; }
+.dp-tableau thead th { font-family: var(--mono); font-size: .8cqw; color: #696155; }
+.dp-tableau .num { text-align: right; font-variant-numeric: tabular-nums; }
+.dp-liste { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 3cqw; font-size: 1.5cqw; }
+.dp-liste li { display: flex; gap: 1.2cqw; padding: .9cqw 0; border-bottom: 1px solid var(--trait-fort); break-inside: avoid; }
+.dp-li-num { font-family: var(--mono); color: var(--vert); font-size: 1.1cqw; padding-top: .3cqw; }
+.dp-liste a { color: inherit; text-decoration: none; }
+.dp-couverture { background: var(--espresso); color: var(--creme); grid-template-rows: auto 1fr auto; padding: 4cqw 5cqw; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.dp-couv-haut, .dp-couv-bas { display: flex; justify-content: space-between; align-items: center; }
+.dp-logo { background: #fff; border-radius: .8cqw; padding: 1.2cqw 1.6cqw; display: inline-flex; }
+.dp-logo img { max-height: 5.5cqw; max-width: 16cqw; object-fit: contain; display: block; }
+.dp-conf { font-family: var(--mono); font-size: .85cqw; letter-spacing: .14em; text-transform: uppercase; color: var(--cuivre-clair); }
+.dp-couv-centre { align-self: center; }
+.dp-etiquette { font-family: var(--mono); font-size: 1cqw; letter-spacing: .16em; text-transform: uppercase; color: #A39886; margin-bottom: 1.2cqw; }
+.dp-couverture h2 { font-size: 5.6cqw; line-height: 1.02; font-weight: 400; letter-spacing: -.03em; max-width: 80%; }
+.dp-date { margin-top: 1.4cqw; color: #A39886; }
+.dp-couv-bas { font-size: .85cqw; color: #A39886; border-top: 1px solid rgba(251, 246, 236, .18); padding-top: 1.2cqw; }
+.dp-passation { font-weight: 500; color: var(--creme); font-size: 1.2cqw; }
+.dp-outils { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: -4px 0 24px; }
+.dp-outils textarea { width: 100%; border-radius: 10px; border: 1px solid var(--trait-fort); padding: 10px 12px; font: inherit; }
+@page diapo { size: 338.67mm 190.5mm; margin: 0; }
+@media print {
+  .feuille-document.memo { max-width: none; width: 338.67mm; }
+  .diapo { width: 338.67mm; height: 190.5mm; aspect-ratio: auto; margin: 0; box-shadow: none; border-radius: 0; break-after: page; }
+}
+@media print {
+  .page-document .conteneur, .page-document .conteneur-moyen { max-width: none; width: auto; margin: 0; padding: 0; }
+  .page-document .document-zone { padding: 0; }
+  .page-document { margin: 0; }
+  .feuille-document.memo { margin: 0; }
+}

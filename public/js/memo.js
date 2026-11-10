@@ -70,46 +70,99 @@ function dessinerVerrou() {
   $("#btn-tout").disabled = !v.ok;
 }
 
+const court = (v) => (v == null || !Number.isFinite(v) ? "–" : Math.abs(v) >= 1e6 ? `${(v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} M€` : `${Math.round(v / 1e3).toLocaleString("fr-FR")} k€`);
+
 function tableauFinancier() {
   const t = etat.tableau;
-  if (!t.annees.length) return el("p", { class: "petit", text: "Tableau financier : À compléter (aucun exercice validé)." });
-  return el("table", { class: "tableau-resultat doc-tableau" },
+  if (!t.annees.length) return el("p", { class: "a-rediger", text: "Tableau financier : À compléter (aucun exercice validé)." });
+  return el("table", { class: "dp-tableau" },
     el("thead", {}, el("tr", {}, el("th", { scope: "col", text: "En euros" }), ...t.annees.map((a) => el("th", { scope: "col", class: "num", text: String(a) })))),
     el("tbody", {}, ...t.lignes.map((l) => el("tr", {}, el("th", { scope: "row", text: l.libelle }), ...l.valeurs.map((v) => el("td", { class: "num", text: v == null ? "–" : fmt.format(v) }))))));
+}
+function chiffresCles() {
+  const t = etat.tableau;
+  if (!t.annees.length) return null;
+  const v = (cle) => t.lignes.find((l) => l.cle === cle)?.valeurs.at(-1) ?? null;
+  const ca = v("chiffre_affaires"), ebe = v("ebe");
+  const tuiles = [[`Chiffre d'affaires ${t.annees.at(-1)}`, court(ca)], ["EBE", court(ebe)], ["Marge d'EBE", ca > 0 && ebe != null ? `${((ebe / ca) * 100).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} %` : "–"], ["Résultat net", court(v("resultat_net"))]];
+  return el("div", { class: "dp-tuiles" }, ...tuiles.map(([l, x]) => el("div", { class: "dp-tuile" }, el("span", { class: "dp-tuile-val", text: x }), el("span", { class: "dp-tuile-lib", text: l }))));
+}
+
+const tete = () => el("header", { class: "dp-tete" }, el("span", { class: "dp-marque", text: "Mémorandum d'information" }), el("span", { text: etat.entreprise || "" }));
+const pied = () => el("footer", { class: "dp-pied" }, el("span", { text: "Passation" }), el("span", { text: "Strictement confidentiel" }), el("span", { class: "dp-num" }));
+
+function diapoSection(s, i, contenu, suite = false) {
+  return el("div", { class: "diapo dp-section", "data-section": s.cle, "data-index": String(i), id: suite ? null : `s-${s.cle}` },
+    tete(),
+    el("div", { class: "dp-grille" },
+      el("div", { class: "dp-titre" }, el("span", { class: "dp-numero", text: String(i + 1).padStart(2, "0") }), el("h3", { text: s.titre }), suite ? el("p", { class: "dp-suite", text: "(suite)" }) : null),
+      el("div", { class: "dp-contenu" }, ...contenu)),
+    pied());
 }
 
 function dessinerMemo() {
   const date = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-  const sections = etat.sections.map((s, i) => {
-    const bloc = el("section", { class: "doc-section", id: `s-${s.cle}` },
-      el("h3", { text: `${i + 1}. ${s.titre}` }),
-      s.cle === "finances" ? tableauFinancier() : null,
-      s.redigee ? corps(s.contenu) : el("p", { class: "a-rediger", text: "À compléter." }),
-      s.a_completer?.length ? el("div", { class: "notes-completer pas-imprime" }, el("strong", { text: "Pour compléter cette section : " }), s.a_completer.join(" ; ")) : null,
-      el("div", { class: "doc-edition pas-imprime" },
-        s.modifie ? el("span", { class: "petit", text: "Modifié par vous" }) : null,
-        el("button", { type: "button", class: "btn btn-mini", disabled: !etat.deverrouille.ok, onclick: (ev) => rediger(s.cle, ev.currentTarget) }, s.redigee ? "Rédiger à nouveau" : "Rédiger"),
-        s.redigee ? el("button", { type: "button", class: "lien-simple", onclick: () => editer(bloc, s) }, "Modifier") : null));
-    return bloc;
+  const enfants = [];
+  // Couverture
+  enfants.push(el("div", { class: "diapo dp-couverture" },
+    el("div", { class: "dp-couv-haut" }, etat.logo ? el("span", { class: "dp-logo" }, el("img", { src: `${base}/logo?v=${Date.now()}`, alt: `Logo de ${etat.entreprise || "l'entreprise"}` })) : el("span"), el("span", { class: "dp-conf", text: "Strictement confidentiel" })),
+    el("div", { class: "dp-couv-centre" }, el("p", { class: "dp-etiquette", text: "Mémorandum d'information" }), el("h2", { text: etat.entreprise || "Entreprise" }), el("p", { class: "dp-date", text: date })),
+    el("div", { class: "dp-couv-bas" }, el("span", { text: "Remis sous engagement de confidentialité. Toute diffusion est interdite." }), el("span", { class: "dp-passation", text: "Passation" }))));
+  // Sommaire
+  enfants.push(el("div", { class: "diapo dp-sommaire" }, tete(),
+    el("div", { class: "dp-grille" }, el("div", { class: "dp-titre" }, el("h3", { text: "Sommaire" })),
+      el("ol", { class: "dp-liste" }, ...etat.sections.map((s, i) => el("li", {}, el("span", { class: "dp-li-num", text: String(i + 1).padStart(2, "0") }), el("a", { href: `#s-${s.cle}`, text: s.titre }))))),
+    pied()));
+  // Sections
+  etat.sections.forEach((s, i) => {
+    const contenu = [];
+    if (s.cle === "finances") { const t = chiffresCles(); if (t) contenu.push(t); contenu.push(tableauFinancier()); }
+    contenu.push(...(s.redigee ? corps(s.contenu) : [el("p", { class: "a-rediger", text: "À compléter." })]));
+    enfants.push(diapoSection(s, i, contenu));
+    const outils = el("div", { class: "dp-outils pas-imprime", "data-outils": s.cle },
+      s.modifie ? el("span", { class: "petit", text: "Modifié par vous" }) : null,
+      s.a_completer?.length ? el("span", { class: "notes-completer" }, el("strong", { text: "À compléter : " }), s.a_completer.join(" ; ")) : null,
+      el("button", { type: "button", class: "btn btn-mini", disabled: !etat.deverrouille.ok, onclick: (ev) => rediger(s.cle, ev.currentTarget) }, s.redigee ? "Rédiger à nouveau" : "Rédiger"),
+      s.redigee ? el("button", { type: "button", class: "lien-simple", onclick: () => editer(outils, s) }, "Modifier") : null);
+    enfants.push(outils);
   });
-  $("#memo").replaceChildren(
-    el("header", { class: "doc-tete" }, el("span", { class: "doc-marque", text: "Passation" }), el("span", { class: "doc-confidentiel", text: "Strictement confidentiel" })),
-    el("div", { class: "memo-couverture" },
-      etat.logo ? el("img", { class: "memo-logo", src: `${base}/logo?v=${Date.now()}`, alt: `Logo de ${etat.entreprise || "l'entreprise"}` }) : null,
-      el("p", { class: "etiquette", text: "Mémorandum d'information" }),
-      el("h2", { class: "doc-titre", text: etat.entreprise || "Entreprise" }),
-      el("p", { class: "petit", text: `Document établi le ${date}. Remis sous engagement de confidentialité ; toute diffusion est interdite.` })),
-    el("nav", { class: "memo-sommaire", "aria-label": "Sommaire" }, el("p", { class: "etiquette", text: "Sommaire" }), el("ol", {}, ...etat.sections.map((s) => el("li", {}, el("a", { href: `#s-${s.cle}`, text: s.titre }))))),
-    ...sections,
-    el("footer", { class: "doc-pied" }, el("span", { text: "Informations fournies par le dirigeant et non auditées. Document non contractuel." }), el("span", { text: "Mise en forme : Passation" })));
+  // Avertissement
+  enfants.push(el("div", { class: "diapo dp-sommaire" }, tete(),
+    el("div", { class: "dp-grille" }, el("div", { class: "dp-titre" }, el("h3", { text: "Avertissement" })),
+      el("div", { class: "dp-contenu" },
+        el("p", { text: "Ce mémorandum a été établi à partir d'informations fournies par le dirigeant et de données publiques. Il n'a fait l'objet d'aucun audit. Il ne constitue ni une offre, ni un engagement, et ne remplace pas les vérifications d'usage (audit comptable, juridique, social, fiscal)." }),
+        el("p", { text: "Il est remis sous engagement de confidentialité : toute reproduction ou diffusion, totale ou partielle, est interdite." }),
+        el("p", { text: "Contact : par l'intermédiaire de Passation." }))),
+    pied()));
+  $("#memo").replaceChildren(...enfants);
+  decouper();
+  $("#memo").querySelectorAll(".diapo .dp-num").forEach((n, k) => { n.textContent = String(k + 2); });
 }
-function editer(bloc, s) {
+
+/** Découpe les sections trop longues en diapositives « (suite) ». */
+function decouper() {
+  for (const d of [...$("#memo").querySelectorAll(".dp-section")]) {
+    let courante = d;
+    for (let garde = 0; garde < 6; garde++) {
+      const c = courante.querySelector(".dp-contenu");
+      if (c.scrollHeight <= c.clientHeight + 2 || c.children.length < 2) break;
+      const reports = [];
+      while (c.scrollHeight > c.clientHeight + 2 && c.children.length > 1) reports.unshift(c.removeChild(c.lastElementChild));
+      const s = etat.sections.find((x) => x.cle === courante.dataset.section);
+      const suite = diapoSection(s, Number(courante.dataset.index), reports, true);
+      courante.after(suite);
+      courante = suite;
+    }
+  }
+}
+
+function editer(outils, s) {
   const ta = el("textarea", { rows: "10", "aria-label": `Texte : ${s.titre}` }); ta.value = s.contenu;
   const ok = el("button", { type: "button", class: "btn btn-noir btn-mini" }, "Enregistrer");
   ok.addEventListener("click", async () => {
     try { etat = await api(`${base}/sections/${s.cle}`, { method: "PUT", body: JSON.stringify({ contenu: ta.value }) }); tout(); message("Section enregistrée."); } catch (e) { message(e.message, true); }
   });
-  bloc.replaceChildren(el("h3", { text: s.titre }), ta, el("div", { class: "doc-edition" }, ok, el("button", { type: "button", class: "lien-simple", onclick: tout }, "Annuler")));
+  outils.replaceChildren(ta, el("div", { class: "doc-edition" }, ok, el("button", { type: "button", class: "lien-simple", onclick: tout }, "Annuler")));
   ta.focus();
 }
 async function rediger(cle, bouton) {
