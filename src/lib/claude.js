@@ -113,3 +113,68 @@ export async function redigerTeaser(env, faits, corrections = []) {
   if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
   return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
 }
+
+// ---------------------------------------------------------------- Site internet → faits sourcés
+const SCHEMA_SITE = {
+  type: "object", additionalProperties: false, required: ["faits", "termes_identifiants"],
+  properties: {
+    faits: {
+      type: "array",
+      items: {
+        type: "object", additionalProperties: false, required: ["categorie", "fait", "source"],
+        properties: {
+          categorie: { type: "string", enum: ["activite", "produits", "clients", "marche", "histoire", "equipe", "implantation", "qualite", "autre"] },
+          fait: { type: "string", description: "Une phrase factuelle, telle que le site l'affirme" },
+          source: { type: "string", description: "Adresse de la page où le fait figure" },
+        },
+      },
+    },
+    termes_identifiants: { type: "array", items: { type: "string" }, description: "Marques, noms de produits, noms de personnes, lieux précis cités sur le site" },
+  },
+};
+const CONSIGNE_SITE = `Tu lis les pages du site internet d'une PME française, pour préparer son mémorandum de cession.
+Relève au plus 25 faits utiles à un repreneur (activité, produits, clients, marché, histoire, équipe, implantation, qualité), un par phrase.
+Règles : uniquement ce que les pages affirment ; aucune déduction, aucune exagération ; indique pour chaque fait l'adresse exacte de la page.
+N'inclus aucune donnée personnelle (téléphone, adresse électronique, nom de salarié). Ignore les mentions légales et les cookies.
+Liste aussi les termes identifiants (marques, noms de produits, noms propres, lieux précis) : ils seront exclus du teaser anonyme.`;
+
+export async function extraireSite(env, pages) {
+  const contenu = pages.map((p) => `=== Page : ${p.url}\nTitre : ${p.titre}\n${p.texte}`).join("\n\n");
+  const reponse = await client(env).messages.create({
+    model: MODELS.fast, max_tokens: 16000, system: CONSIGNE_SITE,
+    messages: [{ role: "user", content: contenu }],
+    output_config: { format: { type: "json_schema", schema: SCHEMA_SITE } },
+  });
+  if (reponse.stop_reason === "refusal") throw new Error("lecture_refusee");
+  if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
+  return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
+}
+
+// ---------------------------------------------------------------- Mémorandum : une section
+const SCHEMA_SECTION = {
+  type: "object", additionalProperties: false, required: ["contenu", "a_completer"],
+  properties: {
+    contenu: { type: "string", description: "Texte de la section : paragraphes séparés par une ligne vide ; listes avec « - »" },
+    a_completer: { type: "array", items: { type: "string" }, description: "Informations manquantes que le dirigeant devrait apporter" },
+  },
+};
+const CONSIGNE_MEMO = `Tu rédiges une section du mémorandum d'information d'une PME française à céder, destiné à des repreneurs sérieux ayant signé un engagement de confidentialité.
+Français, troisième personne, ton professionnel et sobre, sans superlatifs ni formules publicitaires.
+Règles absolues :
+- Utilise uniquement les données fournies (réponses du dirigeant, faits du site validés par lui, données publiques, chiffres validés). N'invente rien : ni chiffre, ni client, ni projet, ni certification.
+- Quand une information attendue manque, écris « À compléter » à l'endroit voulu et ajoute-la à la liste a_completer.
+- Recopie les chiffres tels quels ; ne calcule pas de nouveaux ratios.
+- 120 à 300 mots.`;
+
+export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
+  const reponse = await client(env).beta.messages.create({
+    model: MODELS.deep, max_tokens: 16000,
+    system: `${CONSIGNE_MEMO}\nSection à rédiger : « ${titre} ». ${consigne}`,
+    messages: [{ role: "user", content: `Données du dossier (JSON) :\n${JSON.stringify(donnees, null, 2)}` }],
+    output_config: { format: { type: "json_schema", schema: SCHEMA_SECTION } },
+    betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
+  });
+  if (reponse.stop_reason === "refusal") throw new Error("redaction_refusee");
+  if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
+  return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
+}

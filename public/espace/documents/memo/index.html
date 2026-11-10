@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr" class="sans-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mémorandum · Passation</title>
+  <meta name="theme-color" content="#FBF6EC">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="page-document">
+<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<header class="nav-zone pas-imprime">
+  <nav class="nav" aria-label="Navigation principale">
+    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a></div>
+  </nav>
+</header>
+<main id="contenu" class="document-zone" aria-busy="true">
+  <div class="conteneur conteneur-moyen">
+    <div class="document-outils pas-imprime">
+      <div>
+        <p class="etiquette">Vos documents</p>
+        <h1>Mémorandum <em>d'information</em></h1>
+        <p class="chapo-petit">Le document remis aux repreneurs sérieux, après engagement de confidentialité. Chaque section est rédigée à la demande, à partir de vos réponses, de vos chiffres validés et des faits de votre site que vous aurez validés. Ce qui manque est marqué « À compléter ».</p>
+      </div>
+      <div id="verrou"></div>
+      <section class="carte site-panneau" aria-labelledby="titre-site">
+        <h2 id="titre-site" class="h-petit">1. Votre site internet et votre logo</h2>
+        <form id="form-site" class="ligne-form" novalidate>
+          <label for="url-site">Adresse du site</label>
+          <input id="url-site" type="text" inputmode="url" placeholder="www.mon-entreprise.fr" autocomplete="url">
+          <button class="btn btn-noir" type="submit">Lire le site</button>
+        </form>
+        <p class="petit">8 pages au plus, du même site, dans le respect de ses règles (robots.txt). Ni réseaux sociaux, ni avis en ligne.</p>
+        <div id="faits"></div>
+        <div id="logos"></div>
+      </section>
+      <div class="document-actions">
+        <button class="btn btn-noir" type="button" id="btn-tout">Rédiger les sections manquantes</button>
+        <button class="btn btn-contour" type="button" id="btn-imprimer">Imprimer ou enregistrer en PDF</button>
+      </div>
+      <p class="message-carte" id="message" role="status" aria-live="polite" hidden></p>
+    </div>
+    <article class="feuille-document memo" id="memo" aria-label="Mémorandum"></article>
+  </div>
+</main>
+<script src="/js/site.js" defer></script>
+<script type="module" src="/js/memo.js"></script>
+</body>
+</html>

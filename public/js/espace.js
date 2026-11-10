@@ -53,6 +53,7 @@ function afficher({ checklist = true } = {}) {
   document.querySelectorAll(".lien-parcours").forEach((l) => { l.href = `/espace/valorisation/?dossier=${dossier.id}#${l.dataset.ancre}`; });
   $("#lien-datapack").href = `/api/dossiers/${dossier.id}/documents/datapack`;
   $("#lien-teaser").href = `/espace/documents/teaser/?dossier=${dossier.id}`;
+  $("#lien-memo").href = `/espace/documents/memo/?dossier=${dossier.id}`;
   if (dossier.documents?.datapack) $("#detail-documents").textContent = `Datapack : version ${dossier.documents.datapack.version}.`;
   const parcours = dossier.parcours;
   if (parcours) {

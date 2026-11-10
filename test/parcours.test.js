@@ -7,8 +7,10 @@ vi.mock("../src/lib/claude.js", () => ({
   claudeDisponible: (env) => Boolean(env.ANTHROPIC_API_KEY),
   lireLiasse: vi.fn(),
   redigerTeaser: vi.fn(),
+  extraireSite: vi.fn(),
+  redigerSectionMemo: vi.fn(),
 }));
-import { lireLiasse, redigerTeaser } from "../src/lib/claude.js";
+import { lireLiasse, redigerTeaser, extraireSite, redigerSectionMemo } from "../src/lib/claude.js";
 import worker from "../src/index.js";
 import { d1Memoire, r2Memoire } from "./aide/environnement.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
@@ -41,6 +43,9 @@ beforeEach(async () => {
   env = { DB: d1Memoire(), FILES: r2Memoire() };
   lireLiasse.mockReset();
   redigerTeaser.mockReset();
+  extraireSite.mockReset();
+  redigerSectionMemo.mockReset();
+  vi.unstubAllGlobals();
   const f = JSON.parse(readFileSync(new URL(`./fixtures/${SIREN}.json`, import.meta.url)));
   const e = normaliserEntreprise(f.entreprise, SIREN);
   const d = assembler(e, normaliserExercices(f.inpi), normaliserAnnonces(f.bodacc, SIREN, e.date_creation));
@@ -209,6 +214,9 @@ describe("teaser anonymisé", () => {
     expect((await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie })).status).toBe(200);
     expect(redigerTeaser.mock.calls[1][2]).toContain("fraiseraie");
     redigerTeaser.mockReset();
+  extraireSite.mockReset();
+  redigerSectionMemo.mockReset();
+  vi.unstubAllGlobals();
     redigerTeaser.mockResolvedValue({ ...propre, activite: "Siège : SIREN 319 252 813" });
     const r = await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie });
     expect(r.status).toBe(422);
@@ -224,5 +232,64 @@ describe("teaser anonymisé", () => {
     expect(ok.teaser.sections[0]).toMatchObject({ contenu: "Belle PME familiale à reprendre", modifie: true });
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/teaser`, { cookie: b.cookie })).status).toBe(404);
+  });
+});
+
+describe("mémorandum", () => {
+  const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0]);
+  function webSimule() {
+    vi.stubGlobal("fetch", vi.fn(async (u) => {
+      const url = String(u);
+      if (url.endsWith("robots.txt")) return new Response("", { status: 404 });
+      if (url.endsWith(".png")) return new Response(PNG, { headers: { "content-type": "image/png" } });
+      if (url.endsWith(".svg")) return new Response("<svg onload=alert(1)>", { headers: { "content-type": "image/svg+xml" } });
+      return new Response(`<html><title>Accueil</title><body><img src="/logo.png" alt="logo"><p>Confitures depuis 1980.</p><a href="/a-propos">À propos</a></body></html>`, { headers: { "content-type": "text/html" } });
+    }));
+  }
+  it("site lu : faits à valider (jamais validés d'office), termes ajoutés aux interdits du teaser, candidats logo", async () => {
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    webSimule();
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    extraireSite.mockResolvedValue({ faits: [{ categorie: "histoire", fait: "Fondée en 1980.", source: "https://atelier.fr/" }], termes_identifiants: ["Confiture Maison"] });
+    const m = await (await appel(`/api/dossiers/${id}/documents/memo/site`, { methode: "POST", cookie, corps: { url: "atelier.fr" } })).json();
+    expect(m.site.faits[0]).toMatchObject({ fait: "Fondée en 1980.", valide: false });
+    expect(m.site.logos[0].url).toBe("https://atelier.fr/logo.png");
+    await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
+    redigerTeaser.mockResolvedValue({ accroche: "Une Confiture Maison réputée", activite: "x", chiffres: "x", atouts: [], operation: "x" });
+    const t = await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie });
+    expect(t.status).toBe(422);
+    expect((await t.json()).problemes[0].terme).toBe("confiture maison");
+  });
+  it("logo : PNG accepté et servi au seul propriétaire ; SVG refusé ; adresse privée refusée", async () => {
+    webSimule();
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/memo/logo`, { methode: "POST", cookie, corps: { url: "https://atelier.fr/logo.svg" } })).status).toBe(415);
+    expect((await appel(`/api/dossiers/${id}/documents/memo/logo`, { methode: "POST", cookie, corps: { url: "http://127.0.0.1/logo.png" } })).status).toBe(400);
+    const r = await appel(`/api/dossiers/${id}/documents/memo/logo`, { methode: "POST", cookie, corps: { url: "https://atelier.fr/logo.png" } });
+    expect((await r.json()).logo).toBe(true);
+    const img = await appel(`/api/dossiers/${id}/documents/memo/logo`, { cookie });
+    expect(img.headers.get("content-type")).toBe("image/png");
+    expect(img.headers.get("content-security-policy")).toBe("default-src 'none'");
+    const b = await seConnecter("b@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/memo/logo`, { cookie: b.cookie })).status).toBe(404);
+  });
+  it("section : 409 tant que l'activité et l'opération manquent ; ensuite rédigée avec les seuls faits validés ; modifiable", async () => {
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    expect((await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).status).toBe(409);
+    await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
+    await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { faits: [
+      { id: 1, categorie: "histoire", fait: "Fondée en 1980.", source: "s", valide: true },
+      { id: 2, categorie: "histoire", fait: "Leader mondial.", source: "s", valide: false }] } } });
+    redigerSectionMemo.mockResolvedValue({ contenu: "L'entreprise a été fondée en 1980.", a_completer: ["Dates des agrandissements"] });
+    const m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).json();
+    const donnees = JSON.stringify(redigerSectionMemo.mock.calls[0][2]);
+    expect(donnees).toContain("Fondée en 1980.");
+    expect(donnees).not.toContain("Leader mondial");
+    const h = m.sections.find((x) => x.cle === "histoire");
+    expect(h).toMatchObject({ redigee: true, a_completer: ["Dates des agrandissements"] });
+    const e = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "PUT", cookie, corps: { contenu: "Texte revu." } })).json();
+    expect(e.sections.find((x) => x.cle === "histoire")).toMatchObject({ contenu: "Texte revu.", modifie: true });
   });
 });

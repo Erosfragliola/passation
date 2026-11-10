@@ -524,3 +524,22 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
   .feuille-document { box-shadow: none; max-width: none; padding: 0; }
   @page { size: A4; margin: 18mm; }
 }
+.site-panneau { display: grid; gap: 12px; }
+.h-petit { font-size: 1.2rem; }
+.ligne-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ligne-form label { width: 100%; font-weight: 500; }
+.ligne-form input { flex: 1 1 260px; min-height: 46px; border-radius: 12px; border: 1px solid var(--trait-fort); background: var(--creme); padding: 0 14px; font: inherit; }
+.faits { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; }
+.faits legend { font-weight: 500; margin-bottom: 6px; }
+.fait { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; font-size: .92rem; }
+.logos-liste { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0; }
+.logo-choix { width: 110px; height: 70px; border-radius: 10px; border: 1px solid var(--trait-fort); background: #fff; padding: 8px; cursor: pointer; }
+.logo-choix img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.memo-couverture { min-height: 320px; display: grid; align-content: center; gap: 8px; border-bottom: 1px solid var(--trait-fort); margin-bottom: 28px; padding-bottom: 28px; }
+.memo-logo { max-width: 180px; max-height: 90px; object-fit: contain; margin-bottom: 18px; }
+.memo-sommaire ol { padding-left: 20px; columns: 2; font-size: .92rem; }
+.a-rediger { color: #8B4A22; font-style: italic; }
+.notes-completer { background: #F3E3CF; border-radius: 10px; padding: 10px 14px; font-size: .85rem; margin-top: 8px; }
+.doc-tableau { margin: 8px 0 14px; }
+@media print { .memo-couverture { min-height: 60vh; break-after: page; } .memo-sommaire { break-after: page; } .doc-section { break-inside: auto; } }

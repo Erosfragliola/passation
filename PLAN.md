@@ -378,3 +378,22 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   - Deux essais au plus, sinon refus sans enregistrement.
   - Nom de code (« Projet … ») ; versions dans R2 ; page imprimable `/espace/documents/teaser/`.
   - Tests : 172.
+- **10/11/2026, étape 6b (info memo)** :
+  - Lecture du site (`src/documents/site.js`) :
+    - adresse saisie par le dirigeant, publique uniquement ;
+    - 8 pages au plus, même domaine, `robots.txt` respecté ;
+    - ni réseaux sociaux, ni contact, ni mentions légales.
+  - Faits sourcés extraits par Claude Haiku ; **validés un par un** par le dirigeant. Les termes identifiants (marques,
+    produits) sont ajoutés aux interdits du teaser.
+  - Logo : candidats détectés ou dépôt manuel ; PNG, JPEG ou WebP de 1 Mo au plus (SVG refusé) ; stocké dans R2, servi au
+    seul propriétaire.
+  - 8 sections rédigées à la demande par Claude Sonnet 5.5, à partir des seules données utiles (réponses, faits validés,
+    données publiques, chiffres validés), avec « À compléter » et la liste des manques. Chaque section est modifiable.
+  - Tableau financier calculé par le code.
+  - Ouverture du memo : activité décrite et opération précisée.
+  - Page imprimable `/espace/documents/memo/` : couverture avec logo, sommaire, « Strictement confidentiel ».
+  - Tests : 182.
+  - Pas encore faits :
+    - export .docx (la vue imprimable sert de PDF) ;
+    - photos du site attestées par le dirigeant ;
+    - liens signés de partage.

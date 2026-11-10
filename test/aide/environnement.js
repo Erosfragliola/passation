@@ -33,6 +33,7 @@ export function r2Memoire() {
   return {
     objets,
     put: async (k, v) => { objets.set(k, v); },
+    get: async (k) => (objets.has(k) ? { body: objets.get(k) } : null),
     list: async ({ prefix = "" } = {}) => ({ objects: [...objets.keys()].filter((k) => k.startsWith(prefix)).map((key) => ({ key })), truncated: false }),
     delete: async (cles) => { for (const k of [].concat(cles)) objets.delete(k); },
   };

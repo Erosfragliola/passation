@@ -17,7 +17,7 @@ import { assemblerEntree } from "../valuation/entree.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
 import HYPOTHESES from "../data/hypotheses.json";
 
-const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages"]);
+const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site"]);
 const corpsJson = async (request) => { try { return await request.json(); } catch { return null; } };
 
 // ---------------------------------------------------------------- Chiffres
@@ -166,7 +166,7 @@ export async function routeValorisation(request, env, row, sous, item) {
     if (m === "PUT" && ETAPES_VALIDES.has(item)) {
       const c = await corpsJson(request);
       const donnees = c?.data;
-      if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 20_000) return json({ erreur: "requete_invalide", message: "Réponses invalides." }, 400);
+      if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 60_000) return json({ erreur: "requete_invalide", message: "Réponses invalides." }, 400);
       await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, ?, ?, ?)
         ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)
         .bind(row.id, item, JSON.stringify(donnees), maintenant()).run();
