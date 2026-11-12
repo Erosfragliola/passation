@@ -174,9 +174,12 @@
 
 /* ---------- Dossier de présentation (histoire, démo, résultat) : unités de sa propre largeur (--u) ---------- */
 .dossier p { color: inherit; }
-.dossier { position: relative; container-type: inline-size; --u: calc(100cqw / 660); aspect-ratio: 660 / 812; color: #1E1A17; text-shadow: none; }
+.dossier { position: relative; container-type: inline-size; --u: calc(100cqw / 660); padding-bottom: calc(16 * var(--u)); color: #1E1A17; text-shadow: none; }
 .dossier > * { translate: 0 calc(var(--secousse, 0) * var(--u)); }
-.dossier-feuille, .dossier-couverture { position: absolute; left: 0; top: 0; width: calc(600 * var(--u)); height: calc(780 * var(--u)); border-radius: calc(6 * var(--u)); background: #EFE6D8 url("/img/landing/papier.webp") center / cover; }
+.dossier-feuille, .dossier-couverture { width: calc(600 * var(--u)); border-radius: calc(6 * var(--u)); background: #EFE6D8 url("/img/landing/papier.webp") center / cover; }
+.dossier-feuille { position: absolute; left: 0; top: 0; height: calc(100% - 16 * var(--u)); }
+.dossier-couverture { position: relative; min-height: calc(780 * var(--u)); }
+.dossier-couverture > * { flex-shrink: 0; }
 .dossier-feuille-3 { filter: brightness(.78); transform: translate(calc(14 * var(--u)), calc(12 * var(--u))) rotate(1.4deg); box-shadow: 0 10px 30px rgba(0, 0, 0, .45); }
 .dossier-feuille-2 { filter: brightness(.88); transform: translate(calc(7 * var(--u)), calc(6 * var(--u))) rotate(.7deg); box-shadow: 0 4px 12px rgba(0, 0, 0, .35); }
 .dossier-onglet {
@@ -196,8 +199,9 @@
 .dossier-confidentiel { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .dossier-identite { position: relative; height: calc(232 * var(--u)); margin-top: calc(40 * var(--u)); }
 .dossier .dossier-attente { position: absolute; left: 0; top: calc(10 * var(--u)); margin: 0; padding-bottom: calc(18 * var(--u)); width: calc(440 * var(--u)); border-bottom: 2px dashed #CDBFAD; font-family: var(--mot-cle); font-style: italic; font-size: calc(74 * var(--u)); line-height: 1; color: #A99C89; }
-.dossier-nom { position: absolute; left: 0; top: calc(4 * var(--u)); margin: 0; display: grid; justify-items: start; gap: calc(4 * var(--u)); font-weight: 700; font-size: calc(56 * var(--u)); line-height: 1.1; letter-spacing: -0.025em; white-space: nowrap; }
+.dossier-nom { position: absolute; left: 0; top: calc(4 * var(--u)); margin: 0; display: grid; justify-items: start; gap: calc(4 * var(--u)); font-weight: 700; font-size: calc(56 * var(--u) * var(--nom-echelle, 1)); line-height: 1.1; letter-spacing: -0.025em; white-space: nowrap; }
 .dossier-nom-ligne, .dossier-meta { position: relative; min-height: 1em; }
+.dossier-nom-mesure { position: absolute; visibility: hidden; white-space: nowrap; }
 .dossier-nom-ligne::after, .dossier-meta::after {
   content: ""; position: absolute; left: calc(-6 * var(--u)); right: calc(-8 * var(--u)); top: 6%; bottom: 2%;
   background: #15110F; border-radius: 2px; transform-origin: 0 50%; transform: scaleX(var(--bandeau, 0));
@@ -210,7 +214,7 @@
 }
 .dossier-tampon::before { content: ""; position: absolute; left: 0; top: 0; right: calc(12 * var(--u)); bottom: calc(12 * var(--u)); border: calc(6 * var(--u)) double var(--tampon); border-radius: calc(6 * var(--u)); }
 .dossier-tampon-libelle { position: absolute; left: 0; right: 0; top: calc(16 * var(--u)); text-align: center; font: 500 calc(14 * var(--u)) var(--mono); letter-spacing: .3em; text-transform: uppercase; }
-.dossier-tampon-nom { position: absolute; left: 0; right: calc(12 * var(--u)); top: calc(34 * var(--u)); text-align: center; white-space: nowrap; text-transform: uppercase; font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; font-size: calc(96 * var(--u)); line-height: 1; letter-spacing: .02em; }
+.dossier-tampon-nom { position: absolute; left: 50%; top: calc(34 * var(--u)); transform: translateX(calc(-50% - 6 * var(--u))); white-space: nowrap; text-transform: uppercase; font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; font-size: calc(96 * var(--u) * var(--tampon-taille, 1)); line-height: 1.05; letter-spacing: .02em; }
 .dossier .dossier-teaser { margin: calc(8 * var(--u)) 0 0; padding-bottom: calc(10 * var(--u)); border-bottom: 1px solid #E0D5C6; font: 500 max(13px, calc(13 * var(--u))) var(--mono); letter-spacing: .1em; text-transform: uppercase; color: #6B6157; }
 .dossier-lignes { margin: calc(8 * var(--u)) 0 0; display: grid; gap: calc(10 * var(--u)); }
 .dossier-ligne { display: grid; grid-template-columns: minmax(calc(150 * var(--u)), max-content) 1fr; column-gap: calc(16 * var(--u)); align-items: center; min-height: calc(40 * var(--u)); }
@@ -241,9 +245,18 @@
 }
 .outils-ligne { margin-top: 40px; max-width: 46rem; }
 
-/* ---------- Et la vôtre ? ---------- */
-.essai .chapo { margin-top: 20px; }
-.essai-action { margin-top: 28px; }
+/* ---------- Et la vôtre ? (sur l'établi) ---------- */
+.essai { position: relative; overflow: hidden; isolation: isolate; background: #141110; }
+.essai-fond { position: absolute; inset: 0; z-index: -2; background: #2A1D14 center / cover no-repeat; }
+.essai::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(20, 17, 16, .82) 0%, rgba(20, 17, 16, .45) 55%, rgba(20, 17, 16, .25) 100%); }
+.essai-grille { display: grid; gap: 48px; align-items: center; }
+@media (min-width: 900px) { .essai-grille { grid-template-columns: 0.95fr 1.05fr; gap: 64px; } }
+.essai-texte { display: grid; text-shadow: 0 2px 20px rgba(0, 0, 0, .5); }
+.essai-avant, .essai-apres { grid-area: 1 / 1; }
+.essai-texte .chapo { margin-top: 20px; }
+.essai-action { margin-top: 32px; }
+.essai-demo { width: 100%; max-width: 520px; justify-self: center; }
+.essai-demo .histoire-fictif { margin-top: 18px; }
 
 /* ---------- Confidentialité ---------- */
 .landing .confid-grille .chapo { margin-top: 20px; }

@@ -23,8 +23,20 @@ const el = (tag, classe, texte) => {
 const CADENAS = '<svg width="11" height="13" viewBox="0 0 11 13" aria-hidden="true"><rect x="1" y="5.5" width="9" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M3 5.5V3.8a2.5 2.5 0 0 1 5 0V5.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>';
 const LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.4"/><circle cx="16" cy="21" r="2.8" fill="#A8653A"/></svg>';
 
+/** Nom de société en deux lignes équilibrées (« MENUISERIE » / « DURAND & FILS »). */
+export function couperNom(nom) {
+  const mots = String(nom || "").trim().split(/\s+/).filter(Boolean);
+  if (mots.length < 2) return [mots[0] || "", ""];
+  let meilleur = [mots.join(" "), ""], ecart = Infinity;
+  for (let i = 1; i < mots.length; i++) {
+    const a = mots.slice(0, i).join(" "), b = mots.slice(i).join(" ");
+    if (Math.max(a.length, b.length) < ecart) { ecart = Math.max(a.length, b.length); meilleur = [a, b]; }
+  }
+  return meilleur;
+}
+
 /**
- * @param {{ textes: object, chapitres: {numero: string}[], tampon?: string }} options
+ * @param {{ textes: object, chapitres: {numero: string}[], valeurLibelle?: string }} options
  *   textes : histoire.dossier du contenu (entete, confidentiel, titre, teaser, secteur, region, anciennete, effectif, pied)
  */
 export function creerDossier({ textes = {}, chapitres = [], valeurLibelle = "" }) {
@@ -85,6 +97,27 @@ export function creerDossier({ textes = {}, chapitres = [], valeurLibelle = "" }
   racine.append(couverture);
 
   const etat = { nom: ["", ""], ecrit: 1 };
+  // Le nom de code tient dans le cadre du tampon (484 unités de large, marge comprise)
+  function ajusterTampon() {
+    tamponNom.style.setProperty("--tampon-taille", "1");
+    const dispo = couverture.clientWidth * (440 / 600);
+    const largeur = tamponNom.scrollWidth;
+    if (dispo > 0 && largeur > dispo) tamponNom.style.setProperty("--tampon-taille", (dispo / largeur).toFixed(3));
+  }
+  // Mesure sur le texte complet (même pendant qu'il s'écrit) : la taille ne change pas en cours de frappe
+  function ajusterNom() {
+    nom.style.setProperty("--nom-echelle", "1");
+    const mesure = el("span", "dossier-nom-mesure");
+    nom.append(mesure);
+    let taille = 1;
+    for (const ligne of etat.nom) {
+      mesure.textContent = ligne;
+      const dispo = couverture.clientWidth * (512 / 600);
+      if (mesure.scrollWidth > dispo && dispo > 0) taille = Math.min(taille, dispo / mesure.scrollWidth);
+    }
+    mesure.remove();
+    nom.style.setProperty("--nom-echelle", taille.toFixed(3));
+  }
   function definir(e = {}) {
     if ("attente" in e) { attente.style.opacity = e.attente; racine.classList.toggle("dossier-nomme", e.attente < 0.5); }
     if (e.nom) etat.nom = e.nom;
@@ -95,11 +128,12 @@ export function creerDossier({ textes = {}, chapitres = [], valeurLibelle = "" }
       l1.textContent = a.slice(0, n);
       l2.textContent = b.slice(0, Math.max(0, n - a.length));
     }
+    if (e.nom) requestAnimationFrame(ajusterNom);
     if ("meta" in e) meta.textContent = e.meta;
     if ("metaOp" in e) meta.style.opacity = e.metaOp;
     if (e.bandeaux) [l1, l2, meta].forEach((x, i) => x.style.setProperty("--bandeau", e.bandeaux[i] ?? 0));
     if (e.tampon) {
-      if (e.tampon.nom != null) tamponNom.textContent = e.tampon.nom;
+      if (e.tampon.nom != null) { tamponNom.textContent = e.tampon.nom; requestAnimationFrame(ajusterTampon); }
       if ("op" in e.tampon) tampon.style.opacity = e.tampon.op;
       if ("echelle" in e.tampon) tampon.style.setProperty("--tampon-echelle", e.tampon.echelle);
     }

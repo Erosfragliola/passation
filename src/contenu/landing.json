@@ -165,8 +165,9 @@
     "apres_texte": "Comme dans les grandes cessions, votre dossier reçoit un nom de code. Votre teaser circule sans jamais révéler votre nom.",
     "demo": {
       "nom": "MENUISERIE DURAND & FILS",
+      "meta": "SIREN 8•• ••• ••• · Nantes (44)",
       "code": "Chêne",
-      "secteur": "Menuiserie-agencement",
+      "secteur": "Travaux de construction spécialisés",
       "region": "Pays de la Loire",
       "anciennete": "plus de 30 ans",
       "effectif": "20 à 49 salariés",
