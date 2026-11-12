@@ -5,7 +5,7 @@
 | `photos/texture-clair-*.webp`, `photos/texture-sombre-*.webp` | Création originale Passation, générée par `scripts/art/texture-peinte.html` (`npm run images`) | Propriété du projet |
 | `favicon.svg`, `logo-seuil.svg` | Création originale Passation | Propriété du projet |
 | Maquette 3D « De l'esquisse à l'édifice » | Construite en code (`public/js/edifice/`) avec Three.js 0.186.1 (dont ses modules d'exemple de lignes), postprocessing 6.39.5, n8ao 2.0.1 ; textures procédurales générées en code | Three.js : MIT (`public/vendor/LICENSE-three.txt`) ; postprocessing : Zlib (`LICENSE-postprocessing.md`) ; n8ao : ISC (`LICENSE-n8ao.txt`) |
-| `edifice/esquisse-*.webp`, `edifice/matiere-*.webp` | Captures de la maquette d'exemple (rendu du site), images fixes avant la 3D ou sans WebGL | Propriété du projet |
+| `edifice/*.webp` (esquisse, matière, éclaté, enseigne, soir) | Captures de la maquette d'exemple (rendu du site), images fixes avant la 3D ou sans WebGL | Propriété du projet |
 
 | Carte des régions (mémorandum, `public/js/carte-france.js`) | IGN Admin Express, contours simplifiés par github.com/gregoiredavid/france-geojson ; converti par `scripts/carte-france.mjs` | Licence ouverte Etalab (mention de la source) |
 | Pictogrammes et logo Passation des diapositives | Dessins SVG originaux (`public/js/memo.js`) | Propriété du projet |

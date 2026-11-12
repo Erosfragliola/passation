@@ -31,6 +31,15 @@ Le dirigeant a délégué ces arbitrages (« je te fais confiance ») après le 
 | `esquisse` (Le témoin) | tracé au trait | 1,2 → 0,62 |
 | `ouvrage` (Comment ça marche) | volume : étages un à un, toit, fenêtres une par une, arbres | 1,2 → 0,7 |
 | `ouvrage` | matière : pierre, verre, laiton, lumière chaude, personnages | 0,66 → 0,3 |
+| `eclate` (bande collante de « La boîte à outils ») | ouverture en entrant ; fermeture quand les cartes finissent de passer sous la bande | 1,1 → 0,45 ; cartes 80 % → 100 % |
+| `enseigne` (Confidentialité) | le nom quitte la plaque et le cartouche, la cote s'en va, le décor s'estompe | 1,1 → 0,5 |
+| `soir` (appel final) | lumière du soir, fenêtres allumées plus lumineuses | 1,15 → 0,55 |
+
+Vue éclatée, une strate par outil (même ordre que les cartes, attribut `data-strate`) : Valorisation → fondations,
+Datapack → étages, Teaser → enseigne, Mémorandum → façade (avance vers le lecteur), Ressources → rez-de-chaussée,
+Chat expert → toiture. Survoler une carte (ordinateur), la toucher, ou sur écran tactile la laisser au centre de la
+zone visible sous la bande : sa strate se soulève et prend un reflet cuivré, la carte reçoit un liseré cuivre.
+Après la confidentialité, la maquette reste anonyme jusqu'au soir (la feuille reste opaque : c'est le sol).
 
 ## Données → maquette (inchangé, `regles.js`)
 
@@ -49,16 +58,16 @@ Three.js ajoutés à `public/vendor/rendu3d.js` (`npm run vendor:3d`).
 ## Livraisons
 
 1. Scènes 1 à 3 (esquisse, volume, matière) avec un vrai SIREN : **faite**.
-2. Scènes 4 à 6 (vue éclatée, enseigne effacée, soir) : à faire.
+2. Scènes 4 à 6 (vue éclatée, enseigne effacée, soir) : **faite**.
 3. Finitions (mobile, accessibilité, performances) : à faire.
 
 ## Mesures (local, `wrangler dev`)
 
-| | Avant | Après livraison 1 |
-|---|---|---|
-| Lighthouse mobile : performance / accessibilité | 100 / 100 | 100 / 100 |
-| FCP / LCP / TBT / CLS | 0,8 s / 0,8 s / 0 ms / 0,001 | 0,8 s / 0,8 s / 0 ms / 0,001 |
-| Poids au chargement (Lighthouse) | 375 Ko | 328 Ko |
-| Parcours complet, ordinateur : image moyenne / 95e centile | 22,1 ms / 50 ms | 17,1 ms / 16,8 ms |
-| Parcours complet, mobile : image moyenne / 95e centile | 17,1 ms / 16,8 ms | 17,1 ms / 16,7 ms |
-| Tâches longues pendant le parcours (ordinateur / mobile) | 550 ms / 417 ms | 493 ms / 427 ms |
+| | Avant | Après livraison 1 | Après livraison 2 |
+|---|---|---|---|
+| Lighthouse mobile : performance / accessibilité | 100 / 100 | 100 / 100 | 100 / 100 |
+| FCP / LCP / TBT / CLS | 0,8 s / 0,8 s / 0 ms / 0,001 | 0,8 s / 0,8 s / 0 ms / 0,001 | 0,9 s / 0,9 s / 0 à 10 ms / 0,001 |
+| Poids au chargement (Lighthouse) | 375 Ko | 328 Ko | 407 Ko (images fixes des 5 fenêtres) |
+| Parcours complet, ordinateur : image moyenne / 95e centile | 22,1 ms / 50 ms | 17,1 ms / 16,8 ms | 17,3 ms / 16,8 ms |
+| Parcours complet, mobile : image moyenne / 95e centile | 17,1 ms / 16,8 ms | 17,1 ms / 16,7 ms | 17,2 ms / 16,8 ms |
+| Tâches longues pendant le parcours (ordinateur / mobile) | 550 ms / 417 ms | 493 ms / 427 ms | 627 ms / 557 ms |

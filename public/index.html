@@ -192,38 +192,41 @@
         <h2 id="titre-outils">Tout ce qu'un repreneur vous <em>demandera</em>.</h2>
         <p class="chapo">Vous saisissez une information une fois. Elle sert partout.</p>
       </div>
+      <!-- Vue éclatée : la bande reste en haut pendant que les cartes défilent ; une strate par outil -->
+      <div class="fenetre-edifice bande-edifice bande-collante" data-fenetre="eclate" data-repere="#outils .outils" role="img"
+           aria-label="Vue éclatée de la maquette, un niveau par outil : fondations pour la valorisation, étages pour le datapack, enseigne pour le teaser, façade pour le mémorandum, rez-de-chaussée pour les ressources, toiture pour le chat expert."></div>
       <div class="outils">
-        <article class="carte outil apparait">
+        <article class="carte outil apparait" data-strate="fondations">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
           <h3>Valorisation</h3>
           <ul><li>Express, dès votre SIREN</li><li>Approfondie : multiples, DCF, actif net corrigé</li><li>Retraitements, décotes, valeur des titres</li></ul>
           <p class="outil-forme">Fourchette · synthèse · sensibilités</p>
         </article>
-        <article class="carte outil apparait">
+        <article class="carte outil apparait" data-strate="etages">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18"/></svg></div>
           <h3>Datapack Excel</h3>
           <ul><li>Comptes, bilan, BFR, dette nette</li><li>Les trois méthodes et leurs hypothèses</li><li>Formules vivantes, sources citées</li></ul>
           <p class="outil-forme">Fichier .xlsx · 9 onglets</p>
         </article>
-        <article class="carte outil apparait">
+        <article class="carte outil apparait" data-strate="enseigne">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h4"/></svg></div>
           <h3>Teaser</h3>
           <ul><li>Une à deux pages, anonymisées</li><li>Nom de code, activité, chiffres arrondis</li><li>Points forts et raison de la cession</li></ul>
           <p class="outil-forme">Word · version imprimable PDF</p>
         </article>
-        <article class="carte outil apparait">
+        <article class="carte outil apparait" data-strate="facade">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-4a2 2 0 0 0-2 2"/><path d="M20 4v14h-6"/></svg></div>
           <h3>Mémorandum</h3>
           <ul><li>Activité, marché, clients, équipes</li><li>Données financières et perspectives</li><li>Rien d'inventé : les manques sont signalés</li></ul>
           <p class="outil-forme">15 à 25 pages · section par section</p>
         </article>
-        <article class="carte outil apparait">
+        <article class="carte outil apparait" data-strate="rdc">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4h10l4 4v12H5z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></div>
           <h3>Ressources</h3>
           <ul><li>Préparer, valoriser, trouver un repreneur</li><li>Négocier, fiscalité, après la cession</li><li>Sources officielles, fiches datées</li></ul>
           <p class="outil-forme">Fiches classées par étape</p>
         </article>
-        <article class="carte outil apparait">
+        <article class="carte outil apparait" data-strate="toiture">
           <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></div>
           <h3>Chat expert</h3>
           <ul><li>Connaît votre dossier et vos chiffres</li><li>Cite ses sources</li><li>Vous oriente vers le bon conseil</li></ul>
@@ -241,6 +244,9 @@
         <h2 id="titre-confid">Vos chiffres restent <em>les vôtres</em>.</h2>
         <p class="chapo" style="margin-top:20px">Préparer une cession demande de la discrétion. Passation est conçu pour la protéger.</p>
         <p style="margin-top:28px"><a class="btn btn-sable" href="/confidentialite">Lire notre politique</a></p>
+        <!-- Le nom quitte la plaque, le décor s'estompe -->
+        <div class="fenetre-edifice bande-edifice bande-confid" data-fenetre="enseigne" role="img"
+             aria-label="Le nom quitte la plaque et le cartouche de la maquette, le décor s'estompe : il ne reste qu'un bâtiment anonyme."></div>
       </div>
       <div class="apparait">
         <div class="garanties">
@@ -296,6 +302,9 @@
   <section class="nuit final" aria-labelledby="titre-final">
     <div class="fond-peint"><img src="/img/photos/texture-sombre-1600.webp" alt="" loading="lazy" width="1600" height="1067"></div>
     <div class="conteneur apparait">
+      <!-- Le soir tombe, les lumières restent allumées -->
+      <div class="fenetre-edifice bande-edifice bande-soir" data-fenetre="soir" role="img"
+           aria-label="Le soir tombe sur la maquette ; les lumières restent allumées."></div>
       <p class="etiquette">Premier pas</p>
       <h2 id="titre-final">Commencez par une <em>première valeur</em>.</h2>
       <p class="chapo">Votre SIREN suffit. Le reste viendra à votre rythme.</p>
