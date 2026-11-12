@@ -34,7 +34,8 @@ function studio() {
 }
 
 export function creerRendu(conteneur, scene, camera, { mobile = false, debug = false } = {}) {
-  const renderer = new THREE.WebGLRenderer({ antialias: false, stencil: false, powerPreference: "high-performance" });
+  const renderer = new THREE.WebGLRenderer({ antialias: false, stencil: false, alpha: true, premultipliedAlpha: true, powerPreference: "high-performance" });
+  renderer.setClearColor(0x000000, 0); // fond transparent : l'objet est « détouré » sur la section
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap; // ombres douces : rayon réglé sur chaque lumière (disque de Vogel)
@@ -60,7 +61,7 @@ export function creerRendu(conteneur, scene, camera, { mobile = false, debug = f
     composer.addPass(ao);
   }
 
-  const bloom = new BloomEffect({ luminanceThreshold: 0.92, luminanceSmoothing: 0.2, intensity: mobile ? 0.7 : 0.85, mipmapBlur: true, radius: 0.72 });
+  const bloom = new BloomEffect({ luminanceThreshold: 0.95, luminanceSmoothing: 0.15, intensity: mobile ? 0.35 : 0.45, mipmapBlur: true, radius: 0.55 });
   const tilt = new TiltShiftEffect({ offset: 0, rotation: 0, focusArea: 1.0, feather: 0.55, kernelSize: KernelSize.SMALL, resolutionScale: 0.5 });
   const passeHdr = new EffectPass(camera, bloom, tilt);
   composer.addPass(passeHdr);
@@ -71,12 +72,13 @@ export function creerRendu(conteneur, scene, camera, { mobile = false, debug = f
   const vignette = new VignetteEffect({ offset: 0.32, darkness: 0.58 });
   const grain = new NoiseEffect({ premultiply: true, blendFunction: BlendFunction.SCREEN });
   grain.blendMode.opacity.value = 0.045;
-  composer.addPass(new EffectPass(camera, ton, contraste, teinte, vignette, grain));
+  composer.addPass(new EffectPass(camera, ton, contraste, teinte)); // pas de vignettage ni de grain : pas de « cadre »
   composer.addPass(new EffectPass(camera, new SMAAEffect({ preset: mobile ? SMAAPreset.MEDIUM : SMAAPreset.HIGH })));
 
   // ---------------------------------------------------------------- Taille
   function dimensionner() {
-    const { clientWidth: w, clientHeight: h } = conteneur;
+    // Taille réelle du canevas (il déborde de sa colonne pour que la cloche puisse bouger dans la section)
+    const { clientWidth: w, clientHeight: h } = renderer.domElement;
     if (!w || !h) return false;
     renderer.setSize(w, h, false);
     composer.setSize(w, h, false);

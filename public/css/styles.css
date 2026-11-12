@@ -842,3 +842,15 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 .guide-barre { margin-bottom: 24px; }
 .guide-ecran { padding: 0; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ---------- La cloche détourée : aucun cadre, posée sur la section, libre de bouger dans la section ---------- */
+#maquette { overflow: hidden; }
+.scene-3d { background: none !important; border-radius: 0; overflow: visible; }
+.scene-3d canvas { inset: -12% -18%; width: 136%; height: 124%; }
+.scene-3d .legende { display: none; }
+.scene-3d::before { content: ""; position: absolute; inset: -12% -18%; background: image-set(url("/img/photos/cloche-detouree-800.webp") 1x, url("/img/photos/cloche-detouree-1600.webp") 2x) center / contain no-repeat; transition: opacity .8s ease; pointer-events: none; }
+.scene-3d.scene-prete::before, .scene-3d.sans-3d::before { opacity: 0; }
+@media (max-width: 979px) { .scene-3d canvas { inset: -8% -10%; width: 120%; height: 116%; } }
+.scene-3d .passation-mains { inset: -12% -18%; width: 136%; height: 124%; }
+@media (max-width: 979px) { .scene-3d .passation-mains { inset: -8% -10%; width: 120%; height: 116%; } }
+@media (max-width: 979px) { .scene-3d::before { inset: -8% -10%; } }

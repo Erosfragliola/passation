@@ -39,9 +39,7 @@ export async function creerScene(conteneur) {
   // ---------------------------------------------------------------- Scène, rendu, décor
   const textures = await chargerTextures({ mobile });
   const scene = new THREE.Scene();
-  const fond = fondVitrine(textures);
-  scene.background = fond;
-  scene.fog = new THREE.Fog(0x0b0907, 13, 27);
+  const fond = null; // pas de fond : la cloche est posée directement sur la section
   const camera = new THREE.PerspectiveCamera(30, 1, 0.5, 120);
   const rendu = creerRendu(conteneur, scene, camera, { mobile, debug });
   const m = creerMateriaux(textures, { mobile });
@@ -89,10 +87,11 @@ export async function creerScene(conteneur) {
   function cadrer() {
     if (!rendu.dimensionner()) return;
     const v = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    distance = Math.max(3.3 / v, 4.3 / (v * camera.aspect)) * 1.1;
+    // Marge : le canevas déborde de sa colonne et la cloche y bouge ; elle ne doit jamais toucher son bord.
+    distance = Math.max(3.3 / v, 4.3 / (v * camera.aspect)) * 1.38;
     sale = true;
   }
-  new ResizeObserver(cadrer).observe(conteneur);
+  new ResizeObserver(cadrer).observe(rendu.renderer.domElement);
 
   // ---------------------------------------------------------------- État
   let actuel = null, ancien = null, params = EXEMPLE;
@@ -203,8 +202,8 @@ export async function creerScene(conteneur) {
     const now = performance.now();
     if (now - dernierSurvol < 60) return;
     dernierSurvol = now;
-    const r = conteneur.getBoundingClientRect();
-    souris.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    const r = conteneur.getBoundingClientRect(), rc = rendu.renderer.domElement.getBoundingClientRect();
+    souris.set(((e.clientX - rc.left) / rc.width) * 2 - 1, -((e.clientY - rc.top) / rc.height) * 2 + 1);
     rayon.setFromCamera(souris, camera);
     const cibles = [vitrine.plaque, ...(actuel?.fenetresAllumees.filter((f) => f.material !== m.vitreEteinte) ?? [])];
     const touche = rayon.intersectObjects(cibles, false)[0];
@@ -233,8 +232,8 @@ export async function creerScene(conteneur) {
     return clamp01((window.innerHeight * 0.06 - r.top) / (r.height * 0.55));
   }
   const projeter = (v) => {
-    const p = v.clone().project(camera);
-    return { x: (p.x * 0.5 + 0.5) * conteneur.clientWidth, y: (-p.y * 0.5 + 0.5) * conteneur.clientHeight };
+    const p = v.clone().project(camera), c = rendu.renderer.domElement;
+    return { x: (p.x * 0.5 + 0.5) * c.clientWidth, y: (-p.y * 0.5 + 0.5) * c.clientHeight };
   };
 
   // ---------------------------------------------------------------- Boucle
@@ -269,7 +268,12 @@ export async function creerScene(conteneur) {
       }
       sale = true;
     }
-    pivot.rotation.y = rotation + glisser.angle;
+    // Mouvement dans la section : en la traversant, la cloche pivote et s'élève légèrement
+    const rs = conteneur.closest("section")?.getBoundingClientRect() ?? conteneur.getBoundingClientRect();
+    const defil = Math.max(-1, Math.min(1, (window.innerHeight / 2 - (rs.top + rs.height / 2)) / (rs.height / 2 + window.innerHeight / 2)));
+    const scrollRot = calme ? 0 : defil * 0.9;
+    pivot.rotation.y = rotation + glisser.angle + scrollRot;
+    pivot.position.y = calme ? 0 : Math.sin(tt * 0.6) * 0.05 - defil * 0.25;
 
     if (respire) spot.intensity = SPOT * (0.78 + 0.22 * Math.sin(tt * 3));
     if (!calme) {
@@ -326,7 +330,9 @@ export async function creerScene(conteneur) {
       passation(p) { forcePassation = p; sale = true; },
       get ips() { return rendu.ips; },
       get palier() { return rendu.palier; },
-      scene, vitrine,
+      scene, vitrine, rendu,
+      /** Image PNG transparente du canevas (pour l'image d'attente détourée). */
+      image() { rendu.composer.render(); return rendu.renderer.domElement.toDataURL("image/png"); },
     };
   }
 

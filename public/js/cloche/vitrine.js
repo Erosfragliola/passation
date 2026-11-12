@@ -52,19 +52,28 @@ export function creerVitrine(m, { mobile = false } = {}) {
   const fixe = new THREE.Group();     // la table, l'ombre de contact
 
   // ---------------------------------------------------------------- Table en feutre
-  const table = new THREE.Mesh(geo(new THREE.CircleGeometry(60, 64)), m.feutre);
+  const matOmbrePortee = new THREE.ShadowMaterial({ opacity: 0.5 }); liberer.push(matOmbrePortee);
+  // L'ombre portée s'estompe avant le bord du disque : aucune limite visible, l'objet reste « détouré ».
+  matOmbrePortee.onBeforeCompile = (sh) => {
+    sh.vertexShader = "varying vec2 vSol;\n" + sh.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\n vSol = position.xy;");
+    sh.fragmentShader = "varying vec2 vSol;\n" + sh.fragmentShader.replace("#include <tonemapping_fragment>",
+      "gl_FragColor.a *= 1.0 - smoothstep(R_SOCLE_OMBRE * 0.95, R_SOCLE_OMBRE * 1.9, length(vSol));\n#include <tonemapping_fragment>")
+      .replace(/R_SOCLE_OMBRE/g, (R_SOCLE).toFixed(3));
+  };
+  const table = new THREE.Mesh(geo(new THREE.CircleGeometry(14, 64)), matOmbrePortee); // seule l'ombre portée est visible
   table.rotation.x = -Math.PI / 2;
   table.receiveShadow = true;
   fixe.add(table);
   // Ombre de contact très douce (dégradé radial)
   const c = document.createElement("canvas"); c.width = c.height = 256;
   const x = c.getContext("2d");
-  const gr = x.createRadialGradient(128, 128, 60, 128, 128, 128);
-  gr.addColorStop(0, "rgba(0,0,0,0.85)"); gr.addColorStop(0.55, "rgba(0,0,0,0.35)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+  // Serrée autour du socle et nulle bien avant le bord du canevas : pas de limite visible (objet « détouré »).
+  const gr = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, "rgba(0,0,0,0.85)"); gr.addColorStop(0.72, "rgba(0,0,0,0.7)"); gr.addColorStop(0.82, "rgba(0,0,0,0.25)"); gr.addColorStop(1, "rgba(0,0,0,0)");
   x.fillStyle = gr; x.fillRect(0, 0, 256, 256);
   const texOmbre = new THREE.CanvasTexture(c); liberer.push(texOmbre);
   const matOmbre = new THREE.MeshBasicMaterial({ map: texOmbre, transparent: true, depthWrite: false, opacity: 0.75 }); liberer.push(matOmbre);
-  const ombre = new THREE.Mesh(geo(new THREE.PlaneGeometry(10.5, 10.5)), matOmbre);
+  const ombre = new THREE.Mesh(geo(new THREE.PlaneGeometry(R_SOCLE * 2.6, R_SOCLE * 2.6)), matOmbre);
   ombre.rotation.x = -Math.PI / 2; ombre.position.y = 0.004;
   fixe.add(ombre);
 
@@ -165,6 +174,7 @@ export function creerVitrine(m, { mobile = false } = {}) {
     liberer.push(mat);
     const pts = new THREE.Points(g, mat);
     pts.userData.graine = graine;
+    pts.visible = false; // pas de poussière : plus sobre, plus réaliste
     dome.add(pts);
     poussieres.push(pts);
   }
