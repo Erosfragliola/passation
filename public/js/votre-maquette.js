@@ -22,24 +22,26 @@ const etat = { scene: null, sceneChargee: null, donnees: null, suggestion: null,
 // ------------------------------------------------------------------ Chargement de la scène 3D
 function chargerScene() {
   if (!etat.sceneChargee) {
-    etat.sceneChargee = import("/js/cloche/scene.js")
-      .then(({ creerScene }) => creerScene(conteneur3d))
+    etat.sceneChargee = import("/js/edifice/scene.js")
+      .then(({ creerScene }) => creerScene({ fenetres: document.querySelectorAll("[data-fenetre]"), principale: conteneur3d }))
       .then((scene) => { etat.scene = scene; if (!scene) sansWebGL(); return scene; })
       .catch(() => { sansWebGL(); return null; });
   }
   return etat.sceneChargee;
 }
 if (conteneur3d && "IntersectionObserver" in window) {
-  // Chargement quand la section devient visible (au quart), pendant un moment calme : la page d'accueil reste légère.
+  // Chargement quand une fenêtre de la scène entre à l'écran, pendant un moment calme : la page d'accueil reste
+  // légère (l'image fixe de l'esquisse s'affiche en attendant), le hero ne dépend jamais de la 3D.
   const obs = new IntersectionObserver((e) => {
     if (!e.some((x) => x.isIntersecting)) return;
     obs.disconnect();
     (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(() => chargerScene(), { timeout: 1500 });
-  }, { threshold: 0.25 });
-  obs.observe(conteneur3d);
+  }, { threshold: 0.15 });
+  document.querySelectorAll("[data-fenetre]").forEach((f) => obs.observe(f));
 }
 function sansWebGL() {
   conteneur3d.classList.add("sans-3d");
+  document.documentElement.classList.add("sans-webgl");
   $("#btn-telecharger")?.setAttribute("hidden", "");
 }
 
@@ -181,11 +183,19 @@ function afficher(d, scene, { depuisEtages = false } = {}) {
     : [];
   const montrerEstimation = () => afficherEstimation(d.estimation, !!animer);
   if (scene) {
-    scene.construire({ ...p, nom: d.nom }, { evenements: [...evenements, { t: scene.temps?.valeur ?? 8, f: montrerEstimation }], depuisEtages });
+    scene.construire({ ...p, nom: d.nom, ...texteCote(d.estimation) }, { evenements: [...evenements, { t: scene.temps?.valeur ?? 8, f: montrerEstimation }], depuisEtages });
   } else {
     dessinerSansWebGL(p);
     montrerEstimation();
   }
+}
+
+/** La fourchette, écrite comme une cote de plan sur la feuille de la maquette (mêmes mentions que le texte). */
+function texteCote(est) {
+  if (!est || est.statut === "comptes_absents") return { cote: "À compléter", legendeCote: "Comptes non publiés" };
+  if (est.statut === "non_calculable") return { cote: "Sur mesure", legendeCote: `Comptes ${est.exercice} lus` };
+  if (est.statut !== "ok") return { cote: "À compléter", legendeCote: `Comptes ${est.exercice} lus` };
+  return { cote: `${euros(est.bas)} – ${euros(est.haut)}`, legendeCote: `Valeur indicative · comptes ${est.exercice}` };
 }
 
 function afficherEstimation(est, animer) {
