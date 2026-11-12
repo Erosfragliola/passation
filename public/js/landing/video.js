@@ -107,3 +107,36 @@ export function lancerVideo({ hero, textes = {} }) {
   majBouton();
   jouer();
 }
+
+/**
+ * Vidéo en boucle d'une section (« Parti pris ») : chargée à l'approche, lue seulement à l'écran, bouton pause.
+ * Jamais en mouvement réduit, en économie de données, ni sur téléphone (pas de version légère : le poster reste).
+ */
+export function lancerVideoSection({ zone, textes = {} }) {
+  const video = zone?.querySelector("video[data-sources]");
+  const bouton = zone?.querySelector(".hero-pause");
+  if (!video) return;
+  const connexion = navigator.connection || {};
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || connexion.saveData || window.matchMedia("(max-width: 768px)").matches) return;
+  const libelle = bouton?.querySelector(".visuellement-cache");
+  let arretParVous = false, visible = false, chargee = false;
+  const majBouton = () => {
+    if (!bouton) return;
+    bouton.classList.toggle("en-pause", arretParVous);
+    libelle.textContent = arretParVous ? textes.lecture : textes.pause;
+  };
+  const jouer = () => {
+    if (arretParVous || !visible || document.hidden) return;
+    if (!chargee) {
+      chargee = true;
+      JSON.parse(video.dataset.sources).forEach(([src, type]) => video.append(Object.assign(document.createElement("source"), { src, type })));
+      video.load();
+    }
+    video.hidden = false;
+    video.play().then(() => { video.classList.add("lue"); if (bouton) bouton.hidden = false; }).catch(() => {});
+  };
+  bouton?.addEventListener("click", () => { arretParVous = !arretParVous; if (arretParVous) video.pause(); else jouer(); majBouton(); });
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) jouer(); else video.pause(); }, { threshold: 0.25 }).observe(zone);
+  document.addEventListener("visibilitychange", () => (document.hidden ? video.pause() : jouer()));
+  majBouton();
+}

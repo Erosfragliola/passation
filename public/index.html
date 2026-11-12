@@ -298,6 +298,14 @@
     <div class="parti-pris-media">
       <img src="/img/photos/hero-poster-1600.webp" srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
            sizes="100vw" loading="lazy" width="2400" height="1266" data-t-attr="alt=parti_pris.video_alt">
+      <!-- La vidéo de l'artisan, en boucle tant qu'elle est à l'écran (public/js/landing/video.js) -->
+      <video class="parti-pris-video" muted loop playsinline preload="none" aria-hidden="true" hidden
+             data-sources='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'></video>
+      <button class="hero-pause parti-pris-pause" type="button" hidden>
+        <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
+        <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
+        <span class="visuellement-cache"></span>
+      </button>
       <div class="conteneur parti-pris-texte">
         <p class="surtitre" data-t="parti_pris.surtitre"></p>
         <h2 id="titre-parti-pris" data-t="parti_pris.titre"></h2>
