@@ -8,7 +8,8 @@ directory = "./public"
 binding = "ASSETS"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
-run_worker_first = ["/api/*"]
+# La page d'accueil passe par le Worker : ses textes viennent de src/contenu/landing.json (src/routes/landing.js)
+run_worker_first = ["/api/*", "/"]
 
 # Base D1 de production créée le 10/11/2026 (npx wrangler d1 create passation).
 # En local, wrangler dev utilise une copie SQLite locale de cette base.

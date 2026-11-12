@@ -16,7 +16,9 @@
     "vendor:3d": "node scripts/vendor-3d.mjs"
   },
   "devDependencies": {
+    "axe-core": "4.14.0",
     "n8ao": "2.0.1",
+    "playwright-core": "1.64.1",
     "postprocessing": "6.39.5",
     "sharp": "0.35.5",
     "three": "0.186.1",

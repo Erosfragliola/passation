@@ -2,6 +2,10 @@
 (() => {
   document.documentElement.classList.remove("sans-js");
 
+  // Développement : contenus de la page d'accueil encore à fournir (clés vides de src/contenu/landing.json)
+  const manquants = document.documentElement.dataset.contenuManquant;
+  if (manquants) console.warn(`Contenu à fournir (src/contenu/landing.json, « cles ») : ${manquants.split(" ").join(", ")}`);
+
   // Menu mobile
   const bouton = document.querySelector(".nav-bouton");
   const menu = document.getElementById("nav-mobile");
