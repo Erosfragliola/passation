@@ -25,6 +25,16 @@ Le dirigeant a délégué ces arbitrages (« je te fais confiance ») après le 
   s'efface puis se redessine) ; la frise et la fourchette s'affichent à son rythme.
 - Rendu à la demande : une image n'est calculée que si le défilement, le pointeur ou les données changent ;
   rien quand aucune fenêtre n'est à l'écran ou que l'onglet est masqué.
+- Précompilation : tous les shaders (vitres allumées et éteintes, variantes transparentes de l'enseigne, du décor
+  et du cartouche, ombres) sont compilés en arrière-plan, par passes séparées par des moments calmes, au chargement
+  et à chaque nouvelle entreprise. Ils sont compilés pour une cible de rendu (espace linéaire), comme dans la chaîne
+  de post-traitement. Aucune compilation pendant le défilement.
+- Qualité adaptative (`cadence.js`, testé dans `test/edifice-cadence.test.js`) : la cadence n'est mesurée que sur
+  les images que la scène s'enchaîne elle-même (300 ms après chaque rendu), jamais sur celles qu'un défilement
+  relance une image sur deux.
+- Replis : image fixe de chaque fenêtre avant le chargement, sans WebGL, et pendant une perte du contexte WebGL
+  (la 3D revient seule, reflets recalculés). Économiseur de données : la 3D ne se charge qu'à la recherche d'un
+  SIREN. Mouvement réduit : un état fixe par fenêtre, sans transition.
 
 | Fenêtre | Grandeur | Centre de la fenêtre (hauteurs d'écran) |
 |---|---|---|
@@ -59,15 +69,30 @@ Three.js ajoutés à `public/vendor/rendu3d.js` (`npm run vendor:3d`).
 
 1. Scènes 1 à 3 (esquisse, volume, matière) avec un vrai SIREN : **faite**.
 2. Scènes 4 à 6 (vue éclatée, enseigne effacée, soir) : **faite**.
-3. Finitions (mobile, accessibilité, performances) : à faire.
+3. Finitions (mobile, accessibilité, performances) : **faite**.
+   - La qualité adaptative se dégradait à tort jusqu'au palier le plus bas (« ombres simples ») pendant tout
+     parcours, sur ordinateur comme sur mobile : le rendu à la demande saute des images sans ralentir, et la mesure
+     les comptait comme des images lentes. Les mesures « images » des livraisons 1 et 2 ont donc été prises en
+     qualité réduite.
+   - 19 programmes de shaders se compilaient pendant le défilement (début du volume, entrée des outils et de la
+     confidentialité) : 60 ms à plus d'une seconde de page figée selon l'appareil et le cache. Désormais 0.
+   - Mobile : bandes proportionnées à la largeur de l'écran (la maquette est plus large que haute).
+   - Journaux de compilation des shaders lus seulement en mode `?debug` (lecture bloquante).
 
 ## Mesures (local, `wrangler dev`)
 
-| | Avant | Après livraison 1 | Après livraison 2 |
-|---|---|---|---|
-| Lighthouse mobile : performance / accessibilité | 100 / 100 | 100 / 100 | 100 / 100 |
-| FCP / LCP / TBT / CLS | 0,8 s / 0,8 s / 0 ms / 0,001 | 0,8 s / 0,8 s / 0 ms / 0,001 | 0,9 s / 0,9 s / 0 à 10 ms / 0,001 |
-| Poids au chargement (Lighthouse) | 375 Ko | 328 Ko | 407 Ko (images fixes des 5 fenêtres) |
-| Parcours complet, ordinateur : image moyenne / 95e centile | 22,1 ms / 50 ms | 17,1 ms / 16,8 ms | 17,3 ms / 16,8 ms |
-| Parcours complet, mobile : image moyenne / 95e centile | 17,1 ms / 16,8 ms | 17,1 ms / 16,7 ms | 17,2 ms / 16,8 ms |
-| Tâches longues pendant le parcours (ordinateur / mobile) | 550 ms / 417 ms | 493 ms / 427 ms | 627 ms / 557 ms |
+| | Avant | Après livraison 1 | Après livraison 2 | Après livraison 3 |
+|---|---|---|---|---|
+| Lighthouse mobile : performance / accessibilité | 100 / 100 | 100 / 100 | 100 / 100 | 100 / 100 |
+| FCP / LCP / TBT / CLS | 0,8 s / 0,8 s / 0 ms / 0,001 | 0,8 s / 0,8 s / 0 ms / 0,001 | 0,9 s / 0,9 s / 0 à 10 ms / 0,001 | 0,9 s / 0,9 s / 0 ms / 0,001 |
+| Poids au chargement (Lighthouse) | 375 Ko | 328 Ko | 407 Ko (images fixes des 5 fenêtres) | 407 Ko |
+| Parcours complet, ordinateur : image moyenne / 95e centile | 22,1 ms / 50 ms | 17,1 ms / 16,8 ms | 17,3 ms / 16,8 ms | 16,7 ms / 16,8 ms |
+| Parcours complet, mobile : image moyenne / 95e centile | 17,1 ms / 16,8 ms | 17,1 ms / 16,7 ms | 17,2 ms / 16,8 ms | 16,7 ms / 16,7 ms |
+| Qualité en fin de parcours (ordinateur / mobile) | non mesurée | non mesurée | ombres simples / ombres simples (à tort) | complète / complète |
+| Shaders compilés pendant le parcours (ordinateur / mobile) | non mesuré | non mesuré | 19 / 19 | 0 / 0 |
+| Tâches longues pendant le parcours (ordinateur / mobile) | 550 ms / 417 ms | 493 ms / 427 ms | 627 ms / 557 ms | 0 ms / 0 ms |
+
+Livraison 3 : Chrome 157 sans interface (puppeteer-core du cache de Lighthouse), Apple M3, profil neuf à chaque
+mesure, défilement régulier de toute la page. Processeur ralenti 20 fois : la qualité baisse bien d'un palier à la
+fois (trois paliers en 4 s), comme prévu. Vérifiés aussi : un vrai SIREN (nouvelle maquette précompilée, rien
+compilé pendant le parcours), mouvement réduit, perte puis retour du contexte WebGL, économiseur de données.

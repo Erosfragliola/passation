@@ -232,6 +232,7 @@ export async function creerScene({ fenetres, principale }) {
     b.details.children.forEach((o) => { o.userData.echelle = o.scale.clone(); });
     habiller(p);
     decrire(p);
+    prechauffer().catch(() => {});
   }
 
   // ---------------------------------------------------------------- Texte équivalent et légende
@@ -460,11 +461,16 @@ export async function creerScene({ fenetres, principale }) {
     requestAnimationFrame(() => f.classList.add("scene-prete"));
   }
 
-  let raf = 0, signature = "";
+  // Après chaque rendu, la boucle se relance d'elle-même pendant 300 ms (sans rien dessiner si rien ne change) :
+  // ces images enchaînées donnent à la qualité adaptative la cadence réelle de l'écran (rendu.tic). Une image
+  // demandée par un événement (défilement, pointeur) ne compte pas : rien ne dit qu'elle suit la précédente.
+  let raf = 0, signature = "", actifJusqua = 0, perdu = false, enchaine = false;
   const demander = () => { if (!raf) raf = requestAnimationFrame(image); };
   function image(now) {
     raf = 0;
-    if (document.hidden || !visibles.size) return;            // pause hors écran et onglet masqué
+    const suite = enchaine;
+    enchaine = false;
+    if (document.hidden || !visibles.size || perdu) return;   // pause hors écran, onglet masqué, contexte perdu
     const { centres, active } = mesurer();
     if (!active) return;
     if (active !== hote) placer(active);
@@ -496,11 +502,13 @@ export async function creerScene({ fenetres, principale }) {
     const sig = [e.trace, e.volume, e.matiere, e.ouvert, e.efface, e.soir, e.etape, pointeur.cx, pointeur.cy, somme].map((x) => x.toFixed(4)).join("|") + `|${toile.width}x${toile.height}`;
     if (sale || anime || sig !== signature) {
       appliquer(e, now);
-      rendu.rendre(now, true);
+      rendu.rendre();
       signature = sig;
       sale = false;
+      actifJusqua = now + 300;
     }
-    if (anime) demander();
+    rendu.tic(now, suite);
+    if (anime || now < actifJusqua) { demander(); enchaine = true; }
   }
 
   function finirTransition() {
@@ -528,10 +536,89 @@ export async function creerScene({ fenetres, principale }) {
     }, { passive: true });
   }
 
+  // ---------------------------------------------------------------- Précompilation des shaders
+  // Tout programme absent au moment où une pièce apparaît se compile pendant le défilement : page figée de
+  // 60 ms à plus d'une seconde, à froid, selon l'appareil. On compile donc d'avance, en arrière-plan et par passes
+  // séparées par des moments calmes : vitres allumées, puis vitres éteintes et variantes transparentes (enseigne,
+  // décor et cartouche qui s'estompent), puis les ombres. Chaque passe rétablit la scène avant de rendre la main :
+  // aucune image n'en montre rien.
+  const calme = () => new Promise((ok) => {
+    if (window.requestIdleCallback) return requestIdleCallback(ok, { timeout: 1200 });
+    setTimeout(() => { const t0 = performance.now(); ok({ timeRemaining: () => Math.max(0, 8 - (performance.now() - t0)) }); }, 60);
+  });
+  const mini = new THREE.WebGLRenderTarget(4, 4);
+  liberer.push(mini);
+  /** Comme dans la chaîne de post-traitement, la scène se rend dans une cible (espace linéaire), pas à l'écran :
+   *  les programmes compilés d'avance doivent être ceux-là. */
+  function dansLaCible(f) {
+    const avant = rendu.renderer.getRenderTarget();
+    rendu.renderer.setRenderTarget(mini);
+    try { return f(); } finally { rendu.renderer.setRenderTarget(avant); }
+  }
+  const compiler = () => dansLaCible(() => rendu.renderer.compileAsync(scene, camera));
+  function basculer(mats) {
+    for (const c of mats) { c.transparent = !c.transparent; c.needsUpdate = true; }
+  }
+  async function prechauffer() {
+    const x = bati;
+    const vitres = x.b.allumees.map((f) => [f, f.vitre.material]);
+    const remettre = () => vitres.forEach(([f, mat]) => { f.vitre.material = mat; });
+    const variables = [...(x.parGroupe.enseigne ?? []), ...(x.parGroupe.decor ?? []), matAnonyme];
+    const passes = [
+      () => {
+        vitres.forEach(([f]) => { f.vitre.material = f.lueur; });
+        try { return compiler(); } finally { remettre(); }
+      },
+      () => {
+        vitres.forEach(([f]) => { f.vitre.material = f.vitre.userData.eteinte ?? x.b.vitreEteinte; });
+        basculer(variables);
+        try { return compiler(); } finally { basculer(variables); remettre(); }
+      },
+      // Sans compilation parallèle (KHR_parallel_shader_compile), l'édition des liens attend le premier usage :
+      // on la provoque ici, quelques programmes par moment calme
+      async () => {
+        const liste = [...rendu.renderer.info.programs];
+        while (liste.length) {
+          const d = await calme();
+          if (x !== bati || perdu) return;
+          do { const p = liste.shift(); p.getUniforms(); p.getAttributes(); } while (liste.length && d.timeRemaining() > 4);
+        }
+      },
+      // Ombres : leurs shaders de profondeur ne se créent qu'au rendu. Une image hors écran, toutes pièces visibles.
+      () => {
+        const caches = [];
+        monde.traverse((o) => { if (!o.visible) { caches.push(o); o.visible = true; } });
+        try { dansLaCible(() => rendu.renderer.render(scene, camera)); } finally { caches.forEach((o) => { o.visible = false; }); }
+      },
+    ];
+    for (const passe of passes) {
+      await calme();
+      if (x !== bati || perdu) return;   // entreprise changée entre-temps : la nouvelle a sa propre précompilation
+      await passe();
+    }
+    sale = true;
+    demander();
+  }
+
+  // ---------------------------------------------------------------- Contexte WebGL perdu (mémoire du téléphone)
+  // Les images fixes reprennent la place de la scène ; au retour du contexte, Three.js recharge tout.
+  toile.addEventListener("webglcontextlost", (ev) => {
+    ev.preventDefault();
+    perdu = true;
+    hote?.classList.remove("scene-prete");
+  });
+  toile.addEventListener("webglcontextrestored", () => {
+    perdu = false;
+    hote = null;            // replace le canevas et le révèle à la prochaine image
+    sale = true;
+    demander();
+    prechauffer().catch(() => {});
+  });
+
   // ---------------------------------------------------------------- État initial : l'entreprise d'exemple
   poser(EXEMPLE);
   appliquer(etatScene({ esquisse: 0.5 }), performance.now());
-  await rendu.renderer.compileAsync(scene, camera).catch(() => {});
+  await compiler().catch(() => {});
   demander();
 
   if (debug) {

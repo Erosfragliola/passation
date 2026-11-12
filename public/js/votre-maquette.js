@@ -29,9 +29,10 @@ function chargerScene() {
   }
   return etat.sceneChargee;
 }
-if (conteneur3d && "IntersectionObserver" in window) {
+if (conteneur3d && "IntersectionObserver" in window && !navigator.connection?.saveData) {
   // Chargement quand une fenêtre de la scène entre à l'écran, pendant un moment calme : la page d'accueil reste
   // légère (l'image fixe de l'esquisse s'affiche en attendant), le hero ne dépend jamais de la 3D.
+  // Économiseur de données activé : les images fixes restent ; la 3D ne se charge qu'à la recherche d'un SIREN.
   const obs = new IntersectionObserver((e) => {
     if (!e.some((x) => x.isIntersecting)) return;
     obs.disconnect();

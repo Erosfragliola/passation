@@ -429,3 +429,11 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
 - **10/11/2026, 3D « La cloche » mise en ligne** (accord du dirigeant) : la branche `3d-v2-cloche` est fusionnée sans
   conflit. Tests : 211. Cloche et fenêtre de connexion vérifiées en local. Mesure d'images par seconde non probante ce
   jour-là (machine de test très chargée : charge moyenne de 21) ; à confirmer sur un vrai MacBook avec `?debug`.
+- **12/11/2026, 3D v3 « De l'esquisse à l'édifice »** : branche locale `3d-esquisse-edifice` (non poussée), en attente
+  de validation. Une scène unique dans cinq fenêtres de la page, état fonction pure du défilement ; détail et
+  mesures dans `docs/3D-V3-EDIFICE.md`.
+  - Livraisons 1 et 2 : esquisse, volume, matière ; vue éclatée (une strate par outil), enseigne effacée, soir.
+  - Livraison 3 (finitions) : plus aucune compilation de shader pendant le défilement ; qualité adaptative corrigée
+    (elle se dégradait à tort au palier le plus bas) ; bandes mobiles proportionnées ; reprise après perte du
+    contexte WebGL ; économiseur de données respecté.
+  - Tests : 237. Lighthouse mobile 100 / 100.

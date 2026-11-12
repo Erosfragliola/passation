@@ -6,6 +6,7 @@ import {
   EffectComposer, RenderPass, EffectPass, BloomEffect, SMAAEffect, SMAAPreset, ToneMappingEffect, ToneMappingMode,
   HueSaturationEffect, BrightnessContrastEffect, N8AOPostPass,
 } from "/vendor/rendu3d.js";
+import { creerCadence } from "/js/edifice/cadence.js";
 
 /**
  * Studio photo pour les reflets (verre, cuivre, vernis) : pièce sombre, grande boîte à lumière chaude en haut à
@@ -36,6 +37,8 @@ function studio() {
 export function creerRendu(scene, camera, { mobile = false, debug = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: false, stencil: false, alpha: true, premultipliedAlpha: true, powerPreference: "high-performance" });
   renderer.setClearColor(0x000000, 0); // fond transparent : l'objet est « détouré » sur la section
+  // Lecture des journaux de compilation : bloquante, réservée au mode ?debug
+  renderer.debug.checkShaderErrors = debug;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.5 : 2)); // résolution plafonnée sur mobile
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap; // ombres douces : rayon réglé sur chaque lumière (disque de Vogel)
@@ -45,10 +48,18 @@ export function creerRendu(scene, camera, { mobile = false, debug = false } = {}
   renderer.domElement.className = "edifice-toile";
 
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const decor = studio();
-  scene.environment = pmrem.fromScene(decor, 0.05).texture;
+  let cibleReflets = null;
+  /** Reflets du studio, calculés sur le GPU : à refaire si le contexte WebGL a été perdu puis rendu. */
+  function eclairer() {
+    cibleReflets?.dispose();
+    const decor = studio();
+    cibleReflets = pmrem.fromScene(decor, 0.05);
+    scene.environment = cibleReflets.texture;
+    decor.traverse((o) => { o.geometry?.dispose(); o.material?.dispose(); });
+  }
+  eclairer();
   scene.environmentIntensity = 0.6;
-  decor.traverse((o) => { o.geometry?.dispose(); o.material?.dispose(); });
+  renderer.domElement.addEventListener("webglcontextrestored", eclairer);
 
   const composer = new EffectComposer(renderer, { frameBufferType: THREE.HalfFloatType });
   composer.addPass(new RenderPass(scene, camera));
@@ -86,8 +97,10 @@ export function creerRendu(scene, camera, { mobile = false, debug = false } = {}
   }
 
   // ---------------------------------------------------------------- Qualité adaptative
-  // Sous 45 i/s pendant 2 s de rendu continu : on réduit la résolution, puis on coupe l'AO, puis les ombres douces.
-  let palier = 0, images = 0, debutFenetre = performance.now(), sousSeuil = 0, ips = 60, derniere = 0;
+  // Sous 45 i/s pendant 2 s d'activité : on réduit la résolution, puis on coupe l'AO, puis les ombres douces.
+  // Cadence mesurée sur les seules images enchaînées (voir cadence.js).
+  let palier = 0;
+  const cadence = creerCadence({ depart: performance.now() });
   const lumieresOmbres = [];
   const PALIERS = ["complète", "résolution réduite", "sans AO", "ombres simples"];
   function degrader() {
@@ -103,28 +116,20 @@ export function creerRendu(scene, camera, { mobile = false, debug = false } = {}
     compteur.setAttribute("aria-hidden", "true");
     document.body.append(compteur);
   }
-  const depart = performance.now();
-  function mesurer(maintenant) {
-    // Rendu à la demande : seules les images rendues d'affilée (moins de 50 ms d'écart) comptent.
-    if (maintenant - depart < 3500 || document.hidden || maintenant - derniere > 50) { debutFenetre = maintenant; images = 0; derniere = maintenant; return; }
-    derniere = maintenant;
-    images++;
-    const ecoule = maintenant - debutFenetre;
-    if (ecoule < 500) return;
-    ips = (images * 1000) / ecoule;
-    images = 0; debutFenetre = maintenant;
-    if (ips < 45 && palier < 3) { sousSeuil += ecoule; if (sousSeuil >= 2000) { degrader(); sousSeuil = 0; } } else sousSeuil = 0;
-    if (compteur) compteur.textContent = `${Math.round(ips)} i/s · qualité ${PALIERS[palier]}`;
+  function tic(maintenant, enchaine) {
+    if (cadence.tic(maintenant, enchaine, document.hidden) && palier < 3) degrader();
+    if (compteur) compteur.textContent = `${Math.round(cadence.ips)} i/s · qualité ${PALIERS[palier]}`;
   }
 
   return {
     renderer, composer, ao, bloom,
     dimensionner,
-    /** mesure : false pendant la chorégraphie (on ne juge la fluidité qu'au repos). */
-    rendre(maintenant, mesure = true) { composer.render(); if (maintenant != null && mesure) mesurer(maintenant); else debutFenetre = performance.now(), images = 0; },
+    rendre() { composer.render(); },
+    /** À chaque requestAnimationFrame tant que la scène est active (voir la qualité adaptative). */
+    tic,
     ombres(lumiere) { lumieresOmbres.push(lumiere); },
-    get ips() { return ips; },
+    get ips() { return cadence.ips; },
     get palier() { return palier; },
-    dispose() { composer.dispose(); renderer.dispose(); pmrem.dispose(); compteur?.remove(); },
+    dispose() { composer.dispose(); cibleReflets?.dispose(); renderer.dispose(); pmrem.dispose(); compteur?.remove(); },
   };
 }
