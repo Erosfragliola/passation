@@ -35,7 +35,8 @@
     "libelle": "SIREN ou nom de votre société",
     "bouton": "Estimer mon entreprise",
     "bouton_court": "Estimer",
-    "suggestions": "Sociétés correspondantes"
+    "suggestions": "Sociétés correspondantes",
+    "zone": "Estimer votre entreprise"
   },
   "hero": {
     "surtitre": "Préparer la cession de votre PME",
@@ -319,6 +320,10 @@
       "saisie_erreur": "Indiquez votre chiffre d'affaires et votre EBE, en milliers d'euros.",
       "affiner": "Affiner avec mes chiffres",
       "autre": "Rechercher une autre entreprise"
+    },
+    "video": {
+      "pause": "Mettre la vidéo en pause",
+      "lecture": "Lire la vidéo"
     }
   }
 }

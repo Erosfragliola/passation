@@ -24,6 +24,18 @@ export const TRANCHES = {
   "53": { min: 10000, max: null },
 };
 
+/** Libellé INSEE de la tranche d'effectif salarié : « 20 à 49 salariés », « non employeuse », « 0 salarié ». */
+export function libelleSalaries(code) {
+  if (code === "NN") return "non employeuse";
+  const t = TRANCHES[code];
+  if (!t) return null;
+  const n = (v) => v.toLocaleString("fr-FR");
+  if (t.max === 0) return "0 salarié";
+  if (t.max == null) return `${n(t.min)} salariés et plus`;
+  if (code === "01") return "1 ou 2 salariés";
+  return `${n(t.min)} à ${n(t.max)} salariés`;
+}
+
 export const ETAGES_MAX = 8;
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 

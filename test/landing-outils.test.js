@@ -55,3 +55,30 @@ describe("format des montants", () => {
     expect(remplir("comptes {exercice} ({x})", { exercice: 2024 })).toBe("comptes 2024 ({x})");
   });
 });
+
+import { detailSuggestion } from "../public/js/landing/estimation.js";
+import { libelleSalaries } from "../public/js/regles.js";
+import { normaliserSuggestions } from "../src/sources/entreprise.js";
+import fraiseraie from "./fixtures/319252813.json";
+
+describe("suggestions", () => {
+  it("tranches d'effectif : libellés INSEE", () => {
+    expect(libelleSalaries("NN")).toBe("non employeuse");
+    expect(libelleSalaries("00")).toBe("0 salarié");
+    expect(libelleSalaries("01")).toBe("1 ou 2 salariés");
+    expect(libelleSalaries("12")).toBe("20 à 49 salariés");
+    expect(libelleSalaries("42")).toBe("1 000 à 1 999 salariés");
+    expect(libelleSalaries("53")).toBe("10 000 salariés et plus");
+    expect(libelleSalaries("99")).toBeNull();
+  });
+  it("date de création et tranche reprises de la réponse réelle de l'annuaire", () => {
+    const [s] = normaliserSuggestions(fraiseraie.entreprise);
+    expect(s).toMatchObject({ siren: "319252813", date_creation: "1980-04-01", tranche_effectif: "12", code_postal: "44210" });
+  });
+  it("ligne lisible : ville (département), année de création, effectif", () => {
+    expect(detailSuggestion({ ville: "PORNIC", code_postal: "44210", date_creation: "1980-04-01", tranche_effectif: "12" }))
+      .toBe("PORNIC (44) · créée en 1980 · 20 à 49 salariés");
+    expect(detailSuggestion({ ville: "SAINT-DENIS", code_postal: "97400", date_creation: null, tranche_effectif: "NN" })).toBe("SAINT-DENIS (974)");
+    expect(detailSuggestion({ ville: null, code_postal: null })).toBe("");
+  });
+});

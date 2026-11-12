@@ -1,38 +1,30 @@
-// Page d'accueil : branchement du champ SIREN sur l'estimation express et affichage du résultat.
-// Les textes viennent de src/contenu/landing.json (sous-arbre « js », posé dans <script id="textes">).
-// Phase 2 : affichage provisoire du résultat ; l'écran du nom de code le remplacera en phase 7.
-import { monterChamp } from "/js/landing/champ-siren.js";
+// Page d'accueil : champ SIREN partagé (hero, navigation, barre du bas, relance) branché sur l'estimation express,
+// vidéo du hero, affichage du résultat. Textes : src/contenu/landing.json (sous-arbre « js », <script id="textes">).
+// L'affichage du résultat est provisoire : l'écran du nom de code le remplacera en phase 7.
+import { creerChampPartage } from "/js/landing/champ-siren.js";
+import { surveillerChamps } from "/js/landing/barres.js";
+import { lancerVideo } from "/js/landing/video.js";
 import { chargerEntreprise, estimationManuelle, fourchette, multiple, remplir } from "/js/landing/estimation.js";
 
 const $ = (s) => document.querySelector(s);
-const reduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let T = {};
 try { T = JSON.parse($("#textes")?.textContent || "{}"); } catch { T = {}; }
 const R = T.resultat || {};
+const reduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const message = $("#recherche-message");
 const section = $("#resultat");
 const etat = { donnees: null };
 
-function dire(texte) {
-  message.textContent = texte || "";
-  message.hidden = !texte;
-}
+const champ = creerChampPartage({ estimer, textes: T });
+document.querySelectorAll("[data-champ-siren]").forEach((f) => champ.monter(f));
+const barres = surveillerChamps({ hero: $('[data-champ-siren="accueil"]'), relance: $('[data-champ-siren="relance"]'), auChangement: () => champ.fermerListes() });
+lancerVideo({ hero: $("#accueil"), textes: T.video });
 
-const form = document.querySelector('[data-champ-siren="accueil"]');
-const champ = form && monterChamp(form, {
-  estimer: (siren) => estimer(siren),
-  erreur: (code) => dire(T.erreurs?.[code] || T.erreurs?.source_indisponible),
-  effacer: () => dire(""),
-});
-
-async function estimer(siren) {
-  dire(T.chargement);
-  form.setAttribute("aria-busy", "true");
+async function estimer(siren, emplacement) {
+  champ.dire(T.chargement, emplacement);
   const r = await chargerEntreprise(siren);
-  form.removeAttribute("aria-busy");
-  if (!r.ok) return dire(T.erreurs?.[r.code] || T.erreurs?.source_indisponible);
-  dire("");
+  if (!r.ok) return champ.dire(T.erreurs?.[r.code] || T.erreurs?.source_indisponible, emplacement);
+  champ.dire("");
   etat.donnees = r.donnees;
   afficher(r.donnees, r.donnees.estimation);
   section.hidden = false;
@@ -84,13 +76,10 @@ $("#form-comptes")?.addEventListener("submit", async (e) => {
 
 $("#btn-autre")?.addEventListener("click", () => {
   section.hidden = true;
-  champ?.vider();
-  window.scrollTo({ top: 0, behavior: reduit() ? "auto" : "smooth" });
-  setTimeout(() => champ?.focaliser(), reduit() ? 0 : 400);
+  champ.vider();
+  barres.actualiser();
+  champ.focaliser();
 });
 
-// Boutons qui ramènent au champ (« Essayer avec mon entreprise », relance)
-document.querySelectorAll("[data-focus-champ]").forEach((b) => b.addEventListener("click", () => {
-  form.scrollIntoView({ behavior: reduit() ? "auto" : "smooth", block: "center" });
-  setTimeout(() => champ?.focaliser(), reduit() ? 0 : 400);
-}));
+// « Essayer avec mon entreprise » : le curseur dans le champ partagé (barre du haut ou du bas)
+document.querySelectorAll("[data-focus-champ]").forEach((b) => b.addEventListener("click", () => { barres.actualiser(); champ.focaliser(); }));

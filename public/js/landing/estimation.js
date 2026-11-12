@@ -1,5 +1,6 @@
 // Estimation express : appels aux routes existantes (GET /api/maquette/:siren, POST /api/estimation) et mise en
-// forme des montants. Aucun calcul ici : le moteur est côté serveur (src/valuation/express.js).
+// forme des montants et des suggestions. Aucun calcul ici : le moteur est côté serveur (src/valuation/express.js).
+import { libelleSalaries } from "../regles.js";
 
 /** Données publiques et estimation d'une société : { ok: true, donnees } ou { ok: false, code }. */
 export async function chargerEntreprise(siren) {
@@ -46,3 +47,13 @@ export const multiple = (v) => nombre(v, Number.isInteger(v) ? 0 : 1);
 
 /** Remplace {cle} dans un modèle de texte. */
 export const remplir = (modele, valeurs) => String(modele || "").replace(/\{([a-z_]+)\}/g, (m, k) => (k in valeurs ? String(valeurs[k]) : m));
+
+const departement = (cp) => (/^\d{5}$/.test(cp || "") ? (cp.startsWith("97") ? cp.slice(0, 3) : cp.slice(0, 2)) : null);
+
+/** Ligne d'une suggestion : « Ville (dép.) · créée en AAAA · 20 à 49 salariés ». */
+export function detailSuggestion(x) {
+  const dep = departement(x.code_postal);
+  const annee = /^\d{4}/.test(x.date_creation || "") ? x.date_creation.slice(0, 4) : null;
+  const effectif = x.tranche_effectif && x.tranche_effectif !== "NN" ? libelleSalaries(x.tranche_effectif) : null;
+  return [x.ville ? `${x.ville}${dep ? ` (${dep})` : ""}` : null, annee ? `créée en ${annee}` : null, effectif].filter(Boolean).join(" · ");
+}

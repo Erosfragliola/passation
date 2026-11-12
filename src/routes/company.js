@@ -8,7 +8,7 @@ import { SEARCH_RATE_LIMIT } from "../config.js";
 export async function routeRecherche(request, env) {
   const q = (new URL(request.url).searchParams.get("q") || "").trim().slice(0, 80);
   if (q.length < 3) return json({ suggestions: [] });
-  const cle = `recherche:v1:${q.toLowerCase()}`;
+  const cle = `recherche:v2:${q.toLowerCase()}`; // v2 : date de création et tranche d'effectif
   let suggestions = await lireCache(env.DB, cle);
   if (!suggestions) {
     const debit = await verifierDebit(env.DB, request, env, "recherche", SEARCH_RATE_LIMIT.requetesParHeureParIP);
