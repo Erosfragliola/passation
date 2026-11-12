@@ -1,6 +1,6 @@
 // Scène 3D « De l'esquisse à l'édifice » : l'état dépend uniquement de la position des fenêtres (défilement).
 import { describe, it, expect } from "vitest";
-import { avance, centreRelatif, etatScene, poseCamera, calendrierVolume, PLAGES } from "../public/js/edifice/etats.js";
+import { avance, centreRelatif, etatScene, poseCamera, calendrierVolume, decalageStrate, PLAGES, STRATES } from "../public/js/edifice/etats.js";
 
 describe("avance", () => {
   it("vaut 0 avant le début, 1 après la fin, et progresse entre les deux", () => {
@@ -55,7 +55,7 @@ describe("etatScene", () => {
 describe("poseCamera", () => {
   it("reste dans les bornes et passe exactement par les poses clés", () => {
     expect(poseCamera(-1)).toEqual(poseCamera(0));
-    expect(poseCamera(9)).toEqual(poseCamera(2));
+    expect(poseCamera(9)).toEqual(poseCamera(5));
     expect(poseCamera(1).elevation).toBeCloseTo(0.44, 10);
   });
   it("descend progressivement de la vue d'esquisse à la vue de matière", () => {
@@ -83,5 +83,46 @@ describe("calendrierVolume", () => {
     expect(allumees(0.9)).toBe(6);
     expect(cal.arbre(0.69, 0)).toBe(0);
     expect(cal.arbre(1, 2)).toBe(1);
+  });
+});
+
+describe("scènes 4 à 6 : outils, enseigne, soir", () => {
+  const fin = { esquisse: -5, ouvrage: -4 };
+  it("la maquette s'ouvre en arrivant aux outils, reste ouverte pendant les cartes, se referme à la fin", () => {
+    expect(etatScene({ ...fin, eclate: 1.5 }).ouvert).toBe(0);
+    expect(etatScene({ ...fin, eclate: 0.3, outilsDefile: 0.4 }).ouvert).toBe(1);
+    expect(etatScene({ ...fin, eclate: 0.3, outilsDefile: 1 }).ouvert).toBe(0);
+    expect(etatScene({ ...fin, eclate: 0.3, outilsDefile: 0.9 }).ouvert).toBeGreaterThan(0);
+  });
+  it("aux outils, la maquette est finie (volume et matière à 1)", () => {
+    expect(etatScene({ eclate: 0.3, outilsDefile: 0.4 })).toMatchObject({ trace: 1, volume: 1, matiere: 1 });
+  });
+  it("l'enseigne effacée implique les outils parcourus et la maquette refermée", () => {
+    const e = etatScene({ ...fin, eclate: 0.3, outilsDefile: 0.4, enseigne: 0.8 });
+    expect(e.efface).toBeGreaterThan(0);
+    expect(e.outils).toBe(1);
+    expect(e.ouvert).toBe(0);
+  });
+  it("le soir arrive en dernier ; l'étape va de 0 à 5", () => {
+    const e = etatScene({ soir: 0.4 });
+    expect(e).toMatchObject({ soir: 1, efface: 1, outils: 1, matiere: 1, etape: 5 });
+    expect(etatScene({}).etape).toBe(0);
+  });
+  it("avec « réduire les animations », la vue éclatée est une image fixe ouverte pendant les cartes", () => {
+    expect(etatScene({ ...fin, eclate: 0.3, outilsDefile: 0.4 }, { reduit: true }).ouvert).toBe(1);
+    expect(etatScene({ ...fin, eclate: 1.5 }, { reduit: true }).ouvert).toBe(0);
+    expect(etatScene({ ...fin, eclate: 0.3, outilsDefile: 1 }, { reduit: true }).ouvert).toBe(0);
+  });
+  it("six strates, une par outil, dans l'ordre des cartes", () => {
+    expect(STRATES.map((x) => x.outil)).toEqual(["Valorisation", "Datapack Excel", "Teaser", "Mémorandum", "Ressources", "Chat expert"]);
+    expect(new Set(STRATES.map((x) => x.cle)).size).toBe(6);
+  });
+  it("fermée, aucune strate ne bouge ; ouverte, elles s'empilent dans l'ordre", () => {
+    for (const { cle } of STRATES) expect(decalageStrate(cle, 0, { etage: 2, nbEtages: 4 })).toEqual({ y: 0, z: 0 });
+    const y = (cle) => decalageStrate(cle, 1, { etage: 1, nbEtages: 4 }).y;
+    expect(y("fondations")).toBeLessThan(y("rdc"));
+    expect(y("rdc")).toBeLessThan(y("etages"));
+    expect(y("etages")).toBeLessThan(y("toiture"));
+    expect(decalageStrate("enseigne", 1).z).toBeGreaterThan(0);
   });
 });
