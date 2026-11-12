@@ -40,6 +40,7 @@ export function creerBatiment(params, m, { mobile = false, graine = 7 } = {}) {
     const mesh = new THREE.Mesh(g, mat);
     mesh.position.set(x, y, z);
     mesh.castShadow = true; mesh.receiveShadow = true;
+    if (h <= 0.13 && y < 0.1 && mat === m.mur) mesh.userData.strate = "fondations"; // soubassement
     parent.add(mesh);
     return mesh;
   }
@@ -72,6 +73,7 @@ export function creerBatiment(params, m, { mobile = false, graine = 7 } = {}) {
       const im = new THREE.InstancedMesh(cube, m.platre, mats.length);
       mats.forEach((mx, i) => im.setMatrixAt(i, mx));
       im.castShadow = true; im.receiveShadow = true;
+      im.userData.strate = "facade"; // menuiseries
       parent.add(im);
     }
   }
@@ -80,6 +82,7 @@ export function creerBatiment(params, m, { mobile = false, graine = 7 } = {}) {
     const vitre = new THREE.Mesh(geo(new THREE.PlaneGeometry(l, h)), m.vitreEteinte);
     vitre.position.set(x, y, z + 0.006);
     vitre.receiveShadow = true;
+    vitre.userData.strate = "facade";
     parent.add(vitre);
     const e = 0.035, d = 0.05;
     barreau(parent, x, y + h / 2, z + d / 2, l + e, e, d);
@@ -100,13 +103,16 @@ export function creerBatiment(params, m, { mobile = false, graine = 7 } = {}) {
     return f;
   }
   function porte(parent, x, z, h = 1.15, l = 0.68) {
-    boite(l, h, 0.07, m.balsa, x, h / 2, z + 0.02, parent, 0.02);
+    boite(l, h, 0.07, m.balsa, x, h / 2, z + 0.02, parent, 0.02).userData.strate = "facade";
     barreau(parent, x, h + 0.03, z + 0.05, l + 0.14, 0.06, 0.1);
-    cylindre(0.025, 0.025, 0.04, m.laiton, x + l * 0.32, h * 0.48, z + 0.08, parent, 10).rotation.x = Math.PI / 2;
+    const poignee = cylindre(0.025, 0.025, 0.04, m.laiton, x + l * 0.32, h * 0.48, z + 0.08, parent, 10);
+    poignee.rotation.x = Math.PI / 2;
+    poignee.userData.strate = "facade";
   }
   function enseigne(parent, x, y, z, l = 1.1) {
     enseignes.push(boite(l, 0.18, 0.03, m.cuivre, x, y, z + 0.03, parent, 0.012));
-    boite(l - 0.12, 0.035, 0.035, m.platre, x, y, z + 0.05, parent, 0.01); // filet en relief, lu comme un lettrage au trait
+    enseignes.push(boite(l - 0.12, 0.035, 0.035, m.platre, x, y, z + 0.05, parent, 0.01)); // filet en relief, lu comme un lettrage au trait
+    for (const e of enseignes.slice(-2)) e.userData.strate = "enseigne";
   }
   function gouttiere(parent, c, yToit) {
     const g = cylindre(0.035, 0.035, c.l + 0.1, m.laiton, c.x, yToit - 0.02, c.z + c.p / 2 + 0.06, parent, 10);
@@ -339,13 +345,31 @@ export function creerBatiment(params, m, { mobile = false, graine = 7 } = {}) {
     }
   }
 
+  // ---------------------------------------------------------------- Strates de la vue éclatée (une par outil)
+  // Chaque maille reçoit sa strate ; les accessoires, les arbres, les personnages et l'allée forment le décor.
+  const strates = { fondations: [], rdc: [], etages: [], facade: [], toiture: [], enseigne: [] };
+  const decor = [];
+  const ranger = (racine, defaut, niveau) => racine.traverse((o) => {
+    if (!o.isMesh) return;
+    o.userData.strate ??= defaut;
+    o.userData.niveau = niveau;
+    if (o.userData.strate && strates[o.userData.strate]) strates[o.userData.strate].push(o); else decor.push(o);
+  });
+  niveaux.forEach((n, i) => ranger(n.groupe, i === 0 ? "rdc" : "etages", i));
+  if (toit) ranger(toit, "toiture", niveaux.length - 1);
+  ranger(details, null, 0);
+  if (echafaudage) ranger(echafaudage, null, 0);
+  for (const a of arbres) ranger(a.groupe, null, 0);
+  for (const p of personnes) ranger(p, null, 0);
+  ranger(allee, null, 0);
+
   // ---------------------------------------------------------------- Mesures (cadrage, feuille de papier)
   const boite3 = new THREE.Box3().setFromObject(groupe, true);
   for (let k = 0; k < traits.length; k += 3) boite3.expandByPoint(v.set(traits[k], traits[k + 1], traits[k + 2]));
   const centre = boite3.getCenter(new THREE.Vector3());
 
   return {
-    groupe, niveaux, toit, details, echafaudage, allee, arbres, personnes, allumees, enseignes,
+    groupe, niveaux, toit, details, echafaudage, allee, arbres, personnes, allumees, enseignes, strates, decor, lueurs,
     vitreEteinte: m.vitreEteinte,
     traits: new Float32Array(traits), traitsBati: finBati / 6, pointilles: new Float32Array(pointilles),
     boite: boite3, centre, hauteur: boite3.max.y,

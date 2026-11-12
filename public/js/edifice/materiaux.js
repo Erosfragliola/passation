@@ -54,7 +54,7 @@ export function chargerTextures({ mobile = false } = {}) {
  * triplanaire : la texture de pierre est posée selon la position dans la maquette (assises alignées d'un étage à
  * l'autre, blocs jamais étirés), et non selon les coordonnées de chaque boîte.
  */
-function matiereProgressive(mat, uniforms, { triplanaire = false } = {}) {
+export function matiereProgressive(mat, uniforms, { triplanaire = false } = {}) {
   mat.onBeforeCompile = (sh) => {
     sh.uniforms.uMatiere = uniforms.matiere;
     let v = sh.vertexShader, f = sh.fragmentShader;

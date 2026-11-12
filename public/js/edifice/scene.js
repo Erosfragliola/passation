@@ -8,9 +8,9 @@
 import * as THREE from "/vendor/three.module.min.js";
 import { LineSegments2, LineSegmentsGeometry, LineMaterial } from "/vendor/rendu3d.js";
 import { creerRendu } from "/js/edifice/rendu.js";
-import { chargerTextures, creerMateriaux, dessinerFeuille, dessinerCote, ombreRectangle, plaqueGravee, GRAPHITE } from "/js/edifice/materiaux.js";
+import { chargerTextures, creerMateriaux, matiereProgressive, dessinerFeuille, dessinerCote, ombreRectangle, plaqueGravee, GRAPHITE } from "/js/edifice/materiaux.js";
 import { creerBatiment } from "/js/edifice/batiment.js";
-import { etatScene, poseCamera, calendrierVolume, centreRelatif, doux, segment, clamp01 } from "/js/edifice/etats.js";
+import { etatScene, poseCamera, calendrierVolume, centreRelatif, decalageStrate, STRATES, doux, segment, clamp01 } from "/js/edifice/etats.js";
 
 /** Maquette d'exemple, affichée tant qu'aucun SIREN n'est saisi (présentée comme telle). */
 export const EXEMPLE = {
@@ -19,7 +19,10 @@ export const EXEMPLE = {
   cote: "Exemple", legendeCote: "Votre fourchette après votre SIREN",
 };
 const TEMPS = { effacement: [0, 0.35], construction: [0.35, 1.45], valeur: 1.5, fin: 1.6 };
-const NEUTRE = new THREE.Color(0xfff6ec), CHAUD = new THREE.Color(0xffdcb4);
+const NEUTRE = new THREE.Color(0xfff6ec), CHAUD = new THREE.Color(0xffdcb4), CREPUSCULE = new THREE.Color(0x8ea3d4);
+const CIEL_JOUR = new THREE.Color(0xfff8ee), CIEL_SOIR = new THREE.Color(0x313c58);
+const SOL_JOUR = new THREE.Color(0xcfc6b6), SOL_SOIR = new THREE.Color(0x17120e);
+const CUIVRE = new THREE.Color(0xa8653a);
 
 function graineDe(texte) { let h = 2166136261; for (const ch of String(texte)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; }
 const pluriel = (n, mot, motPluriel = mot + "s") => `${n} ${n > 1 ? motPluriel : mot}`;
@@ -70,6 +73,13 @@ export async function creerScene({ fenetres, principale }) {
   ombreFeuille.rotation.x = -Math.PI / 2;
   ombreFeuille.position.y = -0.01;
   monde.add(ombreFeuille);
+  // Même feuille sans nom (cartouche vide) : posée par-dessus quand l'enseigne s'efface
+  const matAnonyme = g(new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, transparent: true, opacity: 0, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
+  const feuilleAnonyme = new THREE.Mesh(feuille.geometry, matAnonyme);
+  feuilleAnonyme.rotation.x = -Math.PI / 2;
+  feuilleAnonyme.receiveShadow = true;
+  feuilleAnonyme.visible = false;
+  monde.add(feuilleAnonyme);
 
   const matPlaque = g(new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.85, roughness: 1, normalScale: new THREE.Vector2(1, 1), envMapIntensity: 1.6 }));
   const plaque = new THREE.Group();
@@ -77,7 +87,13 @@ export async function creerScene({ fenetres, principale }) {
   socle.position.y = 0.08; socle.castShadow = true; socle.receiveShadow = true;
   const lame = new THREE.Mesh(g(new THREE.BoxGeometry(2.1, 0.54, 0.04)), [m.laiton, m.laiton, m.laiton, m.laiton, matPlaque, m.laiton]);
   lame.position.set(0, 0.42, 0); lame.rotation.x = -0.55; lame.castShadow = true;
-  plaque.add(socle, lame);
+  // Plaque vierge, en fondu par-dessus la gravure quand le nom s'efface
+  const matVierge = g(new THREE.MeshStandardMaterial({ color: 0xd8b47a, metalness: 0.85, roughness: 0.42, transparent: true, opacity: 0 }));
+  const vierge = new THREE.Mesh(g(new THREE.PlaneGeometry(2.08, 0.52)), matVierge);
+  vierge.position.set(0, 0.42 + Math.sin(0.55) * 0.021, Math.cos(0.55) * 0.021);
+  vierge.rotation.x = -0.55;
+  vierge.visible = false;
+  plaque.add(socle, lame, vierge);
   monde.add(plaque);
 
   const matCote = g(new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false }));
@@ -114,14 +130,46 @@ export async function creerScene({ fenetres, principale }) {
       pt.add(pts);
     }
     monde.add(pt);
-    return { b, porteur: pt, lignes, pts };
+    // Matériaux propres à chaque strate (mise en évidence) et au décor (fondu) ; même passage carton → matière
+    const clones = new Map();
+    const cloner = (mat, groupe) => {
+      const k = `${groupe}|${mat.uuid}`;
+      if (!clones.has(k)) {
+        const c = mat.clone();
+        matiereProgressive(c, m.uniforms, { triplanaire: mat === m.mur });
+        c.userData.groupe = groupe;
+        clones.set(k, c);
+      }
+      return clones.get(k);
+    };
+    for (const [cle, liste] of Object.entries(b.strates)) {
+      for (const o of liste) {
+        o.userData.base = o.position.clone();
+        const eteinte = o.material === m.vitreEteinte;
+        o.material = cloner(o.material, cle);
+        if (eteinte) o.userData.eteinte = o.material;
+      }
+    }
+    for (const o of b.decor) o.material = cloner(o.material, "decor");
+    const parGroupe = {};
+    for (const c of clones.values()) (parGroupe[c.userData.groupe] ??= []).push(c);
+    return { b, porteur: pt, lignes, pts, clones: [...clones.values()], parGroupe };
   }
   function desinstaller(x) {
     if (!x) return;
     x.porteur.removeFromParent();
     x.lignes.geometry.dispose();
     x.pts?.geometry.dispose();
+    x.clones.forEach((c) => c.dispose());
     x.b.dispose();
+  }
+  /** Transparence d'un groupe de matériaux (bascule du mode transparent seulement quand il change). */
+  function opacite(mats, a) {
+    for (const c of mats ?? []) {
+      const t = a < 0.999;
+      if (c.transparent !== t) { c.transparent = t; c.needsUpdate = true; }
+      c.opacity = a;
+    }
   }
 
   /** Feuille, plaque et cote à la mesure du bâtiment ; nom et « depuis » sur la plaque et le cartouche. */
@@ -140,6 +188,12 @@ export async function creerScene({ fenetres, principale }) {
     matFeuille.map?.dispose();
     matFeuille.map = dessinerFeuille(L, P, { nom: p.nom, depuis: p.depuis, exemple: !!p.exemple });
     matFeuille.needsUpdate = true;
+    feuilleAnonyme.scale.copy(feuille.scale);
+    feuilleAnonyme.position.copy(feuille.position).setY(0.002);
+    feuilleAnonyme.rotation.z = feuille.rotation.z;
+    matAnonyme.map?.dispose();
+    matAnonyme.map = dessinerFeuille(L, P, { nom: "", depuis: null, exemple: false });
+    matAnonyme.needsUpdate = true;
     // Plaque de laiton à l'avant gauche, cote de plan à l'avant droit (le long de la façade)
     const avant = boite.max.z + 0.75;
     plaque.position.set(boite.min.x + 1.25, 0, avant);
@@ -157,7 +211,11 @@ export async function creerScene({ fenetres, principale }) {
     const z0 = feuille.position.z;
     reperes.length = 0;
     for (const [x, z] of [[-L / 2, z0 - P / 2], [L / 2, z0 - P / 2], [-L / 2, z0 + P / 2], [L / 2, z0 + P / 2]]) reperes.push(new THREE.Vector3(x * 1.04, 0, z + Math.sign(z - z0) * P * 0.02));
-    for (const x of [boite.min.x, boite.max.x]) for (const z of [boite.min.z, boite.max.z]) reperes.push(new THREE.Vector3(x, boite.max.y, z));
+    for (const x of [boite.min.x, boite.max.x]) for (const z of [boite.min.z, boite.max.z]) {
+      const r = new THREE.Vector3(x, boite.max.y, z);
+      r.haut = true; r.avant = z === boite.max.z; // repères déplacés quand la maquette s'ouvre
+      reperes.push(r);
+    }
     cadre.makeEmpty();
     reperes.forEach((r) => cadre.expandByPoint(r));
     cadrer();
@@ -185,6 +243,9 @@ export async function creerScene({ fenetres, principale }) {
     const textes = {
       esquisse: `Esquisse au trait de la maquette ${qui}, sur une feuille d'architecte : ${niveaux}${p.depuis ? `, depuis ${p.depuis}` : ""}. Cote de plan : ${p.cote || "à compléter"}.`,
       ouvrage: `La maquette ${qui} prend volume, étage par étage (${niveaux}, ${fenetres}, ${arbres}), puis matière : pierre, verre et lumière chaude.`,
+      eclate: `Vue éclatée de la maquette ${qui}, un niveau par outil : fondations pour la valorisation, étages pour le datapack, enseigne pour le teaser, façade pour le mémorandum, rez-de-chaussée pour les ressources, toiture pour le chat expert.`,
+      enseigne: `Le nom quitte la plaque et le cartouche de la maquette, le décor s'estompe : il ne reste qu'un bâtiment anonyme.`,
+      soir: `Le soir tombe sur la maquette ${qui} ; les lumières restent allumées (${fenetres}).`,
     };
     for (const f of fenetres_) if (textes[f.dataset.fenetre]) f.setAttribute("aria-label", textes[f.dataset.fenetre]);
     const legende = principale?.querySelector(".legende");
@@ -212,14 +273,20 @@ export async function creerScene({ fenetres, principale }) {
   }
 
   const ndc = new THREE.Vector3();
-  function placerCamera(az, el, d0) {
+  function placerCamera(az, el, d0, { haut = 0, avant = 0 } = {}) {
     let d = d0;
+    const c = cible.clone().add(new THREE.Vector3(0, haut * 0.35, avant * 0.3));
     for (let k = 0; k < 4; k++) {
-      camera.position.set(cible.x + d * Math.cos(el) * Math.sin(az), cible.y + d * Math.sin(el), cible.z + d * Math.cos(el) * Math.cos(az));
-      camera.lookAt(cible);
+      camera.position.set(c.x + d * Math.cos(el) * Math.sin(az), c.y + d * Math.sin(el), c.z + d * Math.cos(el) * Math.cos(az));
+      camera.lookAt(c);
       camera.updateMatrixWorld();
       let ecart = 0;
-      for (const r of reperes) { ndc.copy(r).project(camera); ecart = Math.max(ecart, Math.abs(ndc.x), Math.abs(ndc.y)); }
+      for (const r of reperes) {
+        ndc.copy(r);
+        if (r.haut) { ndc.y += haut; if (r.avant) ndc.z += avant; }
+        ndc.project(camera);
+        ecart = Math.max(ecart, Math.abs(ndc.x), Math.abs(ndc.y));
+      }
       if (!reperes.length) break;
       d *= 1 + (ecart / (mobile ? 0.95 : 0.9) - 1) * 0.85; // vise 90 % du champ (95 % sur mobile)
     }
@@ -227,6 +294,18 @@ export async function creerScene({ fenetres, principale }) {
 
   // ---------------------------------------------------------------- Application d'un état
   let transition = null;      // changement d'entreprise : { t0, suivant, evenements, fin }
+  // Mise en évidence des strates (0 à 1, lissée) : carte survolée ou touchée ; sur écran tactile, la carte au
+  // centre de la zone visible sous la bande
+  const surbrillance = Object.fromEntries(STRATES.map((x) => [x.cle, 0]));
+  let survolee = null, choisie = null, auto = null;
+  const cartes = [...document.querySelectorAll("[data-strate]")];
+  for (const c of cartes) {
+    if (pointeurFin) {
+      c.addEventListener("pointerenter", () => { survolee = c.dataset.strate; demander(); });
+      c.addEventListener("pointerleave", () => { if (survolee === c.dataset.strate) survolee = null; demander(); });
+    }
+    c.addEventListener("click", () => { choisie = choisie === c.dataset.strate ? null : c.dataset.strate; demander(); });
+  }
   let respire = false;
   let sale = true;
   const pointeur = { x: 0, y: 0, cx: 0, cy: 0 };
@@ -268,7 +347,7 @@ export async function creerScene({ fenetres, principale }) {
     b.allee.visible = v > 0.3;
     b.allee.scale.y = Math.max(0.002, doux(segment(v, 0.3, 0.5)));
     b.allee.position.z = b.porte.z + 1.5 + (1 - b.allee.scale.y) * -1.7;
-    b.allumees.forEach((f, i) => { f.vitre.material = cal.fenetreAllumee(v, i) ? f.lueur : b.vitreEteinte; });
+    b.allumees.forEach((f, i) => { f.vitre.material = cal.fenetreAllumee(v, i) ? f.lueur : (f.vitre.userData.eteinte ?? b.vitreEteinte); });
     b.arbres.forEach((a, i) => {
       const s = cal.arbre(v, i);
       a.groupe.visible = s > 0.002;
@@ -282,22 +361,60 @@ export async function creerScene({ fenetres, principale }) {
       p.visible = s > 0.002;
       p.scale.setScalar(Math.max(0.002, s));
     });
-    soleil.color.lerpColors(NEUTRE, CHAUD, mt);
-    soleil.intensity = 2.0 + 0.9 * mt;
-    ciel.intensity = 1.15 - 0.45 * mt;
-    scene.environmentIntensity = 0.35 + 0.3 * mt;
+    // Soir : la lumière du jour baisse et bleuit, les fenêtres allumées restent allumées (et brillent davantage)
+    const sr = doux(e.soir);
+    soleil.color.lerpColors(NEUTRE, CHAUD, mt).lerp(CREPUSCULE, sr);
+    soleil.intensity = (2.0 + 0.9 * mt) * (1 - 0.88 * sr);
+    ciel.color.lerpColors(CIEL_JOUR, CIEL_SOIR, sr);
+    ciel.groundColor.lerpColors(SOL_JOUR, SOL_SOIR, sr);
+    ciel.intensity = (1.15 - 0.45 * mt) * (1 - 0.45 * sr);
+    scene.environmentIntensity = (0.35 + 0.3 * mt) * (1 - 0.8 * sr);
+    b.lueurs.forEach((l) => { l.emissiveIntensity = 2.4 + 1.6 * sr; });
+
+    // Vue éclatée : une strate par outil ; la strate de la carte survolée ou touchée s'allume et se soulève
+    const o = e.ouvert;
+    const nbE = b.niveaux.length;
+    for (const [cle, liste] of Object.entries(b.strates)) {
+      const leve = surbrillance[cle] * 0.4 * o;
+      for (const x of liste) {
+        const niv = x.userData.niveau ?? 0;
+        const d = cle === "facade"
+          ? { y: decalageStrate(niv === 0 ? "rdc" : "etages", o, { etage: niv, nbEtages: nbE }).y, z: STRATES[3].dz * o }
+          : decalageStrate(cle, o, { etage: niv, nbEtages: nbE });
+        x.position.set(x.userData.base.x, x.userData.base.y + d.y + leve, x.userData.base.z + d.z);
+      }
+      for (const c of bati.parGroupe[cle] ?? []) { c.emissive.copy(CUIVRE); c.emissiveIntensity = 0.85 * surbrillance[cle] * o; }
+    }
+    if (b.echafaudage) b.echafaudage.visible = b.echafaudage.visible && o < 0.05;
+    matPlaque.emissive.copy(CUIVRE); matPlaque.emissiveIntensity = 0.4 * surbrillance.enseigne * o;
+
+    // Enseigne effacée : le nom quitte la plaque et le cartouche, la cote s'en va, le décor s'estompe
+    const ef = e.efface;
+    const nomEfface = doux(segment(ef, 0, 0.6));
+    vierge.visible = nomEfface > 0.001;
+    matVierge.opacity = nomEfface;
+    opacite(bati.parGroupe.enseigne, 1 - nomEfface);
+    const fondu = doux(segment(ef, 0.3, 1));
+    opacite(bati.parGroupe.decor, 1 - 0.85 * fondu);
+    // La feuille reste opaque (c'est le sol de la maquette) : seul son cartouche perd le nom
+    const anonyme = doux(segment(ef, 0, 0.5));
+    feuille.visible = anonyme < 0.999;
+    feuilleAnonyme.visible = anonyme > 0.001;
+    opacite([matAnonyme], anonyme);
+
     // Plaque et cote apparaissent avec le tracé
     const fp = doux(segment(fTrace, 0.55, 1));
     plaque.visible = fp > 0.01;
     plaque.scale.setScalar(Math.max(0.01, fp));
-    cote.visible = fp > 0.01;
-    matCote.opacity = fp * (1 - 0.35 * mt);
+    plaque.position.y = surbrillance.enseigne * 0.25 * o;
+    cote.visible = fp > 0.01 && ef < 0.4;
+    matCote.opacity = fp * (1 - 0.35 * mt) * (1 - doux(segment(ef, 0, 0.4)));
 
     // Caméra : pose de l'étape, légère réaction au pointeur sur ordinateur ; distance ajustée pour que la feuille
-    // entière reste dans le champ (rien n'est coupé par le bord de la fenêtre)
+    // entière (et la maquette ouverte) reste dans le champ : rien n'est coupé par le bord de la fenêtre
     const pose = poseCamera(e.etape);
     const az = pose.azimut + pointeur.cx * 0.06, el = pose.elevation + pointeur.cy * 0.03;
-    placerCamera(az, el, distance * pose.distance);
+    placerCamera(az, el, distance * pose.distance, { haut: decalageStrate("toiture", o, { nbEtages: nbE }).y + 0.4 * o, avant: 2.6 * o });
     soleil.position.set(cible.x - 8, 14, cible.z + 9);
     soleil.target.position.copy(cible);
   }
@@ -315,6 +432,22 @@ export async function creerScene({ fenetres, principale }) {
       centres[f.dataset.fenetre] = centreRelatif(r.top, r.height, vh);
       const v = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
       if (v > vu) { vu = v; meilleure = f; }
+      const repere = f.dataset.repere && document.querySelector(f.dataset.repere);
+      if (repere) {
+        // Bande collante : avancement des cartes qui défilent sous elle
+        const gr = repere.getBoundingClientRect();
+        centres.outilsDefile = clamp01((r.bottom - gr.top) / Math.max(1, gr.height));
+        if (!pointeurFin && v > 0) {
+          const milieu = (Math.max(0, r.bottom) + vh) / 2;
+          let proche = null, dmin = Infinity;
+          for (const c of cartes) {
+            const cr = c.getBoundingClientRect();
+            const dist = Math.abs(cr.top + cr.height / 2 - milieu);
+            if (cr.bottom > r.bottom && dist < dmin) { dmin = dist; proche = c.dataset.strate; }
+          }
+          auto = proche;
+        }
+      }
     }
     return { centres, active: meilleure };
   }
@@ -350,8 +483,17 @@ export async function creerScene({ fenetres, principale }) {
       if (Math.abs(pointeur.x - pointeur.cx) + Math.abs(pointeur.y - pointeur.cy) > 0.002) anime = true;
     }
     if (respire && !reduit()) anime = true;
+    const cible_ = e.ouvert > 0.01 ? (survolee ?? choisie ?? auto) : null;
+    let somme = 0;
+    for (const cle of Object.keys(surbrillance)) {
+      const but = cle === cible_ ? 1 : 0;
+      surbrillance[cle] = reduit() ? but : surbrillance[cle] + (but - surbrillance[cle]) * 0.18;
+      if (Math.abs(but - surbrillance[cle]) > 0.003) anime = true; else surbrillance[cle] = but;
+      somme += surbrillance[cle] * (STRATES.findIndex((x) => x.cle === cle) + 1);
+    }
+    for (const c of cartes) c.classList.toggle("strate-active", c.dataset.strate === cible_);
 
-    const sig = `${e.trace.toFixed(4)}|${e.volume.toFixed(4)}|${e.matiere.toFixed(4)}|${pointeur.cx.toFixed(4)}|${pointeur.cy.toFixed(4)}|${toile.width}x${toile.height}`;
+    const sig = [e.trace, e.volume, e.matiere, e.ouvert, e.efface, e.soir, e.etape, pointeur.cx, pointeur.cy, somme].map((x) => x.toFixed(4)).join("|") + `|${toile.width}x${toile.height}`;
     if (sale || anime || sig !== signature) {
       appliquer(e, now);
       rendu.rendre(now, true);
@@ -394,7 +536,12 @@ export async function creerScene({ fenetres, principale }) {
 
   if (debug) {
     window.__edifice = {
-      forcer(e) { forcage = e ? { trace: 0, volume: 0, matiere: 0, ...e, etape: (e.volume ?? 0) + (e.matiere ?? 0) } : null; sale = true; demander(); },
+      forcer(e) {
+        forcage = e ? { trace: 0, volume: 0, matiere: 0, outils: 0, ouvert: 0, efface: 0, soir: 0, ...e } : null;
+        if (forcage) forcage.etape = forcage.volume + forcage.matiere + forcage.outils + forcage.efface + forcage.soir;
+        sale = true; demander();
+      },
+      surligner(cle) { choisie = cle; demander(); },
       get ips() { return rendu.ips; },
       image() { rendu.composer.render(); return toile.toDataURL("image/png"); },
       scene, rendu,
@@ -429,7 +576,7 @@ export async function creerScene({ fenetres, principale }) {
       const sauvegarde = { ...pointeur };
       pointeur.cx = pointeur.cy = 0;
       const coteVisible = cote.visible;
-      appliquer({ trace: 1, volume: 1, matiere: 1, etape: 2 }, performance.now());
+      appliquer({ trace: 1, volume: 1, matiere: 1, outils: 0, ouvert: 0, efface: 0, soir: 0, etape: 2 }, performance.now());
       cote.visible = false; // l'image partagée ne porte aucune valeur
       rendu.composer.render();
       const image = toile.toDataURL("image/png");
