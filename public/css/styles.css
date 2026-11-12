@@ -412,12 +412,12 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 
 /* ---------- Parcours de valorisation (espace/valorisation) ---------- */
 .parcours-tete { padding-bottom: 28px; }
-.etapes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-.etapes a { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--trait-nuit); color: var(--creme); text-decoration: none; font-size: .95rem; }
-.etapes a[aria-current] { background: var(--creme); color: var(--espresso); }
-.etape-num { font-family: var(--mono); font-size: 12px; opacity: .8; }
+nav.etapes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+nav.etapes a { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--trait-nuit); color: var(--creme); text-decoration: none; font-size: .95rem; }
+nav.etapes a[aria-current] { background: var(--creme); color: var(--espresso); }
+nav.etapes .etape-num { font-family: var(--mono); font-size: 12px; opacity: .8; }
 .etape-etat { font-family: var(--mono); font-size: 12px; color: var(--cuivre-clair); }
-.etapes a[aria-current] .etape-etat { color: var(--vert); }
+nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .panneau { padding: 48px 0 72px; }
 .panneau h2 { font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 8px; }
 .chapo-petit { max-width: 720px; color: #696155; margin-bottom: 24px; }
