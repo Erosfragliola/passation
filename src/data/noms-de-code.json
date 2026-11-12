@@ -1,0 +1,140 @@
+{
+  "_source": "Proposition du brief de refonte de la landing (12/11/2026), à compléter. Le premier préfixe du code NAF qui correspond l'emporte (ordre de la liste). Sans correspondance : un nom de « repli » choisi par hachage du code NAF, jamais du SIREN (sinon le nom de code d'une société connue pourrait être recalculé à partir de son SIREN).",
+  "regles": [
+    {
+      "prefixes": [
+        "10.71"
+      ],
+      "nom": "Levain"
+    },
+    {
+      "prefixes": [
+        "43.32"
+      ],
+      "nom": "Chêne"
+    },
+    {
+      "prefixes": [
+        "16",
+        "31"
+      ],
+      "nom": "Chêne"
+    },
+    {
+      "prefixes": [
+        "41",
+        "42",
+        "43"
+      ],
+      "nom": "Granit"
+    },
+    {
+      "prefixes": [
+        "45"
+      ],
+      "nom": "Piston"
+    },
+    {
+      "prefixes": [
+        "49",
+        "52"
+      ],
+      "nom": "Escale"
+    },
+    {
+      "prefixes": [
+        "69.20"
+      ],
+      "nom": "Boussole"
+    },
+    {
+      "prefixes": [
+        "69.10",
+        "70.22"
+      ],
+      "nom": "Sextant"
+    },
+    {
+      "prefixes": [
+        "18"
+      ],
+      "nom": "Encre"
+    },
+    {
+      "prefixes": [
+        "25"
+      ],
+      "nom": "Enclume"
+    },
+    {
+      "prefixes": [
+        "28"
+      ],
+      "nom": "Engrenage"
+    },
+    {
+      "prefixes": [
+        "32.12",
+        "95.25"
+      ],
+      "nom": "Rouage"
+    },
+    {
+      "prefixes": [
+        "46"
+      ],
+      "nom": "Halle"
+    },
+    {
+      "prefixes": [
+        "47"
+      ],
+      "nom": "Enseigne"
+    },
+    {
+      "prefixes": [
+        "55"
+      ],
+      "nom": "Lanterne"
+    },
+    {
+      "prefixes": [
+        "56"
+      ],
+      "nom": "Tablée"
+    },
+    {
+      "prefixes": [
+        "62",
+        "63"
+      ],
+      "nom": "Circuit"
+    },
+    {
+      "prefixes": [
+        "71"
+      ],
+      "nom": "Compas"
+    },
+    {
+      "prefixes": [
+        "86"
+      ],
+      "nom": "Caducée"
+    },
+    {
+      "prefixes": [
+        "01"
+      ],
+      "nom": "Sillon"
+    }
+  ],
+  "repli": [
+    "Cèdre",
+    "Ardoise",
+    "Phare",
+    "Ancre",
+    "Tilleul",
+    "Sextant"
+  ]
+}

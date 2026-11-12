@@ -128,31 +128,45 @@
     </div>
   </section>
 
-  <!-- Résultat de l'estimation (provisoire : l'écran du nom de code arrive en phase 7) -->
-  <section id="resultat" class="resultat" aria-labelledby="titre-resultat" hidden>
-    <div class="conteneur">
-      <div class="resultat-carte" aria-live="polite">
-        <p class="surtitre" data-t="js.resultat.titre"></p>
-        <h2 id="titre-resultat" class="resultat-nom"></h2>
-        <div id="resultat-estimation" hidden>
-          <p class="petit" id="estimation-legende"></p>
-          <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
-          <p class="resultat-note" id="estimation-note"></p>
-          <p class="petit" id="estimation-methodes"></p>
+  <!-- Résultat de l'estimation (public/js/landing/resultat.js) : nom de code, fourchette, teaser anonyme, trois suites.
+       Aucun compte n'est demandé avant de voir la valeur. -->
+  <section id="resultat" class="resultat nuit" aria-labelledby="titre-resultat" hidden>
+    <div class="essai-fond" data-fond="/img/landing/etabli-1200.webp" aria-hidden="true"></div>
+    <div class="conteneur resultat-grille">
+      <div class="resultat-texte" aria-live="polite">
+        <div class="resultat-chargement" hidden>
+          <div class="trousseau" aria-hidden="true">
+            <img src="/img/landing/cles/k0.webp" alt="" width="104" height="264" loading="lazy"><img src="/img/landing/cles/k4.webp" alt="" width="104" height="264" loading="lazy"><img src="/img/landing/cles/k6.webp" alt="" width="104" height="264" loading="lazy"><img src="/img/landing/cles/k8.webp" alt="" width="104" height="264" loading="lazy">
+          </div>
+          <p class="resultat-chargement-texte" data-t="js.chargement"></p>
         </div>
-        <form id="form-comptes" class="form-comptes" hidden>
-          <p data-t="js.resultat.confidentiels"></p>
-          <label><span data-t="js.resultat.ca"></span><input id="saisie-ca" type="number" inputmode="numeric" min="1" step="1" required></label>
-          <label><span data-t="js.resultat.ebe"></span><input id="saisie-ebe" type="number" inputmode="numeric" step="1" required></label>
-          <button class="btn btn-vert" type="submit" data-t="js.resultat.voir"></button>
-          <p class="petit" data-t="js.resultat.saisie_note"></p>
-        </form>
-        <p class="resultat-message" id="resultat-message" role="status" hidden></p>
-        <div class="resultat-actions">
-          <a class="btn btn-vert" href="/connexion" data-connexion id="btn-affiner"><span data-t="js.resultat.affiner"></span> <span class="fleche" aria-hidden="true">→</span></a>
-          <button class="lien" type="button" id="btn-autre" data-t="js.resultat.autre"></button>
+        <div class="resultat-contenu" hidden>
+          <p class="surtitre" data-t="js.resultat.titre"></p>
+          <h2 id="titre-resultat"><span class="resultat-code-intro" data-t="js.resultat.code_intro"></span> <em class="resultat-code"></em></h2>
+          <p class="visuellement-cache" id="resultat-teaser"></p>
+          <div class="resultat-valeur" id="resultat-estimation">
+            <p class="resultat-libelle" data-t="js.resultat.fourchette_titre"></p>
+            <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
+            <ul class="resultat-methodes" id="estimation-methodes"></ul>
+            <p class="resultat-note" id="estimation-note"></p>
+          </div>
+          <form id="form-comptes" class="form-comptes" hidden>
+            <p data-t="js.resultat.confidentiels"></p>
+            <label><span data-t="js.resultat.ca"></span><input id="saisie-ca" type="number" inputmode="numeric" min="1" step="1" required></label>
+            <label><span data-t="js.resultat.ebe"></span><input id="saisie-ebe" type="number" inputmode="numeric" step="1" required></label>
+            <button class="btn btn-vert" type="submit" data-t="js.resultat.voir"></button>
+            <p class="petit" data-t="js.resultat.saisie_note"></p>
+          </form>
+          <p class="resultat-message" id="resultat-message" role="status" hidden></p>
+          <ul class="resultat-suites">
+            <li><a class="suite" href="/connexion" data-connexion data-suite="garder"><strong data-t="js.resultat.garder_titre"></strong><span data-t="js.resultat.garder_texte"></span></a></li>
+            <li><a class="suite" href="/connexion" data-connexion data-suite="affiner"><strong data-t="js.resultat.affiner_titre"></strong><span data-t="js.resultat.affiner_texte"></span></a></li>
+            <li><a class="suite" href="mailto:" data-suite="inviter"><strong data-t="js.resultat.inviter_titre"></strong><span data-t="js.resultat.inviter_texte"></span></a></li>
+          </ul>
+          <p class="resultat-autre"><button class="lien" type="button" id="btn-autre" data-t="js.resultat.autre"></button></p>
         </div>
       </div>
+      <div class="resultat-dossier" aria-hidden="true"></div>
     </div>
   </section>
 

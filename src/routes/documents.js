@@ -7,6 +7,7 @@
 //   POST /api/dossiers/:id/documents/memo/site { url }     lecture du site → faits à valider, termes, logos
 //   POST|GET /api/dossiers/:id/documents/memo/logo         logo (adresse ou fichier PNG/JPEG/WebP ≤ 1 Mo) / affichage
 //   POST|PUT /api/dossiers/:id/documents/memo/sections/:cle  rédaction par Claude / modification
+import { projet } from "../documents/nom-de-code.js";
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { calculer, lireReponses } from "./valorisation.js";
@@ -93,7 +94,8 @@ async function genererTeaser(env, row) {
   }
   let code = row.code_name;
   if (!code) {
-    code = `Projet ${NOMS_DE_CODE[crypto.getRandomValues(new Uint8Array(1))[0] % NOMS_DE_CODE.length]}`;
+    // Même nom de code que celui montré sur la page d'accueil (tiré du code NAF) ; au hasard sans code NAF
+    code = ctx.entreprise.naf ? projet(ctx.entreprise.naf) : `Projet ${NOMS_DE_CODE[crypto.getRandomValues(new Uint8Array(1))[0] % NOMS_DE_CODE.length]}`;
     await env.DB.prepare("UPDATE dossiers SET code_name = ? WHERE id = ?").bind(code, row.id).run();
   }
   const version = await prochaineVersion(env, row.id, "teaser");
