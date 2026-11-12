@@ -156,35 +156,46 @@
     </div>
   </section>
 
-  <!-- 2. Histoire : comprendre (animation des clés en phase 4) -->
+  <!-- 2. Histoire : comprendre. L'établi et le trousseau (public/js/landing/histoire.js) : scène collante pilotée par
+       le défilement sur ordinateur, trois panneaux sur téléphone, tablette et en mouvement réduit. -->
   <section id="histoire" class="nuit histoire" aria-labelledby="titre-histoire">
-    <div class="conteneur">
-      <div class="histoire-temps">
-        <p class="surtitre" data-t="histoire.temps1.surtitre"></p>
-        <h2 id="titre-histoire" data-t="histoire.temps1.titre"></h2>
-        <p class="chapo" data-t="histoire.temps1.texte"></p>
+    <div class="histoire-collant">
+      <div class="histoire-temps histoire-temps-1">
+        <div class="histoire-visuel" aria-hidden="true"></div>
+        <div class="histoire-texte">
+          <p class="surtitre" data-t="histoire.temps1.surtitre"></p>
+          <h2 id="titre-histoire" data-t="histoire.temps1.titre"></h2>
+          <p class="chapo" data-t="histoire.temps1.texte"></p>
+        </div>
       </div>
-      <div class="histoire-temps">
-        <p class="surtitre" data-t="histoire.temps2.surtitre"></p>
-        <h3 class="titre-section" data-t="histoire.temps2.titre"></h3>
-        <p class="chapo" data-t="histoire.temps2.texte"></p>
-        <ol class="chapitres">
-          <li><span class="chapitre-num" data-t="histoire.chapitres.0.numero"></span><strong data-t="histoire.chapitres.0.titre"></strong><span data-t="histoire.chapitres.0.detail"></span></li>
-          <li><span class="chapitre-num" data-t="histoire.chapitres.1.numero"></span><strong data-t="histoire.chapitres.1.titre"></strong><span data-t="histoire.chapitres.1.detail"></span></li>
-          <li><span class="chapitre-num" data-t="histoire.chapitres.2.numero"></span><strong data-t="histoire.chapitres.2.titre"></strong><span data-t="histoire.chapitres.2.detail"></span></li>
-          <li><span class="chapitre-num" data-t="histoire.chapitres.3.numero"></span><strong data-t="histoire.chapitres.3.titre"></strong><span data-t="histoire.chapitres.3.detail"></span></li>
-          <li><span class="chapitre-num" data-t="histoire.chapitres.4.numero"></span><strong data-t="histoire.chapitres.4.titre"></strong><span data-t="histoire.chapitres.4.detail"></span></li>
-          <li><span class="chapitre-num" data-t="histoire.chapitres.5.numero"></span><strong data-t="histoire.chapitres.5.titre"></strong><span data-t="histoire.chapitres.5.detail"></span></li>
-          <li><span class="chapitre-num" data-t="histoire.chapitres.6.numero"></span><strong data-t="histoire.chapitres.6.titre"></strong><span data-t="histoire.chapitres.6.detail"></span></li>
-          <li><span class="chapitre-num" data-t="histoire.chapitres.7.numero"></span><strong data-t="histoire.chapitres.7.titre"></strong><span data-t="histoire.chapitres.7.detail"></span></li>
-          <li class="chapitre-valeur"><span class="chapitre-num" data-t="histoire.chapitres.8.numero"></span><strong data-t="histoire.chapitres.8.titre"></strong><span data-t="histoire.chapitres.8.detail"></span></li>
+      <div class="histoire-temps histoire-temps-2">
+        <div class="histoire-visuel" aria-hidden="true"></div>
+        <div class="histoire-texte">
+          <p class="surtitre" data-t="histoire.temps2.surtitre"></p>
+          <h3 class="titre-section" data-t="histoire.temps2.titre"></h3>
+          <p class="chapo" data-t="histoire.temps2.texte"></p>
+        </div>
+        <ol class="visuellement-cache">
+          <li><span data-t="histoire.chapitres.0.numero"></span> <span data-t="histoire.chapitres.0.titre"></span> : <span data-t="histoire.chapitres.0.detail"></span></li>
+          <li><span data-t="histoire.chapitres.1.numero"></span> <span data-t="histoire.chapitres.1.titre"></span> : <span data-t="histoire.chapitres.1.detail"></span></li>
+          <li><span data-t="histoire.chapitres.2.numero"></span> <span data-t="histoire.chapitres.2.titre"></span> : <span data-t="histoire.chapitres.2.detail"></span></li>
+          <li><span data-t="histoire.chapitres.3.numero"></span> <span data-t="histoire.chapitres.3.titre"></span> : <span data-t="histoire.chapitres.3.detail"></span></li>
+          <li><span data-t="histoire.chapitres.4.numero"></span> <span data-t="histoire.chapitres.4.titre"></span> : <span data-t="histoire.chapitres.4.detail"></span></li>
+          <li><span data-t="histoire.chapitres.5.numero"></span> <span data-t="histoire.chapitres.5.titre"></span> : <span data-t="histoire.chapitres.5.detail"></span></li>
+          <li><span data-t="histoire.chapitres.6.numero"></span> <span data-t="histoire.chapitres.6.titre"></span> : <span data-t="histoire.chapitres.6.detail"></span></li>
+          <li><span data-t="histoire.chapitres.7.numero"></span> <span data-t="histoire.chapitres.7.titre"></span> : <span data-t="histoire.chapitres.7.detail"></span></li>
+          <li><span data-t="histoire.chapitres.8.numero"></span> <span data-t="histoire.chapitres.8.titre"></span> : <span data-t="histoire.chapitres.8.detail"></span></li>
         </ol>
       </div>
-      <div class="histoire-temps">
-        <p class="surtitre" data-t="histoire.temps3.surtitre"></p>
-        <h3 class="titre-section" data-t="histoire.temps3.titre"></h3>
-        <p class="chapo" data-t="histoire.temps3.texte"></p>
+      <div class="histoire-temps histoire-temps-3">
+        <div class="histoire-visuel" aria-hidden="true"></div>
+        <div class="histoire-texte">
+          <p class="surtitre" data-t="histoire.temps3.surtitre"></p>
+          <h3 class="titre-section" data-t="histoire.temps3.titre"></h3>
+          <p class="chapo" data-t="histoire.temps3.texte"></p>
+        </div>
       </div>
+      <div class="histoire-progression" aria-hidden="true"><span></span></div>
     </div>
   </section>
 
@@ -380,9 +391,11 @@
 
 <script type="application/json" id="textes" data-t-json="js"></script>
 <script type="application/json" id="videos-metiers" data-t-json="cles.videos_metiers"></script>
+<script type="application/json" id="textes-histoire" data-t-json="histoire"></script>
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/landing/intro.js"></script>
 <script type="module" src="/js/landing/landing.js"></script>
+<script type="module" src="/js/landing/histoire-page.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>
