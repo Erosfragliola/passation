@@ -34,13 +34,12 @@
         <rect width="100%" height="100%" fill="#fff"/>
         <g class="intro-zoom"><path class="intro-trou" d="M9 27V15a7 7 0 0 1 14 0v12z" fill="#000" opacity="0"/></g>
       </mask>
-      <radialGradient id="intro-lueur" cx="50%" cy="70%" r="65%"><stop offset="0" stop-color="#F6DDBB"/><stop offset="1" stop-color="#C9894F"/></radialGradient>
     </defs>
     <rect class="intro-fond" width="100%" height="100%" mask="url(#intro-masque)"/>
     <g class="intro-zoom">
-      <path class="intro-porte" d="M9 27V15a7 7 0 0 1 14 0v12z" fill="url(#intro-lueur)" opacity="0"/>
-      <path class="intro-trait" d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="#FBF6EC" stroke-width="1.1" stroke-linecap="round"/>
-      <path class="intro-trait" d="M5 27h22" fill="none" stroke="#FBF6EC" stroke-width="1.1" stroke-linecap="round"/>
+      <path class="intro-porte" d="M9 27V15a7 7 0 0 1 14 0v12z" opacity="0"/>
+      <path class="intro-trait" d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke-width="1.1" stroke-linecap="round"/>
+      <path class="intro-trait" d="M5 27h22" fill="none" stroke-width="1.1" stroke-linecap="round"/>
       <circle class="intro-point" cx="16" cy="21" r="2.4" fill="#A8653A" opacity="0"/>
     </g>
   </svg>
@@ -172,7 +171,7 @@
 
   <!-- 2. Histoire : comprendre. L'établi et le trousseau (public/js/landing/histoire.js) : scène collante pilotée par
        le défilement sur ordinateur, trois panneaux sur téléphone, tablette et en mouvement réduit. -->
-  <section id="histoire" class="nuit histoire" aria-labelledby="titre-histoire">
+  <section id="histoire" class="histoire" aria-labelledby="titre-histoire">
     <div class="histoire-collant">
       <div class="histoire-temps histoire-temps-1">
         <div class="histoire-visuel" aria-hidden="true"></div>
@@ -410,20 +409,6 @@
     <span data-t="pied.avertissement"></span>
   </div>
 </footer>
-
-<!-- Téléphone : le champ dans une barre fixe en bas, quand le hero est passé (sauf au-dessus de la relance) -->
-<div class="barre-siren" data-zone-champ>
-  <form class="recherche-mini" action="/connexion" method="get" data-champ-siren="barre">
-    <label for="q-barre" data-t="champ.libelle"></label>
-    <div class="barre-ligne">
-      <input id="q-barre" name="q" type="search" autocomplete="off" enterkeyhint="search"
-             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-barre">
-      <button class="btn btn-vert" type="submit" data-t="champ.bouton_court"></button>
-    </div>
-    <ul class="suggestions" id="suggestions-barre" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
-    <p class="recherche-message" id="message-barre" role="status" data-message hidden></p>
-  </form>
-</div>
 
 <script type="application/json" id="textes" data-t-json="js"></script>
 <script type="application/json" id="videos-metiers" data-t-json="cles.videos_metiers"></script>

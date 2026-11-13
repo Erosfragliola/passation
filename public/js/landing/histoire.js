@@ -21,6 +21,10 @@ const VAGUE = '<svg class="etiquette-trait" width="84" height="14" viewBox="0 0 
 
 const el = (tag, classe) => { const e = document.createElement(tag); if (classe) e.className = classe; return e; };
 const f2 = (x) => Math.round(x * 100) / 100;
+/** Ombre portée brun chaud : grande, décalée et floue quand l'objet est en l'air (h), resserrée au contact. */
+const ombre = (h, base, pente, etiquette = false) => etiquette
+  ? `drop-shadow(${f2(2 + 13 * h)}px ${f2(4 + 20 * h)}px ${f2(3 + 18 * h)}px rgb(70 48 28 / ${f2(Math.max(0.1, base - pente * h))}))`
+  : `drop-shadow(${f2(3 + 15 * h)}px ${f2(5 + 24 * h)}px ${f2(3 + 20 * h)}px rgb(70 48 28 / ${f2(Math.max(0.1, base - pente * h))}))`;
 
 /** Étiquette recto (manuscrit) / verso (numéro, titre, détail). */
 function creerEtiquette(c, i, derniere) {
@@ -65,12 +69,11 @@ function charger(racine) {
 }
 
 // ---------------------------------------------------------------- Scène de l'établi (ordinateur, et panneau 1)
-function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fond = `${IMG}etabli.webp`, fictif = "" }) {
+function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fictif = "" }) {
   const stage = el("div", "etabli-stage");
   const cameraEl = el("div", "etabli-camera");
-  const fondEl = el("div", "etabli-fond");
-  fondEl.dataset.fond = fond;
-  cameraEl.append(fondEl);
+  // Fond sable uni, en CSS (dégradé et grain) : dans la caméra pour suivre son léger zoom
+  cameraEl.append(el("div", "etabli-fond"));
   let dossier = null, dossierPorteur = null;
   if (avecDossier) {
     dossier = creerDossier({ textes: dossierTextes, chapitres });
@@ -105,18 +108,13 @@ function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fond = `${I
     return { g, chemins, a, b };
   });
   cameraEl.append(svg);
-  const poussieresEl = el("div", "etabli-poussieres");
-  const motes = P.poussieres().map((m) => { const d = el("span"); d.style.width = d.style.height = `${f2(m.s)}px`; poussieresEl.append(d); return { m, d }; });
-  cameraEl.append(poussieresEl);
-  stage.append(cameraEl, el("div", "etabli-vignette"));
+  stage.append(cameraEl);
 
   const fixer = (x, cle, valeur, ecrire) => { if (x.cache[cle] !== valeur) { x.cache[cle] = valeur; ecrire(valeur); } };
   function poser(t, { reduit = false } = {}) {
     cameraEl.style.transform = `scale(${P.camera(t).toFixed(4)})`;
-    const l = P.lampe(t);
-    fondEl.style.filter = l < 0.999 ? `brightness(${l.toFixed(3)})` : "none";
     pieces.forEach((x, i) => {
-      const k = P.cle(i, t), e = P.etiquette(i, t, k.jit);
+      const k = P.cle(i, t), e = P.etiquette(i, t);
       fixer(x, "kvis", k.op > 0.001, (v) => { x.kw.style.display = v ? "" : "none"; });
       if (k.op > 0.001) {
         x.kw.style.opacity = k.op.toFixed(3);
@@ -124,7 +122,7 @@ function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fond = `${I
         x.kr.style.transform = `rotate(${f2(k.rot)}deg)`;
         // Ombre sur le conteneur non tourné : elle tombe toujours du même côté, plus loin quand la clé est soulevée
         const h = Math.round(k.h * 50) / 50;
-        fixer(x, "kombre", h, (v) => { x.kw.style.filter = reduit ? "" : `drop-shadow(${f2(3 + 15 * v)}px ${f2(5 + 24 * v)}px ${f2(3 + 20 * v)}px rgba(0,0,0,${f2(0.62 - 0.3 * v)})) drop-shadow(0 1px 1px rgba(0,0,0,${f2(0.5 * (1 - v))}))`; });
+        fixer(x, "kombre", h, (v) => { x.kw.style.filter = reduit ? "" : ombre(v, 0.42, 0.12); });
         fixer(x, "kz", k.z, (v) => { x.kw.style.zIndex = v; });
       }
       fixer(x, "tvis", e.op > 0.001, (v) => { x.tw.style.display = v ? "" : "none"; });
@@ -134,7 +132,7 @@ function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fond = `${I
         x.tr.style.transform = `rotate(${f2(e.rot)}deg)`;
         fixer(x, "flip", f2(e.flip), (v) => { x.carte.style.transform = `rotateY(${f2(180 * v)}deg)`; });
         const h = Math.round(e.h * 50) / 50;
-        fixer(x, "tombre", h, (v) => { x.tw.style.filter = reduit ? "" : `drop-shadow(${f2(2 + 13 * v)}px ${f2(4 + 20 * v)}px ${f2(3 + 18 * v)}px rgba(0,0,0,${f2(0.55 - 0.25 * v)}))`; });
+        fixer(x, "tombre", h, (v) => { x.tw.style.filter = reduit ? "" : ombre(v, 0.36, 0.10, true); });
         fixer(x, "tz", e.z, (v) => { x.tw.style.zIndex = v; });
       }
       const f = P.ficelle(i, t, k, e), F = ficelles[i];
@@ -153,7 +151,6 @@ function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fond = `${I
       if (d.visible) dossierPorteur.style.transform = `translateY(${f2(d.y)}px) rotate(${f2(d.rot)}deg)`;
       dossier.definir({ onglets: pieces.map((_, i) => P.onglet(i, t)) });
     }
-    if (!reduit) motes.forEach(({ m, d }) => { const p = P.poussiere(m, t); d.style.transform = `translate(${f2(p.x)}px,${f2(p.y)}px)`; d.style.opacity = p.op.toFixed(3); });
   }
   return { stage, poser, charger: () => charger(stage), ajuster: () => ajusterMains(stage) };
 }
@@ -193,15 +190,20 @@ function monterScene(section, { chapitres, dossierTextes, fictif }) {
     const k = Math.max(W / 1920, H / 1080);
     etabli.stage.style.transform = `translate(${f2((W - 1920 * k) / 2)}px,${f2((H - 1080 * k) / 2)}px) scale(${k.toFixed(5)})`;
   };
+  // La carte colle sous l'en-tête : la progression va de son arrivée en place à la fin de la section
   const progression = () => {
     const r = section.getBoundingClientRect();
-    return P.clamp01(-r.top / Math.max(1, r.height - innerHeight));
+    const haut = parseFloat(getComputedStyle(collant).top) || 0, pad = parseFloat(getComputedStyle(section).paddingTop) || 0;
+    return P.clamp01((haut - (r.top + pad)) / Math.max(1, r.height - pad - collant.offsetHeight));
+  };
+  const enPlace = () => {
+    const r = section.getBoundingClientRect();
+    return r.top + (parseFloat(getComputedStyle(section).paddingTop) || 0) <= (parseFloat(getComputedStyle(collant).top) || 0) + 4;
   };
   function image(now) {
     etat.raf = 0;
-    const r = section.getBoundingClientRect();
-    // L'allumage et la chute se jouent une seule fois, au temps, quand la section arrive en haut de l'écran
-    if (!etat.jouee && etat.chute == null && r.top <= innerHeight * 0.08) etat.chute = now;
+    // L'arrivée du trousseau se joue une seule fois, au temps, quand la carte Histoire arrive en place
+    if (!etat.jouee && etat.chute == null && enPlace()) etat.chute = now;
     let t, anime = false;
     if (etat.chute != null && !etat.jouee) {
       t = P.T_DEBUT + (now - etat.chute) / 1000;
@@ -258,7 +260,7 @@ function monterScene(section, { chapitres, dossierTextes, fictif }) {
 function monterPanneaux(section, { chapitres, dossierTextes, fictif, reduit }) {
   const [v1, v2, v3] = [...section.querySelectorAll(".histoire-visuel")];
   // 1. Le trousseau en vrac sur l'établi (même scène, cadrée sur la pile)
-  const etabli = creerEtabli({ chapitres, dossierTextes, avecDossier: false, fond: `${IMG}etabli-1200.webp` });
+  const etabli = creerEtabli({ chapitres, dossierTextes, avecDossier: false });
   const cadre1 = el("div", "panneau-etabli");
   cadre1.append(etabli.stage);
   v1.append(cadre1);
@@ -301,7 +303,14 @@ function monterPanneaux(section, { chapitres, dossierTextes, fictif, reduit }) {
   addEventListener("resize", cadrer, { passive: true });
   cadrer();
 
-  if (reduit.matches) { final(); return { final }; }
+  if (reduit.matches) {
+    // Mouvement réduit : pas de vol, le tas apparaît en fondu (300 ms) quand le panneau arrive
+    final();
+    cadre1.classList.add("fondu-attente");
+    const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) { o.disconnect(); cadre1.classList.remove("fondu-attente"); } }, { threshold: 0.3 });
+    o.observe(cadre1);
+    return { final };
+  }
   etabli.poser(P.T_DEBUT);
   // Chaque panneau se joue à son apparition, une seule fois
   const jouer = (v, f) => {

@@ -21,6 +21,13 @@ describe("contrastes (WCAG AA)", () => {
     }
     expect(contraste("#8E5530", "#FBF6EC")).toBeCloseTo(5.58, 1);
   });
+  it("début clair : texte courant et sur-titres à 4,5:1 sur la page et sur le sable, mots-clés à 3:1", () => {
+    // Sable : #EDE5D9 au milieu du dégradé (là où sont les textes), #E2D8CA dans les coins
+    for (const fond of [jeton("page"), "#EDE5D9", "#E2D8CA"]) {
+      for (const texte of ["encre", "encre-2", "sur-titre"]) expect(contraste(jeton(texte), fond), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(4.5);
+    }
+    for (const fond of [jeton("page"), "#F3EDE3", "#EDE5D9"]) expect(contraste(jeton("ocre-clair"), fond), `ocre-clair sur ${fond}`).toBeGreaterThanOrEqual(3);
+  });
   it("mots-clés en grand (ocre) : 3:1 au moins, et pas assez pour du texte courant", () => {
     expect(contraste(jeton("ocre"), jeton("creme"))).toBeGreaterThanOrEqual(3);
     expect(contraste(jeton("ocre"), jeton("creme"))).toBeLessThan(4.5);

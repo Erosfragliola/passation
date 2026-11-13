@@ -1,5 +1,5 @@
-// Champ « SIREN ou nom de votre société », partagé : hero, barre de navigation (ordinateur), barre fixe du bas
-// (téléphone) et relance finale. Une seule valeur, une seule soumission ; chaque emplacement a sa propre liste de
+// Champ « SIREN ou nom de votre société », partagé : hero, en-tête (centré sur ordinateur, seconde ligne sur
+// téléphone) et relance finale. Une seule valeur, une seule soumission ; chaque emplacement a sa propre liste de
 // suggestions (motif combobox ARIA : flèches, Entrée, Échap) et sa propre zone de message (aria-live).
 import { sirenValide, nettoyerSiren, ressembleASiren } from "/js/siren.js";
 import { rechercher, detailSuggestion } from "/js/landing/estimation.js";
@@ -126,16 +126,15 @@ export function creerChampPartage({ estimer, textes = {} }) {
     for (const x of montures) if (x !== sauf && x.champ.value !== valeur) x.champ.value = valeur;
   }
 
-  /** Place le curseur dans le champ visible : barre du haut ou du bas en priorité, sinon le hero. */
+  /** Place le curseur dans le champ visible : celui de l'en-tête en priorité, sinon le hero. */
   function focaliser(prefere) {
     const racine = document.documentElement;
     const visible = (x) => {
       if (x.nom === "nav") return racine.classList.contains("champ-en-haut");
-      if (x.nom === "barre") return racine.classList.contains("champ-en-bas");
       const r = x.champ.getBoundingClientRect();
       return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight;
     };
-    const ordre = ["nav", "barre", "relance", "accueil"];
+    const ordre = ["nav", "relance", "accueil"];
     const choisi = (prefere && montures.find((x) => x.nom === prefere && visible(x)))
       || ordre.map((n) => montures.find((x) => x.nom === n)).find((x) => x && visible(x));
     if (choisi) { choisi.champ.focus({ preventScroll: true }); return; }
