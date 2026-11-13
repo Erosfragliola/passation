@@ -40,3 +40,19 @@ $("#btn-autre")?.addEventListener("click", () => {
 
 // « Essayer avec mon entreprise » : le curseur dans le champ partagé (barre du haut ou du bas)
 document.querySelectorAll("[data-focus-champ]").forEach((b) => b.addEventListener("click", () => { barres.actualiser(); champ.focaliser(); }));
+
+// Liens #comment-1, -2, -3 (tuiles du hero, cartes) : ouvrent « Comment ça marche » sur la bonne étape.
+// L'événement « ouvrir-etape » est écouté par les onglets de la section.
+function ouvrirEtape(ancre) {
+  const m = /^#comment-([123])$/.exec(ancre || "");
+  const section = document.getElementById("comment");
+  if (!m || !section) return false;
+  document.dispatchEvent(new CustomEvent("ouvrir-etape", { detail: Number(m[1]) }));
+  section.scrollIntoView({ behavior: reduit() ? "auto" : "smooth", block: "start" });
+  return true;
+}
+document.addEventListener("click", (e) => {
+  const a = e.target.closest?.('a[href^="#comment-"]');
+  if (a && ouvrirEtape(a.getAttribute("href"))) { e.preventDefault(); history.replaceState(null, "", a.getAttribute("href")); }
+});
+if (location.hash) requestAnimationFrame(() => ouvrirEtape(location.hash));

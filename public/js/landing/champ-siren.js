@@ -57,6 +57,15 @@ export function creerChampPartage({ estimer, textes = {} }) {
       }));
       liste.hidden = m.suggestions.length === 0;
       champ.setAttribute("aria-expanded", String(m.suggestions.length > 0));
+      if (!liste.hidden && m.nom !== "nav") requestAnimationFrame(devoiler);
+    };
+    // Liste sous le bord de la fenêtre : la page défile juste assez pour la montrer entière, sans faire passer le
+    // champ sous l'en-tête (il reste lisible, et celui de l'en-tête ne prend pas le relais).
+    const devoiler = () => {
+      const deborde = liste.getBoundingClientRect().bottom + 12 - innerHeight;
+      const marge = champ.getBoundingClientRect().top - (document.querySelector(".nav")?.getBoundingClientRect().bottom || 0) - 12;
+      const dy = Math.min(deborde, marge);
+      if (dy > 0) scrollBy({ top: dy, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     };
     const choisir = (x) => {
       partage.suggestion = x;

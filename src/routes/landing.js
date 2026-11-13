@@ -4,12 +4,13 @@
 // Attributs reconnus dans index.html :
 //   data-t="chemin"                 contenu de l'élément (texte en ligne, ou paragraphes pour une liste) ;
 //   data-t-attr="alt=chemin; …"     attributs ;
-//   data-si="cle cle2"              élément retiré si l'une des clés (de « cles ») est vide ;
-//   data-si-un="cle cle2"           élément retiré si toutes ces clés sont vides ;
+//   data-si="cle cle2"              élément retiré si l'une des conditions manque (« cle », « legal.rcs »,
+//                                   « guides:3 » = au moins 3 entrées) ;
+//   data-si-un="cle cle2"           élément retiré si toutes ces conditions manquent ;
 //   data-t-json="chemin"            <script type="application/json"> : sous-arbre pour le JavaScript de la page ;
 //   data-t-liste="cles.partenaires" une <li> par élément.
 import contenu from "../contenu/landing.json";
-import { html, texte, lire, estVide, lireAttributs, pourJs, jsonDansScript, clesVides, echapper, typographier } from "../contenu/rendu.js";
+import { html, texte, lire, estVide, condition, lireAttributs, pourJs, jsonDansScript, clesVides, echapper, typographier, valeurAttribut } from "../contenu/rendu.js";
 
 const local = (url) => ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
 
@@ -33,7 +34,7 @@ export async function routeLanding(request, env) {
       element(el) {
         for (const [attr, chemin] of lireAttributs(el.getAttribute("data-t-attr"))) {
           const t = texte(contenu, chemin);
-          if (t == null) el.removeAttribute(attr); else el.setAttribute(attr, t.replace(/"/g, "”"));
+          if (t == null) el.removeAttribute(attr); else el.setAttribute(attr, valeurAttribut(attr, t));
         }
         el.removeAttribute("data-t-attr");
       },
@@ -42,14 +43,14 @@ export async function routeLanding(request, env) {
       element(el) {
         const cles = el.getAttribute("data-si").split(/\s+/).filter(Boolean);
         el.removeAttribute("data-si");
-        if (cles.some((k) => estVide(contenu.cles[k]))) el.remove();
+        if (!cles.every((k) => condition(contenu.cles, k))) el.remove();
       },
     })
     .on("[data-si-un]", {
       element(el) {
         const cles = el.getAttribute("data-si-un").split(/\s+/).filter(Boolean);
         el.removeAttribute("data-si-un");
-        if (cles.every((k) => estVide(contenu.cles[k]))) el.remove();
+        if (!cles.some((k) => condition(contenu.cles, k))) el.remove();
       },
     })
     .on("[data-t-liste]", {

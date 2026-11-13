@@ -1,14 +1,39 @@
 {
   "_lisez_moi": "Textes de la page d'accueil. *mot* : mot-clé en italique. {cle} : valeur de « cles ». Une valeur vide retire l'élément de la page. Espaces fines et apostrophes typographiques ajoutées automatiquement : écrivez « Et la vôtre ? » avec une espace simple.",
   "cles": {
+    "nb_dirigeants": "",
+    "note_avis": "",
+    "nb_avis": "",
+    "prix_etape2": "",
+    "duree_etape2": "",
     "prix_dossier": "",
+    "telephone": "",
+    "email_contact": "",
+    "rappel": false,
     "fondateur_nom": "",
+    "fondateur_titre": "",
     "fondateur_texte": "",
     "fondateur_photo": "",
-    "telephone": "",
+    "photo_dirigeant": "",
+    "chiffres": {
+      "entreprises_estimees": "",
+      "dossiers_prepares": ""
+    },
+    "temoignages": [],
+    "guides": [],
+    "faq_prix": "",
+    "faq_duree": "",
+    "faq_qui": "",
+    "faq_repreneur": "",
     "hebergement": "",
-    "contact": "",
-    "partenaires": [],
+    "partenaires": "",
+    "legal": {
+      "raison_sociale": "",
+      "forme": "",
+      "capital": "",
+      "rcs": "",
+      "adresse": ""
+    },
     "videos_metiers": []
   },
   "meta": {
@@ -24,9 +49,11 @@
     "comment": "Comment ça marche",
     "tarifs": "Tarifs",
     "confidentialite": "Confidentialité",
+    "guides": "Guides",
     "questions": "Questions",
     "espace": "Espace dirigeant",
-    "menu_ouvrir": "Ouvrir le menu"
+    "menu_ouvrir": "Ouvrir le menu",
+    "telephone": "Nous appeler au {telephone}"
   },
   "intro": {
     "passer": "Passer l'intro"
@@ -42,8 +69,34 @@
     "surtitre": "Préparer la cession de votre PME",
     "titre": "Vous avez bâti. Préparez votre *transmission*.",
     "sous_titre": "Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.",
-    "note": "Gratuit, sans compte. Personne n'est prévenu.",
-    "note_comptes": "Comptes confidentiels ? Deux chiffres suffisent."
+    "note": "Gratuit, sans compte. Personne n'est averti : ni vos salariés, ni vos clients.",
+    "note_comptes": "Comptes confidentiels ? Deux chiffres suffisent.",
+    "preuves": {
+      "dirigeants": "*{nb_dirigeants}* dirigeants accompagnés",
+      "avis": "*{note_avis}/5* · {nb_avis} avis",
+      "registres": "Données des registres officiels"
+    },
+    "tuiles": {
+      "libelle": "Un seul espace pour toute votre cession",
+      "liste": [
+        {
+          "titre": "Estimation express",
+          "texte": "30 secondes, gratuite"
+        },
+        {
+          "titre": "Estimation approfondie",
+          "texte": "Trois méthodes croisées"
+        },
+        {
+          "titre": "Teaser anonyme",
+          "texte": "Sous un nom de code"
+        },
+        {
+          "titre": "Mémo et datapack",
+          "texte": "Le dossier complet"
+        }
+      ]
+    }
   },
   "histoire": {
     "temps1": {
@@ -285,7 +338,7 @@
     "cgu": "Conditions d'utilisation",
     "confidentialite": "Confidentialité",
     "contact": "Contact",
-    "contact_lien": "mailto:{contact}",
+    "contact_lien": "mailto:{email_contact}",
     "telephone_libelle": "Une question ?",
     "telephone_lien": "tel:{telephone}",
     "avertissement": "Estimations indicatives, non contractuelles. Ne constitue pas un conseil juridique, fiscal ou financier."
