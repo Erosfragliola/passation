@@ -192,7 +192,8 @@
   </section>
 
   <!-- 2. Histoire : comprendre. L'établi et le trousseau (public/js/landing/histoire.js) : scène collante pilotée par
-       le défilement sur ordinateur, trois panneaux sur téléphone, tablette et en mouvement réduit. -->
+       le défilement sur ordinateur, panneaux empilés sur téléphone, tablette et en mouvement réduit. Quatre temps :
+       les clés, les chapitres, le dossier, puis « Et la vôtre ? » (nom de code d'un exemple fictif, champ SIREN). -->
   <section id="histoire" class="histoire" aria-labelledby="titre-histoire">
     <div class="histoire-collant">
       <div class="histoire-temps histoire-temps-1">
@@ -230,6 +231,23 @@
           <p class="chapo" data-t="histoire.temps3.texte"></p>
         </div>
       </div>
+      <!-- 4. Et la vôtre ? Le dossier reçoit son nom de code (exemple fictif), puis le champ partagé -->
+      <div class="histoire-temps histoire-temps-4">
+        <div class="histoire-texte">
+          <h3 class="titre-section" data-t="histoire.temps4.titre"></h3>
+          <p class="chapo" data-t="histoire.temps4.texte"></p>
+          <form class="recherche recherche-histoire" action="/connexion" method="get" data-champ-siren="histoire" data-t-attr="aria-label=champ.zone">
+            <div class="recherche-champ">
+              <label for="q-histoire" data-t="champ.libelle"></label>
+              <input id="q-histoire" name="q" type="search" autocomplete="off" data-t-attr="placeholder=histoire.temps4.champ"
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-histoire">
+              <button class="btn btn-vert" type="submit"><span data-t="champ.bouton_court"></span> <span class="fleche" aria-hidden="true">→</span></button>
+            </div>
+            <ul class="suggestions" id="suggestions-histoire" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+            <p class="recherche-message" id="message-histoire" role="status" data-message hidden></p>
+          </form>
+        </div>
+      </div>
       <div class="histoire-progression" aria-hidden="true"><span></span></div>
     </div>
   </section>
@@ -262,30 +280,6 @@
         </li>
       </ol>
       <p class="outils-ligne" data-t="comment.outils"></p>
-    </div>
-  </section>
-
-  <!-- 4. Et la vôtre ? Démo du nom de code sur un exemple fictif (public/js/landing/demo.js), jouée une fois -->
-  <section id="essai" class="essai nuit" aria-labelledby="titre-essai">
-    <div class="essai-fond" data-fond="/img/landing/etabli-1200.webp" aria-hidden="true"></div>
-    <div class="conteneur essai-grille">
-      <div class="essai-texte">
-        <div class="essai-avant">
-          <p class="surtitre" data-t="essai.surtitre"></p>
-          <h2 id="titre-essai" data-t="essai.titre"></h2>
-          <p class="chapo" data-t="essai.texte"></p>
-        </div>
-        <div class="essai-apres" hidden>
-          <p class="surtitre" data-t="essai.apres_surtitre"></p>
-          <h2 data-t="essai.apres_titre"></h2>
-          <p class="chapo" data-t="essai.apres_texte"></p>
-        </div>
-        <p class="essai-action"><button class="btn btn-sable" type="button" data-focus-champ data-t="essai.bouton"></button></p>
-      </div>
-      <div class="essai-demo">
-        <div class="essai-dossier" aria-hidden="true"></div>
-        <p class="histoire-fictif" data-t="histoire.dossier.fictif"></p>
-      </div>
     </div>
   </section>
 
@@ -435,12 +429,10 @@
 <script type="application/json" id="textes" data-t-json="js"></script>
 <script type="application/json" id="videos-metiers" data-t-json="cles.videos_metiers"></script>
 <script type="application/json" id="textes-histoire" data-t-json="histoire"></script>
-<script type="application/json" id="textes-demo" data-t-json="essai.demo"></script>
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/landing/intro.js"></script>
 <script type="module" src="/js/landing/landing.js"></script>
 <script type="module" src="/js/landing/histoire-page.js"></script>
-<script type="module" src="/js/landing/demo.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>

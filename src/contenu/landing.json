@@ -114,6 +114,11 @@
       "titre": "Un dossier qui raconte, *chiffre et convainc.*",
       "texte": "Le teaser : une page anonyme pour intéresser des repreneurs. Le mémo : l'histoire complète de votre entreprise. Le datapack : le fichier Excel des chiffres."
     },
+    "temps4": {
+      "titre": "Et la *vôtre ?*",
+      "texte": "Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
+      "champ": "Et la vôtre ? Son nom ou son SIREN"
+    },
     "chapitres": [
       {
         "recto": "bureau",
@@ -181,6 +186,18 @@
       "effectif": "Effectif",
       "pied": "Teaser · Mémo · Datapack",
       "fictif": "Exemple fictif"
+    },
+    "demo": {
+      "nom": "MENUISERIE DURAND & FILS",
+      "meta": "SIREN 8•• ••• ••• · Nantes (44)",
+      "code": "Chêne",
+      "secteur": "Travaux de construction spécialisés",
+      "region": "Pays de la Loire",
+      "anciennete": "plus de 30 ans",
+      "effectif": "20 à 49 salariés",
+      "valeur_libelle": "Première valeur",
+      "valeur": "1,8 – 2,4 M€",
+      "mention": "Estimation indicative, non contractuelle."
     }
   },
   "comment": {
@@ -207,27 +224,6 @@
       }
     ],
     "outils": "Les 5 outils, dits simplement : estimation express, estimation approfondie, datapack, teaser, mémo."
-  },
-  "essai": {
-    "surtitre": "Essayez avec la vôtre",
-    "titre": "Et la *vôtre ?*",
-    "texte": "Tapez son nom ou son SIREN dans la barre, en haut de la page. Elle vous suit partout.",
-    "bouton": "Essayer avec mon entreprise",
-    "apres_surtitre": "Votre nom de code",
-    "apres_titre": "Personne ne saura. *Sauf ceux que vous choisirez.*",
-    "apres_texte": "Comme dans les grandes cessions, votre dossier reçoit un nom de code. Votre teaser circule sans jamais révéler votre nom.",
-    "demo": {
-      "nom": "MENUISERIE DURAND & FILS",
-      "meta": "SIREN 8•• ••• ••• · Nantes (44)",
-      "code": "Chêne",
-      "secteur": "Travaux de construction spécialisés",
-      "region": "Pays de la Loire",
-      "anciennete": "plus de 30 ans",
-      "effectif": "20 à 49 salariés",
-      "valeur_libelle": "Première valeur",
-      "valeur": "1,8 – 2,4 M€",
-      "mention": "Estimation indicative, non contractuelle."
-    }
   },
   "confidentialite": {
     "surtitre": "Confidentialité",

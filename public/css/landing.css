@@ -164,7 +164,8 @@
 .histoire-texte h2, .histoire-texte .titre-section { font-size: clamp(2.25rem, 4.2vw, 4rem); }
 
 /* Ordinateur : scène collante, textes dans une colonne à gauche */
-.histoire-scene { height: 450vh; }
+/* Quatre temps en 4 écrans de défilement au plus (400vh, carte collante comprise) */
+.histoire-scene { height: 400vh; }
 /* La carte : mêmes marges que le hero, collée sous l'en-tête, 40 px de marge en bas, bord intérieur discret */
 .histoire-scene .histoire-collant {
   position: sticky; top: var(--haut-entete); height: calc(100vh - var(--haut-entete) - 40px); height: calc(100svh - var(--haut-entete) - 40px);
@@ -178,6 +179,8 @@
   left: max(var(--gouttiere), calc((100vw - var(--largeur)) / 2 + var(--gouttiere) - var(--marge-carte)));
 }
 .histoire-scene .histoire-temps-3 { top: 28vh; }
+/* « Et la vôtre ? » : en haut de la carte (place pour les suggestions), cliquable une fois affiché */
+.histoire-scene .histoire-temps-4.histoire-temps-actif { z-index: 5; pointer-events: auto; }
 .histoire-scene .histoire-texte > * { opacity: 0; will-change: opacity, transform; }
 .histoire-progression { display: none; }
 .histoire-scene .histoire-progression { display: block; position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 3px; background: rgb(30 26 23 / .06); }
@@ -263,6 +266,17 @@
 .panneau-dossier { max-width: 440px; margin: 0 auto; transition: transform .8s cubic-bezier(.2, .8, .2, 1), opacity .8s ease; }
 .histoire-panneaux:not(.histoire-jouee) .panneau-dossier:not(.arrive) { transform: translateY(48px); opacity: 0; }
 .panneau-dossier .histoire-fictif { margin-top: 16px; }
+.histoire-panneaux .histoire-temps-4 { margin-top: 56px; }
+@media (min-width: 760px) { .histoire-panneaux .histoire-temps-4 { grid-template-columns: minmax(0, 40rem); } }
+
+/* Champ du 4e temps : même composant que le hero, en clair sur la carte sable */
+.landing .recherche-histoire { max-width: 520px; margin-top: 32px; }
+.recherche-histoire .recherche-champ { gap: 6px; padding: 6px; background: #fff; box-shadow: inset 0 0 0 1px #E2D8CA; }
+.recherche-histoire .recherche-champ:focus-within { box-shadow: inset 0 0 0 1px #E2D8CA, 0 0 0 3px var(--cuivre-clair); }
+.recherche-histoire input { min-height: 48px; font-size: 17px; }
+.recherche-histoire .btn { min-height: 48px; padding: 0 22px; }
+.recherche-histoire .suggestions { overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 20px 50px rgb(70 48 28 / .28); }
+@media (max-width: 559px) { .recherche-histoire input { padding: 0 14px; font-size: 16px; } }
 @media (prefers-reduced-motion: reduce) {
   .retournees .etiquette-carte, .panneau-dossier { transition: none; }
 }
@@ -344,18 +358,8 @@
 }
 .outils-ligne { margin-top: 40px; max-width: 46rem; }
 
-/* ---------- Et la vôtre ? (sur l'établi) ---------- */
-.essai { position: relative; overflow: hidden; isolation: isolate; background: #141110; }
+/* Fond de l'écran de résultat (jusqu'à l'étape 4) */
 .essai-fond { position: absolute; inset: 0; z-index: -2; background: #2A1D14 center / cover no-repeat; }
-.essai::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(20, 17, 16, .82) 0%, rgba(20, 17, 16, .45) 55%, rgba(20, 17, 16, .25) 100%); }
-.essai-grille { display: grid; gap: 48px; align-items: center; }
-@media (min-width: 900px) { .essai-grille { grid-template-columns: 0.95fr 1.05fr; gap: 64px; } }
-.essai-texte { display: grid; text-shadow: 0 2px 20px rgba(0, 0, 0, .5); }
-.essai-avant, .essai-apres { grid-area: 1 / 1; }
-.essai-texte .chapo { margin-top: 20px; }
-.essai-action { margin-top: 32px; }
-.essai-demo { width: 100%; max-width: 520px; justify-self: center; }
-.essai-demo .histoire-fictif { margin-top: 18px; }
 
 /* ---------- Confidentialité ---------- */
 .landing .confid-grille .chapo { margin-top: 20px; }

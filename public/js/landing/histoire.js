@@ -2,10 +2,14 @@
 // Ordinateur (≥ 1024 px, mouvement normal) : section haute, scène collante 1920 × 1080 mise à l'échelle pour couvrir
 // l'écran ; l'allumage et la chute se jouent une fois, au temps, quand la section arrive en haut ; tout le reste suit
 // le défilement (histoire-poses.js). Textes en HTML dans une colonne à gauche.
-// Téléphone, tablette, et mouvement réduit partout : trois panneaux qui se jouent à l'apparition (état final direct
+// Téléphone, tablette, et mouvement réduit partout : panneaux empilés qui se jouent à l'apparition (état final direct
 // en mouvement réduit).
+// Quatrième temps, « Et la vôtre ? » : le dossier reçoit le nom de code d'un exemple fictif. Quatre gestes (nom, bandes
+// noires, tampon, valeur) joués chacun d'un coup quand le défilement atteint son seuil, puis laissés en place
+// (demo-etat.js) ; enfin le champ SIREN partagé.
 import * as P from "/js/landing/histoire-poses.js";
-import { creerDossier } from "/js/landing/dossier.js";
+import { creerDossier, couperNom } from "/js/landing/dossier.js";
+import { etatGestes, planifierGestes, resteGestes, GESTES_JOUES, ORDRE_GESTES } from "/js/landing/demo-etat.js";
 
 const IMG = "/img/landing/";
 // Sprites (keys.json du kit) : taille CSS et trou de l'anneau (pivot, accroche de la ficelle)
@@ -62,6 +66,41 @@ function ajusterMains(racine) {
   });
 }
 
+/** Le dossier de l'exemple fictif : nom, ligne SIREN, nom de code, teaser, première valeur (posés, encore invisibles). */
+function nouveauDossier({ dossierTextes, chapitres, demo }) {
+  const dossier = creerDossier({ textes: dossierTextes, chapitres, valeurLibelle: demo?.valeur_libelle });
+  if (demo?.nom) dossier.definir({
+    nom: couperNom(demo.nom), meta: demo.meta, tampon: { nom: `Projet ${demo.code}` },
+    lignes: [demo.secteur, demo.region, demo.anciennete, demo.effectif].map((texte) => ({ texte })),
+    pastille: { valeur: demo.valeur }, mention: demo.mention,
+  });
+  return dossier;
+}
+
+/** Les gestes du nom de code sur un dossier : atteindre(n) quand n seuils sont franchis ; final() en mouvement réduit. */
+function creerGestes(dossier) {
+  let departs = {}, raf = 0;
+  const maintenant = () => performance.now() / 1000;
+  const poser = () => {
+    const m = maintenant();
+    dossier.definir(etatGestes(Object.fromEntries(Object.entries(departs).map(([g, d]) => [g, m - d]))));
+    raf = resteGestes(departs, m) > 0 ? requestAnimationFrame(poser) : 0;
+  };
+  return {
+    atteindre(n) {
+      const d = planifierGestes(departs, n, maintenant());
+      if (ORDRE_GESTES.every((g) => d[g] === departs[g])) return;
+      departs = d;
+      if (!raf) raf = requestAnimationFrame(poser);
+    },
+    final() {
+      cancelAnimationFrame(raf); raf = 0;
+      departs = Object.fromEntries(ORDRE_GESTES.map((g) => [g, -Infinity]));
+      dossier.definir(etatGestes(GESTES_JOUES));
+    },
+  };
+}
+
 /** Charge les images différées (data-src, data-fond) d'un conteneur. */
 function charger(racine) {
   racine.querySelectorAll("img[data-src]").forEach((i) => { i.src = i.dataset.src; delete i.dataset.src; });
@@ -69,14 +108,14 @@ function charger(racine) {
 }
 
 // ---------------------------------------------------------------- Scène de l'établi (ordinateur, et panneau 1)
-function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fictif = "" }) {
+function creerEtabli({ chapitres, dossierTextes, demo, avecDossier = true, fictif = "" }) {
   const stage = el("div", "etabli-stage");
   const cameraEl = el("div", "etabli-camera");
   // Fond sable uni, en CSS (dégradé et grain) : dans la caméra pour suivre son léger zoom
   cameraEl.append(el("div", "etabli-fond"));
   let dossier = null, dossierPorteur = null;
   if (avecDossier) {
-    dossier = creerDossier({ textes: dossierTextes, chapitres });
+    dossier = nouveauDossier({ dossierTextes, chapitres, demo });
     dossierPorteur = el("div", "etabli-dossier");
     dossierPorteur.append(dossier.element);
     if (fictif) { const f = el("p", "histoire-fictif"); f.textContent = fictif; dossierPorteur.append(f); }
@@ -152,33 +191,37 @@ function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fictif = ""
       dossier.definir({ onglets: pieces.map((_, i) => P.onglet(i, t)) });
     }
   }
-  return { stage, poser, charger: () => charger(stage), ajuster: () => ajusterMains(stage) };
+  return { stage, poser, dossier, charger: () => charger(stage), ajuster: () => ajusterMains(stage) };
 }
 
 // ---------------------------------------------------------------- Section
-export function lancerHistoire(section, { chapitres, dossierTextes, fictif }) {
+export function lancerHistoire(section, { chapitres, dossierTextes, demo, fictif }) {
   if (!section || !chapitres?.length) return;
   const reduit = window.matchMedia("(prefers-reduced-motion: reduce)");
   const large = window.matchMedia("(min-width: 1024px)");
   const modeScene = () => large.matches && !reduit.matches;
   let scene = null, panneaux = null;
 
+  const collant = section.querySelector(".histoire-collant");
   const appliquerMode = () => {
     section.classList.toggle("histoire-scene", modeScene());
     section.classList.toggle("histoire-panneaux", !modeScene());
-    if (modeScene()) (scene ??= monterScene(section, { chapitres, dossierTextes, fictif })).demarrer();
-    else { scene?.arreter(); panneaux ??= monterPanneaux(section, { chapitres, dossierTextes, fictif, reduit }); }
+    // Carte collante : la liste de suggestions du 4e temps tient dans la carte (champ-siren.js), sans défilement
+    collant?.toggleAttribute("data-liste-bornee", modeScene());
+    if (modeScene()) (scene ??= monterScene(section, { chapitres, dossierTextes, demo, fictif })).demarrer();
+    else { scene?.arreter(); panneaux ??= monterPanneaux(section, { chapitres, dossierTextes, demo, fictif, reduit }); }
   };
   appliquerMode();
   large.addEventListener("change", appliquerMode);
   reduit.addEventListener("change", appliquerMode);
 }
 
-function monterScene(section, { chapitres, dossierTextes, fictif }) {
+function monterScene(section, { chapitres, dossierTextes, demo, fictif }) {
   const collant = section.querySelector(".histoire-collant");
   const cadre = el("div", "histoire-cadre");
   cadre.setAttribute("aria-hidden", "true");
-  const etabli = creerEtabli({ chapitres, dossierTextes, fictif });
+  const etabli = creerEtabli({ chapitres, dossierTextes, demo, fictif });
+  const gestes = creerGestes(etabli.dossier);
   cadre.append(etabli.stage);
   collant.prepend(cadre);
   const blocs = [...section.querySelectorAll(".histoire-temps")].map((b) => [...b.querySelectorAll(".histoire-texte > *")]);
@@ -212,6 +255,7 @@ function monterScene(section, { chapitres, dossierTextes, fictif }) {
     if (t !== etat.dernier) {
       etat.dernier = t;
       etabli.poser(t);
+      if (etat.jouee) gestes.atteindre(P.gestesAtteints(t));
       P.TEMPS.forEach(([a, b], j) => {
         const bl = P.bloc(t, a, b, blocs[j].length);
         blocs[j].forEach((e, c) => { e.style.opacity = bl.enfants[c].op.toFixed(3); e.style.transform = `translateY(${f2(bl.enfants[c].dy)}px)`; });
@@ -223,6 +267,17 @@ function monterScene(section, { chapitres, dossierTextes, fictif }) {
   }
   const demander = () => { if (!etat.raf && etat.visible) etat.raf = requestAnimationFrame(image); };
   const surDefilement = () => demander();
+
+  // Clavier : le champ du 4e temps reçoit le focus avant d'être à l'écran → la page va à la fin de l'histoire
+  const allerA = (p) => {
+    const r = section.getBoundingClientRect();
+    const haut = parseFloat(getComputedStyle(collant).top) || 0, pad = parseFloat(getComputedStyle(section).paddingTop) || 0;
+    scrollTo({ top: scrollY + r.top + pad - haut + p * (r.height - pad - collant.offsetHeight), behavior: "auto" });
+  };
+  const temps4 = section.querySelector(".histoire-temps-4");
+  temps4?.addEventListener("focusin", () => requestAnimationFrame(() => {
+    if (progression() < 0.95) allerA(0.985);
+  }));
 
   // Images : chargées quand la section est à moins de 1 500 px
   const pres = new IntersectionObserver(([e]) => {
@@ -257,7 +312,7 @@ function monterScene(section, { chapitres, dossierTextes, fictif }) {
 }
 
 // ---------------------------------------------------------------- Panneaux (téléphone, tablette, mouvement réduit)
-function monterPanneaux(section, { chapitres, dossierTextes, fictif, reduit }) {
+function monterPanneaux(section, { chapitres, dossierTextes, demo, fictif, reduit }) {
   const [v1, v2, v3] = [...section.querySelectorAll(".histoire-visuel")];
   // 1. Le trousseau en vrac sur l'établi (même scène, cadrée sur la pile)
   const etabli = creerEtabli({ chapitres, dossierTextes, avecDossier: false });
@@ -283,15 +338,16 @@ function monterPanneaux(section, { chapitres, dossierTextes, fictif, reduit }) {
     grille.append(li);
   });
   v2.append(grille);
-  // 3. Le dossier et ses onglets
-  const dossier = creerDossier({ textes: dossierTextes, chapitres });
+  // 3. Le dossier et ses onglets ; il reçoit ensuite son nom de code (4e temps), geste par geste au défilement
+  const dossier = nouveauDossier({ dossierTextes, chapitres, demo });
+  const gestes = creerGestes(dossier);
   dossier.definir({ onglets: chapitres.map(() => ({ op: 1, dx: 0 })) });
   const porteDossier = el("div", "panneau-dossier");
   porteDossier.append(dossier.element);
   if (fictif) { const f = el("p", "histoire-fictif"); f.textContent = fictif; porteDossier.append(f); }
   v3.append(porteDossier);
 
-  const final = () => { etabli.poser(P.T_POSE, { reduit: true }); grille.classList.add("retournees"); section.classList.add("histoire-jouee"); };
+  const final = () => { etabli.poser(P.T_POSE, { reduit: true }); grille.classList.add("retournees"); section.classList.add("histoire-jouee"); gestes.final(); };
   const pres = new IntersectionObserver(([e]) => {
     if (!e.isIntersecting) return;
     pres.disconnect();
@@ -328,5 +384,15 @@ function monterPanneaux(section, { chapitres, dossierTextes, fictif, reduit }) {
   });
   jouer(v2, () => grille.classList.add("retournees"));
   jouer(v3, () => porteDossier.classList.add("arrive"));
+  // Gestes du nom de code : seuils quand le haut du dossier passe à 62, 52, 42 puis 32 % de la hauteur de l'écran
+  let suivi = false;
+  const seuils = () => {
+    const haut = porteDossier.getBoundingClientRect().top;
+    gestes.atteindre([0.62, 0.52, 0.42, 0.32].filter((f) => haut <= innerHeight * f).length);
+  };
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting && !suivi) { suivi = true; addEventListener("scroll", seuils, { passive: true }); seuils(); }
+    else if (!e.isIntersecting && suivi) { suivi = false; removeEventListener("scroll", seuils); }
+  }).observe(porteDossier);
   return { final };
 }

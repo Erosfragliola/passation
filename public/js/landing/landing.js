@@ -1,4 +1,4 @@
-// Page d'accueil : champ SIREN partagé (hero, en-tête, relance) branché sur l'estimation express
+// Page d'accueil : champ SIREN partagé (hero, en-tête, fin de l'histoire, relance) branché sur l'estimation express
 // et l'écran de résultat ; vidéos. Textes : src/contenu/landing.json, posés par le Worker dans <script id="textes">
 // (sous-arbre « js ») et <script id="textes-histoire"> (chapitres et dossier).
 import { creerChampPartage } from "/js/landing/champ-siren.js";
@@ -37,9 +37,6 @@ $("#btn-autre")?.addEventListener("click", () => {
   barres.actualiser();
   champ.focaliser();
 });
-
-// « Essayer avec mon entreprise » : le curseur dans le champ partagé (barre du haut ou du bas)
-document.querySelectorAll("[data-focus-champ]").forEach((b) => b.addEventListener("click", () => { barres.actualiser(); champ.focaliser(); }));
 
 // Liens #comment-1, -2, -3 (tuiles du hero, cartes) : ouvrent « Comment ça marche » sur la bonne étape.
 // L'événement « ouvrir-etape » est écouté par les onglets de la section.
