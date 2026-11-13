@@ -96,7 +96,7 @@ export function creerDossier({ textes = {}, chapitres = [], valeurLibelle = "" }
   couverture.append(entete, identite, teaser, lignes, pastille, mention, pied);
   racine.append(couverture);
 
-  const etat = { nom: ["", ""], ecrit: 1 };
+  const etat = { nom: ["", ""], ecrit: 1, tampon: "" };
   // Le nom de code tient dans le cadre du tampon (484 unités de large, marge comprise)
   function ajusterTampon() {
     tamponNom.style.setProperty("--tampon-taille", "1");
@@ -133,8 +133,16 @@ export function creerDossier({ textes = {}, chapitres = [], valeurLibelle = "" }
     if ("metaOp" in e) meta.style.opacity = e.metaOp;
     if (e.bandeaux) [l1, l2, meta].forEach((x, i) => x.style.setProperty("--bandeau", e.bandeaux[i] ?? 0));
     if (e.tampon) {
-      if (e.tampon.nom != null) { tamponNom.textContent = e.tampon.nom; requestAnimationFrame(ajusterTampon); }
-      if ("op" in e.tampon) tampon.style.opacity = e.tampon.op;
+      // Masque d'encre et police du tampon : chargés seulement quand le tampon apparaît
+      if (e.tampon.nom != null) { etat.tampon = e.tampon.nom; if (racine.classList.contains("avec-tampon")) { tamponNom.textContent = etat.tampon; requestAnimationFrame(ajusterTampon); } }
+      if ("op" in e.tampon) {
+        if (e.tampon.op > 0 && !racine.classList.contains("avec-tampon")) {
+          racine.classList.add("avec-tampon");
+          tamponNom.textContent = etat.tampon || "";
+          requestAnimationFrame(ajusterTampon);
+        }
+        tampon.style.opacity = e.tampon.op;
+      }
       if ("echelle" in e.tampon) tampon.style.setProperty("--tampon-echelle", e.tampon.echelle);
     }
     if (e.lignes) e.lignes.forEach((x, j) => {

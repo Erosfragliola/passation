@@ -240,8 +240,8 @@
 .dossier-tampon {
   position: absolute; left: calc(8 * var(--u)); top: 0; width: calc(496 * var(--u)); height: calc(156 * var(--u)); color: var(--tampon);
   opacity: 0; transform: scale(var(--tampon-echelle, 1)) rotate(-7deg);
-  -webkit-mask: url("/img/landing/grunge.webp") 0 0 / 100% 100%; mask: url("/img/landing/grunge.webp") 0 0 / 100% 100%;
 }
+.avec-tampon .dossier-tampon { -webkit-mask: url("/img/landing/grunge.webp") 0 0 / 100% 100%; mask: url("/img/landing/grunge.webp") 0 0 / 100% 100%; }
 .dossier-tampon::before { content: ""; position: absolute; left: 0; top: 0; right: calc(12 * var(--u)); bottom: calc(12 * var(--u)); border: calc(6 * var(--u)) double var(--tampon); border-radius: calc(6 * var(--u)); }
 .dossier-tampon-libelle { position: absolute; left: 0; right: 0; top: calc(16 * var(--u)); text-align: center; font: 500 calc(14 * var(--u)) var(--mono); letter-spacing: .3em; text-transform: uppercase; }
 .dossier-tampon-nom { position: absolute; left: 50%; top: calc(34 * var(--u)); transform: translateX(calc(-50% - 6 * var(--u))); white-space: nowrap; text-transform: uppercase; font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; font-size: calc(96 * var(--u) * var(--tampon-taille, 1)); line-height: 1.05; letter-spacing: .02em; }

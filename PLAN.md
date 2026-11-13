@@ -443,4 +443,9 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     Instrument Serif italique restaurée depuis l'historique git. Plus de 3D, de bande de chiffres ni de « À remplir ».
     Recherche et estimation conservées (`public/js/landing/`), résultat provisoire jusqu'à la phase 7.
     Outils de recette : `playwright-core` 1.64.1 et `axe-core` 4.14.0 (développement seulement).
+  - Phases 3 à 8 (12-13/11/2026) : champ SIREN partagé, intro, histoire des clés, sections, démo du nom de code,
+    écran de résultat (nom de code tiré du code NAF, teaser express côté serveur, divisions NAF de l'INSEE), recette.
+    Tests : 261. axe-core : 0 violation. Lighthouse mobile 99 / 100 / 100 / 100 (LCP 1,3 s, CLS 0). Rapport,
+    mesures, captures et liste « À me fournir » : `docs/REFONTE-LANDING.md`. Fusion, push et déploiement : en
+    attente de l'accord du dirigeant.
 
