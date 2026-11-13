@@ -6,10 +6,11 @@ import { routeDemandeCode, routeVerificationCode, routeDeconnexion, routeMoi } f
 import { routeDossiers } from "./routes/dossiers.js";
 import { origineAutorisee } from "./lib/auth.js";
 import { relancer } from "./routes/suivi.js";
+import { routeLanding } from "./routes/landing.js";
 
 /**
  * Point d'entrée du Worker.
- * Seules les URL /api/* arrivent ici (run_worker_first) ; le reste est servi depuis public/.
+ * Seules les URL /api/* et la page d'accueil arrivent ici (run_worker_first) ; le reste est servi depuis public/.
  */
 export default {
   async fetch(request, env) {
@@ -17,6 +18,7 @@ export default {
     const p = url.pathname;
     const m = request.method;
 
+    if (p === "/" && (m === "GET" || m === "HEAD")) return routeLanding(request, env);
     if (p === "/api/health") return json({ ok: true, app: env.APP_NAME ?? "Passation" });
 
     // Toute requête qui modifie des données doit venir du site lui-même (protection CSRF).

@@ -17,6 +17,7 @@ export function assembler(entreprise, exercices, annonces) {
     siren: entreprise.siren,
     nom: entreprise.nom,
     ville,
+    code_postal: entreprise.code_postal ?? null,
     ville_creation: annonces.ville_creation ? casseVille(annonces.ville_creation) : null,
     naf: entreprise.naf,
     section_naf: entreprise.section_naf,

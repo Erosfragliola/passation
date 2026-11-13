@@ -6,8 +6,9 @@ import { verifierDebit } from "../lib/ratelimit.js";
 import { sirenValide, nettoyerSiren } from "../lib/siren.js";
 import { MAQUETTE_RATE_LIMIT } from "../config.js";
 import { estimationExpress } from "../valuation/express.js";
+import { teaserExpress } from "../documents/teaser-express.js";
 
-const VERSION = "v1";
+const VERSION = "v2"; // v2 : code postal (région du teaser express)
 
 export async function routeMaquette(request, env, sirenBrut) {
   const siren = nettoyerSiren(sirenBrut);
@@ -32,5 +33,5 @@ export async function routeMaquette(request, env, sirenBrut) {
   if (!donnees.actif) {
     return json({ erreur: "inactive", message: "Cette entreprise n'est plus active dans les registres publics." }, 404);
   }
-  return json({ ...donnees, estimation: estimationExpress(donnees) });
+  return json({ ...donnees, estimation: estimationExpress(donnees), ...teaserExpress(donnees) });
 }

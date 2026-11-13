@@ -2,329 +2,438 @@
 <html lang="fr" class="sans-js">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Passation · Préparez la cession de votre entreprise</title>
-  <meta name="description" content="Valorisation express à partir de votre SIREN, valorisation approfondie, datapack Excel, teaser, mémorandum d'information et chat expert : la boîte à outils du dirigeant qui prépare sa cession.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Textes : src/contenu/landing.json, posés par le Worker (src/routes/landing.js). -->
+  <title data-t="meta.titre">Passation</title>
+  <meta name="description" data-t-attr="content=meta.description">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="Passation">
+  <meta property="og:title" data-t-attr="content=meta.partage_titre">
+  <meta property="og:description" data-t-attr="content=meta.description">
+  <meta property="og:image" content="/img/partage.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" data-t-attr="content=meta.partage_image_alt">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#231E18">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="/img/photos/hero-poster-1600.webp" imagesrcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w" imagesizes="100vw" fetchpriority="high">
   <link rel="preload" href="/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <script>try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&!location.hash&&!location.search&&!sessionStorage.getItem("passation-intro"))d.classList.add("avec-intro")}catch(e){}</script>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/landing.css">
 </head>
-<body>
-<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<body class="landing">
+<!-- Intro (première visite) : le seuil du logo se dessine, la porte s'allume, on entre. public/js/landing/intro.js -->
+<div class="intro" id="intro">
+  <svg class="intro-svg" aria-hidden="true" focusable="false">
+    <defs>
+      <mask id="intro-masque" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+        <rect width="100%" height="100%" fill="#fff"/>
+        <g class="intro-zoom"><path class="intro-trou" d="M9 27V15a7 7 0 0 1 14 0v12z" fill="#000" opacity="0"/></g>
+      </mask>
+      <radialGradient id="intro-lueur" cx="50%" cy="70%" r="65%"><stop offset="0" stop-color="#F6DDBB"/><stop offset="1" stop-color="#C9894F"/></radialGradient>
+    </defs>
+    <rect class="intro-fond" width="100%" height="100%" mask="url(#intro-masque)"/>
+    <g class="intro-zoom">
+      <path class="intro-porte" d="M9 27V15a7 7 0 0 1 14 0v12z" fill="url(#intro-lueur)" opacity="0"/>
+      <path class="intro-trait" d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="#FBF6EC" stroke-width="1.1" stroke-linecap="round"/>
+      <path class="intro-trait" d="M5 27h22" fill="none" stroke="#FBF6EC" stroke-width="1.1" stroke-linecap="round"/>
+      <circle class="intro-point" cx="16" cy="21" r="2.4" fill="#A8653A" opacity="0"/>
+    </g>
+  </svg>
+  <span class="intro-nom" aria-hidden="true">Passation</span>
+  <button class="intro-passer" type="button"><span data-t="intro.passer"></span> <span aria-hidden="true">›</span></button>
+</div>
+<a class="lien-evitement" href="#contenu" data-t="nav.evitement">Aller au contenu</a>
 
 <header class="nav-zone">
-  <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <ul class="nav-liens">
-      <li><a href="#comment">Comment ça marche</a></li>
-      <li><a href="#outils">La boîte à outils</a></li>
-      <li><a href="#confidentialite">Confidentialité</a></li>
-      <li><a href="#faq">Questions</a></li>
-    </ul>
+  <nav class="nav" data-t-attr="aria-label=nav.principale">
+    <a class="logo" href="/" data-t-attr="aria-label=nav.accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-centre">
+      <ul class="nav-liens">
+        <li><a href="#comment" data-t="nav.comment"></a></li>
+        <li data-si="prix_dossier"><a href="#tarifs" data-t="nav.tarifs"></a></li>
+        <li><a href="#confidentialite" data-t="nav.confidentialite"></a></li>
+        <li><a href="#questions" data-t="nav.questions"></a></li>
+      </ul>
+      <form class="nav-champ recherche-mini" action="/connexion" method="get" data-champ-siren="nav" data-zone-champ>
+        <label class="visuellement-cache" for="q-nav" data-t="champ.libelle"></label>
+        <input id="q-nav" name="q" type="search" autocomplete="off" data-t-attr="placeholder=champ.libelle"
+               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-nav">
+        <button class="btn btn-vert" type="submit"><span data-t="champ.bouton_court"></span> <span class="fleche" aria-hidden="true">→</span></button>
+        <ul class="suggestions" id="suggestions-nav" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+        <p class="recherche-message" id="message-nav" role="status" data-message hidden></p>
+      </form>
+    </div>
     <div class="nav-actions">
-      <a class="btn btn-noir btn-espace" href="/connexion" data-connexion>Espace dirigeant</a>
-      <button class="nav-bouton" type="button" aria-expanded="false" aria-controls="nav-mobile" aria-label="Ouvrir le menu">
+      <a class="btn btn-noir btn-espace" href="/connexion" data-connexion data-t="nav.espace"></a>
+      <button class="nav-bouton" type="button" aria-expanded="false" aria-controls="nav-mobile" data-t-attr="aria-label=nav.menu_ouvrir">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 5h14M2 9h14M2 13h14"/></svg>
       </button>
     </div>
   </nav>
   <div class="nav-mobile" id="nav-mobile" hidden>
-    <a href="#comment">Comment ça marche</a>
-    <a href="#outils">La boîte à outils</a>
-    <a href="#confidentialite">Confidentialité</a>
-    <a href="#faq">Questions</a>
-    <a href="/connexion" data-connexion>Espace dirigeant</a>
+    <a href="#comment" data-t="nav.comment"></a>
+    <a href="#tarifs" data-si="prix_dossier" data-t="nav.tarifs"></a>
+    <a href="#confidentialite" data-t="nav.confidentialite"></a>
+    <a href="#questions" data-t="nav.questions"></a>
+    <a href="/connexion" data-connexion data-t="nav.espace"></a>
   </div>
 </header>
 
 <main id="contenu">
 
-  <!-- 1. Hero plein écran. Le fond accueillera la photo/vidéo d'un dirigeant (public/img/source) ;
-       en attendant, la texture peinte originale. -->
-  <section class="hero" aria-labelledby="titre-hero">
+  <!-- 1. Hero : agir -->
+  <section id="accueil" class="hero" aria-labelledby="titre-hero">
     <div class="hero-fond">
       <img src="/img/photos/hero-poster-1600.webp"
            srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
            sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
-      <!-- Vidéo chargée par site.js sur grand écran seulement, jamais avec « réduire les animations » -->
-      <video class="hero-video" muted loop playsinline preload="none" aria-hidden="true" hidden
-             data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
-             data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'></video>
+      <!-- Vidéos (public/js/landing/video.js) : clips des métiers en alternance, ou la vidéo actuelle tant que la
+           liste est vide ; jamais avec « réduire les animations » ni en économie de données -->
+      <div class="hero-videos" data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
+           data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'>
+        <video class="hero-video" muted playsinline preload="none" aria-hidden="true" hidden></video>
+        <video class="hero-video" muted playsinline preload="none" aria-hidden="true" hidden></video>
+      </div>
     </div>
+    <p class="hero-metier" aria-hidden="true" hidden></p>
+    <button class="hero-pause" type="button" hidden>
+      <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
+      <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
+      <span class="visuellement-cache"></span>
+    </button>
     <div class="conteneur hero-contenu">
-      <p class="etiquette">Préparer la cession de votre PME</p>
-      <h1 id="titre-hero">Vous avez bâti. Préparez votre <em>transmission</em>.</h1>
-      <p class="chapo">Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.</p>
-      <form class="recherche" action="/estimation" method="get" role="search">
+      <p class="surtitre" data-t="hero.surtitre"></p>
+      <h1 id="titre-hero" data-t="hero.titre"></h1>
+      <p class="chapo" data-t="hero.sous_titre"></p>
+      <form class="recherche" action="/connexion" method="get" role="search" data-champ-siren="accueil" data-t-attr="aria-label=champ.zone">
         <div class="recherche-champ">
-          <label for="q">SIREN ou nom de votre société</label>
-          <input id="q" name="q" type="search" autocomplete="off" required minlength="2" placeholder="SIREN ou nom de votre société" aria-describedby="note-recherche"
+          <label for="q" data-t="champ.libelle"></label>
+          <input id="q" name="q" type="search" autocomplete="off" required minlength="3" aria-describedby="note-recherche"
+                 data-t-attr="placeholder=champ.libelle"
                  role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions">
-          <button class="btn btn-vert" type="submit">Estimer ma valeur <span class="fleche" aria-hidden="true">→</span></button>
+          <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
         </div>
-        <ul class="suggestions" id="suggestions" role="listbox" aria-label="Sociétés correspondantes" hidden></ul>
-        <p class="recherche-note" id="note-recherche">Gratuit, sans compte. <strong>Estimation indicative, non contractuelle.</strong></p>
+        <ul class="suggestions" id="suggestions" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+        <p class="recherche-message" id="recherche-message" role="status" data-message hidden></p>
+        <div class="recherche-note" id="note-recherche">
+          <p data-t="hero.note"></p>
+          <p data-t="hero.note_comptes"></p>
+        </div>
       </form>
     </div>
-    <div class="conteneur">
-      <div class="hero-chiffres" aria-label="Passation en chiffres">
-        <div><strong>3</strong><span>méthodes de valorisation croisées</span></div>
-        <div><strong>9</strong><span>onglets de datapack, formules vivantes</span></div>
-        <div><strong>6</strong><span>outils réunis dans un seul espace</span></div>
-        <div><strong><em>0</em></strong><span>mot de passe : un code à usage unique par e-mail</span></div>
-      </div>
-    </div>
   </section>
 
-  <!-- 2. Votre maquette : la maquette 3D de l'entreprise et la frise « Vous avez bâti » (nuit) -->
-  <section id="maquette" class="nuit" aria-labelledby="titre-maquette">
-    <div class="conteneur temoin-grille">
-      <div class="maquette-texte">
-        <p class="etiquette" id="maquette-etiquette">Le témoin</p>
-        <h2 id="titre-maquette">Ce que vous avez bâti mérite d'être <em>transmis</em>.</h2>
-        <div id="maquette-intro">
-          <p class="chapo" style="margin-top:20px">Saisissez votre SIREN : votre entreprise se construit sous vos yeux, à partir de ses données publiques. Hauteur, lumières, arbres : chaque détail raconte quelque chose de vrai.</p>
-          <ol class="temoin-points">
-            <li><span>01</span>Les étages suivent votre chiffre d'affaires.</li>
-            <li><span>02</span>Les fenêtres allumées, votre équipe.</li>
-            <li><span>03</span>Les arbres, votre rentabilité. La pierre, votre histoire.</li>
-          </ol>
-        </div>
-        <div id="maquette-resultat" hidden aria-live="polite">
-          <p class="etiquette" style="margin:28px 0 14px">Son histoire</p>
-          <ol class="frise" id="frise"></ol>
-          <div id="comptes-absents" class="comptes-absents" hidden>
-            <p>Vos comptes ne sont pas publics. Indiquez votre chiffre d'affaires pour terminer votre maquette.</p>
-            <form id="form-comptes" class="form-comptes">
-              <label>Chiffre d'affaires <span class="petit">(k€)</span><input id="saisie-ca" type="number" inputmode="numeric" min="1" step="1" required></label>
-              <label>EBE <span class="petit">(k€, facultatif)</span><input id="saisie-ebe" type="number" inputmode="numeric" step="1"></label>
-              <button class="btn btn-sable" type="submit">Terminer ma maquette</button>
-            </form>
-            <p class="petit">Ces chiffres ne sont pas enregistrés tant que vous n'avez pas créé de compte.</p>
+  <!-- Résultat de l'estimation (public/js/landing/resultat.js) : nom de code, fourchette, teaser anonyme, trois suites.
+       Aucun compte n'est demandé avant de voir la valeur. -->
+  <section id="resultat" class="resultat nuit" aria-labelledby="titre-resultat" hidden>
+    <div class="essai-fond" data-fond="/img/landing/etabli-1200.webp" aria-hidden="true"></div>
+    <div class="conteneur resultat-grille">
+      <div class="resultat-texte" aria-live="polite">
+        <div class="resultat-chargement" hidden>
+          <div class="trousseau" aria-hidden="true">
+            <img src="/img/landing/cles/k0.webp" alt="" width="104" height="264" loading="lazy"><img src="/img/landing/cles/k4.webp" alt="" width="104" height="264" loading="lazy"><img src="/img/landing/cles/k6.webp" alt="" width="104" height="264" loading="lazy"><img src="/img/landing/cles/k8.webp" alt="" width="104" height="264" loading="lazy">
           </div>
-          <div id="estimation" class="estimation" hidden>
-            <p class="petit" id="estimation-legende"></p>
+          <p class="resultat-chargement-texte" data-t="js.chargement"></p>
+        </div>
+        <div class="resultat-contenu" hidden>
+          <p class="surtitre" data-t="js.resultat.titre"></p>
+          <h2 id="titre-resultat"><span class="resultat-code-intro" data-t="js.resultat.code_intro"></span> <em class="resultat-code"></em></h2>
+          <p class="visuellement-cache" id="resultat-teaser"></p>
+          <div class="resultat-valeur" id="resultat-estimation">
+            <p class="resultat-libelle" data-t="js.resultat.fourchette_titre"></p>
             <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
-            <p class="petit" id="estimation-note"></p>
-            <p class="estimation-mention">Estimation indicative, non contractuelle.</p>
+            <ul class="resultat-methodes" id="estimation-methodes"></ul>
+            <p class="resultat-note" id="estimation-note"></p>
           </div>
-          <div class="maquette-actions">
-            <a class="btn btn-vert" href="/connexion" data-connexion>Affiner ma valorisation <span class="fleche" aria-hidden="true">→</span></a>
-            <button class="btn btn-contour-nuit" type="button" id="btn-telecharger">Télécharger ma maquette</button>
-            <button class="lien-nuit" type="button" id="btn-autre">Rechercher une autre entreprise</button>
-          </div>
+          <form id="form-comptes" class="form-comptes" hidden>
+            <p data-t="js.resultat.confidentiels"></p>
+            <label><span data-t="js.resultat.ca"></span><input id="saisie-ca" type="number" inputmode="numeric" min="1" step="1" required></label>
+            <label><span data-t="js.resultat.ebe"></span><input id="saisie-ebe" type="number" inputmode="numeric" step="1" required></label>
+            <button class="btn btn-vert" type="submit" data-t="js.resultat.voir"></button>
+            <p class="petit" data-t="js.resultat.saisie_note"></p>
+          </form>
+          <p class="resultat-message" id="resultat-message" role="status" hidden></p>
+          <ul class="resultat-suites">
+            <li><a class="suite" href="/connexion" data-connexion data-suite="garder"><strong data-t="js.resultat.garder_titre"></strong><span data-t="js.resultat.garder_texte"></span></a></li>
+            <li><a class="suite" href="/connexion" data-connexion data-suite="affiner"><strong data-t="js.resultat.affiner_titre"></strong><span data-t="js.resultat.affiner_texte"></span></a></li>
+            <li><a class="suite" href="mailto:" data-suite="inviter"><strong data-t="js.resultat.inviter_titre"></strong><span data-t="js.resultat.inviter_texte"></span></a></li>
+          </ul>
+          <p class="resultat-autre"><button class="lien" type="button" id="btn-autre" data-t="js.resultat.autre"></button></p>
         </div>
-        <p class="maquette-message" id="maquette-message" role="status" hidden></p>
       </div>
-      <div class="scene-3d" data-maquette>
-        <p class="legende" aria-hidden="true">Maquette sous cloche · glissez pour tourner</p>
-      </div>
+      <div class="resultat-dossier" aria-hidden="true"></div>
     </div>
   </section>
 
-  <!-- 3. Mission : mosaïque -->
-  <section aria-labelledby="titre-mission">
-    <div class="conteneur">
-      <div class="entete-section apparait">
-        <p class="etiquette">Notre parti pris</p>
-        <h2 id="titre-mission">Une entreprise ne se vend pas. Elle se <em>transmet</em>.</h2>
-      </div>
-      <div class="mosaique">
-        <figure class="photo m-portrait apparait" style="margin:0">
-          <img src="/img/photos/portrait-artisan-800.webp" sizes="(min-width: 900px) 33vw, 100vw" alt="Un horloger concentré à son établi, sous sa lampe (image d'illustration)" loading="lazy" width="1500" height="1800">
-        </figure>
-        <div class="m-citation apparait">
-          <blockquote>« Trente ans de travail ne tiennent pas dans un multiple. Ils tiennent dans un dossier qui <em>raconte</em>, chiffre et convainc. »</blockquote>
-          <p class="petit">Le parti pris de Passation</p>
-        </div>
-        <figure class="photo apparait" style="margin:0">
-          <img src="/img/photos/texture-clair-800.webp" srcset="/img/photos/texture-clair-800.webp 800w, /img/photos/texture-clair-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Peinture abstraite aux tons vert, cuivre et crème" loading="lazy" width="800" height="533">
-        </figure>
-        <div class="m-texte apparait">
-          <p class="etiquette" style="margin:0">Pour qui</p>
-          <p>Les dirigeants de PME qui pensent à céder dans les deux à cinq ans, et veulent arriver prêts devant leurs conseils et leurs repreneurs.</p>
+  <!-- 2. Histoire : comprendre. L'établi et le trousseau (public/js/landing/histoire.js) : scène collante pilotée par
+       le défilement sur ordinateur, trois panneaux sur téléphone, tablette et en mouvement réduit. -->
+  <section id="histoire" class="nuit histoire" aria-labelledby="titre-histoire">
+    <div class="histoire-collant">
+      <div class="histoire-temps histoire-temps-1">
+        <div class="histoire-visuel" aria-hidden="true"></div>
+        <div class="histoire-texte">
+          <p class="surtitre" data-t="histoire.temps1.surtitre"></p>
+          <h2 id="titre-histoire" data-t="histoire.temps1.titre"></h2>
+          <p class="chapo" data-t="histoire.temps1.texte"></p>
         </div>
       </div>
+      <div class="histoire-temps histoire-temps-2">
+        <div class="histoire-visuel" aria-hidden="true"></div>
+        <div class="histoire-texte">
+          <p class="surtitre" data-t="histoire.temps2.surtitre"></p>
+          <h3 class="titre-section" data-t="histoire.temps2.titre"></h3>
+          <p class="chapo" data-t="histoire.temps2.texte"></p>
+        </div>
+        <ol class="visuellement-cache">
+          <li><span data-t="histoire.chapitres.0.numero"></span> <span data-t="histoire.chapitres.0.titre"></span> : <span data-t="histoire.chapitres.0.detail"></span></li>
+          <li><span data-t="histoire.chapitres.1.numero"></span> <span data-t="histoire.chapitres.1.titre"></span> : <span data-t="histoire.chapitres.1.detail"></span></li>
+          <li><span data-t="histoire.chapitres.2.numero"></span> <span data-t="histoire.chapitres.2.titre"></span> : <span data-t="histoire.chapitres.2.detail"></span></li>
+          <li><span data-t="histoire.chapitres.3.numero"></span> <span data-t="histoire.chapitres.3.titre"></span> : <span data-t="histoire.chapitres.3.detail"></span></li>
+          <li><span data-t="histoire.chapitres.4.numero"></span> <span data-t="histoire.chapitres.4.titre"></span> : <span data-t="histoire.chapitres.4.detail"></span></li>
+          <li><span data-t="histoire.chapitres.5.numero"></span> <span data-t="histoire.chapitres.5.titre"></span> : <span data-t="histoire.chapitres.5.detail"></span></li>
+          <li><span data-t="histoire.chapitres.6.numero"></span> <span data-t="histoire.chapitres.6.titre"></span> : <span data-t="histoire.chapitres.6.detail"></span></li>
+          <li><span data-t="histoire.chapitres.7.numero"></span> <span data-t="histoire.chapitres.7.titre"></span> : <span data-t="histoire.chapitres.7.detail"></span></li>
+          <li><span data-t="histoire.chapitres.8.numero"></span> <span data-t="histoire.chapitres.8.titre"></span> : <span data-t="histoire.chapitres.8.detail"></span></li>
+        </ol>
+      </div>
+      <div class="histoire-temps histoire-temps-3">
+        <div class="histoire-visuel" aria-hidden="true"></div>
+        <div class="histoire-texte">
+          <p class="surtitre" data-t="histoire.temps3.surtitre"></p>
+          <h3 class="titre-section" data-t="histoire.temps3.titre"></h3>
+          <p class="chapo" data-t="histoire.temps3.texte"></p>
+        </div>
+      </div>
+      <div class="histoire-progression" aria-hidden="true"><span></span></div>
     </div>
   </section>
 
-  <!-- 4. Comment ça marche -->
-  <section id="comment" aria-labelledby="titre-comment" style="padding-top:0">
+  <!-- 3. Comment ça marche (fusion avec « La boîte à outils ») -->
+  <section id="comment" aria-labelledby="titre-comment">
     <div class="conteneur">
-      <div class="entete-section apparait">
-        <p class="etiquette">Comment ça marche</p>
-        <h2 id="titre-comment">Trois étapes. Une cession <em>mieux préparée</em>.</h2>
+      <div class="entete-section">
+        <p class="surtitre" data-t="comment.surtitre"></p>
+        <h2 id="titre-comment" data-t="comment.titre"></h2>
       </div>
-      <ol class="etapes">
-        <li class="etape apparait">
-          <figure class="photo" style="margin:0"><img src="/img/photos/etape-boutique-800.webp" srcset="/img/photos/etape-boutique-800.webp 800w, /img/photos/etape-boutique-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Une dirigeante au téléphone dans sa boutique (image d'illustration)" loading="lazy" width="2400" height="1350"></figure>
-          <span class="etape-num">01 · Votre SIREN</span>
-          <h3>Une première <em>valeur</em></h3>
-          <p>Nous lisons les registres publics : identité, activité, derniers comptes déposés. Vous obtenez une fourchette en quelques secondes.</p>
+      <ol class="etapes-simples">
+        <li>
+          <span class="etape-numero" data-t="comment.etapes.0.numero"></span>
+          <h3 data-t="comment.etapes.0.titre"></h3>
+          <span class="badge" data-t="comment.etapes.0.badge"></span>
+          <p data-t="comment.etapes.0.texte"></p>
         </li>
-        <li class="etape apparait">
-          <figure class="photo" style="margin:0"><img src="/img/photos/etape-artisane-800.webp" srcset="/img/photos/etape-artisane-800.webp 800w, /img/photos/etape-artisane-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Une artisane à son établi, dans un atelier éclairé par une lampe (image d'illustration)" loading="lazy" width="2400" height="1350"></figure>
-          <span class="etape-num">02 · Vos chiffres</span>
-          <h3>Une valeur <em>argumentée</em></h3>
-          <p>Questionnaire court, import de votre liasse, retraitements de l'EBE. Trois méthodes croisées, des hypothèses que vous gardez en main.</p>
+        <li>
+          <span class="etape-numero" data-t="comment.etapes.1.numero"></span>
+          <h3 data-t="comment.etapes.1.titre"></h3>
+          <span class="badge" data-t="comment.etapes.1.badge"></span>
+          <p data-t="comment.etapes.1.texte"></p>
         </li>
-        <li class="etape apparait">
-          <figure class="photo" style="margin:0"><img src="/img/photos/etape-atelier-hd-800.webp" srcset="/img/photos/etape-atelier-hd-800.webp 800w, /img/photos/etape-atelier-hd-1600.webp 1600w" sizes="(min-width: 900px) 33vw, 100vw" alt="Un artisan à sa perceuse dans un atelier (image d'illustration)" loading="lazy" width="1920" height="1080"></figure>
-          <span class="etape-num">03 · Vos documents</span>
-          <h3>Un dossier <em>prêt</em></h3>
-          <p>Datapack Excel, teaser anonymisé, mémorandum d'information. Vous relisez, vous ajustez, vous partagez.</p>
+        <li>
+          <span class="etape-numero" data-t="comment.etapes.2.numero"></span>
+          <h3 data-t="comment.etapes.2.titre"></h3>
+          <span class="badge" data-t="comment.etapes.2.badge"></span>
+          <p data-t="comment.etapes.2.texte"></p>
         </li>
       </ol>
+      <p class="outils-ligne" data-t="comment.outils"></p>
     </div>
   </section>
 
-  <!-- 5. La boîte à outils -->
-  <section id="outils" aria-labelledby="titre-outils" style="padding-top:0">
-    <div class="conteneur">
-      <div class="entete-section apparait">
-        <p class="etiquette">Votre boîte à outils</p>
-        <h2 id="titre-outils">Tout ce qu'un repreneur vous <em>demandera</em>.</h2>
-        <p class="chapo">Vous saisissez une information une fois. Elle sert partout.</p>
+  <!-- 4. Et la vôtre ? Démo du nom de code sur un exemple fictif (public/js/landing/demo.js), jouée une fois -->
+  <section id="essai" class="essai nuit" aria-labelledby="titre-essai">
+    <div class="essai-fond" data-fond="/img/landing/etabli-1200.webp" aria-hidden="true"></div>
+    <div class="conteneur essai-grille">
+      <div class="essai-texte">
+        <div class="essai-avant">
+          <p class="surtitre" data-t="essai.surtitre"></p>
+          <h2 id="titre-essai" data-t="essai.titre"></h2>
+          <p class="chapo" data-t="essai.texte"></p>
+        </div>
+        <div class="essai-apres" hidden>
+          <p class="surtitre" data-t="essai.apres_surtitre"></p>
+          <h2 data-t="essai.apres_titre"></h2>
+          <p class="chapo" data-t="essai.apres_texte"></p>
+        </div>
+        <p class="essai-action"><button class="btn btn-sable" type="button" data-focus-champ data-t="essai.bouton"></button></p>
       </div>
-      <div class="outils">
-        <article class="carte outil apparait">
-          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
-          <h3>Valorisation</h3>
-          <ul><li>Express, dès votre SIREN</li><li>Approfondie : multiples, DCF, actif net corrigé</li><li>Retraitements, décotes, valeur des titres</li></ul>
-          <p class="outil-forme">Fourchette · synthèse · sensibilités</p>
-        </article>
-        <article class="carte outil apparait">
-          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18"/></svg></div>
-          <h3>Datapack Excel</h3>
-          <ul><li>Comptes, bilan, BFR, dette nette</li><li>Les trois méthodes et leurs hypothèses</li><li>Formules vivantes, sources citées</li></ul>
-          <p class="outil-forme">Fichier .xlsx · 9 onglets</p>
-        </article>
-        <article class="carte outil apparait">
-          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h4"/></svg></div>
-          <h3>Teaser</h3>
-          <ul><li>Une à deux pages, anonymisées</li><li>Nom de code, activité, chiffres arrondis</li><li>Points forts et raison de la cession</li></ul>
-          <p class="outil-forme">Word · version imprimable PDF</p>
-        </article>
-        <article class="carte outil apparait">
-          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-4a2 2 0 0 0-2 2"/><path d="M20 4v14h-6"/></svg></div>
-          <h3>Mémorandum</h3>
-          <ul><li>Activité, marché, clients, équipes</li><li>Données financières et perspectives</li><li>Rien d'inventé : les manques sont signalés</li></ul>
-          <p class="outil-forme">15 à 25 pages · section par section</p>
-        </article>
-        <article class="carte outil apparait">
-          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 4h10l4 4v12H5z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg></div>
-          <h3>Ressources</h3>
-          <ul><li>Préparer, valoriser, trouver un repreneur</li><li>Négocier, fiscalité, après la cession</li><li>Sources officielles, fiches datées</li></ul>
-          <p class="outil-forme">Fiches classées par étape</p>
-        </article>
-        <article class="carte outil apparait">
-          <div class="outil-icone" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg></div>
-          <h3>Chat expert</h3>
-          <ul><li>Connaît votre dossier et vos chiffres</li><li>Cite ses sources</li><li>Vous oriente vers le bon conseil</li></ul>
-          <p class="outil-forme">Cession · transmission · valorisation</p>
-        </article>
+      <div class="essai-demo">
+        <div class="essai-dossier" aria-hidden="true"></div>
+        <p class="histoire-fictif" data-t="histoire.dossier.fictif"></p>
       </div>
     </div>
   </section>
 
-  <!-- 6. Confidentialité (nuit) -->
+  <!-- 5. Confidentialité : se rassurer -->
   <section id="confidentialite" class="nuit" aria-labelledby="titre-confid">
     <div class="conteneur confid-grille">
-      <div class="apparait">
-        <p class="etiquette">Confidentialité</p>
-        <h2 id="titre-confid">Vos chiffres restent <em>les vôtres</em>.</h2>
-        <p class="chapo" style="margin-top:20px">Préparer une cession demande de la discrétion. Passation est conçu pour la protéger.</p>
-        <p style="margin-top:28px"><a class="btn btn-sable" href="/confidentialite">Lire notre politique</a></p>
+      <div>
+        <p class="surtitre" data-t="confidentialite.surtitre"></p>
+        <h2 id="titre-confid" data-t="confidentialite.titre"></h2>
+        <p class="chapo" data-t="confidentialite.texte"></p>
+        <p class="confid-hebergement" data-si="hebergement" data-t="confidentialite.hebergement"></p>
+        <p class="confid-lien"><a class="btn btn-sable" href="/confidentialite" data-t="confidentialite.politique"></a></p>
       </div>
-      <div class="apparait">
-        <div class="garanties">
-          <div class="garantie">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-            <h3>Accès réservé</h3><p>Connexion par code à usage unique, envoyé par e-mail. Vous seul voyez votre dossier.</p>
-          </div>
-          <div class="garantie">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
-            <h3>Aucune revente</h3><p>Vos données servent uniquement aux traitements que vous demandez.</p>
-          </div>
-          <div class="garantie">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
-            <h3>Suppression en un clic</h3><p>Dossier, chiffres et fichiers : vous effacez tout quand vous le décidez.</p>
-          </div>
-          <div class="garantie">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
-            <h3>Teaser anonymisé</h3><p>Ni nom, ni ville, ni chiffre identifiant. Vous choisissez quand vous dévoiler.</p>
+      <div class="garanties">
+        <div class="garantie">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+          <h3 data-t="confidentialite.garanties.0.titre"></h3><p data-t="confidentialite.garanties.0.texte"></p>
+        </div>
+        <div class="garantie">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
+          <h3 data-t="confidentialite.garanties.1.titre"></h3><p data-t="confidentialite.garanties.1.texte"></p>
+        </div>
+        <div class="garantie">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
+          <h3 data-t="confidentialite.garanties.2.titre"></h3><p data-t="confidentialite.garanties.2.texte"></p>
+        </div>
+        <div class="garantie">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
+          <h3 data-t="confidentialite.garanties.3.titre"></h3><p data-t="confidentialite.garanties.3.texte"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Tarifs (retirée tant que le prix du dossier n'est pas fourni) -->
+  <section id="tarifs" class="tarifs" aria-labelledby="titre-tarifs" data-si="prix_dossier">
+    <div class="conteneur">
+      <div class="entete-section">
+        <p class="surtitre" data-t="tarifs.surtitre"></p>
+        <h2 id="titre-tarifs" data-t="tarifs.titre"></h2>
+      </div>
+      <div class="tarifs-grille">
+        <div class="carte tarif">
+          <h3 data-t="tarifs.estimation_titre"></h3>
+          <p class="tarif-prix chiffre" data-t="tarifs.estimation_prix"></p>
+          <p data-t="tarifs.estimation_texte"></p>
+        </div>
+        <div class="carte tarif">
+          <h3 data-t="tarifs.dossier_titre"></h3>
+          <p class="tarif-prix chiffre" data-t="tarifs.dossier_prix"></p>
+          <p data-t="tarifs.dossier_texte"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Parti pris -->
+  <section id="parti-pris" class="parti-pris" aria-labelledby="titre-parti-pris">
+    <div class="parti-pris-media">
+      <img src="/img/photos/hero-poster-1600.webp" srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
+           sizes="100vw" loading="lazy" width="2400" height="1266" data-t-attr="alt=parti_pris.video_alt">
+      <!-- La vidéo de l'artisan, en boucle tant qu'elle est à l'écran (public/js/landing/video.js) -->
+      <video class="parti-pris-video" muted loop playsinline preload="none" aria-hidden="true" hidden
+             data-sources='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'></video>
+      <button class="hero-pause parti-pris-pause" type="button" hidden>
+        <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
+        <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
+        <span class="visuellement-cache"></span>
+      </button>
+      <div class="conteneur parti-pris-texte">
+        <p class="surtitre" data-t="parti_pris.surtitre"></p>
+        <h2 id="titre-parti-pris" data-t="parti_pris.titre"></h2>
+        <p class="chapo" data-t="parti_pris.texte"></p>
+      </div>
+    </div>
+    <div class="conteneur" data-si-un="fondateur_nom fondateur_texte fondateur_photo partenaires">
+      <div class="carte fondateur">
+        <img class="fondateur-photo" data-si="fondateur_photo" data-t-attr="src=cles.fondateur_photo; alt=parti_pris.fondateur_photo_alt" width="160" height="160" loading="lazy">
+        <div>
+          <h3 data-si="fondateur_nom" data-t="parti_pris.fondateur"></h3>
+          <p data-si="fondateur_texte" data-t="parti_pris.fondateur_texte"></p>
+          <div data-si="partenaires">
+            <p class="surtitre" data-t="parti_pris.partenaires"></p>
+            <ul class="partenaires" data-t-liste="cles.partenaires"></ul>
           </div>
         </div>
-        <div class="a-remplir">À remplir : partenaires, labels ou témoignages réels (aucun n'est inventé).</div>
       </div>
     </div>
   </section>
 
-  <!-- 7. FAQ -->
-  <section id="faq" aria-labelledby="titre-faq">
+  <!-- 8. Questions -->
+  <section id="questions" aria-labelledby="titre-faq">
     <div class="conteneur faq-grille">
-      <div class="apparait">
-        <p class="etiquette">Questions fréquentes</p>
-        <h2 id="titre-faq">Ce que les dirigeants nous <em>demandent</em>.</h2>
+      <div>
+        <p class="surtitre" data-t="questions.surtitre"></p>
+        <h2 id="titre-faq" data-t="questions.titre"></h2>
       </div>
-      <div class="faq apparait">
-        <details><summary>L'estimation express est-elle fiable ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>C'est un premier ordre de grandeur. Elle applique des multiples sectoriels aux derniers comptes publiés de votre société.</p><p>Elle ignore vos retraitements, votre dette et vos spécificités. La valorisation approfondie les prend en compte.</p></div></details>
-        <details><summary>D'où viennent les chiffres de ma société ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Des registres publics : l'annuaire des entreprises de l'État, les comptes annuels déposés et le BODACC. Nous indiquons toujours l'exercice utilisé.</p></div></details>
-        <details><summary>Mes comptes sont confidentiels. Que se passe-t-il ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Nous vous le signalons. Vous saisissez alors votre chiffre d'affaires et votre EBE, ou vous importez votre liasse fiscale.</p></div></details>
-        <details><summary>Qui a accès à mes données ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Vous seul. Pour rédiger ou analyser, vos données sont transmises au modèle d'IA qui exécute la demande, et à lui seul. Vous pouvez tout supprimer à tout moment.</p></div></details>
-        <details><summary>Passation remplace-t-il mon expert-comptable ou mon avocat ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Non. Passation vous fait gagner du temps et prépare le terrain. Pour les décisions juridiques et fiscales, faites-vous accompagner par un professionnel.</p></div></details>
-        <details><summary>Quels documents puis-je générer ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p>Un datapack Excel, un teaser anonymisé et un mémorandum d'information. Vous relisez et modifiez chaque section avant de partager.</p></div></details>
-        <details><summary>Combien cela coûte-t-il ?<span class="plus" aria-hidden="true">+</span></summary>
-          <div class="reponse"><p class="a-remplir">À remplir : tarifs et conditions.</p></div></details>
+      <div class="faq">
+        <details><summary><span data-t="questions.liste.0.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.0.r"></div></details>
+        <details><summary><span data-t="questions.liste.1.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.1.r"></div></details>
+        <details><summary><span data-t="questions.liste.2.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.2.r"></div></details>
+        <details><summary><span data-t="questions.liste.3.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.3.r"></div></details>
+        <details><summary><span data-t="questions.liste.4.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.4.r"></div></details>
+        <details><summary><span data-t="questions.liste.5.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.5.r"></div></details>
+        <details data-si="prix_dossier"><summary><span data-t="questions.liste.6.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.6.r"></div></details>
+        <details><summary><span data-t="questions.liste.7.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.7.r"></div></details>
       </div>
     </div>
   </section>
 
-  <!-- 8. Appel final (nuit) -->
-  <section class="nuit final" aria-labelledby="titre-final">
-    <div class="fond-peint"><img src="/img/photos/texture-sombre-1600.webp" alt="" loading="lazy" width="1600" height="1067"></div>
-    <div class="conteneur apparait">
-      <p class="etiquette">Premier pas</p>
-      <h2 id="titre-final">Commencez par une <em>première valeur</em>.</h2>
-      <p class="chapo">Votre SIREN suffit. Le reste viendra à votre rythme.</p>
-      <a class="btn btn-vert" href="#titre-hero" data-focus="#q">Estimer ma valeur <span class="fleche" aria-hidden="true">→</span></a>
+  <!-- 9. Relance -->
+  <section id="relance" class="nuit final relance" aria-labelledby="titre-relance">
+    <div class="conteneur">
+      <h2 id="titre-relance" data-t="relance.titre"></h2>
+      <form class="recherche relance-champ" action="/connexion" method="get" data-champ-siren="relance" data-zone-champ>
+        <div class="recherche-champ">
+          <label for="q-relance" data-t="champ.libelle"></label>
+          <input id="q-relance" name="q" type="search" autocomplete="off" aria-describedby="note-relance" data-t-attr="placeholder=champ.libelle"
+                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-relance">
+          <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
+        </div>
+        <ul class="suggestions" id="suggestions-relance" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+        <p class="recherche-message" id="message-relance" role="status" data-message hidden></p>
+        <p class="relance-note" id="note-relance" data-t="relance.note"></p>
+      </form>
     </div>
   </section>
 </main>
 
 <footer class="pied">
-  <div class="conteneur">
-    <div class="pied-grille">
-      <div>
-        <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-        <p class="petit" style="margin-top:12px;max-width:22rem">La boîte à outils du dirigeant qui prépare la cession de son entreprise.</p>
-      </div>
-      <div>
-        <h3 class="pied-titre">Produit</h3>
-        <ul><li><a href="#comment">Comment ça marche</a></li><li><a href="#outils">La boîte à outils</a></li><li><a href="#faq">Questions fréquentes</a></li></ul>
-      </div>
-      <div>
-        <h3 class="pied-titre">Informations</h3>
-        <ul><li><a href="/mentions-legales">Mentions légales</a></li><li><a href="/cgu">Conditions d'utilisation</a></li><li><a href="/confidentialite">Confidentialité</a></li></ul>
-      </div>
-    </div>
-    <div class="pied-bas">
-      <span>© <span data-annee>2026</span> Passation</span>
-      <span>Estimations indicatives, non contractuelles. Ne constitue pas un conseil juridique, fiscal ou financier.</span>
-    </div>
+  <div class="conteneur pied-ligne">
+    <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <ul class="pied-liens">
+      <li><a href="/mentions-legales" data-t="pied.mentions"></a></li>
+      <li><a href="/confidentialite" data-t="pied.confidentialite"></a></li>
+      <li><a href="/cgu" data-t="pied.cgu"></a></li>
+      <li data-si="contact"><a data-t="pied.contact" data-t-attr="href=pied.contact_lien"></a></li>
+    </ul>
+    <p class="pied-telephone" data-si="telephone"><span data-t="pied.telephone_libelle"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a></p>
+  </div>
+  <div class="conteneur pied-bas">
+    <span>© <span data-annee>2026</span> Passation</span>
+    <span data-t="pied.avertissement"></span>
   </div>
 </footer>
 
+<!-- Téléphone : le champ dans une barre fixe en bas, quand le hero est passé (sauf au-dessus de la relance) -->
+<div class="barre-siren" data-zone-champ>
+  <form class="recherche-mini" action="/connexion" method="get" data-champ-siren="barre">
+    <label for="q-barre" data-t="champ.libelle"></label>
+    <div class="barre-ligne">
+      <input id="q-barre" name="q" type="search" autocomplete="off" enterkeyhint="search"
+             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-barre">
+      <button class="btn btn-vert" type="submit" data-t="champ.bouton_court"></button>
+    </div>
+    <ul class="suggestions" id="suggestions-barre" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+    <p class="recherche-message" id="message-barre" role="status" data-message hidden></p>
+  </form>
+</div>
+
+<script type="application/json" id="textes" data-t-json="js"></script>
+<script type="application/json" id="videos-metiers" data-t-json="cles.videos_metiers"></script>
+<script type="application/json" id="textes-histoire" data-t-json="histoire"></script>
+<script type="application/json" id="textes-demo" data-t-json="essai.demo"></script>
 <script src="/js/site.js" defer></script>
-<script type="module" src="/js/votre-maquette.js"></script>
+<script type="module" src="/js/landing/intro.js"></script>
+<script type="module" src="/js/landing/landing.js"></script>
+<script type="module" src="/js/landing/histoire-page.js"></script>
+<script type="module" src="/js/landing/demo.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>

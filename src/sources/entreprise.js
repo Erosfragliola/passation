@@ -38,6 +38,8 @@ export function normaliserSuggestions(brut) {
     ville: r.siege?.libelle_commune ?? null,
     code_postal: r.siege?.code_postal ?? null,
     naf: r.activite_principale ?? null,
+    date_creation: r.date_creation ?? null,
+    tranche_effectif: r.tranche_effectif_salarie ?? null,
     actif: r.etat_administratif === "A",
   }));
 }

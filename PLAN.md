@@ -429,3 +429,23 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
 - **10/11/2026, 3D « La cloche » mise en ligne** (accord du dirigeant) : la branche `3d-v2-cloche` est fusionnée sans
   conflit. Tests : 211. Cloche et fenêtre de connexion vérifiées en local. Mesure d'images par seconde non probante ce
   jour-là (machine de test très chargée : charge moyenne de 21) ; à confirmer sur un vrai MacBook avec `?debug`.
+- **12/11/2026, refonte de la landing (brief `_refonte/PROMPT-CLAUDE-CODE.md`, kit non versionné)** : branche locale
+  `refonte-landing` partie de `main` (la branche 3D `3d-esquisse-edifice` reste archivée : plus de 3D sur la landing).
+  Décisions du dirigeant (accord du 12/11/2026) : police Geist conservée (pas d'Inter) ; 9 chapitres alignés sur le
+  mémo réel (Synthèse, Histoire, Savoir-faire, Clients, Équipe, Comptes, Atouts, Opération) plus la Valeur ; « un
+  expert à qui parler » retiré tant que le chat n'existe pas ; « Garder mon estimation » (connexion par code) au lieu
+  de l'envoi par e-mail ; invitation de l'expert-comptable par un e-mail prérempli, sans partage de données ;
+  anonymat : ancienneté par paliers, secteur au niveau de la division NAF, nom de code tiré du code NAF (jamais du
+  SIREN) et repris dans le dossier ; « Deux chiffres suffisent » (CA et EBE) ; badge « environ 20 minutes » retiré.
+  - Phase 2 (fondations) : textes dans `src/contenu/landing.json`, posés par le Worker (HTMLRewriter,
+    `src/routes/landing.js`, `run_worker_first` inclut `/`) ; une clé vide retire l'élément. Feuille
+    `public/css/landing.css` (règles typographiques, `--ocre-texte` #8E5530 pour les petits textes, `--tampon`).
+    Instrument Serif italique restaurée depuis l'historique git. Plus de 3D, de bande de chiffres ni de « À remplir ».
+    Recherche et estimation conservées (`public/js/landing/`), résultat provisoire jusqu'à la phase 7.
+    Outils de recette : `playwright-core` 1.64.1 et `axe-core` 4.14.0 (développement seulement).
+  - Phases 3 à 8 (12-13/11/2026) : champ SIREN partagé, intro, histoire des clés, sections, démo du nom de code,
+    écran de résultat (nom de code tiré du code NAF, teaser express côté serveur, divisions NAF de l'INSEE), recette.
+    Tests : 261. axe-core : 0 violation. Lighthouse mobile 99 / 100 / 100 / 100 (LCP 1,3 s, CLS 0). Rapport,
+    mesures, captures et liste « À me fournir » : `docs/REFONTE-LANDING.md`. Fusion, push et déploiement : en
+    attente de l'accord du dirigeant.
+

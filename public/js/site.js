@@ -2,6 +2,10 @@
 (() => {
   document.documentElement.classList.remove("sans-js");
 
+  // Développement : contenus de la page d'accueil encore à fournir (clés vides de src/contenu/landing.json)
+  const manquants = document.documentElement.dataset.contenuManquant;
+  if (manquants) console.warn(`Contenu à fournir (src/contenu/landing.json, « cles ») : ${manquants.split(" ").join(", ")}`);
+
   // Menu mobile
   const bouton = document.querySelector(".nav-bouton");
   const menu = document.getElementById("nav-mobile");
@@ -20,7 +24,7 @@
 
   // Apparitions légères au scroll (désactivées si l'utilisateur réduit les animations)
   const elements = document.querySelectorAll(".apparait");
-  const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches; // la vidéo du hero : js/landing/video.js
   if (reduit || !("IntersectionObserver" in window)) {
     elements.forEach((el) => el.classList.add("visible"));
   } else {
@@ -37,24 +41,6 @@
       if (cible) setTimeout(() => cible.focus({ preventScroll: true }), 400);
     });
   });
-
-  // Vidéo du hero : grand écran seulement, et jamais si l'utilisateur réduit les animations
-  const video = document.querySelector(".hero-video");
-  const connexion = navigator.connection || {};
-  if (video && window.matchMedia("(min-width: 768px)").matches && !reduit && !connexion.saveData) {
-    // 4K pour les écrans qui en profitent (Retina, 4K) avec une connexion rapide ; Full HD sinon
-    const pixels = window.innerWidth * (window.devicePixelRatio || 1);
-    const rapide = !connexion.effectiveType || connexion.effectiveType === "4g";
-    const sources = pixels >= 2200 && rapide ? video.dataset.sourcesUhd : video.dataset.sourcesHd;
-    JSON.parse(sources).forEach(([src, type]) => {
-      const s = document.createElement("source");
-      s.src = src; s.type = type;
-      video.append(s);
-    });
-    video.hidden = false;
-    video.addEventListener("playing", () => video.classList.add("lue"), { once: true });
-    video.play().catch(() => { video.hidden = true; });
-  }
 
   // Confirmation après suppression d'un dossier
   if (new URLSearchParams(location.search).has("dossier-supprime")) {
