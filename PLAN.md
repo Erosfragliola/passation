@@ -449,4 +449,11 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     mesures, captures et liste « À me fournir » : `docs/REFONTE-LANDING.md`.
   - **13/11/2026, mise en ligne** (accord du dirigeant) : fusion dans `main` (`2431141`), push, `wrangler deploy`
     (version Cloudflare 95d46642). Vérifié en ligne : nouvelle page, estimation réelle (319252813), aucune erreur.
+- **13/11/2026, début de la landing en clair** (brief « début clair », accord du dirigeant) : en-tête plat (champ
+  centré, seconde ligne sous 1 024 px, barre fixe du bas retirée), vidéo du hero dans une carte, intro crème et
+  encre ; Histoire en carte au même contour sur fond sable en CSS (plus d'établi, de lampe ni de poussière), ombres
+  brunes ; arrivée : trousseau lancé sur la table (formules du brief). Sur-titres #765840 (le #7A5C42 du brief
+  n'atteint pas 4,5:1 dans les coins du sable). Tests : 265. Fusion `2ffb2c5`, version Cloudflare 5a120c85, vérifiée
+  en ligne. Références du brief (film, frames-clair, prototype-clair) absentes du kit : comparaison image par image à
+  faire quand elles seront fournies. « Et la vôtre ? » et l'écran de résultat restent sur l'établi en bois.
 
