@@ -28,6 +28,21 @@ describe("contrastes (WCAG AA)", () => {
     }
     for (const fond of [jeton("page"), "#F3EDE3", "#EDE5D9"]) expect(contraste(jeton("ocre-clair"), fond), `ocre-clair sur ${fond}`).toBeGreaterThanOrEqual(3);
   });
+  it("nouvelle structure : cartes verte, ocre clair, sable et claire, pied de page", () => {
+    const vert = jeton("vert-carte"), clair = jeton("carte-claire");
+    expect(vert).toBe("#1F3B2D");
+    // Texte courant et petits textes : 4,5:1
+    for (const [texte, fond] of [
+      ["#F7F1EA", vert], ["#E3ECE5", vert], ["#CFE0D3", vert],           // carte verte : titres, texte, sur-titres
+      ["#5E554B", clair], ["#7A5C42", clair], ["#5E554B", "#EDE5D9"],     // cartes claires, étiquettes mono, sable
+      ["#7A5C42", jeton("page")], ["#4A4038", "#EAD7BE"],                 // sur-titres de section ; appel final
+      ["#CFC3B5", "#1E1A17"], ["#B8AD9F", "#1E1A17"], ["#1E1A17", "#EFE8DD"], // pied de page ; bouton secondaire
+    ]) expect(contraste(texte, fond), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(4.5);
+    // Grands chiffres et mots en italique : 3:1
+    for (const [texte, fond] of [["#E9C9A4", vert], ["#D9B48F", vert], ["#7A4F2A", "#EAD7BE"], ["#A8774A", clair]]) {
+      expect(contraste(texte, fond), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(3);
+    }
+  });
   it("mots-clés en grand (ocre) : 3:1 au moins, et pas assez pour du texte courant", () => {
     expect(contraste(jeton("ocre"), jeton("creme"))).toBeGreaterThanOrEqual(3);
     expect(contraste(jeton("ocre"), jeton("creme"))).toBeLessThan(4.5);
@@ -87,5 +102,16 @@ describe("suggestions", () => {
       .toBe("PORNIC (44) · créée en 1980 · 20 à 49 salariés");
     expect(detailSuggestion({ ville: "SAINT-DENIS", code_postal: "97400", date_creation: null, tranche_effectif: "NN" })).toBe("SAINT-DENIS (974)");
     expect(detailSuggestion({ ville: null, code_postal: null })).toBe("");
+  });
+});
+
+import { uhd } from "../public/js/landing/video.js";
+
+describe("vidéo du hero : définition", () => {
+  it("1080p par défaut ; 2160p seulement à partir de 1 600 px de large, sur une connexion rapide", () => {
+    expect(uhd(1440)).toBe(false);
+    expect(uhd(1599)).toBe(false);
+    expect(uhd(1600)).toBe(true);
+    expect(uhd(2560, false)).toBe(false);
   });
 });

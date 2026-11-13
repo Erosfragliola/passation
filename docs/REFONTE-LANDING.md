@@ -76,3 +76,41 @@ ancienneté par paliers, secteur au niveau de la division NAF.
 
 Éditer `src/contenu/landing.json` (espaces simples : la typographie est corrigée à l'affichage ; `*mot*` pour
 l'italique ; une valeur vide masque l'élément), puis redéployer.
+
+## Nouvelle structure (brief « accueil », 13/11/2026)
+
+Ordre : en-tête, hero (`#accueil`), résultat (`#resultat`), histoire (`#histoire`, quatre temps dont « Et la
+vôtre ? »), comment ça marche (`#comment`, onglets), pourquoi (`#pourquoi`), confidentialité, équipe (`#equipe`),
+preuves (`#preuves`), guides (`#guides`), questions, appel final (`#relance`), pied de page.
+
+Décisions et écarts avec la maquette :
+- « Et la vôtre ? » : quatre gestes joués chacun d'un coup à leur seuil de défilement (nom 0,6 s, bandes 0,3 s,
+  tampon 0,35 s, valeur 0,4 s), mis à la file si l'on défile vite, laissés en place ; état final en mouvement réduit.
+- Onglet 2 : « … et vous montre d'où vient chaque écart ». Carte « Vos conseils gardent la main » : « vous leur
+  transmettez le même dossier, en Excel et en PDF » (aucun partage en ligne n'existe).
+- Derrière Passation : photo du fondateur en grand à la place de l'échange avec un expert (il n'existe pas).
+  « Être rappelé » ouvre un e-mail à `email_contact` (aucun service de rappel dans le produit).
+- Appel final : « vous aurez en 30 secondes une première idée de sa valeur » (la maquette disait « ce qu'elle vaut »).
+- Dossier de l'exemple fictif : règles d'anonymat du produit (« Travaux de construction spécialisés », « plus de
+  30 ans »), signalé « Exemple fictif ».
+- Section Tarifs et lien « Tarifs » retirés : les prix vivent dans les pastilles des étapes et dans la FAQ.
+- Vidéo : une seule balise, 1080p, 2160p à partir de 1 600 px de large ; second lecteur créé seulement s'il y a
+  plusieurs clips de métiers.
+
+### À me fournir (clés vides de `src/contenu/landing.json`, « cles »)
+
+| Clé | Affiche |
+|---|---|
+| `nb_dirigeants`, `note_avis`, `nb_avis` | ligne de preuves du hero ; chiffres de « Ils l'ont fait » |
+| `duree_etape2`, `prix_etape2`, `prix_dossier` | pastilles des étapes 2 et 3 (avec l'unité : « 20 minutes », « Gratuit », « 490 € ») |
+| `telephone`, `email_contact` | en-tête, équipe, appel final, pied de page |
+| `rappel` (true) | bouton « Être rappelé » (avec `email_contact`) |
+| `fondateur_nom`, `fondateur_texte`, `fondateur_titre`, `fondateur_photo` | section « Derrière Passation » (nom et texte obligatoires) |
+| `photo_dirigeant` | carte « Les mots et les chiffres d'une PME » (sinon image de la vidéo) |
+| `chiffres.entreprises_estimees`, `chiffres.dossiers_prepares` | « Ils l'ont fait » |
+| `temoignages` (2 au moins : texte, prenom, metier, ville) | section « Ils l'ont fait » |
+| `guides` (3 au moins : titre, url, image) | section « Guides » et lien de l'en-tête |
+| `faq_prix`, `faq_duree`, `faq_qui`, `faq_repreneur` | les quatre nouvelles questions |
+| `hebergement`, `partenaires` | ligne des sources sous « Pourquoi Passation » |
+| `legal.raison_sociale`, `legal.forme`, `legal.capital`, `legal.rcs`, `legal.adresse` | identité légale du pied de page |
+| `videos_metiers` | clips de métiers du hero (sinon la vidéo actuelle) |

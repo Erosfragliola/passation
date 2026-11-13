@@ -1,15 +1,20 @@
 // Vidéo du hero : playlist de clips de métiers (src/contenu/landing.json, cles.videos_metiers :
 // [{ mp4, webm, poster, metier, mp4_720?, webm_720? }]), 1,5 à 2 s chacun, enchaînés en fondu de 400 ms par deux
-// <video> en alternance, en boucle. Liste vide : la vidéo actuelle, en boucle.
+// <video> en alternance (le second lecteur n'est créé qu'à ce moment), en boucle. Liste vide : la vidéo actuelle, en
+// boucle, en 1080p ; la 2160p seulement à partir de 1 600 px de large, sur une connexion rapide.
 // Jamais avec « réduire les animations » ni en économie de données (le poster reste). Sur téléphone : seulement
 // si des versions 720p sont fournies. Pause hors de l'écran et onglet masqué ; bouton pause/lecture (WCAG 2.2.2).
 
 const FONDU = 400; // ms
 
+/** 2160p : écran d'au moins 1 600 px de large (CSS) et connexion rapide ; 1080p sinon. */
+export const uhd = (largeur, rapide = true) => largeur >= 1600 && rapide;
+
 export function lancerVideo({ hero, textes = {} }) {
   const zone = hero?.querySelector(".hero-videos");
   if (!zone) return;
-  const [a, b] = zone.querySelectorAll("video");
+  const a = zone.querySelector("video");
+  if (!a) return;
   const bouton = hero.querySelector(".hero-pause");
   const libelle = bouton?.querySelector(".visuellement-cache");
   const legende = hero.querySelector(".hero-metier");
@@ -24,6 +29,8 @@ export function lancerVideo({ hero, textes = {} }) {
   if (telephone) clips = clips.filter((c) => c.mp4_720 || c.webm_720).map((c) => ({ ...c, mp4: c.mp4_720, webm: c.webm_720 }));
   if (telephone && !clips.length) return; // pas de version légère : le poster suffit
 
+  // Second lecteur, pour le fondu entre deux clips : seulement s'il y a plusieurs clips
+  const b = clips.length > 1 ? zone.appendChild(a.cloneNode(false)) : null;
   const etat = { arretParVous: false, visible: true, courant: a, suivant: b, index: 0, bascule: false };
 
   const sources = (video, liste) => {
@@ -36,9 +43,9 @@ export function lancerVideo({ hero, textes = {} }) {
   };
 
   if (clips.length) {
-    a.preload = "auto"; b.preload = "auto";
+    a.preload = "auto";
     sourcesClip(a, clips[0]);
-    if (clips.length > 1) sourcesClip(b, clips[1]);
+    if (b) { b.preload = "auto"; sourcesClip(b, clips[1]); }
     else a.loop = true;
     const surTemps = (v) => () => {
       if (v !== etat.courant || etat.bascule || clips.length < 2 || !v.duration) return;
@@ -46,12 +53,12 @@ export function lancerVideo({ hero, textes = {} }) {
       basculer();
     };
     a.addEventListener("timeupdate", surTemps(a));
-    b.addEventListener("timeupdate", surTemps(b));
+    b?.addEventListener("timeupdate", surTemps(b));
   } else {
-    // Vidéo actuelle : 4K pour les grands écrans à connexion rapide, Full HD sinon
-    const pixels = window.innerWidth * (window.devicePixelRatio || 1);
+    // Vidéo actuelle : 1080p ; 2160p seulement sur un écran d'au moins 1 600 px de large, à connexion rapide
+    // (l'économie de données a déjà arrêté la vidéo plus haut)
     const rapide = !connexion.effectiveType || connexion.effectiveType === "4g";
-    sources(a, JSON.parse(pixels >= 2200 && rapide ? zone.dataset.sourcesUhd : zone.dataset.sourcesHd));
+    sources(a, JSON.parse(uhd(window.innerWidth, rapide) ? zone.dataset.sourcesUhd : zone.dataset.sourcesHd));
     a.loop = true;
   }
 
@@ -86,7 +93,7 @@ export function lancerVideo({ hero, textes = {} }) {
       if (bouton) bouton.hidden = false;
     }).catch(() => {});
   };
-  const suspendre = () => { a.pause(); b.pause(); };
+  const suspendre = () => { a.pause(); b?.pause(); };
   const majBouton = () => {
     if (!bouton) return;
     bouton.classList.toggle("en-pause", etat.arretParVous);

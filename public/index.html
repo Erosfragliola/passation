@@ -95,12 +95,12 @@
       <img src="/img/photos/hero-poster-1600.webp"
            srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
            sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
-      <!-- Vidéos (public/js/landing/video.js) : clips des métiers en alternance, ou la vidéo actuelle tant que la
-           liste est vide ; jamais avec « réduire les animations » ni en économie de données -->
+      <!-- Vidéo (public/js/landing/video.js) : 1080p, 2160p seulement à partir de 1 600 px de large ; clips des métiers
+           en alternance si la liste est fournie (second lecteur créé à ce moment) ; jamais avec « réduire les
+           animations » ni en économie de données (l'image reste) -->
       <div class="hero-videos" data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
            data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'>
-        <video class="hero-video" muted playsinline preload="none" aria-hidden="true" hidden></video>
-        <video class="hero-video" muted playsinline preload="none" aria-hidden="true" hidden></video>
+        <video class="hero-video" muted playsinline preload="metadata" aria-hidden="true" hidden></video>
       </div>
     </div>
     <div class="conteneur hero-contenu">

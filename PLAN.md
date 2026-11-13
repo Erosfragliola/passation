@@ -457,3 +457,10 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   en ligne. Références du brief (film, frames-clair, prototype-clair) absentes du kit : comparaison image par image à
   faire quand elles seront fournies. « Et la vôtre ? » et l'écran de résultat restent sur l'établi en bois.
 
+- **13/11/2026, nouvelle structure de la page d'accueil** (brief « accueil », branche `refonte-landing`, six
+  commits, pas de push) : douze parties dans l'ordre du brief (hero, résultat, histoire, comment ça marche,
+  pourquoi, confidentialité, équipe, preuves, guides, questions, appel final, pied de page). Histoire en quatre
+  temps (« Et la vôtre ? » fusionné, gestes du nom de code au seuil, champ SIREN), 400vh ; étapes en onglets ARIA ;
+  cartes verte, sable et ocre ; plus d'établi en bois ni de vidéo après le hero ; sections et éléments retirés tant
+  que leur clé est vide (liste « À me fournir » dans `docs/REFONTE-LANDING.md`). Lighthouse : accessibilité 100
+  (ordinateur et téléphone), performance 99 et 98, décalage de mise en page 0. Tests : 289.

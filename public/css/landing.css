@@ -172,6 +172,9 @@
   position: sticky; top: var(--haut-entete); height: calc(100vh - var(--haut-entete) - 40px); height: calc(100svh - var(--haut-entete) - 40px);
   margin: 0 var(--marge-carte); border-radius: var(--rayon-carte); overflow: hidden; isolation: isolate;
 }
+/* Positionnée dès le premier rendu (avant que le script choisisse la scène ou les panneaux) : son liseré ::after
+   reste dans la carte, sinon il couvrirait l'écran un instant (décalage de mise en page de 1 sur téléphone) */
+.histoire-collant { position: relative; }
 .histoire-collant::after { content: ""; position: absolute; inset: 0; z-index: 4; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgb(30 26 23 / .07); }
 .histoire-cadre { position: absolute; inset: 0; overflow: hidden; background: #EDE5D9; }
 .histoire-scene .histoire-visuel { display: none; }
@@ -561,7 +564,7 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
   position: relative; max-width: none; height: var(--haut-entete); margin: 0; padding: 0 var(--marge-entete); gap: 16px;
   border: 0; border-radius: 0; background: var(--page); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none;
 }
-.landing .nav .logo { color: var(--encre); }
+.landing .nav .logo { color: var(--encre); min-height: var(--cible); display: inline-flex; align-items: center; }
 .landing .nav-centre { flex: 1; min-width: 0; }
 .landing .nav-liens { position: static; height: auto; margin-left: 12px; align-items: center; gap: 6px 26px; }
 /* Liens à la suite du logo (maquette) ; jusqu'à cinq liens (Tarifs, Guides : conditionnels) + téléphone : menu sous 1 024 px */
@@ -603,7 +606,9 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
 .landing .nav:has(.nav-telephone) { --droite-entete: 235px; }
 .nav-champ:focus-within { box-shadow: 0 0 0 3px var(--cuivre-clair); }
 .nav-champ input { flex: 1; min-width: 0; height: 38px; border: 0; background: transparent; }
-.nav-champ .btn { min-height: 38px; padding: 0 16px; font-size: 15px; }
+.nav-champ .btn { position: relative; min-height: 38px; padding: 0 16px; font-size: 15px; }
+/* Zone cliquable de 44 px : toute la hauteur du champ (le bouton visible fait 38 px) */
+.nav-champ .btn::before { content: ""; position: absolute; inset: -3px -3px; }
 .nav-champ .suggestions { top: calc(100% + 6px); left: -1px; right: -1px; }
 .nav-champ .recherche-message { position: absolute; top: calc(100% + 8px); left: 0; right: 0; box-shadow: var(--ombre); }
 .champ-en-haut .nav-liens { opacity: 0; visibility: hidden; }
