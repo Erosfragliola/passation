@@ -446,6 +446,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   - Phases 3 à 8 (12-13/11/2026) : champ SIREN partagé, intro, histoire des clés, sections, démo du nom de code,
     écran de résultat (nom de code tiré du code NAF, teaser express côté serveur, divisions NAF de l'INSEE), recette.
     Tests : 261. axe-core : 0 violation. Lighthouse mobile 99 / 100 / 100 / 100 (LCP 1,3 s, CLS 0). Rapport,
-    mesures, captures et liste « À me fournir » : `docs/REFONTE-LANDING.md`. Fusion, push et déploiement : en
-    attente de l'accord du dirigeant.
+    mesures, captures et liste « À me fournir » : `docs/REFONTE-LANDING.md`.
+  - **13/11/2026, mise en ligne** (accord du dirigeant) : fusion dans `main` (`2431141`), push, `wrangler deploy`
+    (version Cloudflare 95d46642). Vérifié en ligne : nouvelle page, estimation réelle (319252813), aucune erreur.
 

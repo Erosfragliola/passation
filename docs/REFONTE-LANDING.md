@@ -1,7 +1,7 @@
 # Refonte de la landing : rapport final (12 et 13/11/2026)
 
-Brief : `_refonte/PROMPT-CLAUDE-CODE.md` (kit non versionné). Branche locale `refonte-landing`, partie de `main`,
-une phase par commit. Rien n'est poussé ni déployé : fusion, push et déploiement attendent l'accord du dirigeant.
+Brief : `_refonte/PROMPT-CLAUDE-CODE.md` (kit non versionné). Branche `refonte-landing`, partie de `main`, une phase
+par commit. Mise en ligne le 13/11/2026 avec l'accord du dirigeant : fusion dans `main`, push, déploiement Cloudflare.
 
 ## Ce qui a été fait
 
