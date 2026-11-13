@@ -114,7 +114,7 @@ function creerEtabli({ chapitres, dossierTextes, avecDossier = true, fictif = ""
   function poser(t, { reduit = false } = {}) {
     cameraEl.style.transform = `scale(${P.camera(t).toFixed(4)})`;
     pieces.forEach((x, i) => {
-      const k = P.cle(i, t), e = P.etiquette(i, t, k.jit);
+      const k = P.cle(i, t), e = P.etiquette(i, t);
       fixer(x, "kvis", k.op > 0.001, (v) => { x.kw.style.display = v ? "" : "none"; });
       if (k.op > 0.001) {
         x.kw.style.opacity = k.op.toFixed(3);
@@ -303,7 +303,14 @@ function monterPanneaux(section, { chapitres, dossierTextes, fictif, reduit }) {
   addEventListener("resize", cadrer, { passive: true });
   cadrer();
 
-  if (reduit.matches) { final(); return { final }; }
+  if (reduit.matches) {
+    // Mouvement réduit : pas de vol, le tas apparaît en fondu (300 ms) quand le panneau arrive
+    final();
+    cadre1.classList.add("fondu-attente");
+    const o = new IntersectionObserver(([e]) => { if (e.isIntersecting) { o.disconnect(); cadre1.classList.remove("fondu-attente"); } }, { threshold: 0.3 });
+    o.observe(cadre1);
+    return { final };
+  }
   etabli.poser(P.T_DEBUT);
   // Chaque panneau se joue à son apparition, une seule fois
   const jouer = (v, f) => {
