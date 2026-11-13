@@ -1,4 +1,4 @@
-// Page d'accueil : champ SIREN partagé (hero, navigation, barre du bas, relance) branché sur l'estimation express
+// Page d'accueil : champ SIREN partagé (hero, en-tête, relance) branché sur l'estimation express
 // et l'écran de résultat ; vidéos. Textes : src/contenu/landing.json, posés par le Worker dans <script id="textes">
 // (sous-arbre « js ») et <script id="textes-histoire"> (chapitres et dossier).
 import { creerChampPartage } from "/js/landing/champ-siren.js";
@@ -15,7 +15,7 @@ const reduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").match
 const resultat = creerResultat({ section: $("#resultat"), textes: T, histoire: lire("textes-histoire") });
 const champ = creerChampPartage({ estimer, textes: T });
 document.querySelectorAll("[data-champ-siren]").forEach((f) => champ.monter(f));
-const barres = surveillerChamps({ hero: $('[data-champ-siren="accueil"]'), relance: $('[data-champ-siren="relance"]'), auChangement: () => champ.fermerListes() });
+const barres = surveillerChamps({ hero: $('[data-champ-siren="accueil"]'), auChangement: () => champ.fermerListes() });
 lancerVideo({ hero: $("#accueil"), textes: T.video });
 lancerVideoSection({ zone: $(".parti-pris-media"), textes: T.video });
 
