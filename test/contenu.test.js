@@ -2,7 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import contenu from "../src/contenu/landing.json";
-import { typographier, enLigne, interpoler, html, texte, lire, estVide, condition, pourJs, jsonDansScript, clesVides, lireAttributs, valeurAttribut, identiteLegale, completer } from "../src/contenu/rendu.js";
+import { typographier, enLigne, interpoler, html, texte, lire, estVide, condition, pourJs, jsonDansScript, clesVides, lireAttributs, valeurAttribut, identiteLegale, completer, legendeTemoignage } from "../src/contenu/rendu.js";
 
 const FINE = " ", INSEC = " ";
 const PAGE = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
@@ -98,13 +98,24 @@ describe("fichier de contenu et page d'accueil", () => {
   const attributs = [...PAGE.matchAll(/data-t-attr="([^"]+)"/g)].flatMap((m) => lireAttributs(m[1]).map(([, ch]) => ch));
   const si = [...PAGE.matchAll(/data-si(?:-un|non)?="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/));
 
+  // Contenu servi (valeurs calculées comprises) ; un élément de liste encore vide (témoignage, guide) n'est pas un oubli
+  const servi = completer(contenu);
+  const existe = (ch) => {
+    let v = servi;
+    for (const k of ch.split(".")) {
+      if (Array.isArray(v) && /^\d+$/.test(k) && Number(k) >= v.length) return true;
+      v = v?.[k];
+      if (v === undefined) return false;
+    }
+    return true;
+  };
   it("chaque texte de la page existe dans le fichier de contenu", () => {
-    const absents = [...chemins, ...attributs].filter((ch) => lire(contenu, ch) === undefined);
+    const absents = [...chemins, ...attributs].filter((ch) => !existe(ch));
     expect(absents).toEqual([]);
     expect(chemins.length).toBeGreaterThan(100);
   });
   it("chaque condition porte sur une clé déclarée", () => {
-    expect(si.filter((k) => lire(contenu.cles, k.split(":")[0]) === undefined)).toEqual([]);
+    expect(si.filter((k) => !existe(`cles.${k.split(":")[0]}`))).toEqual([]);
   });
   it("aucun texte entre crochets dans la page ni dans le contenu", () => {
     const valeurs = [];
@@ -131,6 +142,28 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(PAGE).toMatch(/<li data-si="prix_etape2" data-t="comment\.etapes\.1\.pastilles\.1">/);
     expect(PAGE).toMatch(/<li data-si="prix_dossier" data-t="comment\.etapes\.2\.pastilles\.1">/);
     expect(PAGE).not.toMatch(/id="tarifs"|nav\.tarifs/);
+  });
+  it("les douze parties dans l'ordre du brief ; plus d'essai, de parti pris ni de tarifs ; une seule balise vidéo de section", () => {
+    const ids = [...PAGE.matchAll(/<section id="([^"]+)"/g)].map((m) => m[1]);
+    expect(ids).toEqual(["accueil", "resultat", "histoire", "comment", "pourquoi", "confidentialite", "equipe", "preuves", "guides", "questions", "relance"]);
+    expect(PAGE).toMatch(/<header class="nav-zone"[\s\S]*<main[\s\S]*<\/main>\s*<footer class="pied">/);
+    expect(PAGE).not.toMatch(/id="essai"|id="parti-pris"|id="tarifs"|etabli-1200|parti-pris-video/);
+    expect([...PAGE.matchAll(/<video class="([^"]+)"/g)].every((m) => m[1] === "hero-video")).toBe(true);
+  });
+  it("sections et éléments retirés sans contenu : équipe, preuves (2 témoignages), guides (3), questions à compléter", () => {
+    expect(PAGE).toMatch(/<section id="equipe"[^>]*data-si="fondateur_nom fondateur_texte"/);
+    expect(PAGE).toMatch(/<section id="preuves"[^>]*data-si="temoignages:2"/);
+    expect(PAGE).toMatch(/<section id="guides"[^>]*data-si="guides:3"/);
+    for (const k of ["faq_prix", "faq_duree", "faq_qui", "faq_repreneur"]) expect(PAGE).toMatch(new RegExp(`<details data-si="${k}">`));
+    const q = contenu.questions.liste.map((x) => x.q);
+    expect(q[0]).toBe("Combien ça coûte ?");
+    expect(q.indexOf("D'où viennent les chiffres de ma société ?")).toBe(q.indexOf("L'estimation express est-elle fiable ?") + 1);
+    expect(q).toHaveLength(11);
+  });
+  it("légende d'un témoignage : prénom, métier, ville, les morceaux vides retirés", () => {
+    expect(legendeTemoignage({ prenom: "Anne", metier: "boulangère", ville: "Nantes", texte: "…" })).toBe("Anne, boulangère, Nantes");
+    expect(legendeTemoignage({ prenom: "Anne", metier: "", ville: "Nantes" })).toBe("Anne, Nantes");
+    expect(completer({ cles: { temoignages: [{ prenom: "A" }, { ville: "B" }] }, preuves: { x: 1 } }).preuves).toEqual({ x: 1, legendes: ["A", "B"] });
   });
   it("photo de la carte « Pourquoi » : celle du dirigeant si fournie, sinon une image de la vidéo", () => {
     expect(PAGE).toMatch(/<img class="pourquoi-photo" data-si="photo_dirigeant"/);

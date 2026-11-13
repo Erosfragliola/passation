@@ -1,5 +1,5 @@
 {
-  "_lisez_moi": "Textes de la page d'accueil. *mot* : mot-clé en italique. {cle} : valeur de « cles ». Une valeur vide retire l'élément de la page. Espaces fines et apostrophes typographiques ajoutées automatiquement : écrivez « Et la vôtre ? » avec une espace simple.",
+  "_lisez_moi": "Textes de la page d'accueil. *mot* : mot-clé en italique. {cle} : valeur de « cles ». Une valeur vide retire l'élément de la page. Espaces fines et apostrophes typographiques ajoutées automatiquement : écrivez « Et la vôtre ? » avec une espace simple. Dans « cles » : prix et durées avec leur unité (« 490 € », « Gratuit », « 20 minutes ») ; temoignages : liste d'objets { texte, prenom, metier, ville }, deux au moins pour afficher « Ils l'ont fait » ; guides : liste d'objets { titre, url, image }, trois au moins pour afficher la section et le lien de l'en-tête ; rappel : true pour afficher « Être rappelé » (e-mail à email_contact) ; fondateur_nom et fondateur_texte affichent « Derrière Passation » ; legal : l'identité du pied de page, les morceaux vides sont retirés.",
   "cles": {
     "nb_dirigeants": "",
     "note_avis": "",
@@ -322,15 +322,51 @@
     "telephone": "{telephone}",
     "telephone_aria": "Nous appeler au {telephone}"
   },
+  "preuves": {
+    "surtitre": "Ils l’ont fait",
+    "titre": "Ils ont préparé *leur cession*.",
+    "entreprises": "{chiffres.entreprises_estimees}",
+    "entreprises_libelle": "entreprises estimées",
+    "note": "{note_avis}/5",
+    "note_libelle": "sur {nb_avis} avis",
+    "dossiers": "{chiffres.dossiers_prepares}",
+    "dossiers_libelle": "dossiers préparés",
+    "methodes": "3",
+    "methodes_libelle": "méthodes de valorisation croisées",
+    "legendes": []
+  },
+  "guides": {
+    "surtitre": "Pour tout comprendre",
+    "titre": "Les guides de *la transmission*.",
+    "etiquette": "Guide"
+  },
   "questions": {
     "surtitre": "Questions fréquentes",
-    "titre": "Ce que les dirigeants nous *demandent*.",
+    "titre": "Ce que les dirigeants *nous demandent*.",
     "liste": [
+      {
+        "q": "Combien ça coûte ?",
+        "r": [
+          "{faq_prix}"
+        ]
+      },
       {
         "q": "L'estimation express est-elle fiable ?",
         "r": [
           "C'est un premier ordre de grandeur. Elle applique des multiples sectoriels aux derniers comptes publiés de votre société.",
           "Elle ignore vos retraitements, votre dette et vos spécificités. La valorisation approfondie les prend en compte."
+        ]
+      },
+      {
+        "q": "D'où viennent les chiffres de ma société ?",
+        "r": [
+          "Des registres publics : l'annuaire des entreprises de l'État, les comptes annuels déposés et le BODACC. Nous indiquons toujours l'exercice utilisé."
+        ]
+      },
+      {
+        "q": "Combien de temps ça prend ?",
+        "r": [
+          "{faq_duree}"
         ]
       },
       {
@@ -346,9 +382,9 @@
         ]
       },
       {
-        "q": "D'où viennent les chiffres de ma société ?",
+        "q": "Qui est derrière Passation ?",
         "r": [
-          "Des registres publics : l'annuaire des entreprises de l'État, les comptes annuels déposés et le BODACC. Nous indiquons toujours l'exercice utilisé."
+          "{faq_qui}"
         ]
       },
       {
@@ -364,9 +400,9 @@
         ]
       },
       {
-        "q": "Combien ça coûte ?",
+        "q": "Et pour trouver un repreneur ?",
         "r": [
-          "L'estimation express est gratuite, sans compte. Le dossier complet coûte {prix_dossier} €, en paiement unique."
+          "{faq_repreneur}"
         ]
       },
       {

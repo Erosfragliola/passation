@@ -142,7 +142,17 @@ export function identiteLegale(legal = {}) {
   return parties.length ? `${parties.join(", ")}.` : "";
 }
 
-/** Contenu servi : le fichier, plus les valeurs calculées (pied.identite, à partir de cles.legal). */
+/** Légende d'un témoignage : « prénom, métier, ville », les morceaux vides retirés. */
+export const legendeTemoignage = (t = {}) =>
+  ["prenom", "metier", "ville"].map((k) => (typeof t?.[k] === "string" ? t[k].trim() : "")).filter(Boolean).join(", ");
+
+/** Contenu servi : le fichier, plus les valeurs calculées (pied.identite d'après cles.legal ; preuves.legendes d'après
+ * cles.temoignages). */
 export function completer(contenu) {
-  return { ...contenu, pied: { ...contenu.pied, identite: identiteLegale(contenu.cles?.legal) } };
+  const temoignages = Array.isArray(contenu.cles?.temoignages) ? contenu.cles.temoignages : [];
+  return {
+    ...contenu,
+    pied: { ...contenu.pied, identite: identiteLegale(contenu.cles?.legal) },
+    preuves: { ...contenu.preuves, legendes: temoignages.map(legendeTemoignage) },
+  };
 }

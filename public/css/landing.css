@@ -468,10 +468,40 @@
 .btn-secondaire:hover { background: #E5DCCE; }
 .equipe-photo { flex: 1 1 420px; min-width: 0; width: 100%; max-width: 560px; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
 
-/* ---------- Questions ---------- */
-@media (min-width: 900px) { .landing .faq-grille { grid-template-columns: 0.8fr 1.2fr; } }
-.landing .faq summary { font-size: 18px; }
-.landing .faq .reponse { font-size: 17px; }
+/* ---------- Ils l'ont fait : carte sable ---------- */
+.carte-large.carte-sable { padding: clamp(28px, 4.5vw, 72px); background: radial-gradient(95% 110% at 30% 18%, #F3EDE3 0%, #EDE5D9 48%, #E2D8CA 100%); box-shadow: inset 0 0 0 1px rgb(30 26 23 / .07); }
+.preuves-chiffres { margin: 36px 0 0; display: flex; flex-wrap: wrap; gap: 28px 40px; }
+.preuves-chiffres > div { flex: 1 1 200px; display: flex; flex-direction: column-reverse; justify-content: flex-end; }
+.preuves-chiffres dd { margin: 0; font-size: clamp(40px, 4.5vw, 60px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--encre); }
+.preuves-chiffres dt { margin-top: 8px; font-size: 17px; color: var(--encre-2); }
+.temoignages { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 20px; }
+.temoignage { flex: 1 1 380px; min-width: 0; margin: 0; padding: 28px; border-radius: 10px; }
+.temoignage blockquote { margin: 0; font-size: 20px; line-height: 1.55; color: var(--encre); quotes: "«\00a0" "\00a0»"; }
+.temoignage blockquote::before { content: open-quote; }
+.temoignage blockquote::after { content: close-quote; }
+.temoignage figcaption { margin-top: 16px; font-size: 16px; color: var(--encre-2); }
+
+/* ---------- Guides ---------- */
+.guides-cartes { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 20px; }
+.carte-guide { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: var(--encre); }
+.guide-visuel { display: flex; align-items: center; justify-content: center; min-height: 240px; padding: 20px; border-radius: 10px; background: #EDE5D9; }
+.guide-visuel img { width: 100%; height: 200px; object-fit: contain; border-radius: 4px; }
+.guide-etiquette { font-size: 15px; color: var(--encre-2); }
+.guide-titre { font-size: 21px; font-weight: 600; line-height: 1.3; }
+.carte-guide:hover .guide-titre { text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Questions : titre sur un tiers, liste sur deux ---------- */
+.landing .faq-grille { display: grid; gap: 40px; }
+@media (min-width: 900px) { .landing .faq-grille { grid-template-columns: 1fr 2fr; } }
+.landing .faq { border-top: 1px solid rgb(30 26 23 / .12); }
+.landing .faq details { border-bottom: 1px solid rgb(30 26 23 / .12); }
+.landing .faq summary { min-height: 64px; padding: 12px 0; font-size: 19px; font-weight: 500; line-height: 1.35; }
+.landing .faq summary .plus { width: auto; height: auto; border: 0; border-radius: 0; background: none; font-size: 22px; line-height: 1; color: #7A5C42; transform: none; }
+.landing .faq summary .plus::before { content: "+"; }
+.landing .faq details[open] summary .plus { transform: none; background: none; color: #7A5C42; }
+.landing .faq details[open] summary .plus::before { content: "–"; }
+.landing .faq .reponse { padding: 0 48px 22px 0; font-size: 18px; line-height: 1.6; color: var(--encre-2); }
+@media (max-width: 559px) { .landing .faq .reponse { padding-right: 0; } }
 
 /* ---------- Appel final : carte ocre clair ---------- */
 .carte-ocre { background: #EAD7BE; text-align: center; padding: clamp(40px, 6vw, 96px) clamp(20px, 4vw, 48px); }

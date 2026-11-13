@@ -392,22 +392,74 @@
     </div>
   </section>
 
-  <!-- 8. Questions -->
-  <section id="questions" aria-labelledby="titre-faq">
+  <!-- 7. Ils l'ont fait : retirée tant que deux témoignages au moins ne sont pas fournis -->
+  <section id="preuves" class="bloc-carte" aria-labelledby="titre-preuves" data-si="temoignages:2">
+    <div class="carte-large carte-sable">
+      <p class="surtitre" data-t="preuves.surtitre"></p>
+      <h2 id="titre-preuves" data-t="preuves.titre"></h2>
+      <dl class="preuves-chiffres">
+        <div data-si="chiffres.entreprises_estimees"><dt data-t="preuves.entreprises_libelle"></dt><dd data-t="preuves.entreprises"></dd></div>
+        <div data-si="note_avis nb_avis"><dt data-t="preuves.note_libelle"></dt><dd data-t="preuves.note"></dd></div>
+        <div data-si="chiffres.dossiers_prepares"><dt data-t="preuves.dossiers_libelle"></dt><dd data-t="preuves.dossiers"></dd></div>
+        <div><dt data-t="preuves.methodes_libelle"></dt><dd data-t="preuves.methodes"></dd></div>
+      </dl>
+      <div class="temoignages">
+        <figure class="temoignage carte-claire">
+          <blockquote data-t="cles.temoignages.0.texte"></blockquote>
+          <figcaption data-t="preuves.legendes.0"></figcaption>
+        </figure>
+        <figure class="temoignage carte-claire">
+          <blockquote data-t="cles.temoignages.1.texte"></blockquote>
+          <figcaption data-t="preuves.legendes.1"></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Guides : retirée (avec le lien de l'en-tête) tant que trois guides ne sont pas fournis -->
+  <section id="guides" class="bloc guides" aria-labelledby="titre-guides" data-si="guides:3">
+    <div class="conteneur">
+      <p class="surtitre" data-t="guides.surtitre"></p>
+      <h2 id="titre-guides" data-t="guides.titre"></h2>
+      <div class="guides-cartes">
+        <a class="carte-guide" data-t-attr="href=cles.guides.0.url">
+          <span class="guide-visuel"><img data-si="guides.0.image" data-t-attr="src=cles.guides.0.image" alt="" width="640" height="400" loading="lazy"></span>
+          <span class="guide-etiquette" data-t="guides.etiquette"></span>
+          <span class="guide-titre" data-t="cles.guides.0.titre"></span>
+        </a>
+        <a class="carte-guide" data-t-attr="href=cles.guides.1.url">
+          <span class="guide-visuel"><img data-si="guides.1.image" data-t-attr="src=cles.guides.1.image" alt="" width="640" height="400" loading="lazy"></span>
+          <span class="guide-etiquette" data-t="guides.etiquette"></span>
+          <span class="guide-titre" data-t="cles.guides.1.titre"></span>
+        </a>
+        <a class="carte-guide" data-t-attr="href=cles.guides.2.url">
+          <span class="guide-visuel"><img data-si="guides.2.image" data-t-attr="src=cles.guides.2.image" alt="" width="640" height="400" loading="lazy"></span>
+          <span class="guide-etiquette" data-t="guides.etiquette"></span>
+          <span class="guide-titre" data-t="cles.guides.2.titre"></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Questions : natives (details, summary) ; une question sans réponse fournie est retirée -->
+  <section id="questions" class="bloc" aria-labelledby="titre-faq">
     <div class="conteneur faq-grille">
       <div>
         <p class="surtitre" data-t="questions.surtitre"></p>
         <h2 id="titre-faq" data-t="questions.titre"></h2>
       </div>
       <div class="faq">
-        <details><summary><span data-t="questions.liste.0.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.0.r"></div></details>
-        <details><summary><span data-t="questions.liste.1.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.1.r"></div></details>
-        <details><summary><span data-t="questions.liste.2.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.2.r"></div></details>
-        <details><summary><span data-t="questions.liste.3.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.3.r"></div></details>
-        <details><summary><span data-t="questions.liste.4.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.4.r"></div></details>
-        <details><summary><span data-t="questions.liste.5.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.5.r"></div></details>
-        <details data-si="prix_dossier"><summary><span data-t="questions.liste.6.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.6.r"></div></details>
-        <details><summary><span data-t="questions.liste.7.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.7.r"></div></details>
+        <details data-si="faq_prix"><summary><span data-t="questions.liste.0.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.0.r"></div></details>
+        <details><summary><span data-t="questions.liste.1.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.1.r"></div></details>
+        <details><summary><span data-t="questions.liste.2.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.2.r"></div></details>
+        <details data-si="faq_duree"><summary><span data-t="questions.liste.3.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.3.r"></div></details>
+        <details><summary><span data-t="questions.liste.4.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.4.r"></div></details>
+        <details><summary><span data-t="questions.liste.5.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.5.r"></div></details>
+        <details data-si="faq_qui"><summary><span data-t="questions.liste.6.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.6.r"></div></details>
+        <details><summary><span data-t="questions.liste.7.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.7.r"></div></details>
+        <details><summary><span data-t="questions.liste.8.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.8.r"></div></details>
+        <details data-si="faq_repreneur"><summary><span data-t="questions.liste.9.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.9.r"></div></details>
+        <details><summary><span data-t="questions.liste.10.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.10.r"></div></details>
       </div>
     </div>
   </section>
