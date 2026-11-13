@@ -56,7 +56,7 @@ export function condition(cles, jeton) {
  *  inconnus de « cles » (ex. {exercice}) sont laissés tels quels pour le JavaScript de la page. */
 export function interpoler(s, cles = {}) {
   let manque = false;
-  const r = String(s).replace(/\{([a-z_]+(?:\.[a-z_]+)*)\}/g, (m, k) => {
+  const r = String(s).replace(/\{([a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)*)\}/g, (m, k) => {
     if (!Object.hasOwn(cles, k.split(".")[0])) return m;
     const v = lire(cles, k);
     if (estVide(v)) { manque = true; return ""; }

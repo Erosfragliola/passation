@@ -47,7 +47,6 @@
     "accueil": "Passation, accueil",
     "principale": "Navigation principale",
     "comment": "Comment ça marche",
-    "tarifs": "Tarifs",
     "confidentialite": "Confidentialité",
     "guides": "Guides",
     "questions": "Questions",
@@ -202,28 +201,88 @@
   },
   "comment": {
     "surtitre": "Comment ça marche",
-    "titre": "Trois étapes, *sans surprise.*",
+    "titre": "Trois étapes, *sans surprise*.",
+    "onglets": "Les trois étapes",
     "etapes": [
       {
-        "numero": "01",
-        "titre": "Votre SIREN",
-        "badge": "30 secondes",
-        "texte": "Une première fourchette, à partir des registres publics."
+        "onglet": "1 · Votre SIREN",
+        "surtitre": "Étape 1 · Votre SIREN",
+        "chiffre": "30 secondes",
+        "titre": "Une première fourchette de valeur",
+        "texte": "Tapez le nom ou le SIREN de votre société : la fourchette s’affiche aussitôt, à partir des registres publics. Sans compte, et personne n’est averti.",
+        "pastilles": [
+          "Gratuit",
+          "Sans compte"
+        ]
       },
       {
-        "numero": "02",
-        "titre": "Vos chiffres",
-        "badge": "",
-        "texte": "Une valeur argumentée, avec trois méthodes croisées."
+        "onglet": "2 · Vos chiffres",
+        "surtitre": "Étape 2 · Vos chiffres",
+        "chiffre": "3 méthodes",
+        "titre": "Une valeur argumentée",
+        "texte": "Vous complétez quelques chiffres clés. Passation croise trois méthodes de valorisation et vous montre d’où vient chaque écart, pour une valeur que vous pouvez défendre.",
+        "pastilles": [
+          "{duree_etape2}",
+          "{prix_etape2}"
+        ]
       },
       {
-        "numero": "03",
-        "titre": "Vos documents",
-        "badge": "à votre rythme",
-        "texte": "Teaser, mémo et datapack, prêts à relire et à partager."
+        "onglet": "3 · Vos documents",
+        "surtitre": "Étape 3 · Vos documents",
+        "chiffre": "9 chapitres",
+        "titre": "Teaser, mémo et datapack",
+        "texte": "Le teaser, anonyme, pour intéresser des repreneurs. Le mémo pour raconter toute votre entreprise. Le datapack, le fichier Excel des chiffres. Vous relisez, vous partagez.",
+        "pastilles": [
+          "À votre rythme",
+          "{prix_dossier}"
+        ]
       }
     ],
-    "outils": "Les 5 outils, dits simplement : estimation express, estimation approfondie, datapack, teaser, mémo."
+    "visuel1": {
+      "entete": "Résultat · exemple fictif",
+      "nom": "Menuiserie Durand & Fils",
+      "infos": "Nantes (44) · créée en 1995 · 20 à 49 salariés",
+      "valeur_libelle": "Première valeur",
+      "valeur": "1,8 – 2,4 M€",
+      "mention": "Estimation indicative, non contractuelle."
+    },
+    "visuel2": {
+      "entete": "Trois méthodes · exemple fictif",
+      "methodes": [
+        "Méthode 1",
+        "Méthode 2",
+        "Méthode 3"
+      ],
+      "retenue": "Fourchette retenue"
+    },
+    "visuel3": {
+      "alt": "Les neuf clés alignées, chacune sous l’étiquette de son chapitre, de la synthèse jusqu’à la valeur."
+    }
+  },
+  "pourquoi": {
+    "surtitre": "Pourquoi Passation",
+    "titre": "Pensé pour les PME, *pas pour les grands groupes*.",
+    "cartes": [
+      {
+        "titre": "Les mots et les chiffres d’une PME",
+        "texte": "Artisans, commerçants, industriels, prestataires : chaque étape parle votre langue, pas celle d’une banque d’affaires."
+      },
+      {
+        "chiffre": "3",
+        "titre": "Trois méthodes, une fourchette",
+        "texte": "Les méthodes se croisent pour donner une valeur que vous pouvez expliquer, et défendre face à un acquéreur.",
+        "bouton": "Voir les étapes"
+      },
+      {
+        "titre": "Vos conseils gardent la main",
+        "texte": "Expert-comptable, avocat, banquier : vous leur transmettez le même dossier, en Excel et en PDF. Passation prépare, vous décidez."
+      }
+    ],
+    "photo_alt": "Un artisan penché sur son établi, sous sa lampe",
+    "sources": "Données issues des registres publics officiels",
+    "hebergement": " · Hébergement {hebergement}",
+    "partenaires": " · {partenaires}",
+    "fictif": "Exemple fictif"
   },
   "confidentialite": {
     "surtitre": "Confidentialité",
@@ -249,16 +308,6 @@
     ],
     "hebergement": "Vos données sont hébergées {hebergement}.",
     "politique": "Lire notre politique"
-  },
-  "tarifs": {
-    "surtitre": "Tarifs",
-    "titre": "Le prix, *sans astérisque.*",
-    "estimation_titre": "Estimation",
-    "estimation_prix": "Gratuite",
-    "estimation_texte": "Sans compte, sans engagement.",
-    "dossier_titre": "Dossier complet",
-    "dossier_prix": "{prix_dossier} €",
-    "dossier_texte": "Paiement unique · teaser, mémo, datapack."
   },
   "parti_pris": {
     "surtitre": "Notre parti pris",

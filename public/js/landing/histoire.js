@@ -194,6 +194,33 @@ function creerEtabli({ chapitres, dossierTextes, demo, avecDossier = true, ficti
   return { stage, poser, dossier, charger: () => charger(stage), ajuster: () => ajusterMains(stage) };
 }
 
+// ---------------------------------------------------------------- Éléments repris ailleurs sur la page
+/** Les neuf clés, chacune sous son étiquette (panneaux de l'histoire, onglet 3 de « Comment ça marche »). */
+export function creerGrilleCles(chapitres, classe = "panneau-grille") {
+  const grille = el("ol", classe);
+  chapitres.forEach((c, i) => {
+    const li = el("li", "panneau-cle");
+    li.style.setProperty("--i", i);
+    const carte = creerEtiquette(c, i, i === chapitres.length - 1);
+    const porte = el("div", "panneau-etiquette etiquette-perspective");
+    porte.append(carte);
+    const cle = el("div", "panneau-sprite");
+    cle.append(imageCle(i));
+    li.append(porte, el("span", "panneau-ficelle"), cle);
+    grille.append(li);
+  });
+  return grille;
+}
+export { charger as chargerImages };
+
+/** Le dossier de l'exemple fictif dans son état final (nom de code, bandes noires, première valeur), sans animation. */
+export function creerDossierFinal({ chapitres, dossierTextes, demo }) {
+  const dossier = nouveauDossier({ dossierTextes, chapitres, demo });
+  dossier.definir({ onglets: chapitres.map(() => ({ op: 1, dx: 0 })) });
+  creerGestes(dossier).final();
+  return dossier.element;
+}
+
 // ---------------------------------------------------------------- Section
 export function lancerHistoire(section, { chapitres, dossierTextes, demo, fictif }) {
   if (!section || !chapitres?.length) return;
@@ -325,18 +352,7 @@ function monterPanneaux(section, { chapitres, dossierTextes, demo, fictif, redui
     etabli.stage.style.transform = `translate(${f2(W / 2 - 1120 * k)}px,${f2(H / 2 - 660 * k)}px) scale(${k.toFixed(5)})`;
   };
   // 2. Grille de 3 × 3 : chaque clé sous son étiquette, qui se retourne
-  const grille = el("ol", "panneau-grille");
-  chapitres.forEach((c, i) => {
-    const li = el("li", "panneau-cle");
-    li.style.setProperty("--i", i);
-    const carte = creerEtiquette(c, i, i === chapitres.length - 1);
-    const porte = el("div", "panneau-etiquette etiquette-perspective");
-    porte.append(carte);
-    const cle = el("div", "panneau-sprite");
-    cle.append(imageCle(i));
-    li.append(porte, el("span", "panneau-ficelle"), cle);
-    grille.append(li);
-  });
+  const grille = creerGrilleCles(chapitres);
   v2.append(grille);
   // 3. Le dossier et ses onglets ; il reçoit ensuite son nom de code (4e temps), geste par geste au défilement
   const dossier = nouveauDossier({ dossierTextes, chapitres, demo });

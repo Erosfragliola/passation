@@ -45,6 +45,10 @@ describe("conditions d'affichage", () => {
     expect(interpoler("{legal.forme} au capital", cles)).toBeNull();
     expect(clesVides({ cles })).toEqual(expect.arrayContaining(["telephone", "rappel", "legal.forme", "vide.a"]));
   });
+  it("noms de clés avec chiffres (prix_etape2, duree_etape2)", () => {
+    expect(interpoler("{duree_etape2} · {prix_etape2}", { duree_etape2: "20 minutes", prix_etape2: "Gratuit" })).toBe("20 minutes · Gratuit");
+    expect(interpoler("{prix_etape2}", { prix_etape2: "" })).toBeNull();
+  });
 });
 
 describe("rendu des valeurs", () => {
@@ -85,7 +89,7 @@ describe("rendu des valeurs", () => {
 describe("fichier de contenu et page d'accueil", () => {
   const chemins = [...PAGE.matchAll(/data-t="([^"]+)"/g)].map((m) => m[1]);
   const attributs = [...PAGE.matchAll(/data-t-attr="([^"]+)"/g)].flatMap((m) => lireAttributs(m[1]).map(([, ch]) => ch));
-  const si = [...PAGE.matchAll(/data-si(?:-un)?="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/));
+  const si = [...PAGE.matchAll(/data-si(?:-un|non)?="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/));
 
   it("chaque texte de la page existe dans le fichier de contenu", () => {
     const absents = [...chemins, ...attributs].filter((ch) => lire(contenu, ch) === undefined);
@@ -115,10 +119,14 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(clesVides(contenu)).toEqual(expect.arrayContaining(["prix_dossier", "fondateur_nom", "telephone", "hebergement", "partenaires", "videos_metiers",
       "nb_dirigeants", "note_avis", "nb_avis", "rappel", "chiffres.entreprises_estimees", "legal.raison_sociale", "temoignages", "guides", "faq_prix"]));
   });
-  it("les textes visibles qui dépendent du prix sont retirés avec lui", () => {
-    // Section tarifs, lien de navigation et question « Combien ça coûte ? » : sous condition prix_dossier
-    expect(PAGE).toMatch(/<section id="tarifs"[^>]*data-si="prix_dossier"/);
-    expect(PAGE).toMatch(/<details data-si="prix_dossier"><summary><span data-t="questions\.liste\.6\.q">/);
-    expect(estVide(lire(contenu, "tarifs.dossier_prix"))).toBe(false);
+  it("les pastilles de prix et de durée des étapes sont retirées avec leur clé", () => {
+    expect(PAGE).toMatch(/<li data-si="duree_etape2" data-t="comment\.etapes\.1\.pastilles\.0">/);
+    expect(PAGE).toMatch(/<li data-si="prix_etape2" data-t="comment\.etapes\.1\.pastilles\.1">/);
+    expect(PAGE).toMatch(/<li data-si="prix_dossier" data-t="comment\.etapes\.2\.pastilles\.1">/);
+    expect(PAGE).not.toMatch(/id="tarifs"|nav\.tarifs/);
+  });
+  it("photo de la carte « Pourquoi » : celle du dirigeant si fournie, sinon une image de la vidéo", () => {
+    expect(PAGE).toMatch(/<img class="pourquoi-photo" data-si="photo_dirigeant"/);
+    expect(PAGE).toMatch(/<img class="pourquoi-photo" data-sinon="photo_dirigeant" src="\/img\/photos\/hero-poster-800\.webp"/);
   });
 });

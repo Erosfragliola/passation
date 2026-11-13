@@ -6,6 +6,8 @@ import { surveillerChamps } from "/js/landing/barres.js";
 import { lancerVideo, lancerVideoSection } from "/js/landing/video.js";
 import { chargerEntreprise } from "/js/landing/estimation.js";
 import { creerResultat } from "/js/landing/resultat.js";
+import { lancerOnglets } from "/js/landing/onglets.js";
+import { creerDossierFinal } from "/js/landing/histoire.js";
 
 const $ = (s) => document.querySelector(s);
 const lire = (id) => { try { return JSON.parse(document.getElementById(id)?.textContent || "{}"); } catch { return {}; } };
@@ -38,6 +40,22 @@ $("#btn-autre")?.addEventListener("click", () => {
   champ.focaliser();
 });
 
+// « Comment ça marche » en onglets ; dossiers de l'exemple fictif dans leur état final (Pourquoi, Confidentialité),
+// construits à l'approche
+const H = lire("textes-histoire");
+lancerOnglets($("#comment"), { chapitres: H.chapitres || [] });
+// Le dossier est dessiné à 520 px (tailles minimales de texte comprises), puis réduit d'un bloc à sa zone
+const LARGEUR_DOSSIER = 520;
+document.querySelectorAll("[data-dossier-final]").forEach((zone) => new IntersectionObserver(([e], o) => {
+  if (!e.isIntersecting || !H.chapitres) return;
+  o.disconnect();
+  const dossier = creerDossierFinal({ chapitres: H.chapitres, dossierTextes: H.dossier || {}, demo: H.demo });
+  zone.append(dossier);
+  const echelle = () => { if (zone.clientWidth) dossier.style.zoom = String(zone.clientWidth / LARGEUR_DOSSIER); };
+  new ResizeObserver(echelle).observe(zone);
+  echelle();
+}, { rootMargin: "800px 0px" }).observe(zone));
+
 // Liens #comment-1, -2, -3 (tuiles du hero, cartes) : ouvrent « Comment ça marche » sur la bonne étape.
 // L'événement « ouvrir-etape » est écouté par les onglets de la section.
 function ouvrirEtape(ancre) {
@@ -53,3 +71,4 @@ document.addEventListener("click", (e) => {
   if (a && ouvrirEtape(a.getAttribute("href"))) { e.preventDefault(); history.replaceState(null, "", a.getAttribute("href")); }
 });
 if (location.hash) requestAnimationFrame(() => ouvrirEtape(location.hash));
+addEventListener("hashchange", () => ouvrirEtape(location.hash));

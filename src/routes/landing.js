@@ -7,6 +7,7 @@
 //   data-si="cle cle2"              élément retiré si l'une des conditions manque (« cle », « legal.rcs »,
 //                                   « guides:3 » = au moins 3 entrées) ;
 //   data-si-un="cle cle2"           élément retiré si toutes ces conditions manquent ;
+//   data-sinon="cle"                élément retiré dès qu'une de ces conditions est remplie (contenu de repli) ;
 //   data-t-json="chemin"            <script type="application/json"> : sous-arbre pour le JavaScript de la page ;
 //   data-t-liste="cles.partenaires" une <li> par élément.
 import contenu from "../contenu/landing.json";
@@ -51,6 +52,13 @@ export async function routeLanding(request, env) {
         const cles = el.getAttribute("data-si-un").split(/\s+/).filter(Boolean);
         el.removeAttribute("data-si-un");
         if (!cles.some((k) => condition(contenu.cles, k))) el.remove();
+      },
+    })
+    .on("[data-sinon]", {
+      element(el) {
+        const cles = el.getAttribute("data-sinon").split(/\s+/).filter(Boolean);
+        el.removeAttribute("data-sinon");
+        if (cles.some((k) => condition(contenu.cles, k))) el.remove();
       },
     })
     .on("[data-t-liste]", {
