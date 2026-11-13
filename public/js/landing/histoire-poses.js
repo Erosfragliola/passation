@@ -1,6 +1,6 @@
 // L'histoire des clés : poses et rythme portés du prototype (_refonte/reference/prototype/index.html, renderMain),
 // constantes reprises telles quelles. Fonctions pures du temps « établi » t, sans DOM (test/histoire-poses.test.js).
-// Repères : lampe 6,6 → 7,15 ; chute 7,05 → 8,19 (dernière étiquette posée) ; rangement 11,55 → 13,7 ;
+// Repères : chute 7,05 → 8,19 (dernière étiquette posée) ; rangement 11,55 → 13,7 ;
 // retournements 14,25 → 17,25 ; sortie des clés 19,0 → 19,94 ; regroupement 19,35 → 20,63 ; dossier 20,45 → 21,45 ;
 // onglets 21,15 → 22,54. Coordonnées en pixels de la scène 1920 × 1080.
 
@@ -37,15 +37,11 @@ export const ROWX = Array.from({ length: NB }, (_, i) => 960 + (i - 4) * 160);
 export const TAGY = 606, KEYY = 660;
 export const TABT = Array.from({ length: NB }, (_, i) => ({ x: 1040 + 660, y: 160 + 96 + i * 66 + 28 }));
 
-/** Début (lampe éteinte, rien sur l'établi), fin de la chute jouée au temps (toutes les étiquettes posées), fin. */
+/** Début (rien sur la table), fin de l'arrivée jouée au temps (toutes les étiquettes posées), fin. */
 export const T_DEBUT = 6.6, T_POSE = 8.2, T_FIN = 24.5;
 /** Temps établi suivant le défilement de la section (brief : t = 7,7 + p × 16,8), jamais avant la fin de la chute. */
 export const tempsDefilement = (p) => Math.max(T_POSE, 7.7 + clamp01(p) * 16.8);
 
-/** Luminosité de l'établi : la lampe s'allume avec un léger vacillement. */
-export function lampe(t) {
-  return 0.24 + 0.76 * eOut(seg(t, 6.6, 7.15)) * (t > 6.74 && t < 6.79 ? 0.45 : 1) * (t > 6.86 && t < 6.89 ? 0.75 : 1);
-}
 /** Léger mouvement de caméra (échelle de la scène). */
 export const camera = (t) => 1.03 - 0.03 * eOut(seg(t, 6.6, 8.4)) + 0.035 * seg(t, 8.4, 35.8);
 
@@ -123,18 +119,3 @@ export function bloc(t, debut, fin, enfants = 3) {
 }
 /** Les trois temps de l'histoire (le troisième reste jusqu'à la fin). */
 export const TEMPS = [[7.9, 12.55], [13.15, 19.0], [21.0, Infinity]];
-
-/** Poussières dans la lumière de la lampe (graine fixe : même tirage à chaque visite). */
-export function poussieres(n = 26) {
-  let a = 31;
-  const r = () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let x = Math.imul(a ^ (a >>> 15), 1 | a); x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x; return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
-  return Array.from({ length: n }, () => { const s = 3 + r() * 6; return { x: 560 + r() * 980, y: 180 + r() * 640, p: r() * 6.28, s }; });
-}
-export function poussiere(m, t) {
-  const mv = seg(t, 7.2, 8.2);
-  return {
-    x: m.x + 28 * Math.sin(0.33 * t + m.p),
-    y: m.y + 20 * Math.cos(0.26 * t + m.p * 1.3) - 8 * Math.sin(0.11 * t + m.p),
-    op: mv * (0.1 + 0.28 * (0.5 + 0.5 * Math.sin(1.1 * t + m.p * 2))),
-  };
-}

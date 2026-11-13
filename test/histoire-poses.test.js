@@ -1,15 +1,11 @@
 // L'histoire des clés : poses aux repères du brief. Valeurs attendues calculées à la main depuis les constantes du
 // prototype (PILE, ROWX = 960 + (i − 4) × 160, KEYY = 660, TAGY = 606, STK, TABT…).
 import { describe, it, expect } from "vitest";
-import { cle, etiquette, ficelle, onglet, dossier, bloc, lampe, tempsDefilement, PILE, NB, T_POSE } from "../public/js/landing/histoire-poses.js";
+import { cle, etiquette, ficelle, onglet, dossier, bloc, tempsDefilement, PILE, NB, T_POSE } from "../public/js/landing/histoire-poses.js";
 
 const tous = (f) => Array.from({ length: NB }, (_, i) => f(i));
 
 describe("allumage et chute (joués au temps)", () => {
-  it("lampe : 0,24 éteinte, 1 allumée", () => {
-    expect(lampe(6.6)).toBeCloseTo(0.24, 10);
-    expect(lampe(7.2)).toBe(1);
-  });
   it("avant la chute, rien sur l'établi", () => {
     expect(tous((i) => cle(i, 6.6).op)).toEqual(Array(NB).fill(0));
     expect(tous((i) => etiquette(i, 6.6).op)).toEqual(Array(NB).fill(0));
