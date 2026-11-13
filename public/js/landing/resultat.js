@@ -22,16 +22,9 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
   const dossier = creerDossier({ textes: histoire.dossier || {}, chapitres: histoire.chapitres || [] });
   zoneDossier.append(dossier.element);
   dossier.definir({ onglets: (histoire.chapitres || []).map(() => ({ op: 1, dx: 0 })) });
-  const etat = { donnees: null, anim: 0, fondCharge: false };
+  const etat = { donnees: null, anim: 0 };
 
-  const montrerSection = () => {
-    section.hidden = false;
-    if (!etat.fondCharge) {
-      etat.fondCharge = true;
-      const f = $("[data-fond]");
-      if (f) f.style.backgroundImage = `url("${f.dataset.fond}")`;
-    }
-  };
+  const montrerSection = () => { section.hidden = false; };
 
   /** Chargement : section visible avec le trousseau, puis la réponse (au moins DUREE_MIN). */
   async function charger(promesse) {

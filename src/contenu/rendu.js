@@ -132,3 +132,17 @@ export function clesVides(contenu) {
   parcourir(contenu.cles || {}, "");
   return vides;
 }
+
+/** Identité légale du pied de page : « Raison sociale, forme au capital de X, RCS Y, adresse. » Les morceaux vides
+ * disparaissent ; rien du tout si tout est vide. */
+export function identiteLegale(legal = {}) {
+  const v = (k) => (typeof legal?.[k] === "string" ? legal[k].trim() : "");
+  const forme = [v("forme"), v("capital") ? `au capital de ${v("capital")}` : ""].filter(Boolean).join(" ");
+  const parties = [v("raison_sociale"), forme, v("rcs") ? `RCS ${v("rcs")}` : "", v("adresse")].filter(Boolean);
+  return parties.length ? `${parties.join(", ")}.` : "";
+}
+
+/** Contenu servi : le fichier, plus les valeurs calculées (pied.identite, à partir de cles.legal). */
+export function completer(contenu) {
+  return { ...contenu, pied: { ...contenu.pied, identite: identiteLegale(contenu.cles?.legal) } };
+}

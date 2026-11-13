@@ -2,7 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import contenu from "../src/contenu/landing.json";
-import { typographier, enLigne, interpoler, html, texte, lire, estVide, condition, pourJs, jsonDansScript, clesVides, lireAttributs, valeurAttribut } from "../src/contenu/rendu.js";
+import { typographier, enLigne, interpoler, html, texte, lire, estVide, condition, pourJs, jsonDansScript, clesVides, lireAttributs, valeurAttribut, identiteLegale, completer } from "../src/contenu/rendu.js";
 
 const FINE = " ", INSEC = " ";
 const PAGE = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
@@ -44,6 +44,13 @@ describe("conditions d'affichage", () => {
     expect(interpoler("RCS {legal.rcs}", cles)).toBe("RCS Nantes 123");
     expect(interpoler("{legal.forme} au capital", cles)).toBeNull();
     expect(clesVides({ cles })).toEqual(expect.arrayContaining(["telephone", "rappel", "legal.forme", "vide.a"]));
+  });
+  it("identité légale : les morceaux vides disparaissent, rien si tout est vide", () => {
+    expect(identiteLegale({ raison_sociale: "Passation SAS", forme: "SAS", capital: "1 000 €", rcs: "Nantes 123 456 789", adresse: "1 rue X, 44000 Nantes" }))
+      .toBe("Passation SAS, SAS au capital de 1 000 €, RCS Nantes 123 456 789, 1 rue X, 44000 Nantes.");
+    expect(identiteLegale({ raison_sociale: "Passation SAS", forme: "", capital: "1 000 €", rcs: "", adresse: "Nantes" })).toBe("Passation SAS, au capital de 1 000 €, Nantes.");
+    expect(identiteLegale({ raison_sociale: "", forme: "", capital: "", rcs: "", adresse: "" })).toBe("");
+    expect(completer({ cles: { legal: { rcs: "Nantes 1" } }, pied: { a: 1 } }).pied).toEqual({ a: 1, identite: "RCS Nantes 1." });
   });
   it("noms de clés avec chiffres (prix_etape2, duree_etape2)", () => {
     expect(interpoler("{duree_etape2} · {prix_etape2}", { duree_etape2: "20 minutes", prix_etape2: "Gratuit" })).toBe("20 minutes · Gratuit");

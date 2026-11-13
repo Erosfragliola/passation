@@ -286,12 +286,16 @@
   },
   "confidentialite": {
     "surtitre": "Confidentialité",
-    "titre": "Vos chiffres restent *les vôtres.*",
-    "texte": "Préparer une cession demande de la discrétion. Passation est conçu pour la protéger.",
+    "titre": "Personne ne saura. *Sauf ceux que vous choisirez.*",
+    "texte": "Préparer une cession demande de la discrétion. Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
     "garanties": [
       {
         "titre": "Accès réservé",
         "texte": "Connexion par code à usage unique, envoyé par e-mail. Vous seul voyez votre dossier."
+      },
+      {
+        "titre": "Teaser anonyme, sous nom de code",
+        "texte": "Ni nom, ni ville, ni chiffre identifiant. Vous choisissez quand vous dévoiler."
       },
       {
         "titre": "Aucune revente",
@@ -300,24 +304,23 @@
       {
         "titre": "Suppression en un clic",
         "texte": "Dossier, chiffres et fichiers : vous effacez tout quand vous le décidez."
-      },
-      {
-        "titre": "Teaser anonyme",
-        "texte": "Ni nom, ni ville, ni chiffre identifiant. Vous choisissez quand vous dévoiler."
       }
     ],
-    "hebergement": "Vos données sont hébergées {hebergement}.",
-    "politique": "Lire notre politique"
+    "politique": "Lire notre politique",
+    "fictif": "Exemple fictif"
   },
-  "parti_pris": {
-    "surtitre": "Notre parti pris",
-    "titre": "Une entreprise ne se vend pas. Elle se *transmet.*",
-    "texte": "Au bon prix, à la bonne personne, au bon moment.",
-    "video_alt": "Un artisan à son établi, sous sa lampe (image d'illustration)",
-    "fondateur": "{fondateur_nom}, fondateur de Passation",
-    "fondateur_texte": "{fondateur_texte}",
-    "fondateur_photo_alt": "{fondateur_nom}, fondateur de Passation",
-    "partenaires": "Partenaires"
+  "equipe": {
+    "surtitre": "Qui est derrière Passation",
+    "titre": "Des personnes, *pas un robot*.",
+    "texte": "{fondateur_texte}",
+    "citation": "Une entreprise ne se vend pas. Elle se transmet.",
+    "nom": "{fondateur_nom}",
+    "fonction": "{fondateur_titre}",
+    "photo_alt": "{fondateur_nom}, fondateur de Passation",
+    "rappel": "Être rappelé",
+    "rappel_lien": "mailto:{email_contact}?subject=%C3%8Atre%20rappel%C3%A9",
+    "telephone": "{telephone}",
+    "telephone_aria": "Nous appeler au {telephone}"
   },
   "questions": {
     "surtitre": "Questions fréquentes",
@@ -375,18 +378,20 @@
     ]
   },
   "relance": {
-    "titre": "Quand vous passerez la main, *tout sera prêt.*",
-    "note": "Gratuit, sans compte. Personne n'est prévenu."
+    "titre": "Et si on regardait *votre entreprise* ?",
+    "texte": "C’est gratuit, sans compte, et vous aurez en 30 secondes une première idée de sa valeur.",
+    "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au"
   },
   "pied": {
+    "identite": "",
+    "avertissement": "Estimations indicatives, non contractuelles. Ne constitue pas un conseil juridique, fiscal ou financier.",
+    "liens": "Liens légaux",
     "mentions": "Mentions légales",
-    "cgu": "Conditions d'utilisation",
     "confidentialite": "Confidentialité",
-    "contact": "Contact",
-    "contact_lien": "mailto:{email_contact}",
-    "telephone_libelle": "Une question ?",
+    "cgu": "Conditions d’utilisation",
+    "joindre": "Nous joindre",
     "telephone_lien": "tel:{telephone}",
-    "avertissement": "Estimations indicatives, non contractuelles. Ne constitue pas un conseil juridique, fiscal ou financier."
+    "email_lien": "mailto:{email_contact}"
   },
   "js": {
     "chargement": "Nous lisons les registres publics...",

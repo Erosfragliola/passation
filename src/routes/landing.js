@@ -10,8 +10,10 @@
 //   data-sinon="cle"                élément retiré dès qu'une de ces conditions est remplie (contenu de repli) ;
 //   data-t-json="chemin"            <script type="application/json"> : sous-arbre pour le JavaScript de la page ;
 //   data-t-liste="cles.partenaires" une <li> par élément.
-import contenu from "../contenu/landing.json";
-import { html, texte, lire, estVide, condition, lireAttributs, pourJs, jsonDansScript, clesVides, echapper, typographier, valeurAttribut } from "../contenu/rendu.js";
+import brut from "../contenu/landing.json";
+import { html, texte, lire, estVide, condition, lireAttributs, pourJs, jsonDansScript, clesVides, echapper, typographier, valeurAttribut, completer } from "../contenu/rendu.js";
+
+const contenu = completer(brut);
 
 const local = (url) => ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
 

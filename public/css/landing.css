@@ -35,10 +35,10 @@
 .landing h1 em, .landing h2 em, .landing .titre-section em {
   font-family: var(--mot-cle); font-style: italic; font-weight: 400; letter-spacing: -0.005em; color: var(--ocre);
 }
-.landing .nuit h2 em, .landing .nuit .titre-section em, .landing .hero h1 em, .landing .parti-pris-media h2 em { color: var(--ocre-nuit); }
+.landing .nuit h2 em, .landing .nuit .titre-section em, .landing .hero h1 em { color: var(--ocre-nuit); }
 .landing .chapo { font-size: var(--t-chapo); line-height: 1.55; max-width: 36rem; }
 .surtitre { font-family: var(--sans); font-weight: 600; font-size: 17px; line-height: 1.35; letter-spacing: 0; color: var(--ocre-texte); margin: 0 0 16px; }
-.nuit .surtitre, .hero .surtitre, .parti-pris-media .surtitre { color: var(--ocre-nuit); }
+.nuit .surtitre, .hero .surtitre { color: var(--ocre-nuit); }
 .landing .petit { font-size: 15px; }
 .landing .chiffre, .estimation-valeur { font-variant-numeric: tabular-nums; }
 
@@ -104,12 +104,11 @@
 }
 .landing .sugg-info { font-family: var(--sans); font-size: 15px; }
 
-/* ---------- Écran de résultat (sur l'établi) ---------- */
-.resultat { position: relative; overflow: hidden; isolation: isolate; background: #141110; }
-.resultat::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(20, 17, 16, .86) 0%, rgba(20, 17, 16, .55) 55%, rgba(20, 17, 16, .3) 100%); }
+/* ---------- Écran de résultat : carte verte sous le hero ---------- */
+.landing .resultat { padding: var(--marge-carte) var(--marge-carte) 0; background: transparent; }
 .resultat-grille { display: grid; gap: 48px; align-items: start; }
 @media (min-width: 960px) { .resultat-grille { grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; } }
-.resultat-texte { text-shadow: 0 2px 20px rgba(0, 0, 0, .45); }
+.resultat-grille.carte-verte { background: var(--vert-carte); }
 .resultat-chargement { display: grid; justify-items: start; align-content: center; gap: 24px; min-height: 42vh; }
 .resultat-chargement-texte { font-size: var(--t-chapo); color: var(--creme); }
 .trousseau { position: relative; width: 220px; height: 130px; }
@@ -144,8 +143,10 @@
   background: rgba(251, 246, 236, .08); border: 1px solid rgba(251, 246, 236, .18); transition: background-color .2s;
 }
 .suite:hover { background: rgba(251, 246, 236, .15); }
-.resultat-suites li:first-child .suite { background: var(--vert); border-color: transparent; }
-.resultat-suites li:first-child .suite:hover { background: var(--vert-survol); }
+/* Sur le vert : la première suite en pastille claire, texte encre */
+.resultat-suites li:first-child .suite { background: #F7F1EA; border-color: transparent; color: var(--encre); }
+.resultat-suites li:first-child .suite:hover { background: #EFE8DD; }
+.resultat-suites li:first-child .suite span { color: var(--encre-2); }
 .suite strong { font-size: 18px; font-weight: 600; }
 .suite span { font-size: 16px; color: rgba(251, 246, 236, .8); }
 .resultat-autre { margin-top: 16px; }
@@ -352,10 +353,10 @@
 @media (max-width: 767px) { :root { --espace-section: 72px; } }
 .landing .bloc { padding: var(--espace-section) 0 0; background: transparent; }
 .landing .bloc > .conteneur { max-width: 1280px; padding: 0 var(--marge-carte); }
-.landing .bloc h2 { margin: 0; font-size: clamp(34px, 4.2vw, 56px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; color: var(--encre); }
-.landing .bloc h2 em { color: var(--ocre-clair); }
-.landing .bloc .surtitre { margin: 0 0 14px; font-size: 16px; color: #7A5C42; }
-.landing .bloc .chapo { margin: 18px 0 0; font-size: 19px; line-height: 1.6; color: var(--encre-2); max-width: 620px; }
+.landing .bloc h2, .landing .bloc-carte h2 { margin: 0; font-size: clamp(34px, 4.2vw, 56px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; color: var(--encre); }
+.landing .bloc h2 em, .landing .bloc-carte h2 em { color: var(--ocre-clair); }
+.landing .bloc .surtitre, .landing .bloc-carte .surtitre { margin: 0 0 14px; font-size: 16px; color: #7A5C42; }
+.landing .bloc .chapo, .landing .bloc-carte .chapo { margin: 18px 0 0; font-size: 19px; line-height: 1.6; color: var(--encre-2); max-width: 620px; }
 .mono-ocre { margin: 0; font: 500 14px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: #7A5C42; }
 
 /* ---------- Comment ça marche : onglets ---------- */
@@ -422,56 +423,86 @@
 .carte-verte .btn:hover { background: #EFE8DD; }
 .carte-verte :focus-visible { outline-color: #E9C9A4; }
 .pourquoi-photo { margin-top: auto; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 42% 50%; border-radius: 8px; }
-.pourquoi-dossier { margin-top: auto; display: grid; justify-items: center; gap: 6px; padding: 18px 18px 10px; border-radius: 8px; background: #EDE5D9; }
-.dossier-vitrine { width: 62%; aspect-ratio: 660 / 808; }
+.pourquoi-dossier { margin-top: auto; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 6px; padding: 18px 18px 10px; border-radius: 8px; background: #EDE5D9; }
+/* La zone ne prend jamais la largeur du dossier dessiné à 520 px : c'est lui qui se réduit à elle (landing.js) */
+.dossier-vitrine { width: 62%; aspect-ratio: 660 / 808; contain: inline-size; }
 .dossier-vitrine > .dossier { width: 520px; }
 .landing .pourquoi-dossier .histoire-fictif { font-size: 14px; color: var(--encre-2); }
 .landing .pourquoi-sources { margin: 28px 0 0; font-size: 15px; color: var(--encre-2); }
 
-/* Fond de l'écran de résultat (jusqu'à l'étape 4) */
-.essai-fond { position: absolute; inset: 0; z-index: -2; background: #2A1D14 center / cover no-repeat; }
+/* ---------- Grandes cartes (confidentialité, appel final, résultat) : 1 360 px, marges du hero ---------- */
+.landing .bloc-carte { padding: var(--espace-section) var(--marge-carte) 0; background: transparent; }
+.carte-large { max-width: 1360px; margin: 0 auto; border-radius: 10px; padding: clamp(32px, 5vw, 80px); }
+.carte-large.carte-verte { color: #F7F1EA; }
+.landing .carte-large.carte-verte h2 { color: #F7F1EA; }
+.landing .carte-large.carte-verte h2 em { color: #D9B48F; }
+.landing .carte-large.carte-verte .surtitre { color: #CFE0D3; }
+.landing .carte-large.carte-verte .chapo { color: #E3ECE5; }
+.carte-large .btn-creme { min-height: 46px; padding: 0 22px; background: #F7F1EA; color: var(--encre); font-size: 16px; }
+.carte-large .btn-creme:hover { background: #EFE8DD; }
 
-/* ---------- Confidentialité ---------- */
-.landing .confid-grille .chapo { margin-top: 20px; }
-.confid-hebergement { margin-top: 20px; }
-.confid-lien { margin-top: 28px; }
-@media (min-width: 900px) { .landing .confid-grille { grid-template-columns: 0.9fr 1.1fr; align-items: start; } }
-.landing .garantie p { font-size: 16px; }
-.landing .garantie h3 { font-size: 18px; font-weight: 600; letter-spacing: 0; }
+/* ---------- Confidentialité : carte verte ---------- */
+.confid-carte { display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
+.confid-texte { flex: 1 1 440px; min-width: 0; }
+.landing .confid-texte .chapo { max-width: 560px; }
+.garanties-cochees { list-style: none; margin: 30px 0 32px; padding: 0; display: grid; gap: 18px; }
+.garanties-cochees li { display: flex; gap: 14px; }
+.garanties-cochees .coche { flex: 0 0 auto; color: #E9C9A4; }
+.landing .garanties-cochees p { margin: 4px 0 0; font-size: 17px; line-height: 1.55; color: #E3ECE5; }
+.landing .garanties-cochees .garantie-titre { margin: 0; font-size: 18px; font-weight: 600; color: #F7F1EA; }
+.confid-dossier { flex: 1 1 340px; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 14px; }
+.confid-dossier .dossier-vitrine { width: 100%; max-width: 420px; filter: drop-shadow(0 30px 40px rgb(0 0 0 / .28)); }
+.landing .confid-dossier .histoire-fictif { font-size: 14px; color: #CFE0D3; }
 
-/* ---------- Parti pris ---------- */
-.landing .parti-pris { padding: 0 0 96px; }
-.parti-pris-media { position: relative; min-height: min(86vh, 820px); display: grid; align-items: end; isolation: isolate; color: var(--creme); }
-.parti-pris-media img, .parti-pris-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
-.parti-pris-video { opacity: 0; transition: opacity .6s ease; }
-.parti-pris-video.lue { opacity: 1; }
-.parti-pris-media .parti-pris-pause { bottom: 28px; }
-.parti-pris-media::after {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  background: linear-gradient(180deg, rgba(35, 30, 24, 0.15) 30%, rgba(35, 30, 24, 0.88) 100%);
-}
-.parti-pris-texte { padding-bottom: 72px; }
-.parti-pris-texte h2 { max-width: 16ch; }
-.parti-pris-texte .chapo { margin-top: 20px; color: rgba(251, 246, 236, 0.9); }
-.fondateur { margin-top: 48px; display: grid; gap: 24px; align-items: start; }
-@media (min-width: 700px) { .fondateur { grid-template-columns: 160px 1fr; } }
-.fondateur-photo { border-radius: 20px; object-fit: cover; }
-.partenaires { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 20px; }
+/* ---------- Derrière Passation ---------- */
+.equipe-grille { display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
+.equipe-texte { flex: 1 1 440px; min-width: 0; }
+.equipe-citation { margin: 28px 0 0; padding: 0; }
+.landing .equipe-citation p { margin: 0; font-family: var(--mot-cle); font-style: italic; font-size: 28px; line-height: 1.3; color: var(--encre); }
+.landing .signature { margin: 28px 0 0; display: grid; gap: 2px; }
+.signature strong { font-size: 18px; font-weight: 600; }
+.signature span { font-size: 16px; color: var(--encre-2); }
+.equipe-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+.equipe-actions .btn { min-height: 46px; padding: 0 22px; font-size: 16px; }
+.btn-secondaire { background: #EFE8DD; color: var(--encre); }
+.btn-secondaire:hover { background: #E5DCCE; }
+.equipe-photo { flex: 1 1 420px; min-width: 0; width: 100%; max-width: 560px; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
 
 /* ---------- Questions ---------- */
 @media (min-width: 900px) { .landing .faq-grille { grid-template-columns: 0.8fr 1.2fr; } }
 .landing .faq summary { font-size: 18px; }
 .landing .faq .reponse { font-size: 17px; }
 
-/* ---------- Relance et pied de page ---------- */
-.relance h2 { max-width: 18ch; margin: 0 auto; }
-.relance-action { margin-top: 32px; }
-.relance-note { margin-top: 16px; font-size: 16px; }
-.pied-ligne { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
-.landing .pied .pied-liens { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 24px; }
-.landing .pied a { display: inline-flex; align-items: center; min-height: var(--cible); }
-.pied-telephone { color: var(--pierre-nuit); }
-.landing .pied-bas { font-size: 15px; }
+/* ---------- Appel final : carte ocre clair ---------- */
+.carte-ocre { background: #EAD7BE; text-align: center; padding: clamp(40px, 6vw, 96px) clamp(20px, 4vw, 48px); }
+.landing .relance h2 { margin: 0 auto; max-width: 820px; font-size: clamp(36px, 4.6vw, 64px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; color: var(--encre); }
+.landing .relance h2 em { color: #7A4F2A; }
+.landing .relance-texte { margin: 20px auto 0; max-width: 600px; font-size: 20px; line-height: 1.55; color: #4A4038; }
+.landing .relance-champ { max-width: 620px; margin: 30px auto 0; text-align: left; }
+.relance-champ .recherche-champ { padding: 6px; gap: 6px; background: var(--carte-claire); box-shadow: none; }
+.relance-champ .recherche-champ:focus-within { box-shadow: 0 0 0 3px var(--vert); }
+.relance-champ input { min-height: 52px; font-size: 18px; }
+.relance-champ .btn { min-height: 52px; }
+.landing .relance-telephone { margin: 18px 0 0; font-size: 16px; color: #4A4038; }
+.relance-telephone a { color: inherit; font-weight: 600; text-underline-offset: 3px; }
+
+/* ---------- Pied de page : grand logo ---------- */
+.landing .pied { margin-top: var(--espace-section); padding: 0; border: 0; background: var(--encre); color: #F7F1EA; overflow: hidden; }
+.pied-interieur { max-width: 1360px; margin: 0 auto; padding: 72px clamp(16px, 3vw, 40px) 40px; }
+.landing .pied-logo { margin: 0; font-size: clamp(80px, 15vw, 230px); font-weight: 600; letter-spacing: -0.055em; line-height: .85; color: #F7F1EA; white-space: nowrap; }
+@media (max-width: 374px) { .landing .pied-logo { font-size: 20vw; } }
+.pied-colonnes { margin-top: 56px; display: flex; flex-wrap: wrap; gap: 32px 56px; }
+.pied-legal { flex: 2 1 380px; min-width: 0; font-size: 15px; line-height: 1.7; color: #CFC3B5; }
+.landing .pied-legal p { margin: 0; }
+.landing .pied-legal p + p { margin-top: 12px; }
+.landing .pied-liens { flex: 1 1 200px; display: flex; flex-direction: column; align-items: flex-start; gap: 0; font-size: 16px; }
+.landing .pied a { display: inline-flex; align-items: center; min-height: var(--cible); color: #F7F1EA; text-decoration: none; }
+.landing .pied a:hover { color: #E9C9A4; text-decoration: underline; text-underline-offset: 4px; }
+.landing .pied :focus-visible { outline-color: #E9C9A4; }
+.pied-contact { flex: 1 1 200px; font-size: 16px; }
+.landing .pied-contact p { margin: 0; }
+.landing .pied-contact-titre { margin-bottom: 4px; color: #CFC3B5; }
+.landing .pied-copyright { margin: 48px 0 0; padding-top: 22px; border-top: 1px solid rgb(247 241 234 / .14); font-size: 14px; color: #B8AD9F; }
 
 /* ---------- Début clair : couleurs, en-tête plat, champ de l'en-tête ---------- */
 :root {
@@ -553,8 +584,6 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
   html.champ-en-haut .nav-zone { padding-bottom: 56px; }
 }
 
-.relance-champ { margin: 36px auto 0; }
-.relance .relance-note { color: rgba(251, 246, 236, 0.82); }
 
 /* ---------- Vidéo du hero : bouton pause, métier ---------- */
 .hero-pause {

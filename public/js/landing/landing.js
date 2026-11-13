@@ -3,7 +3,7 @@
 // (sous-arbre « js ») et <script id="textes-histoire"> (chapitres et dossier).
 import { creerChampPartage } from "/js/landing/champ-siren.js";
 import { surveillerChamps } from "/js/landing/barres.js";
-import { lancerVideo, lancerVideoSection } from "/js/landing/video.js";
+import { lancerVideo } from "/js/landing/video.js";
 import { chargerEntreprise } from "/js/landing/estimation.js";
 import { creerResultat } from "/js/landing/resultat.js";
 import { lancerOnglets } from "/js/landing/onglets.js";
@@ -19,7 +19,6 @@ const champ = creerChampPartage({ estimer, textes: T });
 document.querySelectorAll("[data-champ-siren]").forEach((f) => champ.monter(f));
 const barres = surveillerChamps({ hero: $('[data-champ-siren="accueil"]'), auChangement: () => champ.fermerListes() });
 lancerVideo({ hero: $("#accueil"), textes: T.video });
-lancerVideoSection({ zone: $(".parti-pris-media"), textes: T.video });
 
 async function estimer(siren, emplacement) {
   champ.dire("");
