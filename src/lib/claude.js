@@ -152,25 +152,37 @@ export async function extraireSite(env, pages) {
 }
 
 // ---------------------------------------------------------------- Mémorandum : une section
+// Le titre affirme la conclusion du chapitre (convention des banques d'affaires) ; l'accroche le résume en une phrase
+// pour la liste des points forts de la synthèse. Longueurs contrôlées par le code (src/documents/memo.js, titreValide) :
+// les sorties structurées n'acceptent pas maxLength.
 const SCHEMA_SECTION = {
-  type: "object", additionalProperties: false, required: ["contenu", "a_completer"],
+  type: "object", additionalProperties: false, required: ["titre", "accroche", "contenu", "a_completer"],
   properties: {
-    contenu: { type: "string", description: "Texte de la section : paragraphes séparés par une ligne vide ; listes avec « - »" },
-    a_completer: { type: "array", items: { type: "string" }, description: "Informations manquantes que le dirigeant devrait apporter" },
+    titre: { type: "string", description: "Titre affirmatif du chapitre : la conclusion qu'un repreneur doit retenir, appuyée si possible sur un chiffre fourni. Une ligne, 90 caractères au plus, sans point final." },
+    accroche: { type: "string", description: "Une phrase de 160 caractères au plus qui résume le chapitre pour la synthèse." },
+    contenu: { type: "string", description: "Corps du chapitre : un court paragraphe d'introduction, puis des puces commençant par « - » ; **gras** pour le fait clé de chaque puce ; paragraphes séparés par une ligne vide" },
+    a_completer: { type: "array", items: { type: "string" }, description: "Informations manquantes que le dirigeant devrait apporter, formulées comme des demandes précises" },
   },
 };
-const CONSIGNE_MEMO = `Tu rédiges une section du mémorandum d'information d'une PME française à céder, destiné à des repreneurs sérieux ayant signé un engagement de confidentialité.
-Français, troisième personne, ton professionnel et sobre, sans superlatifs ni formules publicitaires.
-Règles absolues :
-- Utilise uniquement les données fournies (réponses du dirigeant, faits du site validés par lui, données publiques, chiffres validés). N'invente rien : ni chiffre, ni client, ni projet, ni certification.
-- Quand une information attendue manque, écris « À compléter » à l'endroit voulu et ajoute-la à la liste a_completer.
-- Recopie les chiffres tels quels ; ne calcule pas de nouveaux ratios.
-- 120 à 300 mots.`;
+const CONSIGNE_MEMO = `Tu es associé d'une banque d'affaires française spécialisée dans la transmission de PME. Tu rédiges un chapitre du mémorandum d'information d'une entreprise à céder. Il sera lu par des repreneurs sérieux (dirigeants, fonds, industriels) qui ont signé un engagement de confidentialité et qui comparent plusieurs dossiers : chaque phrase doit leur apprendre quelque chose.
+
+Style
+- Français, troisième personne, présent. Ton d'un professionnel de la cession : précis, factuel, affirmatif quand les faits le permettent. Aucune formule publicitaire, aucun superlatif non démontré (« leader », « unique », « incontournable », « exceptionnel » sont interdits, sauf s'ils figurent tels quels dans un fait fourni).
+- Titre : la conclusion du chapitre, pas son sujet. Exemple de forme : « Une clientèle fidèle : les cinq premiers clients pèsent 38 % du chiffre d'affaires ». Pas d'exemple de chiffre inventé : n'utilise que ceux fournis.
+- Corps : 140 à 260 mots. Un paragraphe d'introduction de deux phrases au plus, puis 3 à 6 puces. Chaque puce commence par le fait clé en **gras** (quelques mots), puis l'explique en une ou deux phrases.
+- Chiffres : recopie exactement les montants et pourcentages fournis, dans leur forme (« 1,2 M€ », « 8,4 % », « +4,1 % par an »). Ne calcule aucun nouveau chiffre, ratio, moyenne ou évolution : utilise ceux qui sont fournis dans « indicateurs_calcules » et les tableaux.
+- Les estimations du dirigeant sont présentées comme telles (« le dirigeant anticipe… »). Les faits issus du site internet sont présentés comme des affirmations de l'entreprise.
+
+Règles absolues
+- Utilise uniquement les données fournies : réponses du dirigeant, faits de son site qu'il a validés, données publiques, chiffres validés et indicateurs calculés. N'invente rien : ni chiffre, ni client, ni nom, ni projet, ni certification, ni concurrent, ni tendance de marché.
+- Ne mentionne aucun prix, aucune valeur d'entreprise, aucune fourchette de valorisation.
+- Quand une information attendue manque, écris « À compléter » à l'endroit voulu et ajoute une demande précise dans a_completer (par exemple « Préciser la part du chiffre d'affaires réalisée sous contrat pluriannuel »).
+- Mieux vaut un chapitre court et exact qu'un chapitre long et vague.`;
 
 export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   const reponse = await client(env).beta.messages.create({
     model: MODELS.deep, max_tokens: 16000,
-    system: `${CONSIGNE_MEMO}\nSection à rédiger : « ${titre} ». ${consigne}`,
+    system: `${CONSIGNE_MEMO}\n\nChapitre à rédiger : « ${titre} ».\n${consigne}`,
     messages: [{ role: "user", content: `Données du dossier (JSON) :\n${JSON.stringify(donnees, null, 2)}` }],
     output_config: { format: { type: "json_schema", schema: SCHEMA_SECTION } },
     betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",

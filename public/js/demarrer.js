@@ -270,6 +270,21 @@ function champ(c, q) {
     return el("fieldset", { class: "guide-champ regions-choix" }, el("legend", { text: c.libelle }),
       ...REGIONS.map((r, k) => { const cb = el("input", { type: "checkbox", id: `reg-${k}`, checked: choisies.has(r) }); cb.addEventListener("change", () => { if (cb.checked) choisies.add(r); else choisies.delete(r); enregistrer(c.etape, c.cle, [...choisies]).catch((e) => message(e.message, true)); }); return el("label", { class: "choix", for: `reg-${k}` }, cb, ` ${r}`); }));
   }
+  if (c.type === "top_clients") {
+    // Cinq lignes anonymes : part du chiffre d'affaires (%), ancienneté de la relation (ans), activité du client
+    const lignes = Array.isArray(v) ? v : [];
+    const zone = el("div", { class: "guide-champ top-clients", "data-etape": c.etape, "data-cle": c.cle, "data-type": "top_clients" },
+      el("div", { class: "top-clients-tete", "aria-hidden": "true" }, el("span"), el("span", { text: "Part du CA" }), el("span", { text: "Client depuis" }), el("span", { text: "Activité du client (facultatif)" })),
+      ...[0, 1, 2, 3, 4].map((k) => {
+        const x = lignes[k] || {};
+        return el("div", { class: "top-clients-ligne" },
+          el("span", { class: "top-clients-rang", text: `Client ${k + 1}` }),
+          el("div", { class: "champ-unite" }, el("input", { type: "text", inputmode: "decimal", "data-col": "part", placeholder: "part", "aria-label": `Client ${k + 1} : part du chiffre d'affaires en %`, value: Number.isFinite(x.part) ? fmt.format(Math.round(x.part * 1000) / 10) : "" }), el("span", { class: "unite", text: "%" })),
+          el("div", { class: "champ-unite" }, el("input", { type: "text", inputmode: "numeric", "data-col": "anciennete", placeholder: "depuis", "aria-label": `Client ${k + 1} : nombre d'années de relation`, value: Number.isFinite(x.anciennete) ? String(x.anciennete) : "" }), el("span", { class: "unite", text: "ans" })),
+          el("input", { type: "text", "data-col": "secteur", maxlength: "40", "aria-label": `Client ${k + 1} : activité du client`, placeholder: "ex. industrie", value: x.secteur || "" }));
+      }));
+    return zone;
+  }
   if (c.type === "exceptionnels") {
     const liste = Array.isArray(v) && v.length ? v : [{ annee: Number(Object.keys(S.chiffres?.exercices || {}).sort().at(-1)) || null, libelle: "", montant: null, justification: "" }];
     const zone = el("div", { class: "guide-champ exceptionnels" });
@@ -293,6 +308,18 @@ async function enregistrerEcran() {
     else if (type === "euros") { const x = lireNombre(n.value); if (Number.isNaN(x)) throw new Error("Un montant est illisible."); await enregistrer(etape, cle, x); }
     else if (type === "curseur") await enregistrer(etape, cle, Number(n.value) / 100);
     else if (type === "exceptionnels") await enregistrer(etape, cle, n._liste.filter((x) => Number.isFinite(x.montant) && x.montant !== 0));
+    else if (type === "top_clients") {
+      const lignes = [];
+      for (const l of n.querySelectorAll(".top-clients-ligne")) {
+        const part = lireNombre(l.querySelector('[data-col="part"]').value), anc = lireNombre(l.querySelector('[data-col="anciennete"]').value);
+        if (Number.isNaN(part) || Number.isNaN(anc)) throw new Error("Une part ou une ancienneté est illisible.");
+        if (part == null) continue;
+        if (part <= 0 || part > 100) throw new Error("Chaque part doit être comprise entre 0 et 100 %.");
+        lignes.push({ part: part / 100, anciennete: anc == null ? null : Math.round(anc), secteur: l.querySelector('[data-col="secteur"]').value.trim().slice(0, 40) || null });
+      }
+      if (lignes.reduce((a, x) => a + x.part, 0) > 1.0001) throw new Error("Les cinq parts additionnées dépassent 100 % du chiffre d'affaires.");
+      await enregistrer(etape, cle, lignes);
+    }
   }
 }
 function suivante(q) {

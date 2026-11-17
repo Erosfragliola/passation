@@ -294,6 +294,23 @@ describe("mémorandum", () => {
     const e = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "PUT", cookie, corps: { contenu: "Texte revu." } })).json();
     expect(e.sections.find((x) => x.cle === "histoire")).toMatchObject({ contenu: "Texte revu.", modifie: true });
   });
+  it("titre affirmatif et accroche enregistrés (point final retiré, titre trop long écarté) ; gardés quand le texte est modifié", async () => {
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    const { cookie, id } = await seConnecter("titres@exemple.fr");
+    await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
+    await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    redigerSectionMemo.mockResolvedValue({ titre: "Une entreprise fondée en 1980, dirigée par la même famille.", accroche: "Quarante ans d'activité continue.", contenu: "- **1980** : création.", a_completer: [] });
+    let m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).json();
+    expect(m.sections.find((x) => x.cle === "histoire")).toMatchObject({ titre_affirme: "Une entreprise fondée en 1980, dirigée par la même famille", accroche: "Quarante ans d'activité continue", point_fort: 1, court: "Histoire" });
+    expect(m.chiffres).toHaveProperty("compte_resultat");
+    expect(m.profil.nom_de_code).toMatch(/^Projet /);
+    m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "PUT", cookie, corps: { contenu: "Texte revu." } })).json();
+    expect(m.sections.find((x) => x.cle === "histoire").titre_affirme).toBe("Une entreprise fondée en 1980, dirigée par la même famille");
+    expect((await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "PUT", cookie, corps: { contenu: "x", titre: "y".repeat(200) } })).status).toBe(400);
+    redigerSectionMemo.mockResolvedValue({ titre: "z".repeat(150), accroche: "", contenu: "Texte.", a_completer: [] });
+    m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/activite`, { methode: "POST", cookie })).json();
+    expect(m.sections.find((x) => x.cle === "activite")).toMatchObject({ titre_affirme: null, titre: "Activité et savoir-faire" });
+  });
 });
 
 describe("photos du mémorandum", () => {

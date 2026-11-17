@@ -10,11 +10,11 @@
 import { projet } from "../documents/nom-de-code.js";
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
-import { calculer, lireReponses } from "./valorisation.js";
+import { calculer, lireReponses, lireChiffres } from "./valorisation.js";
 import { construireDatapack } from "../documents/datapack.js";
 import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
 import { lireSite, adressePublique } from "../documents/site.js";
-import { SECTIONS_MEMO, donneesSection, tableauFinancier, memoDeverrouille, profilMemo } from "../documents/memo.js";
+import { SECTIONS_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat } from "../documents/anonymat.js";
 import { faitsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
 
@@ -144,20 +144,23 @@ async function lireMemo(env, row) {
   }
   const parCle = Object.fromEntries(sections.map((x) => [x.section_key, x]));
   const { resultat, entree } = await calculer(env, row);
+  const entreprise = JSON.parse(row.company_json || "{}");
+  const ch = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) });
   const site = reponses.site || null;
   return {
     deverrouille: memoDeverrouille(reponses),
-    entreprise: JSON.parse(row.company_json || "{}").nom ?? null,
-    profil: profilMemo(JSON.parse(row.company_json || "{}"), reponses),
+    entreprise: entreprise.nom ?? null,
+    profil: profilMemo(entreprise, reponses, row.code_name),
     photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "" })),
     site, logo: Boolean(site?.logo),
-    tableau: tableauFinancier(entree, resultat),
+    // Chiffres calculés par le code : compte de résultat, EBE retraité, endettement, clients, périmètre, sources
+    chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources },
     memo: doc ? { id: doc.id, version: doc.version, cree_le: doc.created_at } : null,
-    sections: SECTIONS_MEMO.map(({ cle, titre }) => {
+    sections: SECTIONS_MEMO.map(({ cle, titre, court, point_fort }) => {
       const x = parCle[cle];
-      let contenu = "", a_completer = [];
-      if (x) { try { ({ contenu, a_completer } = JSON.parse(x.content_md)); } catch { contenu = x.content_md; } }
-      return { cle, titre, contenu, a_completer, redigee: Boolean(x), modifie: x?.edited_by_user === 1 };
+      let v = {};
+      if (x) { try { v = JSON.parse(x.content_md); } catch { v = { contenu: x.content_md }; } }
+      return { cle, titre, court, point_fort, titre_affirme: v.titre || null, accroche: v.accroche || null, contenu: v.contenu || "", a_completer: v.a_completer || [], redigee: Boolean(x), modifie: x?.edited_by_user === 1 };
     }),
   };
 }
@@ -298,9 +301,9 @@ async function genererSection(env, row, cle) {
   if (!verrou.ok) return json({ erreur: "questionnaire_incomplet", message: `Avant le mémorandum : ${verrou.manque.join(" ; ")}.` }, 409);
   const { resultat, entree } = await calculer(env, row);
   let r;
-  try { r = await redigerSectionMemo(env, section, donneesSection(section, { entreprise, entree, resultat, reponses })); }
+  try { r = await redigerSectionMemo(env, section, donneesSection(section, { entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) })); }
   catch (e) { console.log(`Rédaction du mémorandum impossible : ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "redaction_echouee", message: "La rédaction a échoué. Réessayez dans un instant." }, 502); }
-  await ecrireSection(env, await documentMemo(env, row), cle, { contenu: String(r.contenu || ""), a_completer: r.a_completer || [] }, false);
+  await ecrireSection(env, await documentMemo(env, row), cle, { titre: titreValide(r.titre), accroche: titreValide(r.accroche, 200), contenu: String(r.contenu || ""), a_completer: r.a_completer || [] }, false);
   return json(await lireMemo(env, row));
 }
 
@@ -308,7 +311,13 @@ async function modifierSectionMemo(request, env, row, cle) {
   if (!SECTIONS_MEMO.some((x) => x.cle === cle)) return json({ erreur: "section_inconnue" }, 404);
   let corps; try { corps = await request.json(); } catch { corps = null; }
   if (typeof corps?.contenu !== "string") return json({ erreur: "requete_invalide" }, 400);
-  await ecrireSection(env, await documentMemo(env, row), cle, { contenu: corps.contenu.slice(0, 8000), a_completer: [] }, true);
+  // Le titre et l'accroche rédigés sont conservés, sauf si le dirigeant fournit un nouveau titre
+  const docId = await documentMemo(env, row);
+  const avant = await env.DB.prepare("SELECT content_md FROM document_sections WHERE document_id = ? AND section_key = ?").bind(docId, cle).first();
+  let v = {}; try { v = avant ? JSON.parse(avant.content_md) : {}; } catch { v = {}; }
+  const titre = typeof corps.titre === "string" ? titreValide(corps.titre) : v.titre ?? null;
+  if (typeof corps.titre === "string" && corps.titre.trim() && !titre) return json({ erreur: "titre_invalide", message: "Le titre doit tenir en une ligne (110 caractères au plus)." }, 400);
+  await ecrireSection(env, docId, cle, { titre, accroche: v.accroche ?? null, contenu: corps.contenu.slice(0, 8000), a_completer: [] }, true);
   return json(await lireMemo(env, row));
 }
 
