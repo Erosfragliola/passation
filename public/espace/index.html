@@ -14,7 +14,7 @@
 <header class="nav-zone">
   <nav class="nav" aria-label="Navigation principale">
     <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-contour" href="/">Retour à l'accueil</a></div>
+    <div class="nav-actions"><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button></div>
   </nav>
 </header>
 <main id="contenu" class="espace" aria-busy="true">
@@ -39,49 +39,26 @@
         <span class="petit" id="prochaine-detail">Une étape à la fois : nous vous guidons.</span>
         <span class="fleche" aria-hidden="true">→</span>
       </a>
-      <div class="blocs">
-        <article class="carte bloc" id="bloc-chiffres">
-          <p class="etiquette">01 · Vos chiffres</p><h2>Vos <em>chiffres</em></h2>
-          <div class="jauge"><span></span></div>
-          <p>Déposez votre liasse fiscale : nous en extrayons les chiffres, vous validez chaque ligne.</p>
-          <p class="petit" id="detail-chiffres"></p>
-          <a class="btn btn-noir btn-mini lien-parcours" data-ancre="chiffres" href="/espace/valorisation/">Compléter mes chiffres</a>
-        </article>
-        <article class="carte bloc" id="bloc-valorisation">
-          <p class="etiquette">02 · Votre valorisation</p><h2>Votre <em>valorisation</em></h2>
-          <div class="jauge"><span></span></div>
-          <p>La valorisation express est faite. La valorisation approfondie croise trois méthodes à partir de vos chiffres.</p>
-          <p class="petit" id="detail-valorisation"></p>
-          <a class="btn btn-noir btn-mini lien-parcours" data-ancre="entreprise" href="/espace/valorisation/">Répondre au questionnaire</a>
-          <a class="lien-discret lien-parcours" data-ancre="valorisation" href="/espace/valorisation/">Voir ma valorisation</a>
-        </article>
-        <article class="carte bloc" id="bloc-documents">
-          <p class="etiquette">03 · Vos documents</p><h2>Vos <em>documents</em></h2>
-          <div class="jauge"><span></span></div>
-          <p>Datapack Excel, teaser anonymisé, mémorandum d'information personnalisé.</p>
-          <p class="petit" id="detail-documents">Le datapack est disponible dès qu'un exercice est validé.</p>
-          <a class="btn btn-noir btn-mini" id="lien-datapack" href="#" download>Télécharger le datapack</a>
-          <a class="lien-discret" id="lien-teaser" href="/espace/documents/teaser/">Teaser anonymisé</a>
-          <a class="lien-discret" id="lien-memo" href="/espace/documents/memo/">Mémorandum d'information</a>
-        </article>
-        <article class="carte bloc" id="bloc-preparation">
-          <p class="etiquette">04 · Votre préparation</p><h2>Votre <em>préparation</em></h2>
-          <div class="jauge"><span></span></div>
-          <p>Les pièces qu'un repreneur vous demandera. Cochez-les au fur et à mesure.</p>
-          <a class="lien-discret" href="#checklist">Voir la liste</a>
-        </article>
+      <h2 class="titre-docs">Vos <em>documents</em></h2>
+      <div class="guide-docs docs-dossier">
+        <a class="carte guide-doc" id="doc-valorisation" href="/espace/valorisation/"><strong>Valorisation détaillée</strong><span class="petit doc-etat"></span><span class="fleche" aria-hidden="true">→</span></a>
+        <a class="carte guide-doc" id="doc-datapack" href="#" download><strong>Datapack Excel</strong><span class="petit doc-etat"></span><span class="fleche" aria-hidden="true">↓</span></a>
+        <a class="carte guide-doc" id="doc-teaser" href="/espace/documents/teaser/"><strong>Teaser anonymisé</strong><span class="petit doc-etat"></span><span class="fleche" aria-hidden="true">→</span></a>
+        <a class="carte guide-doc" id="doc-memo" href="/espace/documents/memo/"><strong>Mémorandum d'information</strong><span class="petit doc-etat"></span><span class="fleche" aria-hidden="true">→</span></a>
       </div>
+      <p class="petit lien-detaille"><a id="lien-detaille" href="/espace/valorisation/">Mode détaillé</a> : toutes les lignes de vos comptes, le questionnaire et les réglages de la valorisation.</p>
 
-      <div class="checklist-zone" id="checklist">
-        <h2>Pièces à <em>réunir</em></h2>
+      <details class="checklist-zone" id="checklist">
+        <summary><span class="checklist-titre">Pièces à <em>réunir</em></span> <span class="petit" id="checklist-compte"></span></summary>
         <p class="petit">Liste indicative des documents habituellement demandés lors d'un audit d'acquisition. Votre avocat ou votre expert-comptable peut la compléter.</p>
         <div id="checklist-groupes"></div>
-      </div>
+      </details>
 
-      <div class="dossier-actions">
-        <button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button>
+      <details class="gerer-dossier">
+        <summary>Gérer mon dossier</summary>
+        <p class="petit">La suppression efface définitivement le dossier, vos chiffres, vos réponses et tous les fichiers générés.</p>
         <button class="btn btn-danger" type="button" id="btn-supprimer">Supprimer mon dossier</button>
-      </div>
+      </details>
     </div>
   </section>
 

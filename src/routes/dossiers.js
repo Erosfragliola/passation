@@ -77,7 +77,7 @@ async function detail(env, row) {
     documents: Object.fromEntries(docs.results.map((d) => [d.kind, { version: d.version, le: d.le }])),
     avancement: avancement({
       estimation_express: entreprise.estimation?.statut === "ok", checklist: coches,
-      chiffres_valides: complets / EXERCICES_MAX, valorisation_approfondie: synthese?.central != null, documents: docs.results.length,
+      chiffres_valides: complets / EXERCICES_MAX, questionnaire_pct: questionnaire.pct, valorisation_approfondie: synthese?.central != null, documents: docs.results.length,
     }),
   };
 }

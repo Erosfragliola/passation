@@ -1,4 +1,4 @@
-// Tableau de bord du dossier : en-tête, avancement des 4 blocs, checklist, suppression, déconnexion.
+// Tableau de bord du dossier : en-tête, prochaine étape, état des 4 documents, checklist repliée, gestion du dossier.
 import { CHECKLIST } from "/js/dossier-regles.js";
 import { fourchette } from "/js/landing/estimation.js"; // même arrondi que l'écran de résultat de la landing
 
@@ -47,35 +47,39 @@ function afficher({ checklist = true } = {}) {
   } else {
     $("#estimation-valeur").textContent = "À affiner";
   }
-  document.querySelectorAll(".lien-parcours").forEach((l) => { l.href = `/espace/valorisation/?dossier=${dossier.id}#${l.dataset.ancre}`; });
-  $("#lien-datapack").href = `/api/dossiers/${dossier.id}/documents/datapack`;
-  $("#lien-teaser").href = `/espace/documents/teaser/?dossier=${dossier.id}`;
-  $("#lien-memo").href = `/espace/documents/memo/?dossier=${dossier.id}`;
-  if (dossier.documents?.datapack) $("#detail-documents").textContent = `Datapack : version ${dossier.documents.datapack.version}.`;
-  const parcours = dossier.parcours;
-  $("#prochaine-etape").href = `/espace/demarrer/?dossier=${dossier.id}`;
-  const complet = dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && parcours?.valorisation;
-  const [texte, detail] = !parcours?.exercices_complets ? ["Déposer votre liasse fiscale", "Le seul document à fournir. Nous lisons les chiffres, vous confirmez."]
+  const id = dossier.id, parcours = dossier.parcours, docs = dossier.documents || {};
+  const complet = docs.memo && docs.teaser && docs.datapack && parcours?.valorisation;
+  $("#prochaine-etape").href = `/espace/demarrer/?dossier=${id}`;
+  const [texte, detail] = !parcours?.exercices_complets ? ["Confirmer vos chiffres", "Votre liasse fiscale, ou une dizaine de montants saisis à la main."]
     : parcours.questionnaire.pct < 40 ? ["Répondre à quelques questions", "Des écrans courts, la plupart en un clic."]
     : !complet ? ["Lancer la rédaction de votre dossier", "Valorisation, datapack, teaser et mémorandum, d'un coup."]
     : ["Relire votre dossier", "Tout est rédigé : relisez avant de diffuser."];
   $("#prochaine-texte").textContent = texte; $("#prochaine-detail").textContent = detail;
-  if (parcours) {
-    $("#detail-chiffres").textContent = `${parcours.exercices_complets} exercice${parcours.exercices_complets > 1 ? "s" : ""} complet${parcours.exercices_complets > 1 ? "s" : ""} sur ${parcours.exercices_attendus}.`;
-    $("#detail-valorisation").textContent = `Questionnaire : ${parcours.questionnaire.pct} %.`;
-    if (parcours.valorisation?.central != null) {
-      $("#estimation-legende").textContent = "Valorisation approfondie · valeur des titres";
-      $("#estimation-valeur").textContent = fourchette(parcours.valorisation.bas, parcours.valorisation.haut);
-    }
+  if (parcours?.valorisation?.central != null) {
+    $("#estimation-legende").textContent = "Valorisation approfondie · valeur des titres";
+    $("#estimation-valeur").textContent = fourchette(parcours.valorisation.bas, parcours.valorisation.haut);
   }
+  // Les 4 documents : un état clair, prêt ou à venir (un document à venir n'est pas un lien)
+  const chiffresOk = (parcours?.exercices_complets || 0) > 0;
+  const version = (d) => (d?.version > 1 ? ` · version ${d.version}` : "");
+  const docsEtat = [
+    ["valorisation", `/espace/valorisation/?dossier=${id}#valorisation`, parcours?.valorisation?.central != null, "Prête : trois méthodes, hypothèses et sources", "Après vos chiffres et quelques questions"],
+    ["datapack", `/api/dossiers/${id}/documents/datapack`, chiffresOk, `Prêt : Excel, 9 onglets${version(docs.datapack)}`, "Dès qu'un exercice est confirmé"],
+    ["teaser", `/espace/documents/teaser/?dossier=${id}`, Boolean(docs.teaser), `Prêt${version(docs.teaser)}`, "Rédigé avec votre dossier"],
+    ["memo", `/espace/documents/memo/?dossier=${id}`, Boolean(docs.memo), `Prêt${version(docs.memo)}`, "Rédigé avec votre dossier"],
+  ];
+  for (const [k, href, pret, oui, non] of docsEtat) {
+    const a = $(`#doc-${k}`);
+    a.querySelector(".doc-etat").textContent = pret ? oui : non;
+    a.classList.toggle("a-venir", !pret);
+    if (pret) { a.href = href; a.removeAttribute("aria-disabled"); a.removeAttribute("tabindex"); }
+    else { a.removeAttribute("href"); a.setAttribute("aria-disabled", "true"); }
+  }
+  $("#lien-detaille").href = `/espace/valorisation/?dossier=${id}#chiffres`;
   const a = dossier.avancement;
   $("#avancement-global").textContent = `${a.global} %`;
   jauge($("#jauge-globale"), a.global);
-  for (const [bloc, cle] of [["chiffres", "chiffres"], ["valorisation", "valorisation"], ["documents", "documents"], ["preparation", "preparation"]]) {
-    const j = $(`#bloc-${bloc} .jauge`);
-    j.setAttribute("role", "progressbar"); j.setAttribute("aria-label", `Avancement : ${a[cle]} %`);
-    jauge(j, a[cle]);
-  }
+  $("#checklist-compte").textContent = `${dossier.checklist.length} sur ${CHECKLIST.reduce((n, g) => n + g.items.length, 0)}`;
   if (checklist) dessinerChecklist();
 }
 
