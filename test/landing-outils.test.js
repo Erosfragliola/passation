@@ -46,6 +46,11 @@ describe("contrastes (WCAG AA)", () => {
       expect(contraste(texte, fond), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(3);
     }
   });
+  it("étiquettes kraft (sur-titres) : texte lisible jusque sur le kraft le plus foncé", () => {
+    // Mesuré sur kraft-recto.webp : #CBA26F en moyenne, #AE8B5E à un écart-type plus sombre ; texte #2E1F12
+    expect(css).toMatch(/color: #2E1F12;\s*background: #CBA26F/);
+    for (const fond of ["#CBA26F", "#AE8B5E"]) expect(contraste("#2E1F12", fond), `sur ${fond}`).toBeGreaterThanOrEqual(4.5);
+  });
   it("mots-clés en grand (ocre) : 3:1 au moins, et pas assez pour du texte courant", () => {
     expect(contraste(jeton("ocre"), jeton("creme"))).toBeGreaterThanOrEqual(3);
     expect(contraste(jeton("ocre"), jeton("creme"))).toBeLessThan(4.5);

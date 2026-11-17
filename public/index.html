@@ -54,6 +54,7 @@
     <div class="nav-centre">
       <ul class="nav-liens">
         <li><a href="#comment" data-t="nav.comment"></a></li>
+        <li><a href="#livrables" data-t="nav.livrables"></a></li>
         <li><a href="#confidentialite" data-t="nav.confidentialite"></a></li>
         <li data-si="guides:3"><a href="#guides" data-t="nav.guides"></a></li>
         <li><a href="#questions" data-t="nav.questions"></a></li>
@@ -80,6 +81,7 @@
   </nav>
   <div class="nav-mobile" id="nav-mobile" hidden>
     <a href="#comment" data-t="nav.comment"></a>
+    <a href="#livrables" data-t="nav.livrables"></a>
     <a href="#confidentialite" data-t="nav.confidentialite"></a>
     <a href="#guides" data-si="guides:3" data-t="nav.guides"></a>
     <a href="#questions" data-t="nav.questions"></a>
@@ -142,7 +144,7 @@
         <li><a href="#comment-1"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><strong data-t="hero.tuiles.liste.0.titre"></strong><span data-t="hero.tuiles.liste.0.texte"></span></a></li>
         <li><a href="#comment-2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M2.5 20h19"/></svg><strong data-t="hero.tuiles.liste.1.titre"></strong><span data-t="hero.tuiles.liste.1.texte"></span></a></li>
         <li><a href="#confidentialite"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><strong data-t="hero.tuiles.liste.2.titre"></strong><span data-t="hero.tuiles.liste.2.texte"></span></a></li>
-        <li><a href="#comment-3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14 3v5h5M9 12.5h7M9 16.5h5"/></svg><strong data-t="hero.tuiles.liste.3.titre"></strong><span data-t="hero.tuiles.liste.3.texte"></span></a></li>
+        <li><a href="#livrables"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14 3v5h5M9 12.5h7M9 16.5h5"/></svg><strong data-t="hero.tuiles.liste.3.titre"></strong><span data-t="hero.tuiles.liste.3.texte"></span></a></li>
       </ul>
     </div>
   </section>
@@ -248,18 +250,15 @@
     </div>
   </section>
 
-  <!-- 3. Comment ça marche : trois onglets (public/js/landing/onglets.js). Sans JavaScript, les trois étapes se
-       suivent. Les liens #comment-1, -2, -3 ouvrent la bonne étape. -->
+  <!-- 3. Comment ça marche : les trois étapes visibles d'un coup, en frise (horizontale sur ordinateur, verticale
+       sur téléphone). Les liens #comment-1, -2, -3 mènent à chaque étape. -->
   <section id="comment" class="bloc comment" aria-labelledby="titre-comment">
     <div class="conteneur">
-      <p class="surtitre" data-t="comment.surtitre"></p>
+      <p class="surtitre etiquette-kraft" data-t="comment.surtitre"></p>
       <h2 id="titre-comment" data-t="comment.titre"></h2>
-      <div class="onglets" role="tablist" data-t-attr="aria-label=comment.onglets" hidden>
-        <button type="button" role="tab" id="onglet-1" aria-controls="etape-1" aria-selected="true" data-t="comment.etapes.0.onglet"></button>
-        <button type="button" role="tab" id="onglet-2" aria-controls="etape-2" aria-selected="false" tabindex="-1" data-t="comment.etapes.1.onglet"></button>
-        <button type="button" role="tab" id="onglet-3" aria-controls="etape-3" aria-selected="false" tabindex="-1" data-t="comment.etapes.2.onglet"></button>
-      </div>
-      <div class="etape-panneau" role="tabpanel" id="etape-1" aria-labelledby="onglet-1" tabindex="0">
+      <ol class="comment-frise">
+        <li class="comment-etape" id="comment-1">
+          <span class="etape-numero" aria-hidden="true">1</span>
         <div class="etape-visuel">
           <div class="carte-resultat">
             <p class="mono-ocre" data-t="comment.visuel1.entete"></p>
@@ -281,8 +280,9 @@
             <li data-t="comment.etapes.0.pastilles.1"></li>
           </ul>
         </div>
-      </div>
-      <div class="etape-panneau" role="tabpanel" id="etape-2" aria-labelledby="onglet-2" tabindex="0">
+      </li>
+        <li class="comment-etape" id="comment-2">
+          <span class="etape-numero" aria-hidden="true">2</span>
         <div class="etape-visuel">
           <div class="carte-methodes">
             <svg class="trombone" viewBox="0 0 24 64" aria-hidden="true"><path d="M15 20v28a4.5 4.5 0 0 1-9 0V11a7.5 7.5 0 0 1 15 0v40a10.5 10.5 0 0 1-21 0V22"/></svg>
@@ -303,8 +303,9 @@
             <li data-si="prix_etape2" data-t="comment.etapes.1.pastilles.1"></li>
           </ul>
         </div>
-      </div>
-      <div class="etape-panneau" role="tabpanel" id="etape-3" aria-labelledby="onglet-3" tabindex="0">
+      </li>
+        <li class="comment-etape" id="comment-3">
+          <span class="etape-numero" aria-hidden="true">3</span>
         <div class="etape-visuel">
           <div class="rangee-cles" role="img" data-t-attr="aria-label=comment.visuel3.alt" data-rangee-cles></div>
         </div>
@@ -318,35 +319,66 @@
             <li data-si="prix_dossier" data-t="comment.etapes.2.pastilles.1"></li>
           </ul>
         </div>
-      </div>
+      </li>
+      </ol>
     </div>
   </section>
 
-  <!-- 4. Pourquoi Passation : trois cartes -->
+  <!-- 4. Pourquoi Passation : la confidentialité d'abord (carte verte, le dossier fictif sous nom de code), puis trois
+       cartes de même structure (titre, texte, visuel en bas) -->
   <section id="pourquoi" class="bloc pourquoi" aria-labelledby="titre-pourquoi">
     <div class="conteneur">
-      <p class="surtitre" data-t="pourquoi.surtitre"></p>
+      <p class="surtitre etiquette-kraft" data-t="pourquoi.surtitre"></p>
       <h2 id="titre-pourquoi" data-t="pourquoi.titre"></h2>
+      <div class="carte-large carte-verte confid-carte" id="confidentialite" aria-labelledby="titre-confid">
+        <div class="confid-texte">
+          <p class="surtitre etiquette-kraft" data-t="confidentialite.surtitre"></p>
+          <h3 class="titre-section" id="titre-confid" data-t="confidentialite.titre"></h3>
+          <p class="chapo" data-t="confidentialite.texte"></p>
+          <ul class="garanties-cochees">
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.0.titre"></p><p data-t="confidentialite.garanties.0.texte"></p></div></li>
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.1.titre"></p><p data-t="confidentialite.garanties.1.texte"></p></div></li>
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.2.titre"></p><p data-t="confidentialite.garanties.2.texte"></p></div></li>
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.3.titre"></p><p data-t="confidentialite.garanties.3.texte"></p></div></li>
+        </ul>
+          <a class="btn btn-creme" href="/confidentialite" data-t="confidentialite.politique"></a>
+        </div>
+        <div class="confid-dossier">
+          <div class="dossier-vitrine" aria-hidden="true" data-dossier-final></div>
+          <p class="histoire-fictif" data-t="confidentialite.fictif"></p>
+        </div>
+      </div>
       <div class="pourquoi-cartes">
         <article class="carte-claire">
           <h3 data-t="pourquoi.cartes.0.titre"></h3>
           <p data-t="pourquoi.cartes.0.texte"></p>
-          <img class="pourquoi-photo" data-si="photo_dirigeant" data-t-attr="src=cles.photo_dirigeant; alt=pourquoi.photo_alt" width="720" height="540" loading="lazy">
-          <img class="pourquoi-photo" data-sinon="photo_dirigeant" src="/img/photos/hero-poster-800.webp" srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w"
-               sizes="(min-width: 1024px) 400px, 100vw" data-t-attr="alt=pourquoi.photo_alt" width="800" height="422" loading="lazy">
+          <div class="pourquoi-visuel">
+            <img class="pourquoi-photo" data-si="photo_dirigeant" data-t-attr="src=cles.photo_dirigeant; alt=pourquoi.photo_alt" width="720" height="540" loading="lazy">
+            <img class="pourquoi-photo" data-sinon="photo_dirigeant" src="/img/photos/hero-poster-800.webp" srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w"
+                 sizes="(min-width: 1024px) 400px, 100vw" data-t-attr="alt=pourquoi.photo_alt" width="800" height="422" loading="lazy">
+          </div>
         </article>
-        <article class="carte-verte">
-          <p class="pourquoi-chiffre" aria-hidden="true" data-t="pourquoi.cartes.1.chiffre"></p>
+        <article class="carte-claire">
           <h3 data-t="pourquoi.cartes.1.titre"></h3>
           <p data-t="pourquoi.cartes.1.texte"></p>
-          <a class="btn btn-creme" href="#comment-2" data-t="pourquoi.cartes.1.bouton"></a>
+          <div class="pourquoi-visuel hypotheses" aria-hidden="true">
+            <p class="mono-ocre" data-t="pourquoi.cartes.1.visuel.entete"></p>
+            <ul>
+              <li><span data-t="pourquoi.cartes.1.visuel.lignes.0"></span><i class="cellule"></i><small data-t="pourquoi.cartes.1.visuel.source"></small></li>
+              <li><span data-t="pourquoi.cartes.1.visuel.lignes.1"></span><i class="cellule"></i><small data-t="pourquoi.cartes.1.visuel.source"></small></li>
+              <li><span data-t="pourquoi.cartes.1.visuel.lignes.2"></span><i class="cellule"></i><small data-t="pourquoi.cartes.1.visuel.source"></small></li>
+            </ul>
+            <p class="hypotheses-legende"><i class="cellule"></i> <span data-t="pourquoi.cartes.1.visuel.modifiable"></span></p>
+          </div>
         </article>
         <article class="carte-claire">
           <h3 data-t="pourquoi.cartes.2.titre"></h3>
           <p data-t="pourquoi.cartes.2.texte"></p>
-          <div class="pourquoi-dossier">
-            <div class="dossier-vitrine" aria-hidden="true" data-dossier-final></div>
-            <p class="histoire-fictif" data-t="pourquoi.fictif"></p>
+          <div class="pourquoi-visuel fichiers" aria-hidden="true">
+            <p class="fichier fichier-xlsx"><b>XLSX</b><span data-t="pourquoi.cartes.2.visuel.fichiers.0"></span></p>
+            <p class="fichier fichier-pdf"><b>PDF</b><span data-t="pourquoi.cartes.2.visuel.fichiers.1"></span></p>
+            <p class="fichier fichier-pdf"><b>PDF</b><span data-t="pourquoi.cartes.2.visuel.fichiers.2"></span></p>
+            <p class="fichiers-mention" data-t="pourquoi.cartes.2.visuel.mention"></p>
           </div>
         </article>
       </div>
@@ -354,25 +386,80 @@
     </div>
   </section>
 
-  <!-- 5. Confidentialité : carte verte, quatre garanties, le dossier de l'exemple fictif dans son état final -->
-  <section id="confidentialite" class="bloc-carte" aria-labelledby="titre-confid">
-    <div class="carte-large carte-verte confid-carte">
-      <div class="confid-texte">
-        <p class="surtitre" data-t="confidentialite.surtitre"></p>
-        <h2 id="titre-confid" data-t="confidentialite.titre"></h2>
-        <p class="chapo" data-t="confidentialite.texte"></p>
-        <ul class="garanties-cochees">
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.0.titre"></p><p data-t="confidentialite.garanties.0.texte"></p></div></li>
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.1.titre"></p><p data-t="confidentialite.garanties.1.texte"></p></div></li>
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.2.titre"></p><p data-t="confidentialite.garanties.2.texte"></p></div></li>
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.3.titre"></p><p data-t="confidentialite.garanties.3.texte"></p></div></li>
-        </ul>
-        <a class="btn btn-creme" href="/confidentialite" data-t="confidentialite.politique"></a>
-      </div>
-      <div class="confid-dossier">
-        <div class="dossier-vitrine" aria-hidden="true" data-dossier-final></div>
-        <p class="histoire-fictif" data-t="confidentialite.fictif"></p>
-      </div>
+  <!-- 5. Ce que vous recevez : les trois documents en aperçu (exemple fictif « Projet Chêne », décor en HTML) -->
+  <section id="livrables" class="bloc livrables" aria-labelledby="titre-livrables">
+    <div class="conteneur">
+      <p class="surtitre etiquette-kraft" data-t="livrables.surtitre"></p>
+      <h2 id="titre-livrables" data-t="livrables.titre"></h2>
+      <p class="chapo" data-t="livrables.texte"></p>
+      <ul class="livrables-liste">
+        <li class="livrable">
+          <div class="livrable-apercu" aria-hidden="true">
+            <div class="feuille feuille-teaser">
+              <p class="feuille-entete" data-t="livrables.teaser.entete"></p>
+              <p class="mini-tampon" data-t="livrables.teaser.nom"></p>
+              <dl>
+                <div><dt data-t="livrables.teaser.lignes.0.0"></dt><dd data-t="livrables.teaser.lignes.0.1"></dd></div>
+                <div><dt data-t="livrables.teaser.lignes.1.0"></dt><dd data-t="livrables.teaser.lignes.1.1"></dd></div>
+                <div><dt data-t="livrables.teaser.lignes.2.0"></dt><dd data-t="livrables.teaser.lignes.2.1"></dd></div>
+                <div><dt data-t="livrables.teaser.lignes.3.0"></dt><dd data-t="livrables.teaser.lignes.3.1"></dd></div>
+              </dl>
+              <p class="feuille-texte"><i></i><i></i><i></i></p>
+              <p class="feuille-valeur"><span data-t="livrables.teaser.valeur_libelle"></span> <b data-t="livrables.teaser.valeur"></b></p>
+            </div>
+          </div>
+          <p class="livrable-type" data-t="livrables.docs.0.type"></p>
+          <h3 data-t="livrables.docs.0.titre"></h3>
+          <p data-t="livrables.docs.0.texte"></p>
+          <p class="livrable-format" data-t="livrables.docs.0.format"></p>
+        </li>
+        <li class="livrable">
+          <div class="livrable-apercu" aria-hidden="true">
+            <div class="feuille feuille-memo">
+              <p class="feuille-entete"><span data-t="livrables.memo.entete"></span><span data-t="livrables.memo.mention"></span></p>
+              <p class="feuille-titre" data-t="livrables.memo.nom"></p>
+              <p class="feuille-sommaire" data-t="livrables.memo.sommaire"></p>
+              <ol>
+                <li><b data-t="histoire.chapitres.0.numero"></b><span data-t="histoire.chapitres.0.titre"></span></li>
+                <li><b data-t="histoire.chapitres.1.numero"></b><span data-t="histoire.chapitres.1.titre"></span></li>
+                <li><b data-t="histoire.chapitres.2.numero"></b><span data-t="histoire.chapitres.2.titre"></span></li>
+                <li><b data-t="histoire.chapitres.3.numero"></b><span data-t="histoire.chapitres.3.titre"></span></li>
+                <li><b data-t="histoire.chapitres.4.numero"></b><span data-t="histoire.chapitres.4.titre"></span></li>
+                <li><b data-t="histoire.chapitres.5.numero"></b><span data-t="histoire.chapitres.5.titre"></span></li>
+                <li><b data-t="histoire.chapitres.6.numero"></b><span data-t="histoire.chapitres.6.titre"></span></li>
+                <li><b data-t="histoire.chapitres.7.numero"></b><span data-t="histoire.chapitres.7.titre"></span></li>
+                <li><b data-t="histoire.chapitres.8.numero"></b><span data-t="histoire.chapitres.8.titre"></span></li>
+              </ol>
+            </div>
+          </div>
+          <p class="livrable-type" data-t="livrables.docs.1.type"></p>
+          <h3 data-t="livrables.docs.1.titre"></h3>
+          <p data-t="livrables.docs.1.texte"></p>
+          <p class="livrable-format" data-t="livrables.docs.1.format"></p>
+        </li>
+        <li class="livrable">
+          <div class="livrable-apercu" aria-hidden="true">
+            <div class="feuille feuille-tableur">
+              <p class="tableur-fichier" data-t="livrables.datapack.fichier"></p>
+              <p class="tableur-formule"><b>fx</b><span data-t="livrables.datapack.formule"></span></p>
+              <div class="tableur-grille">
+                <span></span><span>A</span><span>B</span><span>C</span>
+                <span>1</span><span data-t="livrables.datapack.lignes.0"></span><span class="barre" style="--d: 22%; --l: 46%"></span><span></span>
+                <span>2</span><span data-t="livrables.datapack.lignes.1"></span><span class="barre" style="--d: 30%; --l: 40%"></span><span class="jaune"></span>
+                <span>3</span><span data-t="livrables.datapack.lignes.2"></span><span class="barre" style="--d: 18%; --l: 44%"></span><span></span>
+                <span>4</span><span class="gras" data-t="livrables.datapack.retenue"></span><span class="gras valeur" data-t="livrables.datapack.valeur"></span><span class="actif"></span>
+              </div>
+              <p class="tableur-onglets"><span data-t="livrables.datapack.onglets.0"></span><span data-t="livrables.datapack.onglets.1"></span><span data-t="livrables.datapack.onglets.2"></span><span data-t="livrables.datapack.onglets.3"></span><span data-t="livrables.datapack.onglets.4"></span><span data-t="livrables.datapack.onglets.5"></span><span data-t="livrables.datapack.onglets.6"></span><span data-t="livrables.datapack.onglets.7"></span><span class="actif" data-t="livrables.datapack.onglets.8"></span></p>
+              <p class="tableur-legende"><i class="jaune"></i> <span data-t="livrables.datapack.hypothese"></span></p>
+            </div>
+          </div>
+          <p class="livrable-type" data-t="livrables.docs.2.type"></p>
+          <h3 data-t="livrables.docs.2.titre"></h3>
+          <p data-t="livrables.docs.2.texte"></p>
+          <p class="livrable-format" data-t="livrables.docs.2.format"></p>
+        </li>
+      </ul>
+      <p class="livrables-fictif" data-t="livrables.fictif"></p>
     </div>
   </section>
 
@@ -380,7 +467,7 @@
   <section id="equipe" class="bloc equipe" aria-labelledby="titre-equipe" data-si="fondateur_nom fondateur_texte">
     <div class="conteneur equipe-grille">
       <div class="equipe-texte">
-        <p class="surtitre" data-t="equipe.surtitre"></p>
+        <p class="surtitre etiquette-kraft" data-t="equipe.surtitre"></p>
         <h2 id="titre-equipe" data-t="equipe.titre"></h2>
         <p class="chapo" data-t="equipe.texte"></p>
         <blockquote class="equipe-citation"><p data-t="equipe.citation"></p></blockquote>
@@ -397,7 +484,7 @@
   <!-- 7. Ils l'ont fait : retirée tant que deux témoignages au moins ne sont pas fournis -->
   <section id="preuves" class="bloc-carte" aria-labelledby="titre-preuves" data-si="temoignages:2">
     <div class="carte-large carte-sable">
-      <p class="surtitre" data-t="preuves.surtitre"></p>
+      <p class="surtitre etiquette-kraft" data-t="preuves.surtitre"></p>
       <h2 id="titre-preuves" data-t="preuves.titre"></h2>
       <dl class="preuves-chiffres">
         <div data-si="chiffres.entreprises_estimees"><dt data-t="preuves.entreprises_libelle"></dt><dd data-t="preuves.entreprises"></dd></div>
@@ -421,7 +508,7 @@
   <!-- 8. Guides : retirée (avec le lien de l'en-tête) tant que trois guides ne sont pas fournis -->
   <section id="guides" class="bloc guides" aria-labelledby="titre-guides" data-si="guides:3">
     <div class="conteneur">
-      <p class="surtitre" data-t="guides.surtitre"></p>
+      <p class="surtitre etiquette-kraft" data-t="guides.surtitre"></p>
       <h2 id="titre-guides" data-t="guides.titre"></h2>
       <div class="guides-cartes">
         <a class="carte-guide" data-t-attr="href=cles.guides.0.url">
@@ -447,7 +534,7 @@
   <section id="questions" class="bloc" aria-labelledby="titre-faq">
     <div class="conteneur faq-grille">
       <div>
-        <p class="surtitre" data-t="questions.surtitre"></p>
+        <p class="surtitre etiquette-kraft" data-t="questions.surtitre"></p>
         <h2 id="titre-faq" data-t="questions.titre"></h2>
       </div>
       <div class="faq">
@@ -495,6 +582,19 @@
 
 <footer class="pied">
   <div class="pied-interieur">
+    <!-- Le trousseau : les neuf clés de l'histoire, suspendues à leur anneau (décoratif) -->
+    <div class="pied-trousseau" aria-hidden="true">
+      <img src="/img/landing/cles/k3.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -44deg; --z: 1">
+      <img src="/img/landing/cles/k1.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -33deg; --z: 3">
+      <img src="/img/landing/cles/k6.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -22deg; --z: 2">
+      <img src="/img/landing/cles/k0.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -11deg; --z: 5">
+      <img src="/img/landing/cles/k4.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 0deg; --z: 4">
+      <img src="/img/landing/cles/k8.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 11deg; --z: 6">
+      <img src="/img/landing/cles/k2.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 22deg; --z: 3">
+      <img src="/img/landing/cles/k7.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 33deg; --z: 2">
+      <img src="/img/landing/cles/k5.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 44deg; --z: 1">
+      <span class="pied-anneau"></span>
+    </div>
     <p class="pied-logo" aria-hidden="true">Passation</p>
     <div class="pied-colonnes">
       <div class="pied-legal">

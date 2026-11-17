@@ -4,9 +4,10 @@
 // l'écran (ou au-dessus) au chargement reste visible tout de suite. Le hero, le résultat et l'histoire ont leurs
 // propres animations et ne sont pas concernés.
 const CIBLES = [
-  "#comment .surtitre", "#comment h2", "#comment .onglets", "#comment .etape-panneau:not([hidden])",
-  "#pourquoi .surtitre", "#pourquoi h2", "#pourquoi .pourquoi-cartes > *", "#pourquoi .pourquoi-sources",
-  "#confidentialite .confid-texte > *", "#confidentialite .confid-dossier",
+  "#comment .surtitre", "#comment h2", "#comment .comment-etape",
+  "#pourquoi .surtitre", "#pourquoi h2", "#confidentialite .confid-texte > *", "#confidentialite .confid-dossier",
+  "#pourquoi .pourquoi-cartes > *", "#pourquoi .pourquoi-sources",
+  "#livrables .surtitre", "#livrables h2", "#livrables .chapo", "#livrables .livrable",
   "#questions .surtitre", "#questions h2", "#questions .faq > *",
   "#relance .carte-relance",
 ];
