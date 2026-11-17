@@ -21,25 +21,28 @@ describe("contrastes (WCAG AA)", () => {
     }
     expect(contraste("#8E5530", "#FBF6EC")).toBeCloseTo(5.58, 1);
   });
-  it("début clair : texte courant et sur-titres à 4,5:1 sur la page et sur le sable, mots-clés à 3:1", () => {
-    // Sable : #EDE5D9 au milieu du dégradé (là où sont les textes), #E2D8CA dans les coins
-    for (const fond of [jeton("page"), "#EDE5D9", "#E2D8CA"]) {
+  it("fonds crème (plus de sable) : texte courant et sur-titres à 4,5:1, mots-clés à 3:1", () => {
+    // Panneaux et scène de l'histoire : --fond-panneau, et le dégradé --fond-scene jusque dans ses coins (#F1EBE1)
+    const panneau = jeton("fond-panneau");
+    expect(panneau).toBe("#F5F0E7");
+    expect(css).not.toMatch(/#EDE5D9|carte-ocre/);
+    for (const fond of [jeton("page"), panneau, "#F8F3EA", "#F1EBE1"]) {
       for (const texte of ["encre", "encre-2", "sur-titre"]) expect(contraste(jeton(texte), fond), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(4.5);
+      expect(contraste(jeton("ocre-clair"), fond), `ocre-clair sur ${fond}`).toBeGreaterThanOrEqual(3);
     }
-    for (const fond of [jeton("page"), "#F3EDE3", "#EDE5D9"]) expect(contraste(jeton("ocre-clair"), fond), `ocre-clair sur ${fond}`).toBeGreaterThanOrEqual(3);
   });
-  it("nouvelle structure : cartes verte, ocre clair, sable et claire, pied de page", () => {
+  it("nouvelle structure : cartes verte (dont l'appel final), claire et panneaux crème, pied de page", () => {
     const vert = jeton("vert-carte"), clair = jeton("carte-claire");
     expect(vert).toBe("#1F3B2D");
     // Texte courant et petits textes : 4,5:1
     for (const [texte, fond] of [
       ["#F7F1EA", vert], ["#E3ECE5", vert], ["#CFE0D3", vert],           // carte verte : titres, texte, sur-titres
-      ["#5E554B", clair], ["#7A5C42", clair], ["#5E554B", "#EDE5D9"],     // cartes claires, étiquettes mono, sable
-      ["#7A5C42", jeton("page")], ["#4A4038", "#EAD7BE"],                 // sur-titres de section ; appel final
+      ["#5E554B", clair], ["#7A5C42", clair], ["#5E554B", jeton("fond-panneau")], // cartes claires, étiquettes mono, panneaux
+      ["#7A5C42", jeton("page")],                                         // sur-titres de section
       ["#CFC3B5", "#1E1A17"], ["#B8AD9F", "#1E1A17"], ["#1E1A17", "#EFE8DD"], // pied de page ; bouton secondaire
     ]) expect(contraste(texte, fond), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(4.5);
     // Grands chiffres et mots en italique : 3:1
-    for (const [texte, fond] of [["#E9C9A4", vert], ["#D9B48F", vert], ["#7A4F2A", "#EAD7BE"], ["#A8774A", clair]]) {
+    for (const [texte, fond] of [["#E9C9A4", vert], ["#D9B48F", vert], ["#A8774A", clair], [jeton("ocre-nuit"), vert]]) {
       expect(contraste(texte, fond), `${texte} sur ${fond}`).toBeGreaterThanOrEqual(3);
     }
   });

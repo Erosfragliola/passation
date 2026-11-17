@@ -8,6 +8,7 @@ import { chargerEntreprise } from "/js/landing/estimation.js";
 import { creerResultat } from "/js/landing/resultat.js";
 import { lancerOnglets } from "/js/landing/onglets.js";
 import { creerDossierFinal } from "/js/landing/histoire.js";
+import { lancerApparitions } from "/js/landing/apparitions.js";
 
 const $ = (s) => document.querySelector(s);
 const lire = (id) => { try { return JSON.parse(document.getElementById(id)?.textContent || "{}"); } catch { return {}; } };
@@ -71,3 +72,5 @@ document.addEventListener("click", (e) => {
 });
 if (location.hash) requestAnimationFrame(() => ouvrirEtape(location.hash));
 addEventListener("hashchange", () => ouvrirEtape(location.hash));
+
+lancerApparitions();

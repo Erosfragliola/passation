@@ -105,16 +105,16 @@
     },
     "temps2": {
       "surtitre": "Avec Passation",
-      "titre": "Chaque clé devient *un chapitre.*",
+      "titre": "Chaque clé devient un chapitre.",
       "texte": "Neuf chapitres que vos conseils et vos repreneurs comprennent, sans vous."
     },
     "temps3": {
       "surtitre": "Le dossier",
-      "titre": "Un dossier qui raconte, *chiffre et convainc.*",
+      "titre": "Un dossier qui raconte, chiffre et convainc.",
       "texte": "Le teaser : une page anonyme pour intéresser des repreneurs. Le mémo : l'histoire complète de votre entreprise. Le datapack : le fichier Excel des chiffres."
     },
     "temps4": {
-      "titre": "Et la *vôtre ?*",
+      "titre": "Et la vôtre ?",
       "texte": "Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
       "champ": "Et la vôtre ? Son nom ou son SIREN"
     },
@@ -201,7 +201,7 @@
   },
   "comment": {
     "surtitre": "Comment ça marche",
-    "titre": "Trois étapes, *sans surprise*.",
+    "titre": "Trois étapes, sans surprise.",
     "onglets": "Les trois étapes",
     "etapes": [
       {
@@ -244,7 +244,8 @@
       "infos": "Nantes (44) · créée en 1995 · 20 à 49 salariés",
       "valeur_libelle": "Première valeur",
       "valeur": "1,8 – 2,4 M€",
-      "mention": "Estimation indicative, non contractuelle."
+      "mention": "Estimation indicative, non contractuelle.",
+      "annotation": "votre première valeur"
     },
     "visuel2": {
       "entete": "Trois méthodes · exemple fictif",
@@ -261,7 +262,7 @@
   },
   "pourquoi": {
     "surtitre": "Pourquoi Passation",
-    "titre": "Pensé pour les PME, *pas pour les grands groupes*.",
+    "titre": "Pensé pour les PME, pas pour les grands groupes.",
     "cartes": [
       {
         "titre": "Les mots et les chiffres d’une PME",
@@ -286,7 +287,7 @@
   },
   "confidentialite": {
     "surtitre": "Confidentialité",
-    "titre": "Personne ne saura. *Sauf ceux que vous choisirez.*",
+    "titre": "Personne ne saura. Sauf ceux que vous choisirez.",
     "texte": "Préparer une cession demande de la discrétion. Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
     "garanties": [
       {
@@ -311,7 +312,7 @@
   },
   "equipe": {
     "surtitre": "Qui est derrière Passation",
-    "titre": "Des personnes, *pas un robot*.",
+    "titre": "Des personnes, pas un robot.",
     "texte": "{fondateur_texte}",
     "citation": "Une entreprise ne se vend pas. Elle se transmet.",
     "nom": "{fondateur_nom}",
@@ -324,7 +325,7 @@
   },
   "preuves": {
     "surtitre": "Ils l’ont fait",
-    "titre": "Ils ont préparé *leur cession*.",
+    "titre": "Ils ont préparé leur cession.",
     "entreprises": "{chiffres.entreprises_estimees}",
     "entreprises_libelle": "entreprises estimées",
     "note": "{note_avis}/5",
@@ -337,12 +338,12 @@
   },
   "guides": {
     "surtitre": "Pour tout comprendre",
-    "titre": "Les guides de *la transmission*.",
+    "titre": "Les guides de la transmission.",
     "etiquette": "Guide"
   },
   "questions": {
     "surtitre": "Questions fréquentes",
-    "titre": "Ce que les dirigeants *nous demandent*.",
+    "titre": "Ce que les dirigeants nous demandent.",
     "liste": [
       {
         "q": "Combien ça coûte ?",
@@ -416,7 +417,8 @@
   "relance": {
     "titre": "Et si on regardait *votre entreprise* ?",
     "texte": "C’est gratuit, sans compte, et vous aurez en 30 secondes une première idée de sa valeur.",
-    "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au"
+    "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
+    "tampon": "Gratuit · sans compte · 30 secondes ·"
   },
   "pied": {
     "identite": "",

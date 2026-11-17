@@ -268,6 +268,8 @@
             <p class="carte-resultat-valeur"><span data-t="comment.visuel1.valeur_libelle"></span> <strong data-t="comment.visuel1.valeur"></strong></p>
             <p class="carte-resultat-mention" data-t="comment.visuel1.mention"></p>
           </div>
+          <!-- Annotation manuscrite (décorative, le texte est déjà dans la carte) -->
+          <p class="annotation annotation-valeur" aria-hidden="true"><svg class="annotation-fleche" viewBox="0 0 90 56"><path d="M84 50c-18 3-44-2-62-26"/><path d="M22 24l11 2M22 24l1 11"/></svg><span data-t="comment.visuel1.annotation"></span></p>
         </div>
         <div class="etape-texte">
           <p class="etape-surtitre" data-t="comment.etapes.0.surtitre"></p>
@@ -283,6 +285,7 @@
       <div class="etape-panneau" role="tabpanel" id="etape-2" aria-labelledby="onglet-2" tabindex="0">
         <div class="etape-visuel">
           <div class="carte-methodes">
+            <svg class="trombone" viewBox="0 0 24 64" aria-hidden="true"><path d="M15 20v28a4.5 4.5 0 0 1-9 0V11a7.5 7.5 0 0 1 15 0v40a10.5 10.5 0 0 1-21 0V22"/></svg>
             <p class="mono-ocre" data-t="comment.visuel2.entete"></p>
             <div class="methode" style="--debut: 22%; --largeur: 46%"><p data-t="comment.visuel2.methodes.0"></p><span aria-hidden="true"><i></i></span></div>
             <div class="methode" style="--debut: 30%; --largeur: 40%"><p data-t="comment.visuel2.methodes.1"></p><span aria-hidden="true"><i></i></span></div>
@@ -465,7 +468,7 @@
 
   <!-- 11. Appel final : carte ocre clair, le champ partagé -->
   <section id="relance" class="bloc-carte relance" aria-labelledby="titre-relance">
-    <div class="carte-large carte-ocre">
+    <div class="carte-large carte-relance">
       <h2 id="titre-relance" data-t="relance.titre"></h2>
       <p class="relance-texte" data-t="relance.texte"></p>
       <form class="recherche relance-champ" action="/connexion" method="get" data-champ-siren="relance" data-zone-champ>
@@ -478,6 +481,13 @@
         <ul class="suggestions" id="suggestions-relance" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
         <p class="recherche-message" id="message-relance" role="status" data-message hidden></p>
       </form>
+      <!-- Tampon décoratif (le texte est déjà dans la phrase au-dessus) -->
+      <svg class="tampon-rond" viewBox="0 0 140 140" aria-hidden="true">
+        <defs><path id="tampon-cercle" d="M70 70m-51 0a51 51 0 1 1 102 0a51 51 0 1 1-102 0"/></defs>
+        <circle cx="70" cy="70" r="66" stroke-width="3"/><circle cx="70" cy="70" r="61" stroke-width="1"/><circle cx="70" cy="70" r="37" stroke-width="1.5"/>
+        <text textLength="312" lengthAdjust="spacing"><textPath href="#tampon-cercle" data-t="relance.tampon"></textPath></text>
+        <g transform="translate(54 50)" stroke-width="2.2"><path d="M9 27V15a7 7 0 0 1 14 0v12"/><path d="M5 27h22"/><circle cx="16" cy="21" r="2.6" class="plein"/></g>
+      </svg>
       <p class="relance-telephone" data-si="telephone"><span data-t="relance.telephone"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a>.</p>
     </div>
   </section>
