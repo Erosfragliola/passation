@@ -489,3 +489,13 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   `simplification-ux` et `esthetique-landing` fusionnées dans `main` (`b4c3cb2`), push, `wrangler deploy` (version
   Cloudflare c633bbf6). Vérifié en ligne : nouvelle page, estimation réelle 434436622 (290 – 490 k€, deux suites),
   routes privées 401, axe-core 0 violation, aucune erreur JavaScript.
+- **17/11/2026, landing v3 mise en ligne** (9 propositions retenues par le dirigeant, maquette avant/après validée) :
+  section « Ce que vous recevez » (teaser, mémorandum, datapack en aperçus HTML, exemple fictif) ; doublons retirés
+  (un seul dossier « Projet Chêne ») ; Pourquoi et Confidentialité réunis, confidentialité en premier ; « Exemple de
+  dossier » au menu ; « Comment ça marche » en frise sans onglets (`frise.js` remplace `onglets.js`, classes
+  `comment-frise` / `comment-etape` car `.frise` et `.etape` existent dans `styles.css`) ; une ligne de preuve sous
+  le champ et tuiles du hero dans le premier écran ; cartes Pourquoi de même structure ; sur-titres sur étiquettes
+  kraft (contraste testé sur la couleur mesurée de l'image) ; trousseau des neuf clés en pied de page.
+  Fusion `91efd56`, version Cloudflare 7a050746. Vérifié en ligne : sections et menu attendus, 9/9 clés visibles,
+  estimation réelle 434436622 (290 – 490 k€), routes privées 401, axe-core 0 violation, aucune erreur JavaScript.
+  Tests : 291. Page plus longue : environ 10 écrans sur ordinateur, 16 sur téléphone.
