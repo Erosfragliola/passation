@@ -776,7 +776,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 
 /* ---------- Parcours guidé (/espace/demarrer/) ---------- */
 .guide { padding: 120px 0 80px; min-height: 80vh; }
-.guide-etapes { list-style: none; padding: 0; margin: 10px 0 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: #696155; }
+.guide-etapes { list-style: none; padding: 0; margin: 10px 0 12px; display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: .8rem; color: #696155; }
 .guide-etapes li { display: inline-flex; align-items: center; gap: 6px; }
 .guide-etapes li span { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-family: var(--mono); font-size: 11px; border: 1px solid var(--trait-fort); }
 .guide-etapes li.fait span { background: var(--vert); color: var(--creme); border-color: var(--vert); }
@@ -806,6 +806,19 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 @media (max-width: 600px) { .guide-ligne { grid-template-columns: 1fr; } }
 .guide-champ { display: grid; gap: 8px; border: 0; padding: 0; margin: 0; }
 .guide-lib { font-weight: 500; margin: 0; }
+/* « Déjà fait » : ce que Passation sait avant toute saisie */
+.guide-deja { display: grid; gap: 6px; padding: 16px 20px; background: #E3EBE6; }
+.guide-deja ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.guide-deja li::before { content: "✓"; color: var(--vert); font-weight: 600; margin-right: 8px; }
+/* Saisie de l'essentiel : deux groupes, un champ par ligne */
+.saisie-groupe { display: grid; gap: 16px; border: 1px solid var(--trait-fort); border-radius: var(--r-carte); padding: 18px 20px 22px; margin: 0; }
+.saisie-groupe legend { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #696155; padding: 0 6px; }
+.saisie-champ { gap: 4px; }
+.saisie-champ .petit { margin: 0; }
+.saisie-champ .champ-unite input { text-align: right; font-variant-numeric: tabular-nums; }
+.saisie-groupe .lien-simple { justify-self: start; }
+.facultatif { font-weight: 400; color: #696155; font-size: .9em; }
+.guide-champ select { min-height: 46px; max-width: 200px; border-radius: 12px; border: 1px solid var(--trait-fort); background: var(--creme); padding: 0 12px; font: inherit; color: var(--espresso); }
 .puces-choix { display: flex; flex-wrap: wrap; gap: 10px; }
 .puce { min-height: 48px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--trait-fort); background: var(--creme); font: inherit; cursor: pointer; color: var(--espresso); }
 .puce:hover { border-color: var(--espresso); }

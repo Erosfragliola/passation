@@ -56,7 +56,7 @@ function afficher({ checklist = true } = {}) {
   $("#prochaine-etape").href = `/espace/demarrer/?dossier=${dossier.id}`;
   const complet = dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && parcours?.valorisation;
   const [texte, detail] = !parcours?.exercices_complets ? ["Déposer votre liasse fiscale", "Le seul document à fournir. Nous lisons les chiffres, vous confirmez."]
-    : parcours.questionnaire.pct < 40 ? ["Répondre à quelques questions", "Huit écrans courts, la plupart en un clic."]
+    : parcours.questionnaire.pct < 40 ? ["Répondre à quelques questions", "Des écrans courts, la plupart en un clic."]
     : !complet ? ["Lancer la rédaction de votre dossier", "Valorisation, datapack, teaser et mémorandum, d'un coup."]
     : ["Relire votre dossier", "Tout est rédigé : relisez avant de diffuser."];
   $("#prochaine-texte").textContent = texte; $("#prochaine-detail").textContent = detail;
