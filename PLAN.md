@@ -464,3 +464,20 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   cartes verte, sable et ocre ; plus d'établi en bois ni de vidéo après le hero ; sections et éléments retirés tant
   que leur clé est vide (liste « À me fournir » dans `docs/REFONTE-LANDING.md`). Lighthouse : accessibilité 100
   (ordinateur et téléphone), performance 99 et 98, décalage de mise en page 0. Tests : 289.
+- **17/11/2026, simplification de la prise en main** (branche `simplification-ux`, partie de `refonte-landing`, non
+  publiée) : revue UX de l'MVP (accueil, résultat, espace dirigeant, parcours guidé) puis corrections, à la demande
+  du dirigeant (« fais tout »).
+  - Résultat : « Garder mon estimation » et « L'affiner » menaient à la même connexion ; une seule action
+    principale « Ouvrir mon dossier, gratuitement », l'invitation de l'expert-comptable en secondaire.
+  - Cohérence : même fourchette partout (290 – 490 k€ et non 293 k€ – 489 k€ au tableau de bord) ; « Mon dossier »
+    dans toutes les barres ; la page de valorisation devient le « mode détaillé ».
+  - Parcours guidé : écran « Déjà fait » (entreprise, comptes publics, première valeur) ; sans liasse, saisie de
+    l'essentiel dans le parcours (un exercice, postes obligatoires, EBE public repris) au lieu du tableau de
+    22 lignes × 3 exercices ; le site devient la première question (lu pendant les suivantes, « pas de site »
+    enregistré).
+  - Tableau de bord : prochaine étape + état des 4 documents ; liste des pièces et suppression repliées ;
+    déconnexion en haut. Avancement global selon les étapes du parcours : 25 % à l'arrivée au lieu de 6 %.
+  - Landing : histoire des clés en 280vh au lieu de 400vh (8,7 écrans au lieu de 9,9).
+  - Non fait, en attente du dirigeant : prix (`prix_dossier`, `faq_prix`) et fondateur ; écrans de rédaction non
+    revus en local (lecture par Claude inactive sans clé).
+  - Tests : 289 ; parcours vérifié dans le navigateur (1440 et 390 px) jusqu'à la deuxième question.
