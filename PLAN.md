@@ -481,3 +481,11 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   - Non fait, en attente du dirigeant : prix (`prix_dossier`, `faq_prix`) et fondateur ; écrans de rédaction non
     revus en local (lecture par Claude inactive sans clé).
   - Tests : 289 ; parcours vérifié dans le navigateur (1440 et 390 px) jusqu'à la deuxième question.
+- **17/11/2026, retouches esthétiques de la landing** (choix du dirigeant, hero inchangé) : fonds crème, vert et noir
+  seulement (plus de sable ni d'ocre) ; italique serif sur 3 titres au lieu de 13 ; tampon rond sur l'appel final,
+  annotation manuscrite et trombone dans « Comment ça marche » ; apparitions au défilement
+  (`public/js/landing/apparitions.js`). axe-core 0 violation, décalage de mise en page 0.
+- **17/11/2026, mise en ligne** (accord du dirigeant) : `refonte-landing` (structure de l'accueil du 13/11),
+  `simplification-ux` et `esthetique-landing` fusionnées dans `main` (`b4c3cb2`), push, `wrangler deploy` (version
+  Cloudflare c633bbf6). Vérifié en ligne : nouvelle page, estimation réelle 434436622 (290 – 490 k€, deux suites),
+  routes privées 401, axe-core 0 violation, aucune erreur JavaScript.
