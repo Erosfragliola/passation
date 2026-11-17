@@ -1,13 +1,10 @@
 // Tableau de bord du dossier : en-tête, avancement des 4 blocs, checklist, suppression, déconnexion.
 import { CHECKLIST } from "/js/dossier-regles.js";
+import { fourchette } from "/js/landing/estimation.js"; // même arrondi que l'écran de résultat de la landing
 
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
 let dossier = null;
-
-const euros = (v) => (Math.abs(v) >= 1e6
-  ? `${(v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} M€`
-  : `${Math.round(v / 1000).toLocaleString("fr-FR")} k€`);
 
 function message(texte, erreur = false) {
   const m = $("#espace-message");
@@ -46,7 +43,7 @@ function afficher({ checklist = true } = {}) {
   const est = dossier.estimation;
   if (est?.statut === "ok") {
     $("#estimation-legende").textContent = `Valorisation express · comptes ${est.exercice}`;
-    $("#estimation-valeur").textContent = `${euros(est.bas)} – ${euros(est.haut)}`;
+    $("#estimation-valeur").textContent = fourchette(est.bas, est.haut);
   } else {
     $("#estimation-valeur").textContent = "À affiner";
   }
@@ -68,7 +65,7 @@ function afficher({ checklist = true } = {}) {
     $("#detail-valorisation").textContent = `Questionnaire : ${parcours.questionnaire.pct} %.`;
     if (parcours.valorisation?.central != null) {
       $("#estimation-legende").textContent = "Valorisation approfondie · valeur des titres";
-      $("#estimation-valeur").textContent = `${euros(parcours.valorisation.bas)} – ${euros(parcours.valorisation.haut)}`;
+      $("#estimation-valeur").textContent = fourchette(parcours.valorisation.bas, parcours.valorisation.haut);
     }
   }
   const a = dossier.avancement;

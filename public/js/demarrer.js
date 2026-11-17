@@ -8,6 +8,7 @@
 import { CHAMPS } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, siteDepuisEmail } from "/js/parcours.js";
+import { fourchette } from "/js/landing/estimation.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -312,7 +313,7 @@ async function pret() {
   const s = val.resultat?.synthese;
   const aCompleter = [...(memo.sections || []).flatMap((x) => (x.a_completer || []).map((t) => `${x.titre} : ${t}`)), ...(s?.alertes || []).filter((a) => !/en option/.test(a))];
   remplir(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
-    s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${court(s.bas)} – ${court(s.haut)}` })) : null,
+    s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${fourchette(s.bas, s.haut)}` })) : null,
     el("div", { class: "guide-docs" },
       ...[["Valorisation détaillée", "Méthodes, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
         ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],

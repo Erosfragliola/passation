@@ -1,4 +1,4 @@
-// Parcours « Valorisation approfondie » : 1. Vos chiffres (liasse PDF + validation ligne par ligne),
+// Mode détaillé « Valorisation approfondie » : 1. Vos chiffres (liasse PDF + validation ligne par ligne),
 // 2. Votre entreprise (questionnaire, sauvegarde automatique), 3. Votre valorisation (calcul du serveur, réglages).
 // Aucun calcul de valeur ici : tout vient de l'API (code testé). Cette page affiche et recueille.
 import { CHAMPS } from "/js/champs-financiers.js";
@@ -476,6 +476,7 @@ function dessinerResultat() {
 async function charger() {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
   $("#lien-dossier").href = `/espace/?dossier=${id}`;
+  document.querySelectorAll(".lien-guide").forEach((a) => { a.href = `/espace/demarrer/?dossier=${id}`; });
   const [dossier, ch, rep] = await Promise.all([api(base), api(`${base}/financials`), api(`${base}/answers`)]);
   document.title = `Valorisation · ${dossier.entreprise.nom} · Passation`;
   $("#dossier-nom").textContent = dossier.entreprise.nom;

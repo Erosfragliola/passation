@@ -2,8 +2,8 @@
 // Chargement (au moins 1,2 s pour éviter un éclair, jamais plus que la réponse) ; puis à gauche le nom de code, la
 // première fourchette et la méthode réellement employée ; à droite le dossier : le vrai nom s'écrit (seul le
 // dirigeant le voit), des bandeaux noirs le recouvrent, le tampon tombe, le teaser anonyme s'affiche.
-// Comptes confidentiels : deux chiffres sur le même écran. Trois suites : garder (connexion par code), affiner
-// (même connexion, puis le parcours guidé), inviter l'expert-comptable (e-mail prérempli, aucune donnée jointe).
+// Comptes confidentiels : deux chiffres sur le même écran. Deux suites : ouvrir le dossier (connexion par code, puis
+// le parcours guidé), inviter l'expert-comptable (e-mail prérempli, aucune donnée jointe).
 import { creerDossier, couperNom } from "/js/landing/dossier.js";
 import { etatDemo, DEMO } from "/js/landing/demo-etat.js";
 import { estimationManuelle, fourchette, multiple, remplir } from "/js/landing/estimation.js";

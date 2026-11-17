@@ -149,6 +149,13 @@
 .resultat-suites li:first-child .suite span { color: var(--encre-2); }
 .suite strong { font-size: 18px; font-weight: 600; }
 .suite span { font-size: 16px; color: rgba(251, 246, 236, .8); }
+/* Une seule action principale (ouvrir le dossier) ; l'invitation de l'expert-comptable reste secondaire */
+.resultat-suites li:first-child .suite { padding: 20px 24px; }
+.resultat-suites li:first-child .suite strong { font-size: 21px; }
+.resultat-suites li:first-child .suite strong::after { content: " →"; }
+.resultat-suites li + li .suite { background: transparent; padding: 12px 20px; }
+.resultat-suites li + li .suite strong { font-size: 16px; }
+.resultat-suites li + li .suite span { font-size: 14px; }
 .resultat-autre { margin-top: 16px; }
 .resultat-dossier { width: 100%; max-width: 520px; justify-self: center; }
 
