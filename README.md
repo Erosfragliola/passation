@@ -24,10 +24,18 @@ npm test
 - `public/` : site statique (HTML, CSS, JS, polices, illustrations)
 - `src/` : Worker Cloudflare (API `/api/*`), `src/config.js` pour les modèles et les limites
 - `migrations/` : schéma de la base D1
-- `content/` : fiches de ressources en Markdown (étape 7)
+- `scripts/` : génération des images, des polices, des multiples et des jeux de test
 - `test/` : tests automatisés
+- `docs/` : méthode de valorisation (`valorisation-calculs.md`) et rapport de la refonte de l'accueil
+  (`REFONTE-LANDING.md`, captures dans `docs/refonte/`)
 
-## 3D « La cloche »
-- Code : `public/js/cloche/` (scène, rendu, vitrine, diorama, matériaux, textures calculées dans un Web Worker, passation).
-- Bibliothèques de rendu assemblées dans `public/vendor/rendu3d.js` par `npm run vendor:3d` (postprocessing, n8ao).
-- Mode `?debug` : compteur d'images par seconde et palier de qualité adaptative.
+## Branches
+
+| Branche | Contenu |
+|---|---|
+| `main` | Version de référence, celle qui est en ligne. |
+| `refonte-landing` | Suite de la refonte de l'accueil (13/11/2026) : hero, étapes en onglets, section « Pourquoi », champ SIREN, confidentialité, équipe, performance et accessibilité. Testée, pas encore fusionnée ni mise en ligne. |
+| `archive/3d-cloche` | Dernier état de `main` avec la maquette 3D « La cloche » (Three.js). Retirée de `main` le 17/11/2026 : la refonte de l'accueil ne la charge plus. Documentation : `docs/3D-V2.md` sur cette branche. |
+| `archive/3d-esquisse-edifice` | Variante 3D « De l'esquisse à l'édifice » (12/11/2026), non retenue. |
+
+Les branches `archive/` sont conservées pour mémoire et ne sont pas destinées à être fusionnées.

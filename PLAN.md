@@ -1,7 +1,7 @@
 # PASSATION : plan du projet
 
 > Statut : **validé le 10/11/2026**. Étape 1 livrée (voir §10).
-> Projet indépendant : aucun lien avec `~/Desktop/FREEDOM`.
+> Projet indépendant : aucun lien avec les autres projets de `~/Desktop/PROJETS` (dont FREEDOM).
 
 ## Décisions de l'utilisateur (10/11/2026)
 - **Sources** : je recherche les multiples, décotes et paramètres. Les sources sont citées **dans le code**

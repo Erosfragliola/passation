@@ -8,9 +8,9 @@ Le détail (architecture, schéma, routes, méthode, étapes) est dans `PLAN.md`
 Répondre en français, au vouvoiement dans l'interface. Commits en français.
 
 ## Périmètre
-- Travailler **uniquement** dans `~/Desktop/ÉTUDE/Msc CIB/Prog. & IA /PASSATION` (déplacé le 12/11/2026 ; attention à
-  l'espace finale de « Prog. & IA »). Ne jamais lire, modifier ni créer quoi que ce soit dans
-  `~/Desktop/FREEDOM` ou dans les autres projets. Ne réutiliser ni leur D1, ni leur R2, ni leurs secrets, ni leur Worker.
+- Travailler **uniquement** dans `~/Desktop/PROJETS/PASSATION/app` (déplacé le 17/11/2026). Ne jamais lire, modifier
+  ni créer quoi que ce soit dans les autres dossiers de `~/Desktop/PROJETS` (FREEDOM, CARROSSERIE-AUGIAS, MV-IMMO,
+  POISSONNERIE-MARIO, AUTRES). Ne réutiliser ni leur D1, ni leur R2, ni leurs secrets, ni leur Worker.
 - Une étape de `PLAN.md` à la fois. Montrer le résultat et attendre l'accord avant l'étape suivante.
 - Si c'est ambigu, coûteux ou difficile à défaire : demander avant d'agir.
 

@@ -194,11 +194,6 @@ section { padding: 88px 0; }
 /* ---------- Section 3D : le témoin ---------- */
 .temoin-grille { display: grid; gap: 40px; align-items: center; }
 @media (min-width: 980px) { .temoin-grille { grid-template-columns: 0.85fr 1.15fr; gap: 64px; } }
-.scene-3d { position: relative; aspect-ratio: 4 / 3.4; border-radius: 28px; overflow: hidden;
-  background: radial-gradient(120% 90% at 50% 30%, #3A3128 0%, var(--espresso) 70%); }
-.scene-3d canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; opacity: 0; transition: opacity .8s ease; }
-.scene-3d.scene-prete canvas { opacity: 1; }
-.scene-3d .legende { position: absolute; left: 18px; top: 16px; z-index: 1; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--pierre-nuit); }
 .temoin-points { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 14px; }
 .temoin-points li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; color: rgba(251, 246, 236, 0.86); }
 .temoin-points li span { font-family: var(--mono); font-size: 12px; color: var(--pierre-nuit); padding-top: 4px; }
@@ -330,22 +325,8 @@ section { padding: 88px 0; }
 .form-comptes { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
 .form-comptes label { display: grid; gap: 6px; font-size: .9rem; flex: 1 1 140px; }
 .form-comptes input { min-height: 46px; border-radius: 12px; border: 1px solid var(--trait-nuit); background: var(--creme); color: var(--espresso); padding: 0 12px; font: inherit; }
-.scene-3d.sans-3d { display: grid; place-items: center; }
-.scene-3d.sans-3d .legende { display: none; }
-/* La cloche : mains de la passation, infobulle, compteur ?debug, cadre doré sans WebGL */
-.scene-3d { background: #120e0b image-set(url("/img/photos/cloche-repos-800.webp") 1x, url("/img/photos/cloche-repos-1232.webp") 2x) center / cover no-repeat; cursor: grab; }
-.scene-3d.sans-3d { background-image: none; }
-.scene-3d:active { cursor: grabbing; }
-.passation-mains { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; transition: opacity .3s; }
-.passation-mains path { fill: none; stroke: var(--cuivre-clair); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-.infobulle-3d { position: absolute; transform: translate(-50%, calc(-100% - 14px)); padding: 7px 12px; border-radius: 10px; background: rgba(18, 14, 11, .88); color: var(--creme); font-size: .82rem; white-space: nowrap; pointer-events: none; border: 1px solid rgba(233, 201, 164, .35); }
-.compteur-ips { position: absolute; right: 12px; top: 10px; font-family: var(--mono); font-size: 11px; color: var(--cuivre-clair); background: rgba(0,0,0,.5); padding: 4px 8px; border-radius: 6px; }
-.cadre-dore { border: 2px solid var(--cuivre-clair); outline: 1px solid rgba(233, 201, 164, .35); outline-offset: 6px; padding: 18px; border-radius: 4px; }
 #estimation-valeur { font-variant-numeric: tabular-nums; }
-.facade-svg { width: 80%; }
 @media (prefers-reduced-motion: reduce) { .frise li { transition: none; } }
-/* Mobile : la maquette d'abord, la frise en dessous */
-@media (max-width: 979px) { #maquette .scene-3d { order: -1; } }
 
 /* Vidéo du hero : posée sur l'image de couverture, fondu à la lecture */
 .hero-fond { position: absolute; }
@@ -843,14 +824,3 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .guide-ecran { padding: 0; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 
-/* ---------- La cloche détourée : aucun cadre, posée sur la section, libre de bouger dans la section ---------- */
-#maquette { overflow: hidden; }
-.scene-3d { background: none !important; border-radius: 0; overflow: visible; }
-.scene-3d canvas { inset: -12% -18%; width: 136%; height: 124%; }
-.scene-3d .legende { display: none; }
-.scene-3d::before { content: ""; position: absolute; inset: -12% -18%; background: image-set(url("/img/photos/cloche-detouree-800.webp") 1x, url("/img/photos/cloche-detouree-1600.webp") 2x) center / contain no-repeat; transition: opacity .8s ease; pointer-events: none; }
-.scene-3d.scene-prete::before, .scene-3d.sans-3d::before { opacity: 0; }
-@media (max-width: 979px) { .scene-3d canvas { inset: -8% -10%; width: 120%; height: 116%; } }
-.scene-3d .passation-mains { inset: -12% -18%; width: 136%; height: 124%; }
-@media (max-width: 979px) { .scene-3d .passation-mains { inset: -8% -10%; width: 120%; height: 116%; } }
-@media (max-width: 979px) { .scene-3d::before { inset: -8% -10%; } }
