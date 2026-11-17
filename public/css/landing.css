@@ -172,8 +172,9 @@
 .histoire-texte h2, .histoire-texte .titre-section { font-size: clamp(2.25rem, 4.2vw, 4rem); }
 
 /* Ordinateur : scène collante, textes dans une colonne à gauche */
-/* Quatre temps en 4 écrans de défilement au plus (400vh, carte collante comprise) */
-.histoire-scene { height: 400vh; }
+/* Quatre temps en moins de 3 écrans de défilement (280vh, carte collante comprise ; 400vh auparavant) : la
+   progression est proportionnelle à la hauteur, l'animation est simplement plus rapide */
+.histoire-scene { height: 280vh; }
 /* La carte : mêmes marges que le hero, collée sous l'en-tête, 40 px de marge en bas, bord intérieur discret */
 .histoire-scene .histoire-collant {
   position: sticky; top: var(--haut-entete); height: calc(100vh - var(--haut-entete) - 40px); height: calc(100svh - var(--haut-entete) - 40px);
