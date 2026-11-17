@@ -6,7 +6,7 @@ import { surveillerChamps } from "/js/landing/barres.js";
 import { lancerVideo } from "/js/landing/video.js";
 import { chargerEntreprise } from "/js/landing/estimation.js";
 import { creerResultat } from "/js/landing/resultat.js";
-import { lancerOnglets } from "/js/landing/onglets.js";
+import { lancerFriseCles } from "/js/landing/frise.js";
 import { creerDossierFinal } from "/js/landing/histoire.js";
 import { lancerApparitions } from "/js/landing/apparitions.js";
 
@@ -43,7 +43,7 @@ $("#btn-autre")?.addEventListener("click", () => {
 // « Comment ça marche » en onglets ; dossiers de l'exemple fictif dans leur état final (Pourquoi, Confidentialité),
 // construits à l'approche
 const H = lire("textes-histoire");
-lancerOnglets($("#comment"), { chapitres: H.chapitres || [] });
+lancerFriseCles($("#comment"), { chapitres: H.chapitres || [] });
 // Le dossier est dessiné à 520 px (tailles minimales de texte comprises), puis réduit d'un bloc à sa zone
 const LARGEUR_DOSSIER = 520;
 document.querySelectorAll("[data-dossier-final]").forEach((zone) => new IntersectionObserver(([e], o) => {
@@ -56,21 +56,6 @@ document.querySelectorAll("[data-dossier-final]").forEach((zone) => new Intersec
   echelle();
 }, { rootMargin: "800px 0px" }).observe(zone));
 
-// Liens #comment-1, -2, -3 (tuiles du hero, cartes) : ouvrent « Comment ça marche » sur la bonne étape.
-// L'événement « ouvrir-etape » est écouté par les onglets de la section.
-function ouvrirEtape(ancre) {
-  const m = /^#comment-([123])$/.exec(ancre || "");
-  const section = document.getElementById("comment");
-  if (!m || !section) return false;
-  document.dispatchEvent(new CustomEvent("ouvrir-etape", { detail: Number(m[1]) }));
-  section.scrollIntoView({ behavior: reduit() ? "auto" : "smooth", block: "start" });
-  return true;
-}
-document.addEventListener("click", (e) => {
-  const a = e.target.closest?.('a[href^="#comment-"]');
-  if (a && ouvrirEtape(a.getAttribute("href"))) { e.preventDefault(); history.replaceState(null, "", a.getAttribute("href")); }
-});
-if (location.hash) requestAnimationFrame(() => ouvrirEtape(location.hash));
-addEventListener("hashchange", () => ouvrirEtape(location.hash));
+// Liens #comment-1, -2, -3 et #livrables (tuiles du hero) : ancres ordinaires, les étapes sont toutes visibles.
 
 lancerApparitions();

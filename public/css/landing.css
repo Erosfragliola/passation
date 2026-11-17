@@ -374,40 +374,39 @@
 .landing .bloc .chapo, .landing .bloc-carte .chapo { margin: 18px 0 0; font-size: 19px; line-height: 1.6; color: var(--encre-2); max-width: 620px; }
 .mono-ocre { margin: 0; font: 500 14px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: #7A5C42; }
 
-/* ---------- Comment ça marche : onglets ---------- */
-.onglets { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
-.onglets[hidden] { display: none; }
-.onglets [role="tab"] {
-  min-height: 46px; padding: 0 22px; border-radius: var(--r-pilule); border: 1px solid rgb(30 26 23 / .25);
-  background: transparent; color: var(--encre); font: 500 16px var(--sans); cursor: pointer; transition: background-color .2s, border-color .2s;
+/* ---------- Comment ça marche : frise des trois étapes, toutes visibles (plus d'onglets) ---------- */
+/* Ordinateur : trois colonnes reliées par un filet à hauteur des numéros ; téléphone : les étapes se suivent */
+.comment-frise { position: relative; list-style: none; margin: 36px 0 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 48px 28px; }
+@media (min-width: 960px) {
+  .comment-frise { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .comment-frise::before { content: ""; position: absolute; left: 22px; right: 22px; top: 21px; height: 1px; background: rgb(30 26 23 / .18); }
 }
-.onglets [role="tab"]:hover { border-color: var(--encre); }
-.onglets [role="tab"][aria-selected="true"] { background: var(--vert-carte); border-color: var(--vert-carte); color: #F7F1EA; }
-.etape-panneau { margin-top: 20px; display: flex; flex-wrap: wrap; border-radius: 10px; overflow: hidden; background: var(--vert-carte); }
-.etape-panneau[hidden] { display: none; }
-.comment:not(.avec-onglets) .etape-panneau:first-of-type { margin-top: 28px; }
-.etape-panneau:focus-visible { outline: 2px solid var(--vert); outline-offset: 4px; border-radius: 10px; }
-.etape-visuel { flex: 1 1 460px; min-width: 0; min-height: 400px; display: flex; align-items: center; justify-content: center; padding: 36px; background: var(--fond-panneau); }
-.etape-texte { flex: 1 1 420px; min-width: 0; padding: clamp(28px, 4vw, 56px); display: flex; flex-direction: column; justify-content: center; color: #F7F1EA; }
+.comment-etape { position: relative; display: flex; flex-direction: column; gap: 18px; min-width: 0; scroll-margin-top: calc(var(--haut-entete) + 24px); }
+.etape-numero { position: relative; z-index: 1; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--vert-carte); color: #F7F1EA; font: 600 18px var(--sans); }
+.etape-visuel { height: 340px; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 30px 20px 20px; border-radius: 10px; background: var(--fond-panneau); overflow: hidden; }
+@media (max-width: 559px) { .etape-visuel { height: 320px; } }
+.comment-frise .methode { margin-top: 10px; }
+.comment-frise .carte-methodes .mono-ocre + .methode { margin-top: 14px; }
+.comment-frise .methode-retenue { padding-top: 8px; }
+.etape-texte { min-width: 0; color: var(--encre); }
 .landing .etape-texte p { margin: 0; }
-.landing .etape-surtitre { font-size: 16px; color: #CFE0D3; }
-.landing .etape-chiffre { margin-top: 14px; font-size: clamp(44px, 5vw, 68px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; color: #E9C9A4; }
-.landing .etape-texte h3 { margin: 18px 0 0; font-size: 23px; font-weight: 500; letter-spacing: -0.01em; color: #F7F1EA; }
-.landing .etape-description { margin-top: 12px; font-size: 18px; line-height: 1.6; color: #E3ECE5; }
-.pastilles { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.landing .etape-surtitre { font-size: 15px; font-weight: 600; color: var(--ocre-texte); }
+.landing .etape-chiffre { margin-top: 8px; font-size: clamp(36px, 3.4vw, 48px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; color: var(--vert-carte); }
+.landing .etape-texte h3 { margin: 12px 0 0; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; color: var(--encre); }
+.landing .etape-description { margin-top: 10px; font-size: 17px; line-height: 1.6; color: var(--encre-2); }
+.pastilles { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .pastilles:empty { display: none; }
-.pastilles li { padding: 8px 16px; border-radius: var(--r-pilule); border: 1px solid rgb(247 241 234 / .45); font-size: 15px; line-height: 1.3; }
-@media (max-width: 559px) { .etape-visuel { min-height: 0; padding: 24px 16px; } }
+.pastilles li { padding: 6px 14px; border-radius: var(--r-pilule); border: 1px solid rgb(30 26 23 / .22); font-size: 14px; line-height: 1.3; color: var(--encre); }
 
 /* Visuels des étapes : exemples fictifs, signalés comme tels */
-.carte-resultat, .carte-methodes { width: 100%; max-width: 440px; padding: 28px; border-radius: 10px; background: var(--carte-claire); box-shadow: 0 18px 40px rgb(70 48 28 / .14); color: var(--encre); }
-.carte-methodes { max-width: 460px; }
+.carte-resultat, .carte-methodes { width: 100%; max-width: 360px; padding: 22px; border-radius: 10px; background: var(--carte-claire); box-shadow: 0 18px 40px rgb(70 48 28 / .14); color: var(--encre); }
+.carte-methodes { max-width: 360px; }
 .landing .carte-resultat p, .landing .carte-methodes p { margin: 0; }
-.landing .carte-resultat-nom { margin-top: 14px; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+.landing .carte-resultat-nom { margin-top: 12px; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
 .landing .carte-resultat-infos { margin-top: 6px; font-size: 16px; color: var(--encre-2); }
-.landing .carte-resultat-valeur { margin-top: 22px; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; padding: 12px 22px; border-radius: 28px; background: var(--vert-carte); color: #F7F1EA; }
+.landing .carte-resultat-valeur { margin-top: 16px; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 12px; padding: 10px 18px; border-radius: 28px; background: var(--vert-carte); color: #F7F1EA; }
 .carte-resultat-valeur span { font-size: 14px; color: #CFE0D3; }
-.carte-resultat-valeur strong { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.carte-resultat-valeur strong { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .landing .carte-resultat-mention { margin-top: 14px; font-size: 15px; color: var(--encre-2); }
 .methode { margin-top: 14px; }
 .carte-methodes .mono-ocre + .methode { margin-top: 20px; }
@@ -418,31 +417,48 @@
 .landing .methode-retenue p { font-weight: 600; color: var(--encre); }
 .methode-retenue span { height: 18px; border-radius: 9px; }
 .methode-retenue i { background: var(--vert-carte); }
-.rangee-cles { width: 100%; padding: 28px 20px 8px; border-radius: 8px; background: var(--fond-scene); box-shadow: inset 0 0 0 1px rgb(30 26 23 / .06); }
-.rangee-grille { list-style: none; margin: 0 auto; padding: 0; display: grid; grid-template-columns: repeat(9, 124px); justify-content: center; gap: 0 10px; }
-.rangee-grille .etiquette-carte { transform: rotateY(180deg); }
-.rangee-grille .panneau-cle { height: 330px; }
+.rangee-cles { flex: 1 1 auto; width: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.comment-cles { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; width: 660px; gap: 0 10px; }
+.comment-cles .etiquette-carte { transform: rotateY(180deg); }
+.comment-cles .panneau-cle { height: 330px; }
 .rangee-cles .etiquette-verso { background-image: url("/img/landing/etiquettes/papier-verso.webp"); }
 .rangee-cles .etiquette-verte { background-image: url("/img/landing/etiquettes/vert-verso.webp"); }
 
-/* ---------- Pourquoi Passation : trois cartes ---------- */
-.pourquoi-cartes { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 20px; align-items: stretch; }
-.pourquoi-cartes > article { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 28px; border-radius: 10px; }
+/* ---------- Pourquoi Passation : la confidentialité (carte verte), puis trois cartes de même structure ---------- */
+.pourquoi .confid-carte { margin-top: 36px; --trou: var(--vert-carte); }
+.landing .confid-carte .titre-section { margin: 0; font-size: clamp(34px, 4.2vw, 56px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; color: #F7F1EA; }
+.pourquoi-cartes { margin-top: 20px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+@media (min-width: 900px) { .pourquoi-cartes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.pourquoi-cartes > article { min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 28px; border-radius: 10px; }
 .carte-claire { background: var(--carte-claire); box-shadow: var(--bord-carte); }
 .carte-verte { background: var(--vert-carte); color: #F7F1EA; }
 .landing .pourquoi-cartes h3 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; color: inherit; }
-.landing .pourquoi-cartes p { margin: 0; font-size: 17px; line-height: 1.6; color: var(--encre-2); }
+.landing .pourquoi-cartes > article > p { margin: 0; font-size: 17px; line-height: 1.6; color: var(--encre-2); }
 .landing .carte-verte p { color: #E3ECE5; }
-.landing .pourquoi .pourquoi-chiffre { font-size: clamp(96px, 10vw, 140px); font-weight: 600; letter-spacing: -0.05em; line-height: .9; color: #E9C9A4; }
-.carte-verte .btn { margin-top: auto; align-self: flex-start; min-height: 46px; padding: 0 20px; background: #F7F1EA; color: var(--encre); font-size: 16px; }
-.carte-verte .btn:hover { background: #EFE8DD; }
 .carte-verte :focus-visible { outline-color: #E9C9A4; }
-.pourquoi-photo { margin-top: auto; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: 42% 50%; border-radius: 8px; }
-.pourquoi-dossier { margin-top: auto; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 6px; padding: 18px 18px 10px; border-radius: 8px; background: var(--fond-panneau); }
+/* Le visuel de chaque carte : même place (en bas), même format */
+.pourquoi-visuel { margin-top: auto; aspect-ratio: 4 / 3; min-width: 0; border-radius: 8px; overflow: hidden; background: var(--fond-panneau); }
+.pourquoi-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 42% 50%; }
+.landing .pourquoi-visuel p { margin: 0; }
+.hypotheses { display: flex; flex-direction: column; gap: 12px; padding: 18px 20px; }
+.hypotheses ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.hypotheses li { display: grid; grid-template-columns: minmax(0, 1fr) 72px; column-gap: 12px; align-items: center; font-size: 15px; color: var(--encre); }
+.hypotheses li small { grid-column: 1; font-size: 13px; color: var(--encre-2); }
+.hypotheses li small::before { content: "✓ "; color: var(--vert-carte); }
+.hypotheses li .cellule { grid-column: 2; grid-row: 1 / span 2; height: 28px; }
+.cellule { display: block; border-radius: 4px; background: #F6E7A6; box-shadow: inset 0 0 0 1px rgb(150 120 30 / .35); }
+.landing .hypotheses-legende { margin-top: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--encre-2); }
+.hypotheses-legende .cellule { width: 22px; height: 14px; }
+.fichiers { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 18px 20px; }
+.landing .fichier { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 10px 12px; border-radius: 8px; background: var(--carte-claire); box-shadow: 0 6px 14px rgb(70 48 28 / .10); font: 500 13.5px var(--mono); color: var(--encre); }
+.fichier span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fichier b { flex: none; padding: 5px 6px; border-radius: 4px; font: 600 11px var(--mono); letter-spacing: .06em; color: #fff; }
+.fichier-xlsx b { background: #1F6B43; }
+.fichier-pdf b { background: #9B2C22; }
+.landing .fichiers-mention { margin-top: 2px; text-align: center; font-size: 13px; color: var(--encre-2); }
 /* La zone ne prend jamais la largeur du dossier dessiné à 520 px : c'est lui qui se réduit à elle (landing.js) */
 .dossier-vitrine { width: 62%; aspect-ratio: 660 / 808; contain: inline-size; }
 .dossier-vitrine > .dossier { width: 520px; }
-.landing .pourquoi-dossier .histoire-fictif { font-size: 14px; color: var(--encre-2); }
 .landing .pourquoi-sources { margin: 28px 0 0; font-size: 15px; color: var(--encre-2); }
 
 /* ---------- Grandes cartes (confidentialité, appel final, résultat) : 1 360 px, marges du hero ---------- */
@@ -695,3 +711,80 @@ html.avec-intro #intro {
 .a-apparaitre { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--retard, 0ms); }
 .a-apparaitre.apparu { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .a-apparaitre { opacity: 1; transform: none; transition: none; } }
+
+/* ---------- Landing v3 (17/11/2026) : annotation dans la frise, livrables, étiquettes kraft, hero, trousseau ---------- */
+/* L'annotation manuscrite suit la carte d'exemple (plus de positionnement absolu dans une colonne étroite) */
+.comment-frise .annotation { position: static; display: flex; align-self: flex-end; margin-right: 6px; font-size: 20px; }
+.comment-frise .annotation-fleche { width: 62px; height: 40px; margin-top: -22px; }
+
+/* Ce que vous recevez : trois aperçus de même hauteur, puis le texte ; décor en HTML, exemple fictif */
+.livrables-liste { list-style: none; margin: 36px 0 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px 24px; }
+@media (min-width: 900px) { .livrables-liste { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.livrable { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.livrable-apercu { height: 340px; margin-bottom: 12px; display: grid; place-items: center; padding: 24px; border-radius: 10px; background: var(--fond-scene); box-shadow: var(--bord-carte); overflow: hidden; }
+.landing .livrable p { margin: 0; }
+.landing .livrable-type { font: 500 13px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ocre-texte); }
+.landing .livrable h3 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; color: var(--encre); }
+.landing .livrable > p:not([class]) { font-size: 17px; line-height: 1.6; color: var(--encre-2); }
+.landing .livrable-format { align-self: flex-start; margin-top: 6px; padding: 5px 12px; border-radius: var(--r-pilule); box-shadow: inset 0 0 0 1px rgb(30 26 23 / .22); font-size: 14px; color: var(--encre); }
+.landing .livrables-fictif { margin: 22px 0 0; font-size: 14px; color: var(--encre-2); }
+.feuille { position: relative; width: 100%; max-width: 220px; aspect-ratio: 210 / 297; display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 3px;
+  background: var(--carte-claire); box-shadow: 0 18px 36px rgb(70 48 28 / .18), 0 0 0 1px rgb(30 26 23 / .06); color: var(--encre); font-size: 10px; line-height: 1.3; rotate: -1.5deg; }
+.landing .feuille p, .feuille dl, .feuille ol { margin: 0; }
+.landing .feuille-entete { display: flex; justify-content: space-between; gap: 6px; padding-bottom: 6px; border-bottom: 1px solid rgb(30 26 23 / .12); font: 500 7.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--encre-2); }
+.landing .mini-tampon { align-self: flex-start; margin: 6px 0 2px; padding: 3px 8px; border: 3px double var(--tampon); border-radius: 3px; color: var(--tampon);
+  font: 700 16px "Big Shoulders", "Arial Narrow", sans-serif; letter-spacing: .04em; text-transform: uppercase; rotate: -6deg; }
+.feuille-teaser dl { display: grid; gap: 6px; }
+.feuille-teaser dl div { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 6px; }
+.feuille-teaser dt { padding-top: 1px; font: 500 7px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--encre-2); }
+.feuille-teaser dd { margin: 0; font-size: 9.5px; }
+.landing .feuille-texte { display: grid; gap: 5px; margin-top: 4px; }
+.feuille-texte i { display: block; height: 5px; border-radius: 3px; background: rgb(30 26 23 / .1); }
+.feuille-texte i:last-child { width: 68%; }
+.landing .feuille-valeur { margin-top: auto; align-self: flex-start; padding: 5px 10px; border-radius: var(--r-pilule); background: var(--vert-carte); color: #F7F1EA; font-size: 8px; }
+.feuille-valeur b { margin-left: 3px; font-size: 12px; }
+.feuille-memo { rotate: 1.2deg; }
+.landing .feuille-titre { margin-top: 6px; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.landing .feuille-sommaire { margin-top: 4px; font: 500 7.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ocre-texte); }
+.feuille-memo ol { list-style: none; padding: 0; display: grid; gap: 4px; }
+.feuille-memo li { display: flex; gap: 8px; padding-bottom: 3px; border-bottom: 1px dotted rgb(30 26 23 / .2); font-size: 10px; }
+.feuille-memo li b { font: 500 9px var(--mono); color: var(--ocre-texte); }
+.feuille-tableur { max-width: 290px; aspect-ratio: auto; gap: 0; padding: 0; overflow: hidden; border-radius: 6px; rotate: -1deg; font-size: 9.5px; }
+.landing .tableur-fichier { padding: 7px 10px; background: #1F6B43; color: #fff; font: 500 9.5px var(--mono); }
+.landing .tableur-formule { display: flex; gap: 8px; padding: 5px 10px; border-bottom: 1px solid rgb(30 26 23 / .12); font: 400 9.5px var(--mono); }
+.tableur-formule b { font-style: italic; color: var(--encre-2); }
+.tableur-grille { display: grid; grid-template-columns: 18px 1.8fr 1.2fr .55fr; }
+.tableur-grille span { min-height: 26px; display: flex; align-items: center; padding: 4px 6px; border-right: 1px solid rgb(30 26 23 / .08); border-bottom: 1px solid rgb(30 26 23 / .08); }
+.tableur-grille span:nth-child(-n+4), .tableur-grille span:nth-child(4n+1) { justify-content: center; background: #F1EDE6; color: var(--encre-2); font: 500 8.5px var(--mono); }
+.tableur-grille .barre::after { content: ""; display: block; width: var(--l); height: 6px; margin-left: var(--d); border-radius: 3px; background: var(--ocre-clair); }
+.tableur-grille .barre { display: block; padding-top: 10px; }
+.tableur-grille .jaune { background: #F6E7A6; }
+.tableur-grille .gras { font-weight: 600; }
+.tableur-grille .valeur { white-space: nowrap; }
+.tableur-grille .actif { box-shadow: inset 0 0 0 2px #1F6B43; }
+.landing .tableur-onglets { display: flex; justify-content: flex-end; gap: 2px; padding: 6px 6px 0; overflow: hidden; background: #F1EDE6; font: 500 7.5px var(--mono); white-space: nowrap; }
+.tableur-onglets span { padding: 4px 6px; border-radius: 3px 3px 0 0; color: var(--encre-2); }
+.tableur-onglets .actif { background: var(--carte-claire); color: #1F6B43; }
+.landing .tableur-legende { display: flex; align-items: center; gap: 6px; padding: 7px 10px; font-size: 9px; color: var(--encre-2); }
+.tableur-legende i { width: 16px; height: 10px; background: #F6E7A6; box-shadow: inset 0 0 0 1px rgb(150 120 30 / .35); }
+
+/* Étiquettes kraft : chaque sur-titre de section écrit à la main sur une étiquette, comme celles des clés.
+   « rotate » (et non « transform ») : l'apparition au défilement peut animer le transform sans redresser l'étiquette */
+.landing .surtitre.etiquette-kraft, .landing .carte-large .surtitre.etiquette-kraft {
+  position: relative; display: inline-block; margin: 0 0 20px 4px; padding: 6px 18px 5px 36px;
+  font-family: "Nothing You Could Do", cursive; font-weight: 400; font-size: 21px; line-height: 1.25; letter-spacing: 0; color: #2E1F12;
+  background: #CBA26F url("/img/landing/etiquettes/kraft-recto.webp") center / 240px auto;
+  clip-path: polygon(16px 0, 100% 0, 100% 100%, 16px 100%, 0 50%); rotate: -2deg;
+}
+.etiquette-kraft::before { content: ""; position: absolute; left: 14px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--trou, var(--creme)); box-shadow: 0 0 0 2.5px #E6D3AE; }
+
+/* Hero : la carte tient dans le premier écran, tuiles comprises ; une seule ligne de preuve sous le champ */
+.landing .hero { min-height: calc(100svh - var(--haut-entete) - 16px); }
+.landing .hero-contenu { padding-top: clamp(28px, 5vh, 64px); padding-bottom: 20px; }
+@media (max-width: 767px) { .hero-tuiles, .hero-tuiles-libelle { display: none; } }
+
+/* Pied de page : le trousseau au-dessus du grand logo */
+.pied-trousseau { position: relative; width: 300px; height: 210px; margin: 0 0 12px; }
+.pied-trousseau img { position: absolute; left: 50%; top: 40px; width: 62px; height: auto; margin-left: -31px; transform-origin: 50% 7.5%; transform: rotate(var(--a)); z-index: var(--z); filter: drop-shadow(0 8px 10px rgb(0 0 0 / .45)); }
+.pied-anneau { position: absolute; left: 50%; top: 4px; z-index: 10; width: 52px; height: 52px; margin-left: -26px; border-radius: 50%; border: 4px solid #B9B1A5; box-shadow: inset 0 1px 2px rgb(0 0 0 / .5), 0 2px 3px rgb(0 0 0 / .4); }
+@media (max-width: 559px) { .pied-trousseau { zoom: .8; } }

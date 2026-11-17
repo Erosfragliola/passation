@@ -47,6 +47,7 @@
     "accueil": "Passation, accueil",
     "principale": "Navigation principale",
     "comment": "Comment ça marche",
+    "livrables": "Exemple de dossier",
     "confidentialite": "Confidentialité",
     "guides": "Guides",
     "questions": "Questions",
@@ -68,12 +69,12 @@
     "surtitre": "Préparer la cession de votre PME",
     "titre": "Vous avez bâti. Préparez votre *transmission*.",
     "sous_titre": "Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.",
-    "note": "Gratuit, sans compte. Personne n'est averti : ni vos salariés, ni vos clients.",
-    "note_comptes": "Comptes confidentiels ? Deux chiffres suffisent.",
+    "note": "Gratuit, sans compte · Personne n'est averti · Données des registres officiels",
+    "note_comptes": "",
     "preuves": {
       "dirigeants": "*{nb_dirigeants}* dirigeants accompagnés",
       "avis": "*{note_avis}/5* · {nb_avis} avis",
-      "registres": "Données des registres officiels"
+      "registres": ""
     },
     "tuiles": {
       "libelle": "Un seul espace pour toute votre cession",
@@ -202,10 +203,8 @@
   "comment": {
     "surtitre": "Comment ça marche",
     "titre": "Trois étapes, sans surprise.",
-    "onglets": "Les trois étapes",
     "etapes": [
       {
-        "onglet": "1 · Votre SIREN",
         "surtitre": "Étape 1 · Votre SIREN",
         "chiffre": "30 secondes",
         "titre": "Une première fourchette de valeur",
@@ -216,7 +215,6 @@
         ]
       },
       {
-        "onglet": "2 · Vos chiffres",
         "surtitre": "Étape 2 · Vos chiffres",
         "chiffre": "3 méthodes",
         "titre": "Une valeur argumentée",
@@ -227,7 +225,6 @@
         ]
       },
       {
-        "onglet": "3 · Vos documents",
         "surtitre": "Étape 3 · Vos documents",
         "chiffre": "9 chapitres",
         "titre": "Teaser, mémo et datapack",
@@ -269,20 +266,115 @@
         "texte": "Artisans, commerçants, industriels, prestataires : chaque étape parle votre langue, pas celle d’une banque d’affaires."
       },
       {
-        "chiffre": "3",
-        "titre": "Trois méthodes, une fourchette",
-        "texte": "Les méthodes se croisent pour donner une valeur que vous pouvez expliquer, et défendre face à un acquéreur.",
-        "bouton": "Voir les étapes"
+        "titre": "Une valeur que vous pouvez défendre",
+        "texte": "Chaque hypothèse du calcul est sourcée et datée, et vous pouvez la modifier. Rien n’est une boîte noire.",
+        "visuel": {
+          "entete": "Hypothèses · exemple fictif",
+          "lignes": [
+            "Taux sans risque",
+            "Prime de risque",
+            "Multiple sectoriel"
+          ],
+          "source": "source datée",
+          "modifiable": "modifiable"
+        }
       },
       {
         "titre": "Vos conseils gardent la main",
-        "texte": "Expert-comptable, avocat, banquier : vous leur transmettez le même dossier, en Excel et en PDF. Passation prépare, vous décidez."
+        "texte": "Expert-comptable, avocat, banquier : vous leur transmettez le même dossier, en Excel et en PDF. Passation prépare, vous décidez.",
+        "visuel": {
+          "fichiers": [
+            "Projet-Chene-datapack.xlsx",
+            "Projet-Chene-memorandum.pdf",
+            "Projet-Chene-teaser.pdf"
+          ],
+          "mention": "Exemple fictif"
+        }
       }
     ],
     "photo_alt": "Un artisan penché sur son établi, sous sa lampe",
     "sources": "Données issues des registres publics officiels",
     "hebergement": " · Hébergement {hebergement}",
     "partenaires": " · {partenaires}",
+    "fictif": "Exemple fictif"
+  },
+  "livrables": {
+    "surtitre": "Ce que vous recevez",
+    "titre": "Trois documents, prêts à transmettre.",
+    "texte": "Ce que vous remettez à vos conseils, puis aux repreneurs. Ici pour une entreprise fictive, le « Projet Chêne ».",
+    "docs": [
+      {
+        "type": "Teaser",
+        "titre": "Une page, anonyme",
+        "texte": "Pour éveiller l’intérêt des repreneurs sans dévoiler votre nom : secteur, région, taille et première valeur.",
+        "format": "PDF · 1 page"
+      },
+      {
+        "type": "Mémorandum",
+        "titre": "L’histoire complète",
+        "texte": "Neuf chapitres, de la synthèse à la valeur, rédigés à partir de vos réponses et de vos chiffres validés.",
+        "format": "PDF · 9 chapitres"
+      },
+      {
+        "type": "Datapack",
+        "titre": "Tous les chiffres",
+        "texte": "Comptes, retraitements, hypothèses et les trois méthodes, avec des formules que votre expert-comptable peut vérifier.",
+        "format": "Excel · 9 onglets"
+      }
+    ],
+    "teaser": {
+      "entete": "Teaser · confidentiel",
+      "nom": "Projet Chêne",
+      "lignes": [
+        [
+          "Secteur",
+          "Travaux de construction spécialisés"
+        ],
+        [
+          "Région",
+          "Pays de la Loire"
+        ],
+        [
+          "Ancienneté",
+          "plus de 30 ans"
+        ],
+        [
+          "Effectif",
+          "20 à 49 salariés"
+        ]
+      ],
+      "valeur_libelle": "Première valeur",
+      "valeur": "1,8 – 2,4 M€"
+    },
+    "memo": {
+      "entete": "Mémorandum d’information",
+      "nom": "Projet Chêne",
+      "mention": "Strictement confidentiel",
+      "sommaire": "Sommaire"
+    },
+    "datapack": {
+      "fichier": "Projet-Chene-datapack.xlsx",
+      "formule": "=Multiples!D14",
+      "lignes": [
+        "Multiples de l’EBE",
+        "Flux actualisés (DCF)",
+        "Actif net corrigé"
+      ],
+      "retenue": "Fourchette retenue",
+      "valeur": "1,8 – 2,4 M€",
+      "hypothese": "Hypothèse modifiable",
+      "onglets": [
+        "Couverture",
+        "Comptes",
+        "Retraitements",
+        "Hypothèses",
+        "Passage aux titres",
+        "Multiples",
+        "DCF",
+        "ANCC",
+        "Synthèse"
+      ]
+    },
     "fictif": "Exemple fictif"
   },
   "confidentialite": {
