@@ -1,7 +1,7 @@
 // L'histoire des clés : poses aux repères du brief. Valeurs attendues calculées à la main depuis les constantes du
 // prototype (PILE, ROWX = 960 + (i − 4) × 160, KEYY = 660, TAGY = 606, STK, TABT…).
 import { describe, it, expect } from "vitest";
-import { cle, etiquette, ficelle, onglet, dossier, bloc, tempsDefilement, camera, PILE, NB, T_POSE, TOSS, FLY } from "../public/js/landing/histoire-poses.js";
+import { cle, etiquette, ficelle, onglet, dossier, bloc, tempsDefilement, camera, gestesAtteints, PILE, NB, T_POSE, TOSS, FLY, TEMPS, SEUILS_GESTES, TS } from "../public/js/landing/histoire-poses.js";
 
 const tous = (f) => Array.from({ length: NB }, (_, i) => f(i));
 
@@ -47,10 +47,10 @@ describe("arrivée : le trousseau lancé sur la table (jouée au temps)", () => 
     }
     expect([cle(4, T_POSE).x, cle(4, T_POSE).y, cle(4, T_POSE).rot]).toEqual([1078, 672, 12]);
   });
-  it("le défilement ne ramène jamais avant la fin de la chute ; p = 1 → 24,5", () => {
+  it("le défilement ne ramène jamais avant la fin de la chute ; p = 1 → 26,8", () => {
     expect(tempsDefilement(0)).toBe(8.32);
-    expect(tempsDefilement(0.5)).toBeCloseTo(16.1, 10);   // 7,7 + 0,5 × 16,8
-    expect(tempsDefilement(1)).toBeCloseTo(24.5, 10);
+    expect(tempsDefilement(0.5)).toBeCloseTo(17.25, 10);   // 7,7 + 0,5 × 19,1
+    expect(tempsDefilement(1)).toBeCloseTo(26.8, 10);
   });
 });
 
@@ -99,7 +99,17 @@ describe("textes", () => {
     expect(bloc(13, 7.9, 12.55).visible).toBe(false);
     expect(bloc(7.9, 7.9, 12.55).enfants[0].op).toBe(0);
   });
-  it("temps 3 reste jusqu'à la fin", () => {
-    expect(bloc(24.5, 21.0, Infinity).enfants.map((e) => e.op)).toEqual([1, 1, 1]);
+  it("temps 3 lisible une fois le dossier posé, effacé avant « Et la vôtre ? », qui reste jusqu'à la fin", () => {
+    expect(bloc(23, 21.0, 23.9).enfants.map((e) => e.op)).toEqual([1, 1, 1]);
+    expect(bloc(24.3, 21.0, 23.9).visible).toBe(false);
+    expect(bloc(26.8, 24.3, Infinity).enfants.map((e) => e.op)).toEqual([1, 1, 1]);
+    expect(TEMPS.map(([a]) => a)).toEqual([7.9, 13.15, 21.0, 24.3]);
+  });
+  it("gestes du nom de code : après les onglets et le 4e texte, dans l'ordre, tous joués avant la fin", () => {
+    const finOnglets = Math.max(...TS) + 0.75;
+    expect(SEUILS_GESTES[0]).toBeGreaterThan(finOnglets);
+    expect(SEUILS_GESTES[0]).toBeGreaterThan(TEMPS[3][0]);
+    expect([gestesAtteints(24.5), gestesAtteints(24.6), gestesAtteints(25.6), gestesAtteints(tempsDefilement(1))]).toEqual([0, 1, 3, 4]);
+    expect(gestesAtteints(tempsDefilement(0.96))).toBe(3);   // le dernier seuil, juste avant la fin
   });
 });

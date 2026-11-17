@@ -57,6 +57,23 @@ export function creerChampPartage({ estimer, textes = {} }) {
       }));
       liste.hidden = m.suggestions.length === 0;
       champ.setAttribute("aria-expanded", String(m.suggestions.length > 0));
+      if (!liste.hidden && m.nom !== "nav") requestAnimationFrame(devoiler);
+    };
+    // Liste sous le bord de la fenêtre : la page défile juste assez pour la montrer entière, sans faire passer le
+    // champ sous l'en-tête (il reste lisible, et celui de l'en-tête ne prend pas le relais).
+    // Dans une carte collante (data-liste-bornee), défiler ne déplacerait pas le champ : la liste tient dans la carte.
+    const devoiler = () => {
+      const borne = form.closest("[data-liste-bornee]");
+      liste.style.maxHeight = "";
+      if (borne) {
+        const dispo = Math.min(innerHeight, borne.getBoundingClientRect().bottom) - liste.getBoundingClientRect().top - 12;
+        if (liste.scrollHeight > dispo) liste.style.maxHeight = `${Math.max(150, Math.floor(dispo))}px`;
+        return;
+      }
+      const deborde = liste.getBoundingClientRect().bottom + 12 - innerHeight;
+      const marge = champ.getBoundingClientRect().top - (document.querySelector(".nav")?.getBoundingClientRect().bottom || 0) - 12;
+      const dy = Math.min(deborde, marge);
+      if (dy > 0) scrollBy({ top: dy, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     };
     const choisir = (x) => {
       partage.suggestion = x;
@@ -134,7 +151,7 @@ export function creerChampPartage({ estimer, textes = {} }) {
       const r = x.champ.getBoundingClientRect();
       return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight;
     };
-    const ordre = ["nav", "relance", "accueil"];
+    const ordre = ["nav", "relance", "histoire", "accueil"];
     const choisi = (prefere && montures.find((x) => x.nom === prefere && visible(x)))
       || ordre.map((n) => montures.find((x) => x.nom === n)).find((x) => x && visible(x));
     if (choisi) { choisi.champ.focus({ preventScroll: true }); return; }

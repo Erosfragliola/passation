@@ -54,8 +54,8 @@
     <div class="nav-centre">
       <ul class="nav-liens">
         <li><a href="#comment" data-t="nav.comment"></a></li>
-        <li data-si="prix_dossier"><a href="#tarifs" data-t="nav.tarifs"></a></li>
         <li><a href="#confidentialite" data-t="nav.confidentialite"></a></li>
+        <li data-si="guides:3"><a href="#guides" data-t="nav.guides"></a></li>
         <li><a href="#questions" data-t="nav.questions"></a></li>
       </ul>
       <form class="nav-champ recherche-mini" action="/connexion" method="get" data-champ-siren="nav" data-zone-champ>
@@ -68,7 +68,11 @@
       </form>
     </div>
     <div class="nav-actions">
-      <a class="btn btn-noir btn-espace" href="/connexion" data-connexion data-t="nav.espace"></a>
+      <a class="nav-telephone" data-si="telephone" data-t-attr="href=pied.telephone_lien; aria-label=nav.telephone">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+        <span data-t="cles.telephone"></span>
+      </a>
+      <a class="btn btn-espace" href="/connexion" data-connexion data-t="nav.espace"></a>
       <button class="nav-bouton" type="button" aria-expanded="false" aria-controls="nav-mobile" data-t-attr="aria-label=nav.menu_ouvrir">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 5h14M2 9h14M2 13h14"/></svg>
       </button>
@@ -76,8 +80,8 @@
   </nav>
   <div class="nav-mobile" id="nav-mobile" hidden>
     <a href="#comment" data-t="nav.comment"></a>
-    <a href="#tarifs" data-si="prix_dossier" data-t="nav.tarifs"></a>
     <a href="#confidentialite" data-t="nav.confidentialite"></a>
+    <a href="#guides" data-si="guides:3" data-t="nav.guides"></a>
     <a href="#questions" data-t="nav.questions"></a>
     <a href="/connexion" data-connexion data-t="nav.espace"></a>
   </div>
@@ -91,20 +95,14 @@
       <img src="/img/photos/hero-poster-1600.webp"
            srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
            sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
-      <!-- Vidéos (public/js/landing/video.js) : clips des métiers en alternance, ou la vidéo actuelle tant que la
-           liste est vide ; jamais avec « réduire les animations » ni en économie de données -->
+      <!-- Vidéo (public/js/landing/video.js) : 1080p, 2160p seulement à partir de 1 600 px de large ; clips des métiers
+           en alternance si la liste est fournie (second lecteur créé à ce moment) ; jamais avec « réduire les
+           animations » ni en économie de données (l'image reste) -->
       <div class="hero-videos" data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
            data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'>
-        <video class="hero-video" muted playsinline preload="none" aria-hidden="true" hidden></video>
-        <video class="hero-video" muted playsinline preload="none" aria-hidden="true" hidden></video>
+        <video class="hero-video" muted playsinline preload="metadata" aria-hidden="true" hidden></video>
       </div>
     </div>
-    <p class="hero-metier" aria-hidden="true" hidden></p>
-    <button class="hero-pause" type="button" hidden>
-      <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
-      <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
-      <span class="visuellement-cache"></span>
-    </button>
     <div class="conteneur hero-contenu">
       <p class="surtitre" data-t="hero.surtitre"></p>
       <h1 id="titre-hero" data-t="hero.titre"></h1>
@@ -124,14 +122,35 @@
           <p data-t="hero.note_comptes"></p>
         </div>
       </form>
+      <ul class="hero-preuves">
+        <li data-si="nb_dirigeants" data-t="hero.preuves.dirigeants"></li>
+        <li data-si="note_avis nb_avis"><span class="etoiles" aria-hidden="true"><svg viewBox="0 0 90 16" width="90" height="16"><g fill="currentColor"><path id="etoile" d="M8 1l2.1 4.6 5 .5-3.8 3.3 1.1 4.9L8 11.8 3.6 14.3l1.1-4.9L.9 6.1l5-.5z"/><use href="#etoile" x="18"/><use href="#etoile" x="36"/><use href="#etoile" x="54"/><use href="#etoile" x="72"/></g></svg></span> <span data-t="hero.preuves.avis"></span></li>
+        <li data-t="hero.preuves.registres"></li>
+      </ul>
+    </div>
+    <div class="hero-bas">
+      <div class="hero-bas-entete">
+        <p class="hero-metier" aria-hidden="true" hidden></p>
+        <p class="hero-tuiles-libelle" id="hero-tuiles-libelle" data-t="hero.tuiles.libelle"></p>
+        <button class="hero-pause" type="button" hidden>
+          <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
+          <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
+          <span class="visuellement-cache"></span>
+        </button>
+      </div>
+      <ul class="hero-tuiles" aria-labelledby="hero-tuiles-libelle">
+        <li><a href="#comment-1"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><strong data-t="hero.tuiles.liste.0.titre"></strong><span data-t="hero.tuiles.liste.0.texte"></span></a></li>
+        <li><a href="#comment-2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M2.5 20h19"/></svg><strong data-t="hero.tuiles.liste.1.titre"></strong><span data-t="hero.tuiles.liste.1.texte"></span></a></li>
+        <li><a href="#confidentialite"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><strong data-t="hero.tuiles.liste.2.titre"></strong><span data-t="hero.tuiles.liste.2.texte"></span></a></li>
+        <li><a href="#comment-3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14 3v5h5M9 12.5h7M9 16.5h5"/></svg><strong data-t="hero.tuiles.liste.3.titre"></strong><span data-t="hero.tuiles.liste.3.texte"></span></a></li>
+      </ul>
     </div>
   </section>
 
-  <!-- Résultat de l'estimation (public/js/landing/resultat.js) : nom de code, fourchette, teaser anonyme, trois suites.
+  <!-- Résultat de l'estimation (public/js/landing/resultat.js) : nom de code, fourchette, teaser anonyme, deux suites.
        Aucun compte n'est demandé avant de voir la valeur. -->
-  <section id="resultat" class="resultat nuit" aria-labelledby="titre-resultat" hidden>
-    <div class="essai-fond" data-fond="/img/landing/etabli-1200.webp" aria-hidden="true"></div>
-    <div class="conteneur resultat-grille">
+  <section id="resultat" class="resultat" aria-labelledby="titre-resultat" hidden>
+    <div class="carte-large carte-verte nuit resultat-grille">
       <div class="resultat-texte" aria-live="polite">
         <div class="resultat-chargement" hidden>
           <div class="trousseau" aria-hidden="true">
@@ -158,8 +177,7 @@
           </form>
           <p class="resultat-message" id="resultat-message" role="status" hidden></p>
           <ul class="resultat-suites">
-            <li><a class="suite" href="/connexion" data-connexion data-suite="garder"><strong data-t="js.resultat.garder_titre"></strong><span data-t="js.resultat.garder_texte"></span></a></li>
-            <li><a class="suite" href="/connexion" data-connexion data-suite="affiner"><strong data-t="js.resultat.affiner_titre"></strong><span data-t="js.resultat.affiner_texte"></span></a></li>
+            <li><a class="suite" href="/connexion" data-connexion data-suite="ouvrir"><strong data-t="js.resultat.ouvrir_titre"></strong><span data-t="js.resultat.ouvrir_texte"></span></a></li>
             <li><a class="suite" href="mailto:" data-suite="inviter"><strong data-t="js.resultat.inviter_titre"></strong><span data-t="js.resultat.inviter_texte"></span></a></li>
           </ul>
           <p class="resultat-autre"><button class="lien" type="button" id="btn-autre" data-t="js.resultat.autre"></button></p>
@@ -170,7 +188,8 @@
   </section>
 
   <!-- 2. Histoire : comprendre. L'établi et le trousseau (public/js/landing/histoire.js) : scène collante pilotée par
-       le défilement sur ordinateur, trois panneaux sur téléphone, tablette et en mouvement réduit. -->
+       le défilement sur ordinateur, panneaux empilés sur téléphone, tablette et en mouvement réduit. Quatre temps :
+       les clés, les chapitres, le dossier, puis « Et la vôtre ? » (nom de code d'un exemple fictif, champ SIREN). -->
   <section id="histoire" class="histoire" aria-labelledby="titre-histoire">
     <div class="histoire-collant">
       <div class="histoire-temps histoire-temps-1">
@@ -208,217 +227,302 @@
           <p class="chapo" data-t="histoire.temps3.texte"></p>
         </div>
       </div>
+      <!-- 4. Et la vôtre ? Le dossier reçoit son nom de code (exemple fictif), puis le champ partagé -->
+      <div class="histoire-temps histoire-temps-4">
+        <div class="histoire-texte">
+          <h3 class="titre-section" data-t="histoire.temps4.titre"></h3>
+          <p class="chapo" data-t="histoire.temps4.texte"></p>
+          <form class="recherche recherche-histoire" action="/connexion" method="get" data-champ-siren="histoire">
+            <div class="recherche-champ">
+              <label for="q-histoire" data-t="champ.libelle"></label>
+              <input id="q-histoire" name="q" type="search" autocomplete="off" data-t-attr="placeholder=histoire.temps4.champ"
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-histoire">
+              <button class="btn btn-vert" type="submit"><span data-t="champ.bouton_court"></span> <span class="fleche" aria-hidden="true">→</span></button>
+            </div>
+            <ul class="suggestions" id="suggestions-histoire" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+            <p class="recherche-message" id="message-histoire" role="status" data-message hidden></p>
+          </form>
+        </div>
+      </div>
       <div class="histoire-progression" aria-hidden="true"><span></span></div>
     </div>
   </section>
 
-  <!-- 3. Comment ça marche (fusion avec « La boîte à outils ») -->
-  <section id="comment" aria-labelledby="titre-comment">
+  <!-- 3. Comment ça marche : trois onglets (public/js/landing/onglets.js). Sans JavaScript, les trois étapes se
+       suivent. Les liens #comment-1, -2, -3 ouvrent la bonne étape. -->
+  <section id="comment" class="bloc comment" aria-labelledby="titre-comment">
     <div class="conteneur">
-      <div class="entete-section">
-        <p class="surtitre" data-t="comment.surtitre"></p>
-        <h2 id="titre-comment" data-t="comment.titre"></h2>
+      <p class="surtitre" data-t="comment.surtitre"></p>
+      <h2 id="titre-comment" data-t="comment.titre"></h2>
+      <div class="onglets" role="tablist" data-t-attr="aria-label=comment.onglets" hidden>
+        <button type="button" role="tab" id="onglet-1" aria-controls="etape-1" aria-selected="true" data-t="comment.etapes.0.onglet"></button>
+        <button type="button" role="tab" id="onglet-2" aria-controls="etape-2" aria-selected="false" tabindex="-1" data-t="comment.etapes.1.onglet"></button>
+        <button type="button" role="tab" id="onglet-3" aria-controls="etape-3" aria-selected="false" tabindex="-1" data-t="comment.etapes.2.onglet"></button>
       </div>
-      <ol class="etapes-simples">
-        <li>
-          <span class="etape-numero" data-t="comment.etapes.0.numero"></span>
+      <div class="etape-panneau" role="tabpanel" id="etape-1" aria-labelledby="onglet-1" tabindex="0">
+        <div class="etape-visuel">
+          <div class="carte-resultat">
+            <p class="mono-ocre" data-t="comment.visuel1.entete"></p>
+            <p class="carte-resultat-nom" data-t="comment.visuel1.nom"></p>
+            <p class="carte-resultat-infos" data-t="comment.visuel1.infos"></p>
+            <p class="carte-resultat-valeur"><span data-t="comment.visuel1.valeur_libelle"></span> <strong data-t="comment.visuel1.valeur"></strong></p>
+            <p class="carte-resultat-mention" data-t="comment.visuel1.mention"></p>
+          </div>
+          <!-- Annotation manuscrite (décorative, le texte est déjà dans la carte) -->
+          <p class="annotation annotation-valeur" aria-hidden="true"><svg class="annotation-fleche" viewBox="0 0 90 56"><path d="M84 50c-18 3-44-2-62-26"/><path d="M22 24l11 2M22 24l1 11"/></svg><span data-t="comment.visuel1.annotation"></span></p>
+        </div>
+        <div class="etape-texte">
+          <p class="etape-surtitre" data-t="comment.etapes.0.surtitre"></p>
+          <p class="etape-chiffre" data-t="comment.etapes.0.chiffre"></p>
           <h3 data-t="comment.etapes.0.titre"></h3>
-          <span class="badge" data-t="comment.etapes.0.badge"></span>
-          <p data-t="comment.etapes.0.texte"></p>
-        </li>
-        <li>
-          <span class="etape-numero" data-t="comment.etapes.1.numero"></span>
+          <p class="etape-description" data-t="comment.etapes.0.texte"></p>
+          <ul class="pastilles">
+            <li data-t="comment.etapes.0.pastilles.0"></li>
+            <li data-t="comment.etapes.0.pastilles.1"></li>
+          </ul>
+        </div>
+      </div>
+      <div class="etape-panneau" role="tabpanel" id="etape-2" aria-labelledby="onglet-2" tabindex="0">
+        <div class="etape-visuel">
+          <div class="carte-methodes">
+            <svg class="trombone" viewBox="0 0 24 64" aria-hidden="true"><path d="M15 20v28a4.5 4.5 0 0 1-9 0V11a7.5 7.5 0 0 1 15 0v40a10.5 10.5 0 0 1-21 0V22"/></svg>
+            <p class="mono-ocre" data-t="comment.visuel2.entete"></p>
+            <div class="methode" style="--debut: 22%; --largeur: 46%"><p data-t="comment.visuel2.methodes.0"></p><span aria-hidden="true"><i></i></span></div>
+            <div class="methode" style="--debut: 30%; --largeur: 40%"><p data-t="comment.visuel2.methodes.1"></p><span aria-hidden="true"><i></i></span></div>
+            <div class="methode" style="--debut: 18%; --largeur: 44%"><p data-t="comment.visuel2.methodes.2"></p><span aria-hidden="true"><i></i></span></div>
+            <div class="methode methode-retenue" style="--debut: 30%; --largeur: 32%"><p data-t="comment.visuel2.retenue"></p><span aria-hidden="true"><i></i></span></div>
+          </div>
+        </div>
+        <div class="etape-texte">
+          <p class="etape-surtitre" data-t="comment.etapes.1.surtitre"></p>
+          <p class="etape-chiffre" data-t="comment.etapes.1.chiffre"></p>
           <h3 data-t="comment.etapes.1.titre"></h3>
-          <span class="badge" data-t="comment.etapes.1.badge"></span>
-          <p data-t="comment.etapes.1.texte"></p>
-        </li>
-        <li>
-          <span class="etape-numero" data-t="comment.etapes.2.numero"></span>
+          <p class="etape-description" data-t="comment.etapes.1.texte"></p>
+          <ul class="pastilles">
+            <li data-si="duree_etape2" data-t="comment.etapes.1.pastilles.0"></li>
+            <li data-si="prix_etape2" data-t="comment.etapes.1.pastilles.1"></li>
+          </ul>
+        </div>
+      </div>
+      <div class="etape-panneau" role="tabpanel" id="etape-3" aria-labelledby="onglet-3" tabindex="0">
+        <div class="etape-visuel">
+          <div class="rangee-cles" role="img" data-t-attr="aria-label=comment.visuel3.alt" data-rangee-cles></div>
+        </div>
+        <div class="etape-texte">
+          <p class="etape-surtitre" data-t="comment.etapes.2.surtitre"></p>
+          <p class="etape-chiffre" data-t="comment.etapes.2.chiffre"></p>
           <h3 data-t="comment.etapes.2.titre"></h3>
-          <span class="badge" data-t="comment.etapes.2.badge"></span>
-          <p data-t="comment.etapes.2.texte"></p>
-        </li>
-      </ol>
-      <p class="outils-ligne" data-t="comment.outils"></p>
-    </div>
-  </section>
-
-  <!-- 4. Et la vôtre ? Démo du nom de code sur un exemple fictif (public/js/landing/demo.js), jouée une fois -->
-  <section id="essai" class="essai nuit" aria-labelledby="titre-essai">
-    <div class="essai-fond" data-fond="/img/landing/etabli-1200.webp" aria-hidden="true"></div>
-    <div class="conteneur essai-grille">
-      <div class="essai-texte">
-        <div class="essai-avant">
-          <p class="surtitre" data-t="essai.surtitre"></p>
-          <h2 id="titre-essai" data-t="essai.titre"></h2>
-          <p class="chapo" data-t="essai.texte"></p>
+          <p class="etape-description" data-t="comment.etapes.2.texte"></p>
+          <ul class="pastilles">
+            <li data-t="comment.etapes.2.pastilles.0"></li>
+            <li data-si="prix_dossier" data-t="comment.etapes.2.pastilles.1"></li>
+          </ul>
         </div>
-        <div class="essai-apres" hidden>
-          <p class="surtitre" data-t="essai.apres_surtitre"></p>
-          <h2 data-t="essai.apres_titre"></h2>
-          <p class="chapo" data-t="essai.apres_texte"></p>
-        </div>
-        <p class="essai-action"><button class="btn btn-sable" type="button" data-focus-champ data-t="essai.bouton"></button></p>
-      </div>
-      <div class="essai-demo">
-        <div class="essai-dossier" aria-hidden="true"></div>
-        <p class="histoire-fictif" data-t="histoire.dossier.fictif"></p>
       </div>
     </div>
   </section>
 
-  <!-- 5. Confidentialité : se rassurer -->
-  <section id="confidentialite" class="nuit" aria-labelledby="titre-confid">
-    <div class="conteneur confid-grille">
-      <div>
+  <!-- 4. Pourquoi Passation : trois cartes -->
+  <section id="pourquoi" class="bloc pourquoi" aria-labelledby="titre-pourquoi">
+    <div class="conteneur">
+      <p class="surtitre" data-t="pourquoi.surtitre"></p>
+      <h2 id="titre-pourquoi" data-t="pourquoi.titre"></h2>
+      <div class="pourquoi-cartes">
+        <article class="carte-claire">
+          <h3 data-t="pourquoi.cartes.0.titre"></h3>
+          <p data-t="pourquoi.cartes.0.texte"></p>
+          <img class="pourquoi-photo" data-si="photo_dirigeant" data-t-attr="src=cles.photo_dirigeant; alt=pourquoi.photo_alt" width="720" height="540" loading="lazy">
+          <img class="pourquoi-photo" data-sinon="photo_dirigeant" src="/img/photos/hero-poster-800.webp" srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w"
+               sizes="(min-width: 1024px) 400px, 100vw" data-t-attr="alt=pourquoi.photo_alt" width="800" height="422" loading="lazy">
+        </article>
+        <article class="carte-verte">
+          <p class="pourquoi-chiffre" aria-hidden="true" data-t="pourquoi.cartes.1.chiffre"></p>
+          <h3 data-t="pourquoi.cartes.1.titre"></h3>
+          <p data-t="pourquoi.cartes.1.texte"></p>
+          <a class="btn btn-creme" href="#comment-2" data-t="pourquoi.cartes.1.bouton"></a>
+        </article>
+        <article class="carte-claire">
+          <h3 data-t="pourquoi.cartes.2.titre"></h3>
+          <p data-t="pourquoi.cartes.2.texte"></p>
+          <div class="pourquoi-dossier">
+            <div class="dossier-vitrine" aria-hidden="true" data-dossier-final></div>
+            <p class="histoire-fictif" data-t="pourquoi.fictif"></p>
+          </div>
+        </article>
+      </div>
+      <p class="pourquoi-sources"><span data-t="pourquoi.sources"></span><span data-si="hebergement" data-t="pourquoi.hebergement"></span><span data-si="partenaires" data-t="pourquoi.partenaires"></span></p>
+    </div>
+  </section>
+
+  <!-- 5. Confidentialité : carte verte, quatre garanties, le dossier de l'exemple fictif dans son état final -->
+  <section id="confidentialite" class="bloc-carte" aria-labelledby="titre-confid">
+    <div class="carte-large carte-verte confid-carte">
+      <div class="confid-texte">
         <p class="surtitre" data-t="confidentialite.surtitre"></p>
         <h2 id="titre-confid" data-t="confidentialite.titre"></h2>
         <p class="chapo" data-t="confidentialite.texte"></p>
-        <p class="confid-hebergement" data-si="hebergement" data-t="confidentialite.hebergement"></p>
-        <p class="confid-lien"><a class="btn btn-sable" href="/confidentialite" data-t="confidentialite.politique"></a></p>
+        <ul class="garanties-cochees">
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.0.titre"></p><p data-t="confidentialite.garanties.0.texte"></p></div></li>
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.1.titre"></p><p data-t="confidentialite.garanties.1.texte"></p></div></li>
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.2.titre"></p><p data-t="confidentialite.garanties.2.texte"></p></div></li>
+          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.3.titre"></p><p data-t="confidentialite.garanties.3.texte"></p></div></li>
+        </ul>
+        <a class="btn btn-creme" href="/confidentialite" data-t="confidentialite.politique"></a>
       </div>
-      <div class="garanties">
-        <div class="garantie">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-          <h3 data-t="confidentialite.garanties.0.titre"></h3><p data-t="confidentialite.garanties.0.texte"></p>
-        </div>
-        <div class="garantie">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>
-          <h3 data-t="confidentialite.garanties.1.titre"></h3><p data-t="confidentialite.garanties.1.texte"></p>
-        </div>
-        <div class="garantie">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
-          <h3 data-t="confidentialite.garanties.2.titre"></h3><p data-t="confidentialite.garanties.2.texte"></p>
-        </div>
-        <div class="garantie">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
-          <h3 data-t="confidentialite.garanties.3.titre"></h3><p data-t="confidentialite.garanties.3.texte"></p>
-        </div>
+      <div class="confid-dossier">
+        <div class="dossier-vitrine" aria-hidden="true" data-dossier-final></div>
+        <p class="histoire-fictif" data-t="confidentialite.fictif"></p>
       </div>
     </div>
   </section>
 
-  <!-- 6. Tarifs (retirée tant que le prix du dossier n'est pas fourni) -->
-  <section id="tarifs" class="tarifs" aria-labelledby="titre-tarifs" data-si="prix_dossier">
+  <!-- 6. Derrière Passation : retirée tant que le nom et le texte du fondateur manquent -->
+  <section id="equipe" class="bloc equipe" aria-labelledby="titre-equipe" data-si="fondateur_nom fondateur_texte">
+    <div class="conteneur equipe-grille">
+      <div class="equipe-texte">
+        <p class="surtitre" data-t="equipe.surtitre"></p>
+        <h2 id="titre-equipe" data-t="equipe.titre"></h2>
+        <p class="chapo" data-t="equipe.texte"></p>
+        <blockquote class="equipe-citation"><p data-t="equipe.citation"></p></blockquote>
+        <p class="signature"><strong data-t="equipe.nom"></strong><span data-si="fondateur_titre" data-t="equipe.fonction"></span></p>
+        <div class="equipe-actions" data-si-un="rappel telephone">
+          <a class="btn btn-vert" data-si="rappel email_contact" data-t="equipe.rappel" data-t-attr="href=equipe.rappel_lien"></a>
+          <a class="btn btn-secondaire" data-si="telephone" data-t="equipe.telephone" data-t-attr="href=pied.telephone_lien; aria-label=equipe.telephone_aria"></a>
+        </div>
+      </div>
+      <img class="equipe-photo" data-si="fondateur_photo" data-t-attr="src=cles.fondateur_photo; alt=equipe.photo_alt" width="640" height="800" loading="lazy">
+    </div>
+  </section>
+
+  <!-- 7. Ils l'ont fait : retirée tant que deux témoignages au moins ne sont pas fournis -->
+  <section id="preuves" class="bloc-carte" aria-labelledby="titre-preuves" data-si="temoignages:2">
+    <div class="carte-large carte-sable">
+      <p class="surtitre" data-t="preuves.surtitre"></p>
+      <h2 id="titre-preuves" data-t="preuves.titre"></h2>
+      <dl class="preuves-chiffres">
+        <div data-si="chiffres.entreprises_estimees"><dt data-t="preuves.entreprises_libelle"></dt><dd data-t="preuves.entreprises"></dd></div>
+        <div data-si="note_avis nb_avis"><dt data-t="preuves.note_libelle"></dt><dd data-t="preuves.note"></dd></div>
+        <div data-si="chiffres.dossiers_prepares"><dt data-t="preuves.dossiers_libelle"></dt><dd data-t="preuves.dossiers"></dd></div>
+        <div><dt data-t="preuves.methodes_libelle"></dt><dd data-t="preuves.methodes"></dd></div>
+      </dl>
+      <div class="temoignages">
+        <figure class="temoignage carte-claire">
+          <blockquote data-t="cles.temoignages.0.texte"></blockquote>
+          <figcaption data-t="preuves.legendes.0"></figcaption>
+        </figure>
+        <figure class="temoignage carte-claire">
+          <blockquote data-t="cles.temoignages.1.texte"></blockquote>
+          <figcaption data-t="preuves.legendes.1"></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Guides : retirée (avec le lien de l'en-tête) tant que trois guides ne sont pas fournis -->
+  <section id="guides" class="bloc guides" aria-labelledby="titre-guides" data-si="guides:3">
     <div class="conteneur">
-      <div class="entete-section">
-        <p class="surtitre" data-t="tarifs.surtitre"></p>
-        <h2 id="titre-tarifs" data-t="tarifs.titre"></h2>
-      </div>
-      <div class="tarifs-grille">
-        <div class="carte tarif">
-          <h3 data-t="tarifs.estimation_titre"></h3>
-          <p class="tarif-prix chiffre" data-t="tarifs.estimation_prix"></p>
-          <p data-t="tarifs.estimation_texte"></p>
-        </div>
-        <div class="carte tarif">
-          <h3 data-t="tarifs.dossier_titre"></h3>
-          <p class="tarif-prix chiffre" data-t="tarifs.dossier_prix"></p>
-          <p data-t="tarifs.dossier_texte"></p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. Parti pris -->
-  <section id="parti-pris" class="parti-pris" aria-labelledby="titre-parti-pris">
-    <div class="parti-pris-media">
-      <img src="/img/photos/hero-poster-1600.webp" srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
-           sizes="100vw" loading="lazy" width="2400" height="1266" data-t-attr="alt=parti_pris.video_alt">
-      <!-- La vidéo de l'artisan, en boucle tant qu'elle est à l'écran (public/js/landing/video.js) -->
-      <video class="parti-pris-video" muted loop playsinline preload="none" aria-hidden="true" hidden
-             data-sources='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'></video>
-      <button class="hero-pause parti-pris-pause" type="button" hidden>
-        <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
-        <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
-        <span class="visuellement-cache"></span>
-      </button>
-      <div class="conteneur parti-pris-texte">
-        <p class="surtitre" data-t="parti_pris.surtitre"></p>
-        <h2 id="titre-parti-pris" data-t="parti_pris.titre"></h2>
-        <p class="chapo" data-t="parti_pris.texte"></p>
-      </div>
-    </div>
-    <div class="conteneur" data-si-un="fondateur_nom fondateur_texte fondateur_photo partenaires">
-      <div class="carte fondateur">
-        <img class="fondateur-photo" data-si="fondateur_photo" data-t-attr="src=cles.fondateur_photo; alt=parti_pris.fondateur_photo_alt" width="160" height="160" loading="lazy">
-        <div>
-          <h3 data-si="fondateur_nom" data-t="parti_pris.fondateur"></h3>
-          <p data-si="fondateur_texte" data-t="parti_pris.fondateur_texte"></p>
-          <div data-si="partenaires">
-            <p class="surtitre" data-t="parti_pris.partenaires"></p>
-            <ul class="partenaires" data-t-liste="cles.partenaires"></ul>
-          </div>
-        </div>
+      <p class="surtitre" data-t="guides.surtitre"></p>
+      <h2 id="titre-guides" data-t="guides.titre"></h2>
+      <div class="guides-cartes">
+        <a class="carte-guide" data-t-attr="href=cles.guides.0.url">
+          <span class="guide-visuel"><img data-si="guides.0.image" data-t-attr="src=cles.guides.0.image" alt="" width="640" height="400" loading="lazy"></span>
+          <span class="guide-etiquette" data-t="guides.etiquette"></span>
+          <span class="guide-titre" data-t="cles.guides.0.titre"></span>
+        </a>
+        <a class="carte-guide" data-t-attr="href=cles.guides.1.url">
+          <span class="guide-visuel"><img data-si="guides.1.image" data-t-attr="src=cles.guides.1.image" alt="" width="640" height="400" loading="lazy"></span>
+          <span class="guide-etiquette" data-t="guides.etiquette"></span>
+          <span class="guide-titre" data-t="cles.guides.1.titre"></span>
+        </a>
+        <a class="carte-guide" data-t-attr="href=cles.guides.2.url">
+          <span class="guide-visuel"><img data-si="guides.2.image" data-t-attr="src=cles.guides.2.image" alt="" width="640" height="400" loading="lazy"></span>
+          <span class="guide-etiquette" data-t="guides.etiquette"></span>
+          <span class="guide-titre" data-t="cles.guides.2.titre"></span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- 8. Questions -->
-  <section id="questions" aria-labelledby="titre-faq">
+  <!-- 9. Questions : natives (details, summary) ; une question sans réponse fournie est retirée -->
+  <section id="questions" class="bloc" aria-labelledby="titre-faq">
     <div class="conteneur faq-grille">
       <div>
         <p class="surtitre" data-t="questions.surtitre"></p>
         <h2 id="titre-faq" data-t="questions.titre"></h2>
       </div>
       <div class="faq">
-        <details><summary><span data-t="questions.liste.0.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.0.r"></div></details>
-        <details><summary><span data-t="questions.liste.1.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.1.r"></div></details>
-        <details><summary><span data-t="questions.liste.2.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.2.r"></div></details>
-        <details><summary><span data-t="questions.liste.3.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.3.r"></div></details>
-        <details><summary><span data-t="questions.liste.4.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.4.r"></div></details>
-        <details><summary><span data-t="questions.liste.5.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.5.r"></div></details>
-        <details data-si="prix_dossier"><summary><span data-t="questions.liste.6.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.6.r"></div></details>
-        <details><summary><span data-t="questions.liste.7.q"></span><span class="plus" aria-hidden="true">+</span></summary><div class="reponse" data-t="questions.liste.7.r"></div></details>
+        <details data-si="faq_prix"><summary><span data-t="questions.liste.0.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.0.r"></div></details>
+        <details><summary><span data-t="questions.liste.1.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.1.r"></div></details>
+        <details><summary><span data-t="questions.liste.2.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.2.r"></div></details>
+        <details data-si="faq_duree"><summary><span data-t="questions.liste.3.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.3.r"></div></details>
+        <details><summary><span data-t="questions.liste.4.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.4.r"></div></details>
+        <details><summary><span data-t="questions.liste.5.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.5.r"></div></details>
+        <details data-si="faq_qui"><summary><span data-t="questions.liste.6.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.6.r"></div></details>
+        <details><summary><span data-t="questions.liste.7.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.7.r"></div></details>
+        <details><summary><span data-t="questions.liste.8.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.8.r"></div></details>
+        <details data-si="faq_repreneur"><summary><span data-t="questions.liste.9.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.9.r"></div></details>
+        <details><summary><span data-t="questions.liste.10.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.10.r"></div></details>
       </div>
     </div>
   </section>
 
-  <!-- 9. Relance -->
-  <section id="relance" class="nuit final relance" aria-labelledby="titre-relance">
-    <div class="conteneur">
+  <!-- 11. Appel final : carte ocre clair, le champ partagé -->
+  <section id="relance" class="bloc-carte relance" aria-labelledby="titre-relance">
+    <div class="carte-large carte-relance">
       <h2 id="titre-relance" data-t="relance.titre"></h2>
+      <p class="relance-texte" data-t="relance.texte"></p>
       <form class="recherche relance-champ" action="/connexion" method="get" data-champ-siren="relance" data-zone-champ>
         <div class="recherche-champ">
           <label for="q-relance" data-t="champ.libelle"></label>
-          <input id="q-relance" name="q" type="search" autocomplete="off" aria-describedby="note-relance" data-t-attr="placeholder=champ.libelle"
+          <input id="q-relance" name="q" type="search" autocomplete="off" data-t-attr="placeholder=champ.libelle"
                  role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-relance">
           <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
         </div>
         <ul class="suggestions" id="suggestions-relance" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
         <p class="recherche-message" id="message-relance" role="status" data-message hidden></p>
-        <p class="relance-note" id="note-relance" data-t="relance.note"></p>
       </form>
+      <!-- Tampon décoratif (le texte est déjà dans la phrase au-dessus) -->
+      <svg class="tampon-rond" viewBox="0 0 140 140" aria-hidden="true">
+        <defs><path id="tampon-cercle" d="M70 70m-51 0a51 51 0 1 1 102 0a51 51 0 1 1-102 0"/></defs>
+        <circle cx="70" cy="70" r="66" stroke-width="3"/><circle cx="70" cy="70" r="61" stroke-width="1"/><circle cx="70" cy="70" r="37" stroke-width="1.5"/>
+        <text textLength="312" lengthAdjust="spacing"><textPath href="#tampon-cercle" data-t="relance.tampon"></textPath></text>
+        <g transform="translate(54 50)" stroke-width="2.2"><path d="M9 27V15a7 7 0 0 1 14 0v12"/><path d="M5 27h22"/><circle cx="16" cy="21" r="2.6" class="plein"/></g>
+      </svg>
+      <p class="relance-telephone" data-si="telephone"><span data-t="relance.telephone"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a>.</p>
     </div>
   </section>
 </main>
 
 <footer class="pied">
-  <div class="conteneur pied-ligne">
-    <a class="logo" href="/"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <ul class="pied-liens">
-      <li><a href="/mentions-legales" data-t="pied.mentions"></a></li>
-      <li><a href="/confidentialite" data-t="pied.confidentialite"></a></li>
-      <li><a href="/cgu" data-t="pied.cgu"></a></li>
-      <li data-si="contact"><a data-t="pied.contact" data-t-attr="href=pied.contact_lien"></a></li>
-    </ul>
-    <p class="pied-telephone" data-si="telephone"><span data-t="pied.telephone_libelle"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a></p>
-  </div>
-  <div class="conteneur pied-bas">
-    <span>© <span data-annee>2026</span> Passation</span>
-    <span data-t="pied.avertissement"></span>
+  <div class="pied-interieur">
+    <p class="pied-logo" aria-hidden="true">Passation</p>
+    <div class="pied-colonnes">
+      <div class="pied-legal">
+        <p data-t="pied.identite"></p>
+        <p data-t="pied.avertissement"></p>
+      </div>
+      <nav class="pied-liens" data-t-attr="aria-label=pied.liens">
+        <a href="/mentions-legales" data-t="pied.mentions"></a>
+        <a href="/confidentialite" data-t="pied.confidentialite"></a>
+        <a href="/cgu" data-t="pied.cgu"></a>
+      </nav>
+      <div class="pied-contact" data-si-un="telephone email_contact">
+        <p class="pied-contact-titre" data-t="pied.joindre"></p>
+        <p data-si="telephone"><a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a></p>
+        <p data-si="email_contact"><a data-t="cles.email_contact" data-t-attr="href=pied.email_lien"></a></p>
+      </div>
+    </div>
+    <p class="pied-copyright">© <span data-annee>2026</span> Passation</p>
   </div>
 </footer>
 
 <script type="application/json" id="textes" data-t-json="js"></script>
 <script type="application/json" id="videos-metiers" data-t-json="cles.videos_metiers"></script>
 <script type="application/json" id="textes-histoire" data-t-json="histoire"></script>
-<script type="application/json" id="textes-demo" data-t-json="essai.demo"></script>
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/landing/intro.js"></script>
 <script type="module" src="/js/landing/landing.js"></script>
 <script type="module" src="/js/landing/histoire-page.js"></script>
-<script type="module" src="/js/landing/demo.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>

@@ -32,22 +32,35 @@ export function lire(contenu, chemin) {
   return String(chemin).split(".").reduce((v, k) => (v == null ? undefined : v[k]), contenu);
 }
 
-/** Vide : absente, chaîne blanche, liste vide (ou ne contenant que du vide). */
+/** Vide : absente, chaîne blanche, faux (booléen), liste vide, objet dont toutes les valeurs sont vides. */
 export function estVide(v) {
-  if (v == null) return true;
+  if (v == null || v === false) return true;
   if (typeof v === "string") return v.trim() === "";
   if (Array.isArray(v)) return v.every(estVide);
+  if (typeof v === "object") return Object.values(v).every(estVide);
   return false;
+}
+
+/**
+ * Condition d'affichage sur une clé de « cles » : « telephone », « legal.rcs » (chemin), « guides:3 » (liste d'au
+ * moins 3 entrées non vides). Vrai si l'élément doit rester.
+ */
+export function condition(cles, jeton) {
+  const [chemin, min] = String(jeton).split(":");
+  const v = lire(cles, chemin);
+  if (min) return Array.isArray(v) && v.filter((x) => !estVide(x)).length >= Number(min);
+  return !estVide(v);
 }
 
 /** Remplace {cle} par la valeur de contenu.cles ; renvoie null si une clé utilisée est vide. Les {repères}
  *  inconnus de « cles » (ex. {exercice}) sont laissés tels quels pour le JavaScript de la page. */
 export function interpoler(s, cles = {}) {
   let manque = false;
-  const r = String(s).replace(/\{([a-z_]+)\}/g, (m, k) => {
-    if (!Object.hasOwn(cles, k)) return m;
-    if (estVide(cles[k])) { manque = true; return ""; }
-    return String(cles[k]);
+  const r = String(s).replace(/\{([a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)*)\}/g, (m, k) => {
+    if (!Object.hasOwn(cles, k.split(".")[0])) return m;
+    const v = lire(cles, k);
+    if (estVide(v)) { manque = true; return ""; }
+    return String(v);
   });
   return manque ? null : r;
 }
@@ -84,6 +97,13 @@ export function texte(contenu, chemin) {
 /** « attr=chemin; attr2=chemin2 » → [[attr, chemin], …] */
 export const lireAttributs = (spec) => String(spec).split(";").map((x) => x.trim()).filter(Boolean).map((x) => x.split("=").map((y) => y.trim()));
 
+/** Valeur d'attribut finale : guillemets droits neutralisés ; « tel:01 23 45 67 89 » → « tel:0123456789 » (aucune espace,
+ * insécable comprise, dans le lien). */
+export function valeurAttribut(attr, t) {
+  const v = attr === "href" && t.startsWith("tel:") ? `tel:${t.slice(4).replace(/[^\d+]/g, "")}` : t;
+  return v.replace(/"/g, "”");
+}
+
 /** Sous-arbre destiné au JavaScript de la page : chaînes typographiées et interpolées (vides conservés). */
 export function pourJs(contenu, chemin) {
   const v = lire(contenu, chemin);
@@ -100,4 +120,39 @@ export function pourJs(contenu, chemin) {
 export const jsonDansScript = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
 
 /** Clés de contenu.cles encore vides (avertissement en développement, liste « À me fournir »). */
-export const clesVides = (contenu) => Object.entries(contenu.cles || {}).filter(([, v]) => estVide(v)).map(([k]) => k);
+export function clesVides(contenu) {
+  const vides = [];
+  const parcourir = (objet, prefixe) => {
+    for (const [k, v] of Object.entries(objet)) {
+      const chemin = prefixe ? `${prefixe}.${k}` : k;
+      if (v && typeof v === "object" && !Array.isArray(v)) parcourir(v, chemin);
+      else if (estVide(v)) vides.push(chemin);
+    }
+  };
+  parcourir(contenu.cles || {}, "");
+  return vides;
+}
+
+/** Identité légale du pied de page : « Raison sociale, forme au capital de X, RCS Y, adresse. » Les morceaux vides
+ * disparaissent ; rien du tout si tout est vide. */
+export function identiteLegale(legal = {}) {
+  const v = (k) => (typeof legal?.[k] === "string" ? legal[k].trim() : "");
+  const forme = [v("forme"), v("capital") ? `au capital de ${v("capital")}` : ""].filter(Boolean).join(" ");
+  const parties = [v("raison_sociale"), forme, v("rcs") ? `RCS ${v("rcs")}` : "", v("adresse")].filter(Boolean);
+  return parties.length ? `${parties.join(", ")}.` : "";
+}
+
+/** Légende d'un témoignage : « prénom, métier, ville », les morceaux vides retirés. */
+export const legendeTemoignage = (t = {}) =>
+  ["prenom", "metier", "ville"].map((k) => (typeof t?.[k] === "string" ? t[k].trim() : "")).filter(Boolean).join(", ");
+
+/** Contenu servi : le fichier, plus les valeurs calculées (pied.identite d'après cles.legal ; preuves.legendes d'après
+ * cles.temoignages). */
+export function completer(contenu) {
+  const temoignages = Array.isArray(contenu.cles?.temoignages) ? contenu.cles.temoignages : [];
+  return {
+    ...contenu,
+    pied: { ...contenu.pied, identite: identiteLegale(contenu.cles?.legal) },
+    preuves: { ...contenu.preuves, legendes: temoignages.map(legendeTemoignage) },
+  };
+}

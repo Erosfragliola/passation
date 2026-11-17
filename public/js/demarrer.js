@@ -1,13 +1,16 @@
 // Parcours guidé : une étape à la fois, une seule action principale par écran, reprise là où l'on s'est arrêté.
-//   1. Vos comptes : liasse PDF + site internet (proposé depuis l'adresse e-mail)
+//   1. Vos comptes : ce que Passation sait déjà, puis la liasse PDF ; à défaut, saisie de l'essentiel (un exercice
+//      par écran, les seuls postes obligatoires, l'EBE des comptes publics repris s'il existe)
 //   2. Vos chiffres : un clic par exercice ; seules les lignes signalées par les contrôles demandent attention
-//   3. Quelques questions : une par écran, choix rapides, questions sautées si elles ne s'appliquent pas
+//   3. Quelques questions : une par écran, choix rapides, questions sautées si elles ne s'appliquent pas ; la première
+//      demande le site internet (proposé depuis l'adresse e-mail), lu pendant les questions suivantes
 //   4. Votre site : faits relevés (décochez ce qui est faux) et logo
 //   5. Rédaction : valorisation, datapack, teaser et mémorandum générés d'un coup
 //   6. Votre dossier est prêt : relecture et points à compléter
 import { CHAMPS } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, siteDepuisEmail } from "/js/parcours.js";
+import { fourchette } from "/js/landing/estimation.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -34,13 +37,15 @@ async function api(chemin, options = {}) {
 }
 
 const ETAPES = [["comptes", "Vos comptes"], ["chiffres", "Vos chiffres"], ["questions", "Questions"], ["site", "Votre site"], ["redaction", "Rédaction"], ["pret", "Prêt"]];
-const S = { email: "", dossier: null, chiffres: null, reponses: {}, memo: null, etape: "comptes", q: 0, vues: [], lectureSite: null };
+const S = { email: "", dossier: null, chiffres: null, reponses: {}, memo: null, etape: "comptes", q: 0, vues: [], lectureSite: null, saisie: null };
+const fleche = () => el("span", { class: "fleche", "aria-hidden": "true", text: "→" });
 
 // ================================================================== Où en est-on ?
 const exercicesComplets = () => Object.entries(S.chiffres?.manquants || {}).filter(([, l]) => !l.length).length;
 const aDesChiffresAValider = () => Object.values(S.chiffres?.exercices || {}).some((l) => Object.values(l).some((x) => x.valeur != null && x.source !== "inpi"));
 function etapeCourante() {
   if (!exercicesComplets()) return aDesChiffresAValider() ? "chiffres" : "comptes";
+  if (siteARepondre() && !S.complet && !S.reponses.suivi?.pret_envoye) { S.q = -1; return "questions"; }
   const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues));
   if (iq >= 0) { S.q = iq; return "questions"; }
   const site = S.reponses.site || {};
@@ -48,14 +53,15 @@ function etapeCourante() {
   if (!S.reponses.suivi?.pret_envoye && !S.complet) return "redaction";
   return "pret";
 }
+const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
 function dessinerEtapes() {
-  const i = ETAPES.findIndex(([k]) => k === S.etape);
+  const i = ETAPES.findIndex(([k]) => k === (S.etape === "saisie" ? "comptes" : S.etape));
   $("#guide-etapes").replaceChildren(...ETAPES.map(([k, t], j) => el("li", { class: j < i ? "fait" : j === i ? "actif" : null, "aria-current": j === i ? "step" : null }, el("span", { text: String(j + 1) }), t)));
-  const pct = Math.round((i / (ETAPES.length - 1)) * 100);
+  const pct = Math.round(((i + 1) / ETAPES.length) * 100); // l'étape en cours compte : on ne part jamais de zéro
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
 }
-function aller(etape) { S.etape = etape; dessinerEtapes(); ({ comptes, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 }); }
+function aller(etape) { S.etape = etape; dessinerEtapes(); ({ comptes, saisie, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 }); }
 const titre = (t, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: t }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
 // ================================================================== 1. Vos comptes
@@ -64,8 +70,21 @@ function lancerLectureSite(url) {
     .then((m) => { S.memo = m; S.reponses.site = m.site; return m; })
     .catch((e) => { S.erreurSite = e.message; return null; });
 }
+/** Ce que Passation sait déjà : le dirigeant ne part pas de zéro. */
+function dejaFait() {
+  const e = S.dossier?.entreprise || {}, est = S.dossier?.estimation;
+  const publics = Object.entries(S.chiffres?.exercices || {})
+    .filter(([, l]) => Object.values(l).some((x) => x.source === "inpi" && x.valeur != null)).map(([a]) => a).sort();
+  const faits = [
+    `Entreprise identifiée : ${e.nom || "votre société"}`,
+    publics.length ? `Comptes publics récupérés : ${publics.join(", ")}` : null,
+    est?.statut === "ok" ? `Première valeur : ${fourchette(est.bas, est.haut)}` : null,
+  ].filter(Boolean);
+  return el("div", { class: "carte guide-deja" }, el("p", { class: "etiquette", text: "Déjà fait" }),
+    el("ul", {}, ...faits.map((t) => el("li", { text: t }))));
+}
 function comptes() {
-  const proposition = S.reponses.site?.url || siteDepuisEmail(S.email) || "";
+  const lecture = S.chiffres?.lecture_automatique !== false;
   const fichier = el("input", { type: "file", accept: "application/pdf", id: "liasse", class: "visuellement-cache" });
   fichier.addEventListener("change", async () => {
     const f = fichier.files[0]; if (!f) return;
@@ -76,19 +95,81 @@ function comptes() {
     catch (e) { message(e.message, true); }
     finally { $("#zone-depot")?.removeAttribute("aria-busy"); }
   });
-  const site = el("input", { type: "text", id: "site-url", inputmode: "url", value: proposition, placeholder: "www.votre-entreprise.fr" });
-  const etatSite = el("p", { class: "petit", id: "etat-site", text: S.reponses.site?.url ? `Site lu : ${S.reponses.site.url}` : "" });
-  remplir(...titre("Déposez votre dernière liasse fiscale", "C'est le seul document nécessaire. Nous lisons les chiffres ; vous n'aurez qu'à les confirmer."),
+  const versSaisie = (texte, classe = "lien-simple") => el("button", { type: "button", class: classe, onclick: () => { S.saisie = null; aller("saisie"); } }, texte);
+  const suite = exercicesComplets() || aDesChiffresAValider() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller("chiffres") }, "Continuer") : null;
+  if (!lecture) {
+    remplir(dejaFait(), ...titre("Saisissez l'essentiel de vos comptes", "Une dizaine de montants, à recopier de votre liasse fiscale ou de vos comptes annuels. C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre."),
+      el("p", { class: "petit", text: "La lecture automatique des liasses n'est pas disponible pour le moment." }),
+      versSaisie("Saisir mes chiffres", "btn btn-noir"), suite);
+    return;
+  }
+  remplir(dejaFait(), ...titre("Déposez votre dernière liasse fiscale", "C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre. Nous lisons les chiffres ; vous n'aurez qu'à les confirmer."),
     el("div", { class: "depot depot-grand", id: "zone-depot" },
       el("div", { class: "depot-texte" }, el("strong", { text: "Liasse fiscale en PDF" }), el("span", { class: "petit", text: "Formulaires 2033 ou 2050 à 2059, 10 Mo au plus. Elle contient en général deux exercices." })),
       el("label", { class: "btn btn-noir", for: "liasse" }, "Choisir le PDF"), fichier),
-    el("p", { class: "petit" }, "Pas de liasse sous la main ? ", el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Saisir les chiffres à la main" }), "."),
-    el("div", { class: "carte guide-site" },
-      el("label", { for: "site-url", text: proposition && !S.reponses.site?.url ? "Est-ce bien le site de votre entreprise ?" : "Le site internet de votre entreprise (facultatif)" }),
-      el("div", { class: "ligne-form" }, site,
-        el("button", { type: "button", class: "btn btn-contour", onclick: () => { if (!site.value.trim()) return; lancerLectureSite(site.value.trim()); etatSite.textContent = "Lecture du site lancée : elle se poursuit pendant que vous continuez."; } }, proposition ? "Oui, lire ce site" : "Lire ce site")),
-      el("p", { class: "petit", text: "Il sert à personnaliser le mémorandum (activité, logo, photos). Vous validerez ce que nous en retenons." }), etatSite),
-    exercicesComplets() || aDesChiffresAValider() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller("chiffres") }, "Continuer") : null);
+    el("p", { class: "petit" }, "Pas de liasse sous la main ? ", versSaisie("Saisir l'essentiel à la main"), " : une dizaine de montants."),
+    suite);
+}
+
+// ================================================================== 1 bis. Saisie de l'essentiel (sans liasse)
+const DETAIL_CHARGES = ["achats_consommes", "charges_externes", "impots_taxes", "charges_personnel"];
+const BILAN_ESSENTIEL = ["stocks", "creances_clients", "tresorerie", "capitaux_propres", "emprunts", "dettes_fournisseurs", "dettes_fiscales_sociales"];
+const FACULTATIFS = new Set(["impots_taxes", "resultat_net"]);
+/** Exercice proposé : le plus récent encore incomplet parmi ceux connus, sinon le dernier exercice clos. */
+function anneesSaisie() {
+  const y = new Date().getFullYear();
+  const connues = Object.keys(S.chiffres?.exercices || {}).map(Number);
+  const toutes = [...new Set([...connues, y - 1, y - 2, y - 3])].sort((a, b) => b - a);
+  const incomplete = (a) => !S.chiffres?.manquants?.[a] || S.chiffres.manquants[a].length > 0;
+  const defaut = connues.sort((a, b) => b - a).find(incomplete) ?? toutes.find(incomplete) ?? toutes[0];
+  return { toutes, defaut };
+}
+function saisie() {
+  const { toutes, defaut } = anneesSaisie();
+  if (!S.saisie) S.saisie = { annee: defaut, valeurs: {} };
+  const { annee } = S.saisie;
+  const l = S.chiffres?.exercices?.[annee] || {};
+  const ebePublie = l.ebe?.valeur != null;
+  const detail = S.saisie.detail ?? !ebePublie;
+  const champ = (cle) => {
+    const c = CHAMPS.find((x) => x.cle === cle), cell = l[cle];
+    const valeur = S.saisie.valeurs[cle] ?? (cell?.valeur != null ? fmt.format(cell.valeur) : "");
+    const input = el("input", { type: "text", inputmode: "decimal", id: `s-${cle}`, "data-cle": cle, "data-libelle": c.libelle, value: valeur, autocomplete: "off" });
+    if (FACULTATIFS.has(cle)) input.dataset.facultatif = "1";
+    input.addEventListener("input", () => { S.saisie.valeurs[cle] = input.value; });
+    const aide = cell?.source === "inpi" ? "Repris des comptes publics : vérifiez-le avec vos comptes." : c.aide;
+    return el("div", { class: "guide-champ saisie-champ" },
+      el("label", { class: "guide-lib", for: `s-${cle}` }, cle === "ebe" ? "EBE (excédent brut d'exploitation)" : c.libelle, FACULTATIFS.has(cle) ? el("span", { class: "facultatif", text: " · facultatif" }) : null),
+      el("p", { class: "petit", text: aide }),
+      el("div", { class: "champ-unite" }, input, el("span", { class: "unite", text: "€" })));
+  };
+  const choixAnnee = el("select", { id: "s-annee" }, ...toutes.map((a) => el("option", { value: String(a), selected: a === annee }, String(a))));
+  choixAnnee.addEventListener("change", () => { S.saisie = { annee: Number(choixAnnee.value), valeurs: {} }; saisie(); });
+  const basculer = ebePublie ? el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie.detail = !detail; saisie(); } },
+    detail ? "Reprendre l'EBE des comptes publics" : "Je préfère détailler mes charges") : null;
+  remplir(...titre("L'essentiel de vos comptes", "Une dizaine de montants, à recopier de votre liasse fiscale ou de vos comptes annuels. Indiquez 0 si un poste n'existe pas. Les autres lignes sont facultatives : vous pourrez les ajouter plus tard."),
+    el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: "s-annee", text: "Exercice clos en" }), choixAnnee),
+    el("fieldset", { class: "saisie-groupe" }, el("legend", { text: "Compte de résultat" }),
+      champ("chiffre_affaires"), ...(detail ? DETAIL_CHARGES.map(champ) : [champ("ebe")]), basculer, champ("resultat_net")),
+    el("fieldset", { class: "saisie-groupe" }, el("legend", { text: "Bilan" }), ...BILAN_ESSENTIEL.map(champ)),
+    el("div", { class: "q-nav" },
+      el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; message(""); aller(exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes"); } }, "Retour"),
+      el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
+        const bouton = ev.currentTarget;
+        const valeurs = {}, manque = [];
+        for (const i of $("#ecran").querySelectorAll("input[data-cle]")) {
+          const v = lireNombre(i.value);
+          if (Number.isNaN(v)) { message(`Montant illisible : ${i.dataset.libelle}.`, true); i.focus(); return; }
+          if (v === null) { if (!i.dataset.facultatif) manque.push(i.dataset.libelle); continue; }
+          valeurs[i.dataset.cle] = v;
+        }
+        if (manque.length) { message(`Il manque : ${manque.join(", ")}. Indiquez 0 si le poste n'existe pas.`, true); return; }
+        bouton.disabled = true;
+        try {
+          S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs, valider: false }) });
+          S.saisie = null; message(""); aller("chiffres");
+        } catch (e) { message(e.message, true); bouton.disabled = false; }
+      } }, "Enregistrer cet exercice ", fleche())));
 }
 
 // ================================================================== 2. Vos chiffres
@@ -124,7 +205,10 @@ function chiffres() {
   });
   remplir(...titre("Vos chiffres sont-ils justes ?", "Comparez avec votre liasse. Nos contrôles automatiques signalent ce qui mérite votre attention ; le reste se confirme d'un clic."),
     ...cartes,
-    el("p", { class: "petit" }, el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Voir ou corriger le détail ligne par ligne" }), " · ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, "Déposer une autre liasse")),
+    el("p", { class: "petit" },
+      el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; aller("saisie"); } }, "Saisir un autre exercice"), " · ",
+      el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, "Déposer une autre liasse"), " · ",
+      el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Mode détaillé (toutes les lignes)" })),
     el("button", { type: "button", class: "btn btn-vert", disabled: !exercicesComplets(), onclick: () => aller(etapeCourante()) }, exercicesComplets() ? "Continuer" : "Confirmez au moins un exercice complet pour continuer"));
 }
 function ligneAVerifier(annee, cle, cellule) {
@@ -216,22 +300,47 @@ function suivante(q) {
   const i = QUESTIONS.indexOf(q);
   if (i < QUESTIONS.length - 1) { S.q = i + 1; questions(); } else aller(etapeCourante());
 }
+/** Première question : le site internet. Sa lecture se poursuit pendant les questions suivantes. */
+function questionSite() {
+  const proposition = S.reponses.site?.url || siteDepuisEmail(S.email) || "";
+  const input = el("input", { type: "text", id: "site-url", inputmode: "url", value: proposition, placeholder: "www.votre-entreprise.fr", autocomplete: "url" });
+  const suivanteQ = () => { message(""); S.q = 0; questions(); };
+  remplir(
+    el("p", { class: "etiquette", text: `Question 1 sur ${QUESTIONS.length + 1}` }),
+    ...titre(proposition ? "Est-ce bien le site de votre entreprise ?" : "Votre entreprise a-t-elle un site internet ?",
+      "Nous y relevons votre activité et votre logo pour le mémorandum, pendant que vous répondez aux questions suivantes. Vous validerez chaque élément."),
+    el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: "site-url", text: "Adresse du site" }), input),
+    el("p", { class: "petit" }, el("button", { type: "button", class: "lien-simple", onclick: async () => {
+      try { S.reponses.site = { aucun: true }; await api(`${base}/answers/site`, { method: "PUT", body: JSON.stringify({ data: S.reponses.site }) }); suivanteQ(); }
+      catch (e) { message(e.message, true); }
+    } }, "Nous n'avons pas de site")),
+    el("div", { class: "q-nav" },
+      el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, "Retour"),
+      el("button", { type: "button", class: "btn btn-noir", onclick: () => {
+        const url = input.value.trim();
+        if (!url) { message("Indiquez l'adresse du site, ou choisissez « Nous n'avons pas de site ».", true); input.focus(); return; }
+        lancerLectureSite(url);
+        S.reponses.site = { ...(S.reponses.site || {}), url, aucun: undefined };
+        suivanteQ();
+      } }, proposition ? "Oui, lire ce site " : "Lire ce site ", fleche())));
+}
 function questions() {
+  if (S.q < 0) return questionSite();
   const q = QUESTIONS[S.q];
   const champs = [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])];
   const seulChoix = q.champs.length === 1 && ["choix", "valeurs"].includes(q.champs[0].type) && !q.suite?.si(S.reponses);
   remplir(
-    el("p", { class: "etiquette", text: `Question ${S.q + 1} sur ${QUESTIONS.length}` }),
+    el("p", { class: "etiquette", text: `Question ${S.q + 2} sur ${QUESTIONS.length + 1}` }),
     ...titre(q.titre, q.aide),
     ...champs.map((c) => champ(c, q)),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => { if (S.q > 0) { S.q--; questions(); } else aller("chiffres"); } }, "Retour"),
+      el("button", { type: "button", class: "lien-simple", onclick: () => { S.q--; questions(); } }, "Retour"),
       seulChoix ? el("button", { type: "button", class: "lien-simple", onclick: () => suivante(q) }, "Passer")
         : el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
           const bouton = ev.currentTarget;
           bouton.disabled = true;
           try { await enregistrerEcran(); message(""); suivante(q); } catch (e) { message(e.message, true); bouton.disabled = false; }
-        } }, "Continuer ", el("span", { class: "fleche", "aria-hidden": "true", text: "→" }))));
+        } }, "Continuer ", fleche())));
 }
 
 // ================================================================== 4. Votre site
@@ -312,7 +421,7 @@ async function pret() {
   const s = val.resultat?.synthese;
   const aCompleter = [...(memo.sections || []).flatMap((x) => (x.a_completer || []).map((t) => `${x.titre} : ${t}`)), ...(s?.alertes || []).filter((a) => !/en option/.test(a))];
   remplir(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
-    s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${court(s.bas)} – ${court(s.haut)}` })) : null,
+    s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${fourchette(s.bas, s.haut)}` })) : null,
     el("div", { class: "guide-docs" },
       ...[["Valorisation détaillée", "Méthodes, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
         ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],

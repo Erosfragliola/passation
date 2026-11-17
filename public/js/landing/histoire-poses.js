@@ -2,7 +2,8 @@
 // constantes reprises telles quelles. Fonctions pures du temps « établi » t, sans DOM (test/histoire-poses.test.js).
 // Repères : trousseau lancé 6,6 → 8,32 (dernière étiquette étalée) ; rangement 11,55 → 13,7 ;
 // retournements 14,25 → 17,25 ; sortie des clés 19,0 → 19,94 ; regroupement 19,35 → 20,63 ; dossier 20,45 → 21,45 ;
-// onglets 21,15 → 22,54. Coordonnées en pixels de la scène 1920 × 1080.
+// onglets 21,15 → 22,54 ; « Et la vôtre ? » 24,3 → fin, gestes du nom de code aux seuils 24,6 · 25,1 · 25,6 · 26,1.
+// Coordonnées en pixels de la scène 1920 × 1080.
 
 export const clamp01 = (x) => Math.min(1, Math.max(0, x));
 export const seg = (t, a, b) => clamp01((t - a) / (b - a));
@@ -41,9 +42,9 @@ export const TAGY = 606, KEYY = 660;
 export const TABT = Array.from({ length: NB }, (_, i) => ({ x: 1040 + 660, y: 160 + 96 + i * 66 + 28 }));
 
 /** Début (rien sur la table), fin de l'arrivée jouée au temps (toutes les étiquettes étalées), fin. */
-export const T_DEBUT = T0, T_POSE = 8.32, T_FIN = 24.5;
-/** Temps établi suivant le défilement de la section (brief : t = 7,7 + p × 16,8), jamais avant la fin de la chute. */
-export const tempsDefilement = (p) => Math.max(T_POSE, 7.7 + clamp01(p) * 16.8);
+export const T_DEBUT = T0, T_POSE = 8.32, T_FIN = 26.8;
+/** Temps établi suivant le défilement de la section (t = 7,7 + p × 19,1), jamais avant la fin de la chute. */
+export const tempsDefilement = (p) => Math.max(T_POSE, 7.7 + clamp01(p) * (T_FIN - 7.7));
 
 /** Léger mouvement de caméra (échelle de la scène), et petit choc à l'atterrissage (+ 0,006, amorti en 0,3 s). */
 export function camera(t) {
@@ -145,5 +146,9 @@ export function bloc(t, debut, fin, enfants = 3) {
     }),
   };
 }
-/** Les trois temps de l'histoire (le troisième reste jusqu'à la fin). */
-export const TEMPS = [[7.9, 12.55], [13.15, 19.0], [21.0, Infinity]];
+/** Les quatre temps de l'histoire (le quatrième, « Et la vôtre ? », reste jusqu'à la fin). */
+export const TEMPS = [[7.9, 12.55], [13.15, 19.0], [21.0, 23.9], [24.3, Infinity]];
+/** Seuils des quatre gestes du nom de code (nom, bandes noires, tampon, valeur), une fois le dossier en place. */
+export const SEUILS_GESTES = [24.6, 25.1, 25.6, 26.1];
+/** Nombre de gestes dont le seuil est atteint au temps t. */
+export const gestesAtteints = (t) => SEUILS_GESTES.filter((s) => t >= s).length;

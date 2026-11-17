@@ -356,22 +356,30 @@ section { padding: 88px 0; }
 .jauge span { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--vert); transition: width .6s ease; }
 .nuit .jauge span { background: var(--cuivre-clair); }
 .dossier-blocs { padding: 56px 0 104px; }
-.blocs { display: grid; gap: 16px; }
-@media (min-width: 760px) { .blocs { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 1100px) { .blocs { grid-template-columns: repeat(4, 1fr); } }
-.bloc { display: flex; flex-direction: column; gap: 12px; }
-.bloc .etiquette { margin: 0; }
-.bloc h2 { font-size: 1.6rem; }
-.bientot { margin-top: auto; font-family: var(--mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--pierre-texte); }
-.checklist-zone { margin-top: 72px; }
-.checklist-zone h2 { margin-bottom: 10px; }
+/* Tableau de bord : prochaine étape, puis l'état des 4 documents (prêt = lien ; à venir = grisé, pas un lien) */
+.titre-docs { font-size: 1.6rem; margin: 48px 0 16px; }
+.guide-doc.a-venir { background: transparent; border: 1px dashed var(--trait-fort); color: #696155; cursor: default; }
+.guide-doc.a-venir:hover { background: transparent; }
+.guide-doc.a-venir .fleche { display: none; }
+.lien-detaille { margin-top: 14px; }
+/* Liste des pièces et gestion du dossier : repliées, ouvertes à la demande */
+.checklist-zone, .gerer-dossier { margin-top: 56px; border-top: 1px solid var(--trait-fort); padding-top: 20px; }
+.checklist-zone summary, .gerer-dossier summary { cursor: pointer; display: flex; align-items: baseline; gap: 14px; list-style-position: outside; }
+.checklist-zone summary::-webkit-details-marker, .gerer-dossier summary::-webkit-details-marker { display: none; }
+.checklist-zone summary { list-style: none; }
+.gerer-dossier summary { list-style: none; }
+.checklist-zone summary::after, .gerer-dossier summary::after { content: "+"; margin-left: auto; font-size: 1.5rem; line-height: 1; color: var(--espresso); }
+.checklist-zone[open] summary::after, .gerer-dossier[open] summary::after { content: "−"; }
+.checklist-titre { font-size: 1.6rem; letter-spacing: -0.02em; }
+.gerer-dossier { margin-top: 32px; }
+.gerer-dossier summary { font-weight: 500; justify-self: stretch; }
+.gerer-dossier[open] { display: grid; gap: 14px; justify-items: start; }
 #checklist-groupes { margin-top: 24px; display: grid; gap: 16px; }
 @media (min-width: 900px) { #checklist-groupes { grid-template-columns: repeat(3, 1fr); } }
 .checklist-groupe { border: 1px solid var(--trait-fort); border-radius: 20px; padding: 18px 20px 20px; margin: 0; display: grid; gap: 10px; align-content: start; }
 .checklist-groupe legend { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--pierre-texte); padding: 0 6px; }
 .checklist-groupe label { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; cursor: pointer; font-size: .95rem; }
 .checklist-groupe input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--vert); }
-.dossier-actions { margin-top: 56px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
 .btn-danger { background: transparent; color: var(--espresso); border-color: var(--espresso); }
 .btn-danger:hover { background: var(--espresso); color: var(--creme); }
 dialog { border: 0; border-radius: var(--r-carte); padding: 28px; max-width: 460px; background: var(--creme); color: var(--espresso); box-shadow: 0 30px 80px rgba(0,0,0,.35); }
@@ -757,7 +765,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 
 /* ---------- Parcours guidé (/espace/demarrer/) ---------- */
 .guide { padding: 120px 0 80px; min-height: 80vh; }
-.guide-etapes { list-style: none; padding: 0; margin: 10px 0 12px; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: #696155; }
+.guide-etapes { list-style: none; padding: 0; margin: 10px 0 12px; display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: .8rem; color: #696155; }
 .guide-etapes li { display: inline-flex; align-items: center; gap: 6px; }
 .guide-etapes li span { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-family: var(--mono); font-size: 11px; border: 1px solid var(--trait-fort); }
 .guide-etapes li.fait span { background: var(--vert); color: var(--creme); border-color: var(--vert); }
@@ -787,6 +795,19 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 @media (max-width: 600px) { .guide-ligne { grid-template-columns: 1fr; } }
 .guide-champ { display: grid; gap: 8px; border: 0; padding: 0; margin: 0; }
 .guide-lib { font-weight: 500; margin: 0; }
+/* « Déjà fait » : ce que Passation sait avant toute saisie */
+.guide-deja { display: grid; gap: 6px; padding: 16px 20px; background: #E3EBE6; }
+.guide-deja ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.guide-deja li::before { content: "✓"; color: var(--vert); font-weight: 600; margin-right: 8px; }
+/* Saisie de l'essentiel : deux groupes, un champ par ligne */
+.saisie-groupe { display: grid; gap: 16px; border: 1px solid var(--trait-fort); border-radius: var(--r-carte); padding: 18px 20px 22px; margin: 0; }
+.saisie-groupe legend { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #696155; padding: 0 6px; }
+.saisie-champ { gap: 4px; }
+.saisie-champ .petit { margin: 0; }
+.saisie-champ .champ-unite input { text-align: right; font-variant-numeric: tabular-nums; }
+.saisie-groupe .lien-simple { justify-self: start; }
+.facultatif { font-weight: 400; color: #696155; font-size: .9em; }
+.guide-champ select { min-height: 46px; max-width: 200px; border-radius: 12px; border: 1px solid var(--trait-fort); background: var(--creme); padding: 0 12px; font: inherit; color: var(--espresso); }
 .puces-choix { display: flex; flex-wrap: wrap; gap: 10px; }
 .puce { min-height: 48px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--trait-fort); background: var(--creme); font: inherit; cursor: pointer; color: var(--espresso); }
 .puce:hover { border-color: var(--espresso); }
