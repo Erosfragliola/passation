@@ -499,3 +499,14 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   Fusion `91efd56`, version Cloudflare 7a050746. Vérifié en ligne : sections et menu attendus, 9/9 clés visibles,
   estimation réelle 434436622 (290 – 490 k€), routes privées 401, axe-core 0 violation, aucune erreur JavaScript.
   Tests : 291. Page plus longue : environ 10 écrans sur ordinateur, 16 sur téléphone.
+- **17/11/2026, mémorandum « banque d'affaires »** (branche `memo-banque`, non publiée) : inspiré des conventions de
+  deux mémorandums de banques d'affaires fournis par le dirigeant (aucun contenu repris). Retenus : nom de code en
+  couverture ; synthèse sur six points forts numérotés (un par chapitre, renvoi de page) ; titres affirmatifs
+  rédigés (modifiables) ; source sous chaque page de chiffres ; compte de résultat 3 ans (% CA, croissance annualisée,
+  TCAM) ; EBE comptable → retraité (justifications en renvoi) ; endettement net / EBE normatif ; BFR en jours ;
+  cinq premiers clients anonymisés ; schéma du périmètre (holding, murs) ; pied de page nom de code · mois ·
+  « Strictement confidentiel » · page. Écartés : filigrane, « à l'attention de », avertissement en page 2.
+  Aucun prix ni valeur dans le mémorandum (carte de la landing : « 8 chapitres »). Parcours guidé : 10 questions
+  (détention des titres, murs et leur sort, cinq premiers clients). Consignes de rédaction réécrites (associé de
+  banque d'affaires ; chiffres recopiés depuis des indicateurs calculés par le code). Tests : 309. Vérifié en local
+  avec un dossier fictif et un Claude simulé (`ANTHROPIC_BASE_URL`) : 14 pages, aucun débordement, PDF de 14 pages.
