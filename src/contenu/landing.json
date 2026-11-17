@@ -312,8 +312,8 @@
       {
         "type": "Mémorandum",
         "titre": "L’histoire complète",
-        "texte": "Huit chapitres, de la synthèse à l’opération, rédigés à partir de vos réponses et de vos chiffres validés. Comme chez les banques d’affaires, il ne donne aucun prix : la valeur reste entre vous et vos conseils.",
-        "format": "PDF · 8 chapitres"
+        "texte": "Neuf chapitres, de la synthèse à l’opération, dont une étude de votre marché aux chiffres sourcés. Comme chez les banques d’affaires, il ne donne aucun prix : la valeur reste entre vous et vos conseils.",
+        "format": "PDF · 9 chapitres"
       },
       {
         "type": "Datapack",
@@ -350,7 +350,45 @@
       "entete": "Mémorandum d’information",
       "nom": "Projet Chêne",
       "mention": "Strictement confidentiel",
-      "sommaire": "Sommaire"
+      "sommaire": "Sommaire",
+      "chapitres": [
+        {
+          "numero": "01",
+          "titre": "Synthèse"
+        },
+        {
+          "numero": "02",
+          "titre": "Histoire"
+        },
+        {
+          "numero": "03",
+          "titre": "Savoir-faire"
+        },
+        {
+          "numero": "04",
+          "titre": "Équipe"
+        },
+        {
+          "numero": "05",
+          "titre": "Marché"
+        },
+        {
+          "numero": "06",
+          "titre": "Clients"
+        },
+        {
+          "numero": "07",
+          "titre": "Finances"
+        },
+        {
+          "numero": "08",
+          "titre": "Perspectives"
+        },
+        {
+          "numero": "09",
+          "titre": "Opération"
+        }
+      ]
     },
     "datapack": {
       "fichier": "Projet-Chene-datapack.xlsx",

@@ -1,6 +1,6 @@
 // Mémorandum « banque d'affaires » : chiffres calculés par le code. Valeurs attendues calculées à la main.
 import { describe, it, expect } from "vitest";
-import { compteResultat, tableauEbeRetraite, tableauEndettement, clientsPrincipaux, perimetre, sourcesChiffres, indicateurs, tcam, titreValide, SECTIONS_MEMO, profilMemo } from "../src/documents/memo.js";
+import { PARTIES_MEMO, compteResultat, tableauEbeRetraite, tableauEndettement, clientsPrincipaux, perimetre, sourcesChiffres, indicateurs, tcam, titreValide, SECTIONS_MEMO, profilMemo } from "../src/documents/memo.js";
 import { pontEbe, ebeNormatif, detteNette } from "../src/valuation/approfondie.js";
 import { kEuros, montant, pourcent, ratioTableau, multiple } from "../public/js/memo-format.js";
 import { DETENTION, MURS, MURS_CESSION, QUESTIONS } from "../public/js/parcours.js";
@@ -137,9 +137,11 @@ describe("clients, périmètre, sources", () => {
 });
 
 describe("structure du mémorandum", () => {
-  it("six points forts numérotés, un par chapitre, sans chapitre de valeur", () => {
-    expect(SECTIONS_MEMO.filter((s) => s.point_fort).map((s) => [s.cle, s.point_fort])).toEqual([["histoire", 1], ["activite", 2], ["marche", 3], ["organisation", 4], ["finances", 5], ["perspectives", 6]]);
-    expect(SECTIONS_MEMO.map((s) => s.cle)).not.toContain("valeur");
+  it("cinq parties, neuf chapitres dont Marché et Clients ; six points forts numérotés dans l'ordre, sans chapitre de valeur", () => {
+    expect(PARTIES_MEMO.map((p) => p.n)).toEqual([1, 2, 3, 4, 5]);
+    expect(SECTIONS_MEMO.map((s) => s.cle)).toEqual(["synthese", "histoire", "activite", "organisation", "marche", "clients", "finances", "perspectives", "operation"]);
+    expect(SECTIONS_MEMO.filter((s) => s.point_fort).map((s) => [s.cle, s.point_fort])).toEqual([["activite", 1], ["organisation", 2], ["marche", 3], ["clients", 4], ["finances", 5], ["perspectives", 6]]);
+    expect(SECTIONS_MEMO.every((s) => PARTIES_MEMO.some((p) => p.n === s.partie))).toBe(true);
   });
   it("nom de code : celui du dossier, sinon celui tiré du code NAF", () => {
     expect(profilMemo({}, {}, "Projet Chêne").nom_de_code).toBe("Projet Chêne");

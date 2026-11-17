@@ -70,6 +70,33 @@ function dessinerPhotos() {
     el("label", { class: "btn btn-contour btn-mini", for: "fichier-photo" }, "Déposer une photo (3 Mo au plus)"), fichier));
 }
 
+const THEMES_FAITS = { taille: "Taille du marché", tendance: "Tendance", demande: "Demande", reglementation: "Réglementation", concurrence: "Concurrence" };
+function dessinerMarche() {
+  const m = etat.marche || {};
+  const faits = m.faits || [];
+  const bouton = el("button", { type: "button", class: "btn btn-noir btn-mini", disabled: !m.essais_restants, onclick: async (ev) => {
+    const b = ev.currentTarget; b.disabled = true;
+    message("Étude de marché en cours : registres publics et recherche web (une à deux minutes)…");
+    try { etat = await api(`${base}/marche`, { method: "POST" }); tout(); message(`${(etat.marche.faits || []).length} faits de marché retenus, chacun avec sa source. Décochez ceux qui ne correspondent pas à votre marché.`); }
+    catch (e) { message(e.message, true); b.disabled = false; }
+  } }, m.date ? "Relancer l'étude" : "Lancer l'étude de marché");
+  const sct = m.secteur;
+  $("#marche").replaceChildren(
+    sct ? el("p", { class: "petit", text: `Registres : ${sct.region_total.toLocaleString("fr-FR")} entreprises actives du code NAF ${sct.naf} en ${sct.region}, dont ${pct0(sct.part_moins_10)} de moins de 10 salariés.` }) : null,
+    faits.length ? el("fieldset", { class: "faits" }, el("legend", { text: `Faits de marché (${faits.filter((f) => f.valide).length}/${faits.length} retenus)` }),
+      ...faits.map((f) => {
+        const cb = el("input", { type: "checkbox", id: `marche-${f.id}`, checked: f.valide });
+        cb.addEventListener("change", async () => {
+          f.valide = cb.checked;
+          const { essais_restants, ...donnees } = m;
+          try { await api(`/api/dossiers/${id}/answers/marche`, { method: "PUT", body: JSON.stringify({ data: donnees }) }); dessinerMarche(); dessinerMemo(); $(`#marche-${f.id}`)?.focus(); }
+          catch (e) { message(e.message, true); }
+        });
+        return el("label", { class: "fait", for: `marche-${f.id}` }, cb, el("span", {}, el("strong", { text: `${THEMES_FAITS[f.theme] || f.theme} · ` }), el("span", { text: f.fait }), el("a", { href: f.url, target: "_blank", rel: "noopener", class: "petit", text: ` ${f.source || "source"}${f.annee ? `, ${f.annee}` : ""}` })));
+      })) : m.date ? el("p", { class: "petit", text: "Aucun chiffre de marché suffisamment sourcé n'a été trouvé : le chapitre Marché s'appuiera sur les registres publics." }) : null,
+    el("div", { class: "doc-edition" }, bouton, el("span", { class: "petit", text: `${m.essais_restants ?? 0} étude${(m.essais_restants ?? 0) > 1 ? "s" : ""} restante${(m.essais_restants ?? 0) > 1 ? "s" : ""}` })));
+}
+
 function dessinerVerrou() {
   const v = etat.deverrouille;
   $("#verrou").replaceChildren(v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: "Avant de rédiger le mémorandum :" }),
@@ -95,6 +122,17 @@ const ICONES = {
   poignee: "M3 12l4-4 5 3 4-3 5 4-5 5-4-3-4 3z",
   loupe: "M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13zM15.5 15.5L21 21",
   signature: "M3 17c3-1 4-8 6-8s0 7 3 7 3-4 5-4 2 3 4 3M3 21h18",
+  valide: "M5 12l4 4 10-10",
+  equipe: "M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20c0-3 3-5 6-5s6 2 6 5m2-5c3 0 6 2 6 5",
+  croissance: "M3 17l6-6 4 4 8-8M15 7h6v6",
+  qualite: "M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.9 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z",
+  metier: "M4 7h16v12H4zM9 7V4h6v3",
+  euro: "M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9",
+  calendrier: "M4 6h16v14H4zM4 10h16M8 3v4m8-4v4",
+  lieu: "M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
+  horloge: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-13v5l3 2",
+  globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18",
+  balance: "M12 4v16M6 20h12M5 8h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0z",
 };
 const icone = (nom, classe = "dp-picto") => svg("svg", { viewBox: "0 0 24 24", class: classe, "aria-hidden": "true" }, svg("path", { d: ICONES[nom] }));
 
@@ -118,13 +156,6 @@ function decouperTexte(texte) {
     else paragraphes.push(lignes.join(" "));
   }
   return { paragraphes, puces };
-}
-/** Bloc de texte courant (découpable sur une page « suite ») : paragraphes puis puces carrées. */
-function flux(texte, classe = "") {
-  const { paragraphes, puces } = decouperTexte(texte);
-  return el("div", { class: `dp-flux ${classe}`.trim() },
-    ...paragraphes.map((t) => el("p", {}, ...enrichi(t))),
-    ...puces.map((t) => el("p", { class: "dp-puce" }, ...enrichi(t))));
 }
 const aRediger = (s) => el("div", { class: "dp-flux" }, el("p", { class: "a-rediger", text: s ? `${s} : à rédiger.` : "À compléter." }));
 
@@ -159,16 +190,17 @@ function chiffresFinanciers() {
 }
 
 // ------------------------------------------------------------------ Cadre commun des pages
-/** Page de chapitre : rubrique et logo, numéro de point fort et titre affirmatif, contenu, source, pied. */
-function cadre(s, contenu, { titre = null, suite = false, sources = null } = {}) {
-  const i = etat.sections.indexOf(s);
+/** Page de chapitre : rubrique et logo, numéro de point fort et titre affirmatif, contenu, « À retenir », source, pied. */
+function cadre(s, contenu, { titre = null, suite = false, sources = null, retenu = null } = {}) {
+  const partie = (etat.parties || []).find((x) => x.n === s.partie);
   return el("div", { class: `diapo dp-page dp-${s.cle}`, "data-section": s.cle, id: suite ? null : `s-${s.cle}` },
     el("header", { class: "dp-entete" },
-      el("div", { class: "dp-rubrique" }, el("span", { text: `${String(i + 1).padStart(2, "0")} · ${s.court}` }), logoBloc("dp-logo-tete")),
+      el("div", { class: "dp-rubrique" }, el("span", { text: [String(s.partie || 0).padStart(2, "0"), partie?.titre, partie?.titre === s.court ? null : s.court].filter(Boolean).join(" · ") }), logoBloc("dp-logo-tete")),
       el("div", { class: "dp-titre-ligne" },
         s.point_fort ? el("span", { class: "dp-badge", text: String(s.point_fort), "aria-label": `Point fort ${s.point_fort}` }) : null,
         el("h3", { text: titre || titreDe(s) + (suite ? " (suite)" : "") }))),
     el("div", { class: "dp-zone" }, ...contenu.filter(Boolean)),
+    retenir(retenu),
     sources,
     el("footer", { class: "dp-pied" },
       el("span", { text: `${p().nom_de_code || "Projet"} · Mémorandum d'information · ${moisAnnee()}` }),
@@ -301,17 +333,6 @@ function carteFrance() {
       nationale ? [el("span", { class: "dp-pastille national" }), "Présence nationale"] : null));
 }
 
-/** Frise : années citées (texte, création), 6 au plus. */
-function frise(texte) {
-  const phrases = String(texte).replace(/\*\*/g, "").replace(/\n/g, " ").replace(/\s+-\s+/g, " ").split(/(?<=\.)\s+/);
-  const points = new Map();
-  if (p().creation) points.set(p().creation, "Création de l'entreprise");
-  for (const ph of phrases) for (const m of ph.matchAll(/\b(19[5-9]\d|20[0-4]\d)\b/g)) if (!points.has(Number(m[1]))) points.set(Number(m[1]), ph.replace(/^[-•▪\s]*\d{4}\s*[:–-]\s*/, "").replace(/^./, (c) => c.toUpperCase()).slice(0, 90));
-  const l = [...points.entries()].sort((a, b) => a[0] - b[0]).slice(0, 6);
-  if (l.length < 2) return null;
-  return el("ol", { class: "dp-frise" }, ...l.map(([a, t]) => el("li", {}, el("span", { class: "dp-frise-an", text: String(a) }), el("span", { class: "dp-frise-point" }), el("span", { class: "dp-frise-txt", text: t }))));
-}
-
 /** Schéma du périmètre : cédant, holding éventuelle, société, murs (dans ou hors du périmètre). */
 function schemaPerimetre() {
   const pe = ch().perimetre || {};
@@ -346,6 +367,85 @@ function photo(n) {
   return el("figure", { class: "dp-photo" }, el("img", { src: u, alt: etat.photos[n].legende || "Photo de l'entreprise" }), etat.photos[n].legende ? el("figcaption", { text: etat.photos[n].legende }) : null);
 }
 
+// ------------------------------------------------------------------ Blocs visuels
+/** Bande « À retenir » en bas de page : la conclusion du chapitre (accroche rédigée), flèche à gauche. */
+const retenir = (texte) => (texte ? el("div", { class: "dp-retenir" }, el("span", { class: "dp-retenir-fleche", "aria-hidden": "true" }), el("p", {}, el("strong", { text: "À retenir · " }), texte)) : null);
+
+/** Bloc titré (bandeau vert) : l'unité de base des pages denses. */
+const bloc = (titre, ...contenu) => el("section", { class: "dp-bloc" }, el("h4", { class: "dp-bloc-titre", text: titre }), el("div", { class: "dp-bloc-corps" }, ...contenu.filter(Boolean)));
+
+/** Puce rédigée « **Fait clé** : explication » → { titre, texte }. */
+function eclaterPuce(t) {
+  const m = /^\*\*(.+?)\*\*\s*[:–-]?\s*(.*)$/s.exec(String(t).trim());
+  if (m) return { titre: m[1].replace(/[\s:]+$/, ""), texte: m[2] };
+  const i = String(t).indexOf(" : ");
+  return i > 0 && i < 70 ? { titre: t.slice(0, i), texte: t.slice(i + 3) } : { titre: null, texte: t };
+}
+const PICTOS_CARTES = ["valide", "metier", "equipe", "qualite", "croissance", "globe", "loupe", "horloge"];
+/** Puces → cartes à pictogramme (découpables d'une page à l'autre). */
+function cartes(puces, { colonnes = 3, pictos = PICTOS_CARTES, numeros = false } = {}) {
+  if (!puces.length) return null;
+  return el("div", { class: `dp-cartes-puces col-${colonnes}${numeros ? " numerotees" : ""}`, "data-decoupable": "" }, ...puces.map((t, k) => {
+    const { titre, texte } = eclaterPuce(t);
+    return el("article", { class: "dp-carte-puce" },
+      numeros ? el("span", { class: "dp-carte-num", text: String(k + 1).padStart(2, "0") }) : icone(pictos[k % pictos.length], "dp-carte-picto"),
+      el("div", {}, titre ? el("strong", {}, ...enrichi(titre)) : null, el("p", {}, ...enrichi(texte))));
+  }));
+}
+/** Paragraphes d'introduction d'un chapitre. */
+const chapeau = (paragraphes) => (paragraphes.length ? el("div", { class: "dp-chapeau", "data-decoupable": "" }, ...paragraphes.map((t) => el("p", {}, ...enrichi(t)))) : null);
+
+/** Anneau de pourcentage avec valeur au centre (synthèse, clients). */
+function anneau(part, valeur, libelle, precision) {
+  const r = 34, c = 2 * Math.PI * r, v = ok(part) ? Math.max(0, Math.min(1, part)) : 1;
+  return el("div", { class: "dp-anneau-kpi" },
+    el("div", { class: "dp-anneau-boite" }, svg("svg", { viewBox: "0 0 90 90", "aria-hidden": "true" },
+      svg("circle", { cx: 45, cy: 45, r, class: "dp-anneau-fond" }),
+      svg("circle", { cx: 45, cy: 45, r, class: "dp-anneau-val", "stroke-dasharray": `${c * v} ${c}`, transform: "rotate(-90 45 45)" })),
+      el("span", { class: "dp-anneau-txt", text: valeur })),
+    el("span", { class: "dp-chiffre-lib", text: libelle }), precision ? el("span", { class: "dp-chiffre-plus", text: precision }) : null);
+}
+
+/** Structure du secteur : barre empilée par taille, grands chiffres, place de l'entreprise (registres publics). */
+function structureSecteurVisuel() {
+  const s = etat.marche?.secteur;
+  if (!s) return el("p", { class: "a-rediger", text: "Structure du secteur : lancez l'étude de marché (registres publics)." });
+  const teintes = { sans: "#D8CFBF", "1_9": "#9DB8A8", "10_49": "#4E7A63", "50_plus": "#1E3A2E" };
+  const barre = el("div", { class: "dp-barre-empilee", role: "img", "aria-label": s.repartition.map((x) => `${x.libelle} : ${pct0(x.part)}`).join(" ; ") },
+    ...s.repartition.filter((x) => x.part > 0).map((x) => el("span", { class: x.cle === s.bande_entreprise ? "entreprise" : null, style: `flex-basis:${(x.part * 100).toFixed(2)}%;background:${teintes[x.cle]}` }, x.part >= 0.07 ? pct0(x.part) : "")));
+  const legende = el("ul", { class: "dp-legende-barre" }, ...s.repartition.map((x) => el("li", { class: x.cle === s.bande_entreprise ? "entreprise" : null },
+    el("span", { class: "dp-pastille", style: `background:${teintes[x.cle]}` }), el("span", { text: x.libelle }), el("strong", { text: x.n == null ? "n.d." : x.n.toLocaleString("fr-FR") }))));
+  return el("div", { class: "dp-secteur" },
+    rangee(chiffre(`${s.region_plafonne ? "> " : ""}${s.region_total.toLocaleString("fr-FR")}`, `Entreprises actives en ${s.region}`, `code NAF ${s.naf}`),
+      chiffre(pct0(s.part_moins_10), "Ont moins de 10 salariés", "un secteur fragmenté"),
+      s.part_meme_taille_ou_plus != null ? chiffre(pct0(s.part_meme_taille_ou_plus), "Sont de sa taille ou plus grandes", `${s.nombre_meme_taille_ou_plus_region.toLocaleString("fr-FR")} entreprises dans la région`) : null,
+      s.france_10_plus != null ? chiffre(`${s.france_10_plus_plafonne ? "> " : ""}${s.france_10_plus.toLocaleString("fr-FR")}`, "Entreprises de 10 salariés et plus", "en France") : null),
+    el("p", { class: "dp-mini-titre", text: `Répartition des entreprises actives par taille · ${s.region}` }), barre, legende);
+}
+
+const LIBELLES_THEMES = { taille: "Taille du marché", tendance: "Tendance", demande: "Demande", reglementation: "Réglementation", concurrence: "Concurrence" };
+const PICTOS_THEMES = { taille: "euro", tendance: "croissance", demande: "equipe", reglementation: "balance", concurrence: "loupe" };
+const faitsMarche = () => (etat.marche?.faits || []).filter((f) => f.valide);
+/** Faits de marché sourcés : cartes à grand chiffre (convention des pages « moteurs du marché »). */
+function cartesMarche(faits) {
+  return el("div", { class: "dp-cartes-marche", "data-decoupable": "" }, ...faits.map((f) => el("article", { class: `dp-carte-marche theme-${f.theme}` },
+    el("header", {}, icone(PICTOS_THEMES[f.theme] || "valide", "dp-carte-picto"), el("span", { text: LIBELLES_THEMES[f.theme] || f.theme })),
+    f.chiffre ? el("p", { class: "dp-carte-chiffre", text: f.chiffre }) : null,
+    el("p", { class: "dp-carte-texte", text: f.fait }),
+    el("p", { class: "dp-carte-source", text: `${f.source || new URL(f.url).hostname}${f.annee ? `, ${f.annee}` : ""}` }))));
+}
+
+/** Frise des étapes : flèche horizontale, années posées dessus, libellés dessous (6 au plus). */
+function frise(texte) {
+  const phrases = String(texte).replace(/\*\*/g, "").replace(/\n/g, " ").replace(/\s+-\s+/g, " ").split(/(?<=\.)\s+/);
+  const points = new Map();
+  if (p().creation) points.set(p().creation, "Création de l'entreprise");
+  for (const ph of phrases) for (const m of ph.matchAll(/\b(19[5-9]\d|20[0-4]\d)\b/g)) if (!points.has(Number(m[1]))) points.set(Number(m[1]), ph.replace(/^[-•▪\s]*\d{4}\s*[:–-]\s*/, "").replace(/^./, (c) => c.toUpperCase()).slice(0, 80));
+  const l = [...points.entries()].sort((a, b) => a[0] - b[0]).slice(0, 6);
+  if (l.length < 2) return null;
+  return el("ol", { class: "dp-frise-fleche" }, ...l.map(([a, t], k) => el("li", { class: k === l.length - 1 ? "dernier" : null }, el("span", { class: "dp-frise-an", text: String(a) }), el("span", { class: "dp-frise-txt", text: t }))));
+}
+
 // ------------------------------------------------------------------ Pages
 const SOURCES = {
   publiques: "registres publics (INSEE, INPI)",
@@ -354,57 +454,101 @@ const SOURCES = {
   calculs: "calculs Passation",
 };
 
+/** Page d'ouverture de partie : grand numéro, titre, chapitres de la partie (convention des banques d'affaires). */
+function pageOuverture(partie, k) {
+  const chapitres = etat.sections.filter((s) => s.partie === partie.n);
+  const u = photoUrl(k % Math.max(1, etat.photos?.length || 1));
+  return el("div", { class: "diapo dp-ouverture", "data-partie": String(partie.n) },
+    el("div", { class: `dp-ouverture-fond${u ? "" : " dp-couv-texture"}`, style: u ? `background-image:url('${u}')` : null }),
+    el("div", { class: "dp-ouverture-contenu" },
+      el("p", { class: "dp-ouverture-num", "aria-hidden": "true" }, el("span", { class: "zero", text: "0" }), String(partie.n)),
+      el("div", {}, el("h2", { text: partie.titre }), el("p", { class: "dp-ouverture-detail", text: partie.detail }),
+        el("ol", { class: "dp-ouverture-liste" }, ...chapitres.map((s) => el("li", {}, s.point_fort ? el("span", { class: "dp-badge", text: String(s.point_fort) }) : el("span", { class: "dp-badge vide" }), el("span", { text: titreDe(s) })))))),
+    el("footer", { class: "dp-ouverture-pied" }, el("span", { text: `${p().nom_de_code || "Projet"} · Mémorandum d'information` }), el("span", { text: "Strictement confidentiel" }), el("span", { class: "dp-num" })));
+}
+
 function pagesSynthese(s) {
   const pages = [];
-  const q = p(), an = cr().annees.at(-1), cl = ch().clients || {};
-  const age = q.creation ? `${new Date().getFullYear() - q.creation} ans` : null;
+  const q = p(), cl = ch().clients || {}, er = ch().ebe_retraite || {};
+  const ca = derniere("chiffre_affaires"), t = cr().tcam, retraite = er.ebe_retraite?.at(-1), marge = er.marge_retraitee?.at(-1), endet = ch().endettement;
+  const age = q.creation ? new Date().getFullYear() - q.creation : null;
+  const { paragraphes, puces } = decouperTexte(s.contenu);
   pages.push(cadre(s, [
-    rangee(...chiffresFinanciers(), chiffre(effectifCourt(), "Salariés", q.secteur || null), age ? chiffre(age, "D'existence", `Créée en ${q.creation}`) : null,
-      ok(cl.recurrent) ? chiffre(pct0(cl.recurrent), "Chiffre d'affaires récurrent", "déclaré par le dirigeant") : null),
+    el("div", { class: "dp-kpis-anneaux" },
+      ok(ca) ? anneau(1, montant(ca), `Chiffre d'affaires ${cr().annees.at(-1)}`, t && ok(t.ca) ? `${pourcent(t.ca, { signe: true })} par an depuis ${t.de}` : null) : null,
+      ok(retraite) ? anneau(marge, montant(retraite), "EBE retraité", ok(marge) ? `${pourcent(marge)} du chiffre d'affaires` : null) : null,
+      endet && ok(endet.total) ? anneau(1, montant(Math.abs(endet.total)), endet.total <= 0 ? "Trésorerie nette" : "Dette nette", endet.total > 0 && ok(endet.sur_ebe) ? `${multiple(endet.sur_ebe)} l'EBE` : `au 31/12/${endet.annee}`) : null,
+      ok(cl.recurrent) ? anneau(cl.recurrent, pct0(cl.recurrent), "Chiffre d'affaires récurrent", "déclaré par le dirigeant") : null,
+      anneau(1, effectifCourt(), "Salariés", q.secteur || null),
+      age ? anneau(1, `${age} ans`, "D'existence", `créée en ${q.creation}`) : null),
     el("div", { class: "dp-split dp-split-synthese" },
-      s.redigee ? flux(s.contenu) : aRediger("La synthèse"),
+      el("div", {}, s.redigee ? chapeau(paragraphes) : aRediger("La synthèse"), cartes(puces, { colonnes: 2 })),
       el("aside", { class: "dp-encadre" }, el("p", { class: "dp-mini-titre", text: "L'opération envisagée" }),
         el("dl", {}, ...[["Part du capital cédée", q.operation?.part_cedee], ["Motif du cédant", q.operation?.motif], ["Calendrier souhaité", q.operation?.calendrier], ["Accompagnement", q.operation?.accompagnement]]
-          .map(([t, v]) => el("div", {}, el("dt", { text: t }), el("dd", { text: v || "À compléter" }))))))
-  ], { sources: source(sourceChiffres(), SOURCES.publiques, SOURCES.dirigeant, SOURCES.calculs) }));
-  // Les six points forts : le titre affirmatif de chaque chapitre, son accroche et sa page
-  pages.push(cadre(s, [
-    el("ol", { class: "dp-points-forts" }, ...etat.sections.filter((x) => x.point_fort).map((x) => el("li", {},
-      el("span", { class: "dp-badge", text: String(x.point_fort) }),
-      el("div", {}, el("strong", { text: titreDe(x) }), x.accroche ? el("span", { text: x.accroche }) : null),
-      el("a", { class: "dp-renvoi", href: `#s-${x.cle}`, "data-renvoi": x.cle, text: "p. –" }))))
-  ], { titre: "Les six points forts du dossier", suite: true }));
+          .map(([tt, v]) => el("div", {}, el("dt", { text: tt }), el("dd", { text: v || "À compléter" })))))),
+  ], { sources: source(sourceChiffres(), SOURCES.publiques, SOURCES.dirigeant, SOURCES.calculs), retenu: s.redigee ? titreDe(s) : null }));
+  // Les six points forts, regroupés par thème autour du nom de code
+  const pf = (n) => etat.sections.find((x) => x.point_fort === n);
+  const groupes = [["L'entreprise", [1, 2]], ["Marché et clients", [3, 4]], ["Finances et perspectives", [5, 6]]];
+  pages.push(cadre(s, [el("div", { class: "dp-points-forts-grille" },
+    el("div", { class: "dp-medaillon" }, logoBloc("dp-medaillon-logo"), el("strong", { text: q.nom_de_code || "Projet" }), el("span", { text: [q.secteur, q.region].filter(Boolean).join(" · ") })),
+    el("div", { class: "dp-points-forts-groupes" }, ...groupes.map(([g, ns]) => el("div", { class: "dp-pf-groupe" },
+      el("div", { class: "dp-pf-theme", text: g }),
+      el("div", { class: "dp-pf-cartes" }, ...ns.map((n) => pf(n)).filter(Boolean).map((x) => el("article", { class: "dp-pf-carte" },
+        el("span", { class: "dp-badge", text: String(x.point_fort) }),
+        el("div", {}, el("strong", { text: titreDe(x) }), x.accroche ? el("span", { text: x.accroche }) : null),
+        el("a", { class: "dp-renvoi", href: `#s-${x.cle}`, "data-renvoi": x.cle, text: "p. –" }))))))))],
+  { titre: "Les six points forts du dossier", suite: true }));
   return pages;
 }
 
 function pageChapitre(s) {
   const q = p(), cl = ch().clients || {};
-  const texte = s.redigee ? flux(s.contenu) : aRediger(s.court);
+  const { paragraphes, puces } = decouperTexte(s.contenu);
+  const vide = s.redigee ? null : aRediger(s.court);
+  const retenu = s.accroche;
   switch (s.cle) {
     case "histoire":
-      return [cadre(s, [rangee(q.creation ? chiffre(String(q.creation), "Année de création") : null, q.creation ? chiffre(`${new Date().getFullYear() - q.creation} ans`, "D'existence") : null, chiffre(q.region || "n.d.", "Région du siège", q.ville || null)),
-        s.redigee ? frise(s.contenu) : null, el("div", { class: "dp-deux-col-zone" }, texte)],
-        { sources: source(SOURCES.publiques, faitsSite("histoire", "implantation") ? SOURCES.site : null, SOURCES.dirigeant) })];
+      return [cadre(s, [rangee(q.creation ? chiffre(String(q.creation), "Année de création") : null, q.creation ? chiffre(`${new Date().getFullYear() - q.creation} ans`, "D'existence") : null, chiffre(q.region || "n.d.", "Région du siège", q.ville || null), chiffre(effectifCourt(), "Salariés", "tranche INSEE")),
+        s.redigee ? frise(s.contenu) : null, vide, chapeau(paragraphes),
+        cartes(frise(s.contenu) ? puces.filter((t) => !/^\d{4}$/.test(eclaterPuce(t).titre || "")) : puces, { colonnes: 3, pictos: ["qualite", "lieu", "croissance", "metier", "equipe", "calendrier"] })],
+        { sources: source(SOURCES.publiques, faitsSite("histoire", "implantation") ? SOURCES.site : null, SOURCES.dirigeant), retenu })];
     case "activite": {
       const ph = photo(0);
+      const corps = el("div", {}, vide, chapeau(paragraphes), cartes(puces, { colonnes: ph ? 2 : 3, pictos: ["metier", "qualite", "valide", "loupe", "croissance", "equipe"] }));
       return [cadre(s, [rangee(q.secteur ? chiffre(q.secteur, "Secteur", "nomenclature INSEE") : null, chiffre(effectifCourt(), "Salariés", "tranche INSEE"), q.zone ? chiffre(q.zone, "Zone commerciale") : null, ok(derniere("chiffre_affaires")) ? chiffre(montant(derniere("chiffre_affaires")), `Chiffre d'affaires ${cr().annees.at(-1)}`) : null),
-        ph ? el("div", { class: "dp-split" }, texte, ph) : texte], { sources: source(SOURCES.publiques, SOURCES.dirigeant, faitsSite("activite", "produits", "qualite") ? SOURCES.site : null) })];
+        ph ? el("div", { class: "dp-split dp-split-photo" }, corps, ph) : corps], { sources: source(SOURCES.publiques, SOURCES.dirigeant, faitsSite("activite", "produits", "qualite") ? SOURCES.site : null), retenu })];
     }
-    case "marche":
-      return [cadre(s, [
-        rangee(ok(cl.premier) ? chiffre(pct0(cl.premier), "Premier client", "part du chiffre d'affaires") : null, ok(cl.cinq) && cl.cinq_complet ? chiffre(pct0(cl.cinq), "Cinq premiers clients", "part du chiffre d'affaires") : null,
-          ok(cl.recurrent) ? chiffre(pct0(cl.recurrent), "Chiffre d'affaires récurrent") : null, q.zone ? chiffre(q.zone, "Zone commerciale") : null),
-        el("div", { class: "dp-split dp-split-carte" }, el("div", {}, tableauClients(), carteFrance()), texte)
-      ], { sources: source(SOURCES.dirigeant, faitsSite("clients", "marche") ? SOURCES.site : null, "fond de carte IGN Admin Express (Licence ouverte)") })];
     case "organisation": {
       const ph = photo(1);
+      const corps = el("div", {}, vide, chapeau(paragraphes), cartes(puces, { colonnes: 2, pictos: ["equipe", "metier", "valide", "horloge", "signature", "loupe"] }));
       return [cadre(s, [rangee(chiffre(effectifCourt(), "Salariés", "tranche INSEE"), q.creation ? chiffre(String(q.creation), "Création") : null, chiffre(q.ville || "n.d.", "Site principal")),
-        ph ? el("div", { class: "dp-split" }, texte, ph) : texte], { sources: source(SOURCES.publiques, SOURCES.dirigeant, faitsSite("equipe") ? SOURCES.site : null) })];
+        ph ? el("div", { class: "dp-split dp-split-photo" }, corps, ph) : corps], { sources: source(SOURCES.publiques, SOURCES.dirigeant, faitsSite("equipe") ? SOURCES.site : null), retenu })];
     }
+    case "marche": {
+      const faits = faitsMarche();
+      const pages = [cadre(s, [el("div", { class: "dp-split dp-split-marche" }, el("div", {}, vide, chapeau(paragraphes), cartes(puces, { colonnes: 1, pictos: ["globe", "croissance", "equipe", "balance", "loupe"] })), structureSecteurVisuel())],
+        { sources: source(etat.marche?.secteur?.source || "Annuaire des entreprises (INSEE Sirene)", faits.length ? "sources publiques citées en page suivante" : null), retenu })];
+      if (faits.length) pages.push(cadre(s, [cartesMarche(faits)], { titre: "Les moteurs du marché, chiffres sourcés", suite: true,
+        sources: source(...[...new Set(faits.map((f) => `${f.source || new URL(f.url).hostname}${f.annee ? ` (${f.annee})` : ""}`))].slice(0, 6)) }));
+      return pages;
+    }
+    case "clients":
+      return [cadre(s, [
+        el("div", { class: "dp-clients-haut" },
+          el("div", { class: "dp-kpis-anneaux compact" },
+            ok(cl.premier) ? anneau(cl.premier, pct0(cl.premier), "Premier client", "part du chiffre d'affaires") : null,
+            ok(cl.cinq) && cl.cinq_complet ? anneau(cl.cinq, pct0(cl.cinq), "Cinq premiers clients", "part du chiffre d'affaires") : null,
+            ok(cl.recurrent) ? anneau(cl.recurrent, pct0(cl.recurrent), "Chiffre d'affaires récurrent", "déclaré par le dirigeant") : null,
+            q.zone ? chiffre(q.zone, "Zone commerciale") : null),
+          carteFrance()),
+        el("div", { class: "dp-split dp-split-carte" }, el("div", {}, tableauClients()), el("div", {}, vide, chapeau(paragraphes), cartes(puces, { colonnes: 1, pictos: ["poignee", "equipe", "globe", "horloge", "valide"] }))),
+      ], { sources: source(SOURCES.dirigeant, faitsSite("clients", "marche") ? SOURCES.site : null, "fond de carte IGN Admin Express (Licence ouverte)"), retenu })];
     case "finances": {
-      const src = () => source(sourceChiffres(), "retraitements déclarés par le dirigeant", SOURCES.calculs); // une ligne par page
+      const src = () => source(sourceChiffres(), "retraitements déclarés par le dirigeant", SOURCES.calculs);
+      const texte = el("div", {}, vide, chapeau(paragraphes), cartes(puces, { colonnes: 1, pictos: ["euro", "croissance", "valide", "cadenas", "horloge"] }));
       return [
-        cadre(s, [rangee(...chiffresFinanciers()), el("div", { class: "dp-split dp-split-graph" }, graphiqueFinances(), graphiqueMarge())], { sources: src() }),
+        cadre(s, [rangee(...chiffresFinanciers()), el("div", { class: "dp-split dp-split-graph" }, graphiqueFinances(), graphiqueMarge())], { sources: src(), retenu }),
         cadre(s, [el("div", { class: "dp-split dp-split-tableau" }, texte, tableauCompteResultat())], { titre: `Compte de résultat ${cr().annees.length ? `${cr().annees[0]}-${cr().annees.at(-1)}` : ""}`.trim(), suite: true, sources: src() }),
         cadre(s, [el("div", { class: "dp-split dp-split-tableaux" }, tableauEbe(), tableauDette())], { titre: "De l'EBE comptable à l'EBE retraité ; endettement net", suite: true, sources: src() }),
       ];
@@ -412,19 +556,21 @@ function pageChapitre(s) {
     case "perspectives":
       return [cadre(s, [rangee(ok(q.perspectives?.croissance) ? chiffre(`${pourcent(q.perspectives.croissance, { signe: true, decimales: 0 })} par an`, "Croissance anticipée", "estimation du dirigeant, non auditée") : null,
         ok(q.perspectives?.marge_ebe) ? chiffre(pourcent(q.perspectives.marge_ebe, { decimales: 0 }), "Marge d'EBE visée", "estimation du dirigeant") : null,
-        ok(cr().tcam?.ca) ? chiffre(`${pourcent(cr().tcam.ca, { signe: true })} par an`, "Croissance historique", `${cr().tcam.de}-${cr().tcam.a}`) : null), texte],
-        { sources: source(SOURCES.dirigeant, ok(cr().tcam?.ca) ? sourceChiffres() : null, faitsSite("autre") ? SOURCES.site : null) })];
+        ok(cr().tcam?.ca) ? chiffre(`${pourcent(cr().tcam.ca, { signe: true })} par an`, "Croissance historique", `${cr().tcam.de}-${cr().tcam.a}`) : null),
+        vide, chapeau(paragraphes), cartes(puces, { colonnes: Math.min(4, Math.max(2, puces.length)), numeros: true })],
+        { sources: source(SOURCES.dirigeant, ok(cr().tcam?.ca) ? sourceChiffres() : null, faitsMarche().length ? "étude de marché (sources citées au chapitre Marché)" : null, faitsSite("autre") ? SOURCES.site : null), retenu })];
     case "operation":
-      return [cadre(s, [el("div", { class: "dp-split dp-split-operation" }, el("div", {}, el("p", { class: "dp-mini-titre", text: "Périmètre de l'opération" }), schemaPerimetre()), texte), processus()],
-        { sources: source(SOURCES.dirigeant) })];
+      return [cadre(s, [el("div", { class: "dp-split dp-split-operation" }, el("div", {}, el("p", { class: "dp-mini-titre", text: "Périmètre de l'opération" }), schemaPerimetre()), el("div", {}, vide, chapeau(paragraphes), cartes(puces, { colonnes: 1, pictos: ["poignee", "signature", "calendrier", "equipe", "cadenas"] }))), processus()],
+        { sources: source(SOURCES.dirigeant), retenu })];
     default:
-      return [cadre(s, [texte])];
+      return [cadre(s, [vide, chapeau(paragraphes), cartes(puces)], { retenu })];
   }
 }
 
 function dessinerMemo() {
   etat.versionPhotos ??= Date.now();
   const q = p();
+  const parties = etat.parties || [];
   const enfants = [];
   // Couverture : le nom de code seul, jamais le nom de l'entreprise ni sa photo (le document peut traîner sur un bureau)
   enfants.push(el("div", { class: "diapo dp-couverture" },
@@ -434,26 +580,30 @@ function dessinerMemo() {
         el("p", { class: "dp-sous-titre", text: [q.secteur, q.region].filter(Boolean).join(" · ") }), el("span", { class: "dp-filet" })),
       el("div", { class: "dp-couv-bas" }, el("span", { text: moisAnnee().replace(/^./, (c) => c.toUpperCase()) }), logoPassation(true))),
     el("div", { class: "dp-couv-photo dp-couv-texture" })));
-  // Sommaire : chapitres et pages (numéros posés après le découpage)
+  // Sommaire par partie, pages posées après le découpage
   enfants.push(el("div", { class: "diapo dp-sommaire" },
     el("div", { class: "dp-som-liste" }, el("p", { class: "dp-etiquette", text: "Sommaire" }),
-      el("ol", {}, ...etat.sections.map((s, i) => el("li", {}, el("span", { class: "dp-li-num", text: String(i + 1).padStart(2, "0") }),
-        el("a", { href: `#s-${s.cle}` }, el("strong", { text: s.court }), el("span", { text: titreDe(s) })), el("span", { class: "dp-som-page", "data-renvoi": s.cle, text: "" })))),
+      el("ol", { class: "dp-som-parties" }, ...parties.map((pt) => el("li", {},
+        el("div", { class: "dp-som-partie" }, el("span", { class: "dp-li-num", text: String(pt.n).padStart(2, "0") }), el("strong", { text: pt.titre }), el("span", { class: "dp-som-page", "data-renvoi-partie": String(pt.n) })),
+        el("ul", {}, ...etat.sections.filter((s) => s.partie === pt.n).map((s) => el("li", {}, el("a", { href: `#s-${s.cle}`, text: titreDe(s) }), el("span", { class: "dp-som-page", "data-renvoi": s.cle }))))))),
       logoPassation())));
-  etat.sections.forEach((s) => {
-    enfants.push(...(s.cle === "synthese" ? pagesSynthese(s) : pageChapitre(s)));
-    const outils = el("div", { class: "dp-outils pas-imprime", "data-outils": s.cle },
-      el("strong", { class: "petit", text: s.court }),
-      s.modifie ? el("span", { class: "petit", text: "Modifié par vous" }) : null,
-      s.a_completer?.length ? el("span", { class: "notes-completer" }, el("strong", { text: "À compléter : " }), s.a_completer.join(" ; ")) : null,
-      el("button", { type: "button", class: "btn btn-mini", disabled: !etat.deverrouille.ok, onclick: (ev) => rediger(s.cle, ev.currentTarget) }, s.redigee ? "Rédiger à nouveau" : "Rédiger"),
-      s.redigee ? el("button", { type: "button", class: "lien-simple", onclick: () => editer(outils, s) }, "Modifier") : null);
-    enfants.push(outils);
+  parties.forEach((pt, k) => {
+    enfants.push(pageOuverture(pt, k));
+    for (const s of etat.sections.filter((x) => x.partie === pt.n)) {
+      enfants.push(...(s.cle === "synthese" ? pagesSynthese(s) : pageChapitre(s)));
+      const outils = el("div", { class: "dp-outils pas-imprime", "data-outils": s.cle },
+        el("strong", { class: "petit", text: s.court }),
+        s.modifie ? el("span", { class: "petit", text: "Modifié par vous" }) : null,
+        s.a_completer?.length ? el("span", { class: "notes-completer" }, el("strong", { text: "À compléter : " }), s.a_completer.join(" ; ")) : null,
+        el("button", { type: "button", class: "btn btn-mini", disabled: !etat.deverrouille.ok, onclick: (ev) => rediger(s.cle, ev.currentTarget) }, s.redigee ? "Rédiger à nouveau" : "Rédiger"),
+        s.redigee ? el("button", { type: "button", class: "lien-simple", onclick: () => editer(outils, s) }, "Modifier") : null);
+      enfants.push(outils);
+    }
   });
   // Avertissement (dernière page)
   enfants.push(el("div", { class: "diapo dp-fin" },
     el("div", { class: "dp-fin-texte" }, el("p", { class: "dp-etiquette", text: "Avertissement" }),
-      el("p", { text: "Ce mémorandum a été établi à partir d'informations fournies par le dirigeant et de données publiques. Il n'a fait l'objet d'aucun audit. Il ne constitue ni une offre, ni un engagement, et ne remplace pas les vérifications d'usage (audit comptable, juridique, social et fiscal)." }),
+      el("p", { text: "Ce mémorandum a été établi à partir d'informations fournies par le dirigeant, de données publiques et de sources de marché citées. Il n'a fait l'objet d'aucun audit. Il ne constitue ni une offre, ni un engagement, et ne remplace pas les vérifications d'usage (audit comptable, juridique, social et fiscal)." }),
       el("p", { text: "Il est remis sous engagement de confidentialité : toute reproduction ou diffusion, totale ou partielle, est interdite." }),
       el("p", { class: "dp-contact", text: "Contact : par l'intermédiaire de Passation" }), logoPassation()),
     el("div", { class: "dp-fin-photo dp-couv-texture" })));
@@ -464,19 +614,24 @@ function dessinerMemo() {
   diapos.forEach((d, k) => { const n = d.querySelector(".dp-num"); if (n) n.textContent = String(k + 1); });
   const premiere = (cle) => diapos.findIndex((d) => d.dataset.section === cle) + 1;
   $("#memo").querySelectorAll("[data-renvoi]").forEach((r) => { const n = premiere(r.dataset.renvoi); r.textContent = n > 0 ? (r.classList.contains("dp-renvoi") ? `p. ${n}` : String(n)) : ""; });
+  $("#memo").querySelectorAll("[data-renvoi-partie]").forEach((r) => { const n = diapos.findIndex((d) => d.dataset.partie === r.dataset.renvoiPartie) + 1; r.textContent = n > 0 ? String(n) : ""; });
 }
 
-/** Chapitre trop long : les derniers paragraphes du texte courant passent sur une page « (suite) ». */
+/** Page trop pleine : les derniers éléments du dernier bloc découpable (texte, cartes) passent sur une page « (suite) ». */
 function decouper() {
   for (const d of [...$("#memo").querySelectorAll(".dp-page")]) {
     let courante = d;
     for (let garde = 0; garde < 5; garde++) {
-      const zone = courante.querySelector(".dp-zone"), texte = courante.querySelector(".dp-flux");
-      if (!texte || zone.scrollHeight <= zone.clientHeight + 2 || texte.children.length < 2) break;
+      const zone = courante.querySelector(".dp-zone");
+      if (zone.scrollHeight <= zone.clientHeight + 2) break;
+      const blocs = [...zone.querySelectorAll("[data-decoupable]")].filter((b) => b.children.length > 1);
+      const cible = blocs.at(-1);
+      if (!cible) break;
       const reports = [];
-      while (zone.scrollHeight > zone.clientHeight + 2 && texte.children.length > 1) reports.unshift(texte.removeChild(texte.lastElementChild));
+      while (zone.scrollHeight > zone.clientHeight + 2 && cible.children.length > 1) reports.unshift(cible.removeChild(cible.lastElementChild));
       const s = section(courante.dataset.section);
-      const suite = cadre(s, [el("div", { class: "dp-flux dp-deux-col" }, ...reports)], { suite: true, sources: courante.querySelector(".dp-source-ligne")?.cloneNode(true) });
+      const conteneur = el("div", { class: cible.className, "data-decoupable": "" }, ...reports);
+      const suite = cadre(s, [conteneur], { suite: true, sources: courante.querySelector(".dp-source-ligne")?.cloneNode(true) });
       courante.after(suite);
       courante = suite;
     }
@@ -501,7 +656,7 @@ async function rediger(cle, bouton) {
   try { etat = await api(`${base}/sections/${cle}`, { method: "POST" }); tout(); message("Section rédigée. Relisez-la avant toute diffusion."); $(`#s-${cle}`)?.scrollIntoView({ block: "start" }); }
   catch (e) { message(e.message, true); if (bouton) bouton.disabled = false; }
 }
-function tout() { dessinerVerrou(); dessinerSite(); dessinerPhotos(); dessinerMemo(); }
+function tout() { dessinerVerrou(); dessinerSite(); dessinerPhotos(); dessinerMarche(); dessinerMemo(); }
 
 $("#form-site").addEventListener("submit", async (ev) => {
   ev.preventDefault();

@@ -301,7 +301,7 @@ describe("mémorandum", () => {
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
     redigerSectionMemo.mockResolvedValue({ titre: "Une entreprise fondée en 1980, dirigée par la même famille.", accroche: "Quarante ans d'activité continue.", contenu: "- **1980** : création.", a_completer: [] });
     let m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).json();
-    expect(m.sections.find((x) => x.cle === "histoire")).toMatchObject({ titre_affirme: "Une entreprise fondée en 1980, dirigée par la même famille", accroche: "Quarante ans d'activité continue", point_fort: 1, court: "Histoire" });
+    expect(m.sections.find((x) => x.cle === "histoire")).toMatchObject({ titre_affirme: "Une entreprise fondée en 1980, dirigée par la même famille", accroche: "Quarante ans d'activité continue", point_fort: null, partie: 2, court: "Histoire" });
     expect(m.chiffres).toHaveProperty("compte_resultat");
     expect(m.profil.nom_de_code).toMatch(/^Projet /);
     m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "PUT", cookie, corps: { contenu: "Texte revu." } })).json();
@@ -351,7 +351,7 @@ describe("suivi : dossier prêt et rappel unique", () => {
     const t = Math.floor(Date.now() / 1000), doc = "doc-memo-" + id;
     env.DB.sqlite.exec(`INSERT INTO valuations (id, dossier_id, kind, inputs_json, result_json, created_at) VALUES ('v-${id}', '${id}', 'approfondie', '{}', '{}', ${t});
       INSERT INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES ('d-${id}', '${id}', 'datapack', 1, '', ${t}), ('t-${id}', '${id}', 'teaser', 1, '', ${t}), ('${doc}', '${id}', 'memo', 1, '', ${t});`);
-    for (const k of ["synthese", "histoire", "activite", "marche", "organisation", "finances", "perspectives", "operation"]) env.DB.sqlite.exec(`INSERT INTO document_sections (document_id, section_key, content_md, edited_by_user, updated_at) VALUES ('${doc}', '${k}', '{}', 0, ${t});`);
+    for (const k of ["synthese", "histoire", "activite", "organisation", "marche", "clients", "finances", "perspectives", "operation"]) env.DB.sqlite.exec(`INSERT INTO document_sections (document_id, section_key, content_md, edited_by_user, updated_at) VALUES ('${doc}', '${k}', '{}', 0, ${t});`);
   }
   it("« dossier prêt » : 409 tant que tout n'est pas généré, puis un seul envoi", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");

@@ -510,3 +510,18 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   (détention des titres, murs et leur sort, cinq premiers clients). Consignes de rédaction réécrites (associé de
   banque d'affaires ; chiffres recopiés depuis des indicateurs calculés par le code). Tests : 309. Vérifié en local
   avec un dossier fictif et un Claude simulé (`ANTHROPIC_BASE_URL`) : 14 pages, aucun débordement, PDF de 14 pages.
+- **17/11/2026, mémorandum v2 : marché et mise en page « waouh »** (branche `memo-banque`, non publiée). Deux
+  mémorandums supplémentaires fournis par le dirigeant comme référence (conventions seulement, rien repris).
+  - Neuf chapitres en cinq parties (Synthèse ; L'entreprise ; Marché et clients ; Performance financière ;
+    Perspectives et opération), chaque partie ouverte par une page plein cadre à grand numéro ; sommaire par partie.
+  - Nouveau chapitre Marché : structure du secteur tirée de l'annuaire public (`src/sources/secteur.js`, entreprises
+    actives du code NAF dans la région par tranche d'effectif, et en France pour 10 salariés et plus ; plafond de
+    10 000 de l'API signalé ; cache 24 h) + faits de marché trouvés sur le web par Claude (outil web_search,
+    `rechercherMarche`) : un fait n'est gardé que si son adresse figure parmi les pages réellement renvoyées par la
+    recherche, puis le dirigeant les valide un par un. 3 études par dossier (`MARCHE` dans config.js). Clients devient
+    un chapitre à part.
+  - Mise en page : synthèse en infographie (anneaux de chiffres clés, encadré de l'opération), six points forts
+    autour d'un médaillon au nom de code et regroupés par thème, puces rédigées transformées en cartes à pictogramme,
+    bande « À retenir » en bas de chaque chapitre, frise en flèche, cartes de marché à grand chiffre et source.
+  - Tests : 313. Vérifié en local (dossier fictif, Claude simulé, faits de marché d'exemple marqués « fictif ») :
+    22 pages, aucun débordement, aucune erreur.

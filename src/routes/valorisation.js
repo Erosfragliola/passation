@@ -18,7 +18,7 @@ import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
 import HYPOTHESES from "../data/hypotheses.json";
 
-const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site"]);
+const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche"]);
 const corpsJson = async (request) => { try { return await request.json(); } catch { return null; } };
 
 // ---------------------------------------------------------------- Chiffres

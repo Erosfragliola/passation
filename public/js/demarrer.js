@@ -405,7 +405,9 @@ async function redaction() {
     ["valorisation", "Valorisation (3 méthodes)", () => api(`${base}/valuation`, { method: "POST" })],
     ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
     ["teaser", "Teaser anonymisé", () => api(`${base}/documents/teaser`, { method: "POST" })],
-    ...["synthese", "histoire", "activite", "marche", "organisation", "finances", "perspectives", "operation"].map((k) => [`memo-${k}`, `Mémorandum : ${{ synthese: "synthèse", histoire: "histoire", activite: "activité", marche: "marché et clients", organisation: "organisation", finances: "finances", perspectives: "perspectives", operation: "opération" }[k]}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
+    ["etude-marche", "Étude de marché (registres et sources publiques)", () => api(`${base}/documents/memo/marche`, { method: "POST" })],
+    ...[["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]]
+      .map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
   ];
   // Ce qui est déjà rédigé n'est pas refait (reprise après une interruption)
   const deja = new Set();
@@ -415,6 +417,7 @@ async function redaction() {
     if (d.documents?.datapack) deja.add("datapack");
     if (d.documents?.teaser) deja.add("teaser");
     for (const x of m.sections || []) if (x.redigee) deja.add(`memo-${x.cle}`);
+    if (m.marche?.date) deja.add("etude-marche");
   } catch { /* on refait tout */ }
   const lignes = Object.fromEntries(taches.map(([k, t]) => [k, el("li", { class: deja.has(k) ? "fait" : null }, el("span", { class: "etat", "aria-hidden": "true" }), t)]));
   remplir(...titre("Nous rédigeons votre dossier", "Une à deux minutes. Vous pouvez quitter cette page : la rédaction reprendra à votre retour."),
@@ -427,10 +430,12 @@ async function redaction() {
     catch (e) { lignes[k].classList.replace("en-cours", "erreur"); erreurs.push(`${k} : ${e.message}`); }
   };
   await executer(taches[0]);                     // la valorisation d'abord (le reste en dépend)
-  const reste = taches.slice(1);
+  await executer(taches.find(([k]) => k === "etude-marche")); // puis le marché, que le mémorandum cite
+  const reste = taches.slice(1).filter(([k]) => k !== "etude-marche");
   for (let i = 0; i < reste.length; i += 4) await Promise.all(reste.slice(i, i + 4).map(executer)); // 4 à la fois
   // Le teaser peut être refusé par le contrôle d'anonymat : ce n'est pas bloquant, il se reprend depuis sa page
-  const bloquantes = erreurs.filter((e) => !e.startsWith("teaser"));
+  // Le teaser (contrôle d'anonymat) et l'étude de marché (sources) ne bloquent pas : ils se reprennent depuis leur page
+  const bloquantes = erreurs.filter((e) => !e.startsWith("teaser") && !e.startsWith("etude-marche"));
   if (erreurs.length && !bloquantes.length) message("Le teaser n'a pas passé le contrôle d'anonymat : reprenez-le depuis sa page (une réponse contient sans doute un nom ou une marque).", true);
   if (bloquantes.length) {
     message(`Certaines rédactions ont échoué : ${bloquantes.join(" ; ")}`, true);

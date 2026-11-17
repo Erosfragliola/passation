@@ -30,3 +30,6 @@ export const USER_AGENT = "Passation/0.1 (outil de preparation de cession de PME
 
 /** Lecture de liasse par Claude : taille et nombre de fichiers, plafond de lectures par dossier (coût maîtrisé). */
 export const LIASSE = { tailleMax: 10 * 1024 * 1024, fichiersMax: 3, lecturesMaxParDossier: 6 };
+
+/** Étude de marché du mémorandum (recherche web par Claude, coût maîtrisé) : nombre d'études par dossier. */
+export const MARCHE = { etudesMaxParDossier: 3 };

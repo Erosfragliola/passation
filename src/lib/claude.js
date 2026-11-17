@@ -192,6 +192,64 @@ export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
 }
 
+// ---------------------------------------------------------------- Mémorandum : étude de marché (recherche web)
+// Claude cherche sur le web des faits de marché sourcés (taille, tendances, réglementation, demande, concurrence) pour
+// le secteur et la région de l'entreprise. Garde-fou : un fait n'est retenu que si son adresse figure parmi les pages
+// réellement renvoyées par la recherche (faitsSourcesVerifies) ; le dirigeant valide ensuite chaque fait.
+export const THEMES_MARCHE = ["taille", "tendance", "demande", "reglementation", "concurrence"];
+const CONSIGNE_MARCHE = `Tu es analyste dans une banque d'affaires française. Tu prépares la partie « Marché » du mémorandum de cession d'une PME.
+Cherche sur le web des faits récents (moins de 4 ans) et chiffrés sur le marché de l'entreprise, en France et dans sa région : taille du marché ou de l'activité (chiffre d'affaires, volumes, nombre d'entreprises), évolution, tendances et moteurs de la demande, réglementation qui s'impose au secteur, structure concurrentielle.
+Sources à privilégier : INSEE, ministères et administrations, Banque de France, fédérations et organisations professionnelles, chambres de métiers et de commerce, observatoires sectoriels, études publiques. Évite les blogs commerciaux et les contenus sans auteur.
+Règles absolues :
+- Chaque fait doit venir d'une page que tu as réellement consultée par la recherche ; recopie son adresse exacte.
+- Recopie les chiffres tels qu'ils figurent dans la source, avec leur année. Ne calcule rien, n'extrapole rien.
+- Aucune information sur l'entreprise elle-même ni sur un concurrent nommé.
+- 4 à 8 faits, en français, une phrase chacun.
+Réponds en terminant par un bloc \`\`\`json contenant exactement : {"faits":[{"theme":"taille|tendance|demande|reglementation|concurrence","fait":"phrase","chiffre":"le chiffre clé tel qu'écrit, ou null","annee":"année du chiffre, ou null","source":"nom de l'organisme","url":"adresse exacte"}]}`;
+
+/** Garde-fou : ne garde que les faits bien formés dont l'adresse a réellement été renvoyée par la recherche. */
+export function faitsSourcesVerifies(faits, urlsConsultees) {
+  const norm = (u) => String(u || "").trim().replace(/#.*$/, "").replace(/\/$/, "").toLowerCase();
+  const connues = new Set([...urlsConsultees].map(norm));
+  return (Array.isArray(faits) ? faits : [])
+    .filter((f) => f && typeof f.fait === "string" && f.fait.trim() && THEMES_MARCHE.includes(f.theme) && connues.has(norm(f.url)) && /^https?:\/\//.test(f.url))
+    .slice(0, 8)
+    .map((f) => ({ theme: f.theme, fait: f.fait.trim().slice(0, 400), chiffre: typeof f.chiffre === "string" && f.chiffre.trim() ? f.chiffre.trim().slice(0, 60) : null,
+      annee: f.annee == null ? null : String(f.annee).slice(0, 9), source: String(f.source || "").trim().slice(0, 120) || null, url: String(f.url).trim() }));
+}
+
+/** Dernier objet JSON d'un texte (bloc \`\`\`json ou accolades finales). */
+export function dernierJson(texte) {
+  const blocs = [...String(texte).matchAll(/\`\`\`json\s*([\s\S]*?)\`\`\`/g)].map((m) => m[1]);
+  const candidats = blocs.length ? blocs.reverse() : [String(texte).slice(String(texte).indexOf("{"))];
+  for (const c of candidats) { try { return JSON.parse(c); } catch { /* candidat suivant */ } }
+  return null;
+}
+
+/** @param contexte { secteur, activite_naf, region, description } (aucun nom d'entreprise) ; @returns { faits, urls, usage } */
+export async function rechercherMarche(env, contexte) {
+  const messages = [{ role: "user", content: `Entreprise à présenter (anonyme) :\n${JSON.stringify(contexte, null, 2)}` }];
+  const urls = new Set();
+  let texte = "", reponse;
+  for (let tour = 0; tour < 4; tour++) {
+    reponse = await client(env).beta.messages.create({
+      model: MODELS.deep, max_tokens: 16000, system: CONSIGNE_MARCHE, messages,
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 6, user_location: { type: "approximate", country: "FR" } }],
+      betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
+    });
+    for (const b of reponse.content) {
+      if (b.type === "web_search_tool_result" && Array.isArray(b.content)) for (const r of b.content) if (r?.url) urls.add(r.url);
+      if (b.type === "text") { texte += b.text; for (const c of b.citations || []) if (c?.url) urls.add(c.url); }
+    }
+    if (reponse.stop_reason !== "pause_turn") break;
+    messages.push({ role: "assistant", content: reponse.content });
+  }
+  if (reponse.stop_reason === "refusal") throw new Error("redaction_refusee");
+  if (reponse.stop_reason === "pause_turn") throw new Error("recherche_inachevee");
+  const brut = dernierJson(texte);
+  return { faits: faitsSourcesVerifies(brut?.faits, urls), urls: [...urls] };
+}
+
 /** Erreur d'authentification de l'API Claude (clé absente, mal copiée ou d'un autre type) : message explicite. */
 export const cleRefusee = (e) => e?.status === 401 || e?.status === 403;
 export const MESSAGE_CLE_REFUSEE = "La lecture et la rédaction automatiques sont momentanément indisponibles : la clé de l'API Claude du site est refusée. L'administrateur du site doit la remplacer.";

@@ -12,10 +12,13 @@ import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { calculer, lireReponses, lireChiffres } from "./valorisation.js";
 import { construireDatapack } from "../documents/datapack.js";
-import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
+import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, rechercherMarche, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
+import { compterSecteur, structureSecteur } from "../sources/secteur.js";
+import { lireCache, ecrireCache } from "../lib/cache.js";
+import { MARCHE } from "../config.js";
 import { lireSite, adressePublique } from "../documents/site.js";
-import { SECTIONS_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
-import { termesInterdits, verifierAnonymat } from "../documents/anonymat.js";
+import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
+import { termesInterdits, verifierAnonymat, regionDe, SECTEURS_NAF } from "../documents/anonymat.js";
 import { faitsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
 
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -153,16 +156,51 @@ async function lireMemo(env, row) {
     profil: profilMemo(entreprise, reponses, row.code_name),
     photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "" })),
     site, logo: Boolean(site?.logo),
+    marche: reponses.marche ? { ...reponses.marche, essais_restants: Math.max(0, MARCHE.etudesMaxParDossier - (reponses.marche.essais || 0)) } : { essais_restants: MARCHE.etudesMaxParDossier },
     // Chiffres calculés par le code : compte de résultat, EBE retraité, endettement, clients, périmètre, sources
     chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources },
     memo: doc ? { id: doc.id, version: doc.version, cree_le: doc.created_at } : null,
-    sections: SECTIONS_MEMO.map(({ cle, titre, court, point_fort }) => {
+    parties: PARTIES_MEMO,
+    sections: SECTIONS_MEMO.map(({ cle, titre, court, partie, point_fort }) => {
       const x = parCle[cle];
       let v = {};
       if (x) { try { v = JSON.parse(x.content_md); } catch { v = { contenu: x.content_md }; } }
-      return { cle, titre, court, point_fort, titre_affirme: v.titre || null, accroche: v.accroche || null, contenu: v.contenu || "", a_completer: v.a_completer || [], redigee: Boolean(x), modifie: x?.edited_by_user === 1 };
+      return { cle, titre, court, partie, point_fort, titre_affirme: v.titre || null, accroche: v.accroche || null, contenu: v.contenu || "", a_completer: v.a_completer || [], redigee: Boolean(x), modifie: x?.edited_by_user === 1 };
     }),
   };
+}
+
+/** Structure du secteur (annuaire public, cache 24 h) : jamais bloquante, null si indisponible. */
+async function secteurDe(env, entreprise) {
+  const region = regionDe(entreprise.code_postal), naf = entreprise.naf;
+  if (!region || !naf) return null;
+  const cle = `secteur:${naf}:${region}`;
+  let comptes = await lireCache(env.DB, cle);
+  if (!comptes) {
+    try { comptes = await compterSecteur({ naf, region }); if (comptes) await ecrireCache(env.DB, cle, comptes); }
+    catch (e) { console.log(`Structure du secteur indisponible : ${e.message}`); return null; }
+  }
+  const date = new Date().toLocaleDateString("fr-FR");
+  return structureSecteur(comptes, { naf, region, trancheEntreprise: entreprise.tranche_effectif?.code, date });
+}
+
+/** Étude de marché : structure du secteur (registres) + faits sourcés trouvés sur le web, à valider par le dirigeant. */
+async function etudeMarche(env, row) {
+  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: "L'étude de marché n'est pas encore activée." }, 503);
+  const reponses = await lireReponses(env, row.id);
+  const avant = reponses.marche || {};
+  if ((avant.essais || 0) >= MARCHE.etudesMaxParDossier) return json({ erreur: "limite", message: `L'étude de marché a déjà été lancée ${MARCHE.etudesMaxParDossier} fois pour ce dossier.` }, 429);
+  const entreprise = JSON.parse(row.company_json || "{}");
+  const secteur = await secteurDe(env, entreprise);
+  const contexte = { secteur: SECTEURS_NAF[entreprise.section_naf] ?? null, code_naf: entreprise.naf ?? null, region: regionDe(entreprise.code_postal),
+    activite_decrite_par_le_dirigeant: reponses.activite?.description ?? null, zone_commerciale: reponses.activite?.zone ?? null };
+  let r;
+  try { r = await rechercherMarche(env, contexte); }
+  catch (e) { console.log(`Étude de marché impossible : ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "recherche_echouee", message: "La recherche n'a pas abouti. Réessayez dans un instant." }, 502); }
+  const marche = { secteur, faits: r.faits.map((f, i) => ({ id: i + 1, ...f, valide: true })), date: maintenant(), essais: (avant.essais || 0) + 1 };
+  await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'marche', ?, ?)
+    ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(row.id, JSON.stringify(marche), maintenant()).run();
+  return json(await lireMemo(env, row));
 }
 
 async function lireSiteRoute(request, env, row) {
@@ -333,6 +371,7 @@ export async function routeDocuments(request, env, row, type, sous, cle) {
   if (type === "memo") {
     if (!sous && m === "GET") return json(await lireMemo(env, row));
     if (sous === "site" && !cle && m === "POST") return lireSiteRoute(request, env, row);
+    if (sous === "marche" && !cle && m === "POST") return etudeMarche(env, row);
     if (sous === "logo" && !cle && m === "POST") return deposerLogo(request, env, row);
     if (sous === "logo" && !cle && m === "GET") return servirLogo(env, row);
     if (sous === "photos" && !cle && m === "POST") return ajouterPhoto(request, env, row);

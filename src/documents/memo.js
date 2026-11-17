@@ -8,33 +8,45 @@ import { DETENTION, MURS, MURS_CESSION } from "../../public/js/parcours.js";
 import { montant, pourcent, multiple } from "../../public/js/memo-format.js";
 import { projet } from "./nom-de-code.js";
 
+/** Parties du mémorandum, chacune ouverte par une page d'ouverture (convention des banques d'affaires). */
+export const PARTIES_MEMO = [
+  { n: 1, titre: "Synthèse", detail: "L'opportunité en bref et les points forts du dossier" },
+  { n: 2, titre: "L'entreprise", detail: "Histoire, savoir-faire et organisation" },
+  { n: 3, titre: "Marché et clients", detail: "Le secteur, ses moteurs et la clientèle" },
+  { n: 4, titre: "Performance financière", detail: "Comptes, retraitements et endettement" },
+  { n: 5, titre: "Perspectives et opération", detail: "Axes de développement et cession envisagée" },
+];
+
 /**
  * Chapitres. `titre` : intitulé par défaut (remplacé par le titre affirmatif rédigé) ; `court` : nom dans le sommaire et
- * l'en-tête ; `point_fort` : numéro du point fort de la synthèse que le chapitre développe.
+ * l'en-tête ; `partie` : numéro de partie ; `point_fort` : numéro du point fort de la synthèse que le chapitre développe.
  */
 export const SECTIONS_MEMO = [
-  { cle: "synthese", titre: "Synthèse de l'opportunité", court: "Synthèse", point_fort: null,
-    consigne: "Rédige la synthèse (executive summary). Un paragraphe d'ouverture : qui est l'entreprise, son métier, depuis quand, où, sa taille (chiffre d'affaires, effectif). Puis 3 à 4 puces sur ce qui fait l'intérêt du dossier pour un repreneur, chacune appuyée sur un fait ou un chiffre fourni. Termine par une phrase sur l'opération (part cédée, motif, accompagnement). Les six points forts numérotés sont affichés à part : ne les recopie pas.",
-    donnees: ["entreprise", "activite", "atouts", "operation", "perimetre", "indicateurs", "clients"] },
-  { cle: "histoire", titre: "Histoire et identité", court: "Histoire", point_fort: 1,
-    consigne: "Retrace le développement de l'entreprise dans l'ordre chronologique : création, implantations, changements de forme ou de dirigeant, agrandissements, étapes marquantes. Une puce par étape, commençant par l'année. Termine par ce que cette histoire dit de l'entreprise aujourd'hui (ancrage, continuité, réputation), sans extrapoler.",
+  { cle: "synthese", titre: "Synthèse de l'opportunité", court: "Synthèse", partie: 1, point_fort: null,
+    consigne: "Rédige la synthèse (executive summary). Un paragraphe d'ouverture : qui est l'entreprise, son métier, depuis quand, où, sa taille (chiffre d'affaires, effectif), son marché. Puis 3 à 4 puces sur ce qui fait l'intérêt du dossier pour un repreneur, chacune appuyée sur un fait ou un chiffre fourni. Termine par une phrase sur l'opération (part cédée, motif, accompagnement). Les six points forts numérotés sont affichés à part : ne les recopie pas.",
+    donnees: ["entreprise", "activite", "atouts", "operation", "perimetre", "indicateurs", "clients", "marche_resume"] },
+  { cle: "histoire", titre: "Histoire et identité", court: "Histoire", partie: 2, point_fort: null,
+    consigne: "Retrace le développement de l'entreprise dans l'ordre chronologique : création, implantations, changements de forme ou de dirigeant, agrandissements, étapes marquantes. Une puce par étape, commençant par l'année en gras. Termine par ce que cette histoire dit de l'entreprise aujourd'hui (ancrage, continuité, réputation), sans extrapoler.",
     donnees: ["entreprise", "frise", "faits:histoire,implantation"] },
-  { cle: "activite", titre: "Activité et savoir-faire", court: "Activité", point_fort: 2,
-    consigne: "Décris le métier, l'offre de produits ou de services, la façon de produire ou de servir le client, et ce qui différencie l'entreprise (savoir-faire, qualité, équipements, certifications fournies). Le repreneur doit comprendre en une page comment l'entreprise gagne de l'argent.",
+  { cle: "activite", titre: "Activité et savoir-faire", court: "Savoir-faire", partie: 2, point_fort: 1,
+    consigne: "Décris le métier, l'offre de produits ou de services, la façon de produire ou de servir le client, et ce qui différencie l'entreprise (savoir-faire, qualité, équipements, certifications fournies). Le repreneur doit comprendre en une page comment l'entreprise gagne de l'argent. 4 à 6 puces, chacune un aspect distinct.",
     donnees: ["activite", "faits:activite,produits,qualite"] },
-  { cle: "marche", titre: "Marché et clients", court: "Clients", point_fort: 3,
-    consigne: "Analyse la clientèle comme un repreneur le ferait : typologie des clients, zone commerciale, concentration (part du premier client, des cinq premiers), ancienneté des relations, part récurrente du chiffre d'affaires. Le tableau des principaux clients est affiché à part : commente-le. Si la concentration est élevée, dis-le factuellement et indique ce qui l'atténue s'il est fourni ; ne la masque pas.",
-    donnees: ["activite", "clients", "indicateurs", "faits:clients,marche"] },
-  { cle: "organisation", titre: "Organisation et équipe", court: "Équipe", point_fort: 4,
+  { cle: "organisation", titre: "Organisation et équipe", court: "Équipe", partie: 2, point_fort: 2,
     consigne: "Décris l'organisation : effectif, métiers clés, encadrement intermédiaire, ce que fait aujourd'hui le dirigeant et ce qui dépend de lui. Le repreneur cherche à savoir si l'entreprise peut fonctionner sans son dirigeant actuel : réponds avec les faits fournis, et signale ce qui reste à organiser.",
     donnees: ["entreprise", "activite", "dirigeant_role", "faits:equipe"] },
-  { cle: "finances", titre: "Performance financière", court: "Finances", point_fort: 5,
+  { cle: "marche", titre: "Marché", court: "Marché", partie: 3, point_fort: 3,
+    consigne: "Présente le marché de l'entreprise comme une banque d'affaires : structure du secteur (nombre d'entreprises, fragmentation, place de l'entreprise par sa taille, à partir de « structure_du_secteur »), puis taille et évolution du marché, moteurs de la demande, réglementation et concurrence, uniquement à partir des « faits_de_marche_sources ». Une puce par thème. Cite l'organisme source entre parenthèses après chaque chiffre de marché (par exemple « (INSEE, 2024) »). Si les faits de marché manquent, dis-le et ajoute la demande à a_completer.",
+    donnees: ["entreprise", "activite", "marche"] },
+  { cle: "clients", titre: "Clients", court: "Clients", partie: 3, point_fort: 4,
+    consigne: "Analyse la clientèle comme un repreneur le ferait : typologie des clients, zone commerciale, concentration (part du premier client, des cinq premiers), ancienneté des relations, part récurrente du chiffre d'affaires. Le tableau des principaux clients est affiché à part : commente-le. Si la concentration est élevée, dis-le factuellement et indique ce qui l'atténue s'il est fourni ; ne la masque pas.",
+    donnees: ["activite", "clients", "indicateurs", "faits:clients,marche"] },
+  { cle: "finances", titre: "Performance financière", court: "Finances", partie: 4, point_fort: 5,
     consigne: "Commente la trajectoire financière à partir des indicateurs et des tableaux fournis : évolution du chiffre d'affaires (croissance annuelle moyenne), niveau et évolution de la marge d'EBE, nature de chaque retraitement entre l'EBE comptable et l'EBE retraité, endettement net (ou trésorerie nette) rapporté à l'EBE, besoin en fonds de roulement en jours de chiffre d'affaires. Les tableaux sont affichés à part : commente-les, ne les recopie pas en entier.",
     donnees: ["indicateurs", "compte_resultat", "ebe_retraite", "endettement"] },
-  { cle: "perspectives", titre: "Axes de développement", court: "Perspectives", point_fort: 6,
-    consigne: "Présente les axes de développement identifiés par le dirigeant et ce qu'ils supposent (investissement, recrutement, nouveaux marchés). Présente toute croissance future comme l'estimation du dirigeant, jamais comme un fait. Une puce par axe.",
-    donnees: ["atouts", "perspectives", "faits:autre"] },
-  { cle: "operation", titre: "Opération envisagée", court: "Opération", point_fort: null,
+  { cle: "perspectives", titre: "Axes de développement", court: "Perspectives", partie: 5, point_fort: 6,
+    consigne: "Présente 3 à 5 axes de développement identifiés par le dirigeant, un par puce, chacun avec ce qu'il suppose (investissement, recrutement, nouveaux marchés). Relie-les aux tendances de marché sourcées quand elles sont fournies. Présente toute croissance future comme l'estimation du dirigeant, jamais comme un fait.",
+    donnees: ["atouts", "perspectives", "marche_resume", "faits:autre"] },
+  { cle: "operation", titre: "Opération envisagée", court: "Opération", partie: 5, point_fort: null,
     consigne: "Présente l'opération : part du capital cédée, motif du cédant, accompagnement proposé au repreneur, calendrier souhaité, périmètre (détention des titres, situation des murs). Ton neutre et précis. Aucune indication de prix ni de valeur.",
     donnees: ["operation", "perimetre"] },
 ];
@@ -224,6 +236,17 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
     else if (cle === "perspectives") d.perspectives_du_dirigeant = { ...(reponses.perspectives || {}), croissance: ok(reponses.perspectives?.croissance) ? `${pourcent(reponses.perspectives.croissance, { signe: true, decimales: 0 })} par an (estimation du dirigeant)` : null };
     else if (cle === "operation") d.operation = reponses.operation || {};
     else if (cle === "perimetre") d.perimetre = ch.perimetre;
+    else if (cle === "marche" || cle === "marche_resume") {
+      const m = reponses.marche || {}, sct = m.secteur;
+      const faits = (m.faits || []).filter((f) => f.valide).map((f) => ({ theme: f.theme, fait: f.fait, chiffre: f.chiffre, annee: f.annee, source: f.source }));
+      d.structure_du_secteur = sct ? {
+        source: sct.source, region: sct.region, entreprises_actives_dans_la_region: sct.region_total,
+        part_de_moins_de_10_salaries: pourcent(sct.part_moins_10, { decimales: 0 }),
+        place_de_l_entreprise: sct.part_meme_taille_ou_plus == null ? null : `parmi les ${pourcent(sct.part_meme_taille_ou_plus, { decimales: 0 })} d'entreprises de la région de sa taille ou plus grandes (${sct.nombre_meme_taille_ou_plus_region} entreprises)`,
+        entreprises_de_10_salaries_et_plus_en_france: sct.france_10_plus == null ? null : `${sct.france_10_plus_plafonne ? "plus de " : ""}${sct.france_10_plus}`,
+      } : null;
+      d.faits_de_marche_sources = cle === "marche" ? faits : faits.slice(0, 3);
+    }
     else if (cle === "clients") d.clients = { ...(reponses.clients || {}), principaux: ch.clients.lignes.map((x) => ({ client: `Client ${x.rang}`, part_du_ca: pourcent(x.part, { decimales: 0 }), client_depuis: x.anciennete == null ? null : `${x.anciennete} ans`, activite: x.secteur })) };
     else if (cle === "dirigeant_role") d.role_actuel_du_dirigeant = reponses.dirigeant?.role_dirigeant ?? null;
     else if (cle === "indicateurs") d.indicateurs_calcules = ch.indicateurs;
