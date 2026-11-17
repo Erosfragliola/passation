@@ -525,3 +525,18 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     bande « À retenir » en bas de chaque chapitre, frise en flèche, cartes de marché à grand chiffre et source.
   - Tests : 313. Vérifié en local (dossier fictif, Claude simulé, faits de marché d'exemple marqués « fictif ») :
     22 pages, aucun débordement, aucune erreur.
+- **17/11/2026, mémorandum v3 : typologie « banque d'affaires »** (branche `memo-banque`, non publiée). Retour du
+  dirigeant : la v2 « faisait trop IA ». Nouvelle mise en page calquée sur les conventions d'un mémorandum de banque
+  d'affaires fourni en référence (conventions seulement, rien repris) : feuille `public/css/memo-im.css`, rendu dans
+  `public/js/memo.js` (préfixe `im-`).
+  - Pages « partie.page » (1.1, 1.2…) : numéro en accent, titre en petites capitales, phrase-message en couleur
+    d'accent, puces carrées, encadrés à bandeau plein, pied de page avec sources, notes, date et numéro.
+  - Couverture au nom de code, sommaire paginé par partie, glossaire, pages d'ouverture à grand numéro et bandeau,
+    avertissement en dernière page (avec la règle « ne pas contacter salariés, clients, fournisseurs »).
+  - Synthèse : colonne de chiffres clés à pictogrammes, texte, carte et opération ; « Considérations clés
+    d'investissement » (six lignes numérotées). Histoire en frise ; marché avec bande « Données clés » et structure du
+    secteur en barres ; moteurs du marché numérotés avec tuiles à grand chiffre ; clients (concentration, carte,
+    tableau) ; finances en 4 pages (graphiques à cartouches, compte de résultat, EBE retraité avec pont en cascade et
+    renvois numérotés, endettement et BFR) ; perspectives ; organigramme juridique ; processus en cinq couloirs.
+  - Emplacements photo « à ajouter » quand le dirigeant n'a pas déposé de photo. Espace des milliers insécable
+    (U+00A0) pour l'affichage en gras. Tests : 313. Vérifié en local : 24 pages, aucun débordement, PDF 24 pages.

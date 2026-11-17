@@ -2,7 +2,7 @@
 // la page et les tests) : tableaux en k€ sans décimale, montants négatifs entre parenthèses, « n.d. » quand une
 // valeur manque ; dans le texte, M€ à une décimale dès le million, k€ sinon ; pourcentages à une décimale.
 
-const nombre = (v, d = 0) => new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d }).format(v);
+const nombre = (v, d = 0) => new Intl.NumberFormat("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d }).format(v).replace(/\u202f/g, "\u00a0");
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 
 /** Cellule de tableau en k€ : 12 825 400 € → « 12 825 » ; −1 294 000 € → « (1 294) » ; absent → « n.d. ». */
