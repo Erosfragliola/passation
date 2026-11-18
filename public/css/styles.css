@@ -1106,3 +1106,9 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .dp-operation .dp-processus { margin-top: auto; }
 .dp-finances .dp-split-graph .dp-graph { max-height: 16cqw; }
 .dp-finances .dp-split-graph { flex: 0 1 auto; }
+/* Parcours guidé, 17/11/2026 : tâches en attente d'une réponse, chronomètre, réponses indispensables */
+.guide-taches li.attente { opacity: .55; }
+.guide-chrono { display: block; margin: -6px 0 10px; font-variant-numeric: tabular-nums; color: #696155; min-height: 1.2em; }
+.requis-note { color: #8B4A22; }
+.guide-todo .btn { margin-top: 10px; justify-content: space-between; text-align: left; }
+.guide-todo p.petit { margin: 4px 0 6px; }

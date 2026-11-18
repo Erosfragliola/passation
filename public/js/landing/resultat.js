@@ -58,7 +58,9 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     const ou = (v) => v || R.non_renseigne;
     $("#resultat-teaser").textContent = remplir(R.teaser, { nom: d.nom, secteur: ou(t.secteur), region: ou(t.region), anciennete: ou(t.anciennete), effectif: ou(t.effectif) });
     // Suites : connexion par code pour ce SIREN ; e-mail prérempli sans aucune donnée du dossier
-    section.querySelectorAll("a[data-connexion]").forEach((a) => { a.href = `/connexion?siren=${d.siren}`; a.dataset.siren = d.siren; });
+    // Toutes les entrées « Espace dirigeant » (barre, menu mobile) mènent aussi à ce dossier : sinon, après le code,
+    // le dirigeant revenait sur l'accueil sans dossier (constaté le 17/11/2026)
+    document.querySelectorAll("a[data-connexion]").forEach((a) => { a.href = `/connexion?siren=${d.siren}`; a.dataset.siren = d.siren; });
     const corps = remplir(R.inviter_corps, { adresse: location.origin });
     $('a[data-suite="inviter"]').href = `mailto:?subject=${encodeURIComponent(R.inviter_sujet || "")}&body=${encodeURIComponent(corps)}`;
     afficherEstimation(d.estimation);
