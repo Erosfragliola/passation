@@ -5,7 +5,7 @@
 //   POST   /api/dossiers/:id/uploads   (PDF)            liasse → R2 → lecture par Claude → lignes « à valider »
 //   GET    /api/dossiers/:id/answers                    réponses au questionnaire et réglages
 //   PUT    /api/dossiers/:id/answers/:etape { data }    sauvegarde automatique d'une étape
-//   POST   /api/dossiers/:id/valuation                  calcul des 3 méthodes (code testé), enregistré
+//   POST   /api/dossiers/:id/valuation                  calcul (multiples, DCF si la prime de taille est réglée, ANCC), enregistré
 //   GET    /api/dossiers/:id/valuation                  dernier calcul
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
