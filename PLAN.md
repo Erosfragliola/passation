@@ -556,3 +556,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   depuis le compte de résultat, omis si les postes ne bouclent pas à 8 % près) et ratios ; BFR en barres ; page
   resserrée avant d'ouvrir une page « (suite) ». Cas de test du parcours complet : `test/fixtures/` (liasse 2033 de
   test pour 434436622, CA et résultat 2024 réels, le reste fictif ; réponses aux questions).
+- **18/11/2026, mise en ligne** (accord du dirigeant) : `memo-bento` (mémorandum v5, pages remplies) et
+  `parcours-performant` (parcours après le SIREN) fusionnées dans `main`. Parcours vérifié en local de bout en bout
+  (accueil → code → saisie → 11 questions → rédaction → « Votre dossier est prêt ») : valorisation, datapack, teaser,
+  étude de marché et 9 chapitres sur 9. Tests : 314.
