@@ -481,7 +481,16 @@ async function redaction() {
   const SECTIONS = [["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]];
   const taches = [
     ["valorisation", "Valorisation (3 méthodes)", () => api(`${base}/valuation`, { method: "POST" })],
-    ["etude-marche", "Étude de marché (registres et sources publiques)", async () => { const m = await (S.marche || null); if (!m?.marche?.date) await api(`${base}/documents/memo/marche`, { method: "POST" }); }],
+    ["etude-marche", "Étude de marché sur le web (deux minutes au plus)", async () => {
+      const m = await (S.marche || null);
+      if (m?.marche?.date) return;
+      try { await api(`${base}/documents/memo/marche`, { method: "POST" }); }
+      catch (e) {
+        if (e.statut !== 409) throw e;
+        // Déjà en cours (lancée au début du parcours) : on attend son résultat, deux minutes au plus
+        for (let k = 0; k < 24; k++) { await new Promise((r) => setTimeout(r, 5000)); const x = await api(`${base}/documents/memo`).catch(() => null); if (x?.marche?.date || !x?.marche?.en_cours) return; }
+      }
+    }],
     ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
     ["teaser", "Teaser anonymisé", () => api(`${base}/documents/teaser`, { method: "POST" })],
     ...SECTIONS.map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
@@ -513,12 +522,14 @@ async function redaction() {
   };
   try {
     await executer(taches[0]); // la valorisation d'abord : le datapack, le teaser et le mémorandum s'en servent
-    // Étude de marché (souvent déjà faite pendant les questions) puis tout le reste, 4 rédactions à la fois en continu
+    // L'étude de marché tourne pendant tout le reste ; seuls les chapitres qui la citent (marché, synthèse,
+    // perspectives) l'attendent, et ils passent en dernier
     const marche = executer(taches[1]);
+    const citent = new Set(["memo-marche", "memo-synthese", "memo-perspectives"]);
     const memo = taches.filter(([k]) => k.startsWith("memo-"));
-    await enParallele(taches.slice(2).filter(([k]) => !k.startsWith("memo-")), 2, executer);
-    await marche; // le chapitre Marché du mémorandum cite l'étude
-    await enParallele(memo, 4, executer);
+    await enParallele([...taches.slice(2).filter(([k]) => !k.startsWith("memo-")), ...memo.filter(([k]) => !citent.has(k))], 4, executer);
+    await marche;
+    await enParallele(memo.filter(([k]) => citent.has(k)), 3, executer);
   } finally { clearInterval(minuterie); }
 
   const suite = $("#redaction-suite");

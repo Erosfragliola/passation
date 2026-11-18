@@ -228,16 +228,22 @@ export function dernierJson(texte) {
 }
 
 /** @param contexte { secteur, activite_naf, region, description } (aucun nom d'entreprise) ; @returns { faits, urls, usage } */
+export const MARCHE_DUREE_MAX_MS = 110000;
 export async function rechercherMarche(env, contexte) {
   const messages = [{ role: "user", content: `Entreprise à présenter (anonyme) :\n${JSON.stringify(contexte, null, 2)}` }];
   const urls = new Set();
   let texte = "", reponse;
-  for (let tour = 0; tour < 4; tour++) {
+  // Budget : 4 recherches par tour, 2 tours au plus, 75 s par appel et 110 s en tout (l'étude ne doit pas faire
+  // attendre le dirigeant plus de deux minutes ; au-delà, le chapitre Marché s'appuie sur les registres publics)
+  const fin = Date.now() + MARCHE_DUREE_MAX_MS;
+  for (let tour = 0; tour < 2; tour++) {
+    const reste = fin - Date.now();
+    if (reste < 15000) throw new Error("recherche_trop_longue");
     reponse = await client(env).beta.messages.create({
-      model: MODELS.deep, max_tokens: 16000, system: CONSIGNE_MARCHE, messages,
-      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 6, user_location: { type: "approximate", country: "FR" } }],
+      model: MODELS.deep, max_tokens: 8000, system: CONSIGNE_MARCHE, messages,
+      tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 4, user_location: { type: "approximate", country: "FR" } }],
       betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
-    });
+    }, { timeout: Math.min(75000, reste), maxRetries: 0 });
     for (const b of reponse.content) {
       if (b.type === "web_search_tool_result" && Array.isArray(b.content)) for (const r of b.content) if (r?.url) urls.add(r.url);
       if (b.type === "text") { texte += b.text; for (const c of b.citations || []) if (c?.url) urls.add(c.url); }
