@@ -136,6 +136,66 @@
 .tuile-valeur .affiche { text-transform: none; }
 .piece-fichiers .lien-simple { margin-left: 8px; }
 
+/* ---------- Mémorandum en mode présentation (18/11/2026) ---------- */
+/* Petits textes cuivrés en #8E5530 (« ocre texte » de l'accueil) : --cuivre n'atteint pas 4,5:1 (« jamais pour du texte ») */
+.memo-studio { background: var(--creme); padding: 96px 0 60px; }
+.studio-conteneur { max-width: 1380px; }
+.studio-tete { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.studio-tete h1 { margin: 0; font-size: clamp(30px, 3.4vw, 42px); }
+.studio-tete .etiquette { margin: 0 0 4px; }
+.studio { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+.studio-scene { min-width: 0; display: grid; gap: 12px; }
+.studio-nav { display: flex; align-items: center; gap: 12px; }
+.studio-compteur { font-variant-numeric: tabular-nums; font-weight: 600; min-width: 120px; text-align: center; }
+.studio-nav .lien-simple { margin-left: auto; }
+.studio .feuille-document.memo { max-width: none; margin: 0; }
+@media screen { .studio.actif:not(.tout) #memo .diapo:not(.courante) { display: none; } }
+.studio.actif:not(.tout) #memo .diapo.courante { margin: 0; box-shadow: 0 30px 70px -40px rgba(35, 30, 24, .45); }
+.studio #memo .dp-outils { display: none; }
+.studio-vignettes { list-style: none; margin: 0; padding: 4px 2px 10px; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; }
+.studio-vignettes li { flex: none; scroll-snap-align: center; }
+.studio-vignettes button { width: 132px; height: 76px; display: grid; grid-template-rows: auto 1fr; gap: 2px; text-align: left; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--trait-fort); background: #FFFDF8; font: inherit; color: var(--espresso); cursor: pointer; overflow: hidden; }
+.studio-vignettes button b { font: 700 15px/1 var(--b-affiche); color: #8E5530; }
+.studio-vignettes button span { font-size: 11.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.studio-vignettes button.partie { background: var(--vert); color: #F6F1E6; border-color: transparent; }
+.studio-vignettes button.partie b { color: #E9C9A4; }
+.studio-vignettes button[aria-current="page"] { outline: 3px solid var(--cuivre); outline-offset: 1px; }
+.studio.tout .studio-vignettes, .studio.tout .studio-nav #page-prec, .studio.tout .studio-nav #page-suiv, .studio.tout .studio-compteur { display: none; }
+.studio-panneau { position: sticky; top: 92px; border-radius: 24px; background: #FFFDF8; border: 1px solid var(--trait); padding: 20px; display: grid; align-content: start; gap: 14px; max-height: calc(100vh - 110px); overflow: auto; }
+.studio-panneau .etiquette { margin: 0; }
+.panneau-titre { font-size: 19px; line-height: 1.25; letter-spacing: -.01em; margin: 0; }
+.panneau-etat { margin: 0; font-size: 14px; color: var(--pierre-texte); }
+.pastille-etat { border-radius: 99px; padding: 3px 10px; font-weight: 600; font-size: 13px; }
+.pastille-etat.ok { background: rgba(46, 138, 98, .14); color: var(--b-vif); }
+.pastille-etat.a-faire { background: #F5E7D6; color: #8E5530; }
+.panneau-bloc { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--trait); }
+.panneau-bloc h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: #8E5530; }
+.panneau-recos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.panneau-recos li { display: grid; gap: 4px; padding: 10px 12px; border-radius: 14px; background: #F5E7D6; font-size: 14px; }
+.panneau-recos .lien-simple { justify-self: start; font-weight: 600; color: var(--vert); }
+.ok-reco { color: var(--b-vif) !important; }
+.panneau-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.panneau-edition { display: grid; gap: 8px; }
+.panneau-edition:empty { display: none; }
+.panneau-edition input, .panneau-edition textarea { width: 100%; border-radius: 12px; border: 1px solid var(--trait-fort); padding: 8px 10px; font: inherit; font-size: 14px; background: var(--creme); }
+.studio-donnees { margin-top: 26px; border-radius: 22px; background: #FFFDF8; border: 1px solid var(--trait); padding: 6px 18px; }
+.studio-donnees summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+.studio-donnees[open] { padding-bottom: 18px; }
+.studio-donnees .site-panneau { margin-top: 12px; }
+@media (max-width: 1100px) { .studio { grid-template-columns: 1fr; } .studio-panneau { position: static; max-height: none; } }
+@media print { .studio { display: block; } .memo-studio { padding: 0; } .studio-conteneur { max-width: none; } }
+
+/* Récapitulatif des réponses préparées */
+.recap-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.recap-carte { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 16px; border-radius: 18px; border: 1.5px solid var(--vert); background: color-mix(in srgb, var(--vert) 5%, var(--creme)); cursor: pointer; }
+.recap-carte input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--vert); }
+.recap-texte { display: grid; gap: 4px; min-width: 0; }
+.recap-texte strong { font-size: 15px; }
+.recap-valeurs { display: flex; flex-wrap: wrap; gap: 6px; }
+.recap-valeurs span { border-radius: 10px; padding: 3px 10px; background: #FFFDF8; border: 1px solid var(--trait); font-size: 14px; color: var(--vert); font-weight: 500; overflow-wrap: anywhere; }
+.recap-texte small { font-size: 12.5px; color: #8E5530; }
+.recap-liste li.decoche .recap-carte { border-color: var(--trait-fort); background: var(--creme); opacity: .7; }
+
 /* Police unique (18/11/2026) : plus de serif italique ni de chasse fixe dans l'espace */
 :root { --b-serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; }
 .nom-code, .page-guidee #guide-entreprise { font-style: normal; font-weight: 600; letter-spacing: -.03em; }

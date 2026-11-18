@@ -38,22 +38,37 @@ describe("scénario de démonstration (liasse fictive Atelier Exemple)", () => {
     expect(r.dcf.statut).toBe("a_completer");
     expect(r.synthese.ponderation).toEqual({ multiples: 1, dcf: 0 });
   });
-  it("prime de taille 3 % : DCF calculé (2 530 797 / 2 819 933 / 3 180 021) et synthèse 60/40 = 2 293 064,12", () => {
+  it("prime de taille 3 % : DCF calculé (2 530 797 / 2 819 933 / 3 180 021) mais synthèse sur les multiples seuls (défaut du 18/11/2026)", () => {
     const { r } = calcul({ prime_taille: 0.03 });
     expect(r.dcf.statut).toBe("ok");
     proche(r.dcf.cmpc.valeur, 0.112085, 1e-6);
     proche(r.dcf.titres.bas, 2_530_796.95);
     proche(r.dcf.titres.central, 2_819_933.02);
     proche(r.dcf.titres.haut, 3_180_020.94);
+    expect(r.synthese.ponderation).toEqual({ multiples: 1, dcf: 0 });
+    proche(r.synthese.bas, 1_381_818.18);
+    proche(r.synthese.central, 1_941_818.18);
+    proche(r.synthese.haut, 2_431_818.18);
+    expect(r.ancc.valeur).toBe(700_000);
+  });
+  it("DCF activé en option à 40 % dans « Affiner » : synthèse 60/40 = 1 841 409,69 / 2 293 064,12 / 2 731 099,28", () => {
+    // 0,6 × 1 381 818,18 + 0,4 × 2 530 796,95 ; 0,6 × 1 941 818,18 + 0,4 × 2 819 933,02 ; 0,6 × 2 431 818,18 + 0,4 × 3 180 020,94
+    const { r } = calcul({ prime_taille: 0.03, poids_multiples: 0.6 });
+    expect(r.synthese.ponderation).toEqual({ multiples: 0.6, dcf: 0.4 });
     proche(r.synthese.bas, 1_841_409.69);
     proche(r.synthese.central, 2_293_064.12);
     proche(r.synthese.haut, 2_731_099.28);
-    expect(r.ancc.valeur).toBe(700_000);
   });
-  it("datapack : les formules Excel redonnent la synthèse du moteur et de la référence", () => {
-    const { entree, H, r } = calcul({ prime_taille: 0.03 });
-    const calc = construireDatapack({ entreprise: { nom: "Atelier Exemple", siren: "" }, entree, H, resultat: r, genereLe: new Date("2026-11-18") }).calculer();
-    proche(calc.valeur("Synthèse", "C11"), 2_293_064.12);
-    proche(calc.valeur("DCF", "C31"), 2_819_933.02);
+  it("datapack : les formules Excel redonnent la synthèse du moteur et de la référence (défaut et DCF à 40 %)", () => {
+    const datapack = (reglages) => {
+      const { entree, H, r } = calcul(reglages);
+      return construireDatapack({ entreprise: { nom: "Atelier Exemple", siren: "" }, entree, H, resultat: r, genereLe: new Date("2026-11-18") }).calculer();
+    };
+    const parDefaut = datapack({ prime_taille: 0.03 });
+    proche(parDefaut.valeur("Synthèse", "C11"), 1_941_818.18);
+    proche(parDefaut.valeur("DCF", "C31"), 2_819_933.02);
+    const avecDcf = datapack({ prime_taille: 0.03, poids_multiples: 0.6 });
+    proche(avecDcf.valeur("Synthèse", "C11"), 2_293_064.12);
+    proche(avecDcf.valeur("DCF", "C31"), 2_819_933.02);
   });
 });

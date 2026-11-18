@@ -250,10 +250,11 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   const anc = ancc(dernier, e.complements || {});
   if (anc.valeur < 0) alertes.push("Capitaux propres corrigés négatifs.");
 
-  // Synthèse : 60 / 40 par défaut, multiples seuls si le DCF manque, DCF seul si les multiples ne s'appliquent pas
+  // Synthèse : multiples seuls par défaut (décision du 18/11/2026), DCF en option par la pondération ; DCF seul si
+  // les multiples ne s'appliquent pas
   let poids = { ...(e.ponderation || { multiples: H.ponderation.multiples, dcf: H.ponderation.dcf }) };
   const okM = multiples.statut === "ok", okD = dcfR.statut === "ok";
-  if (okM && !okD) { poids = { multiples: 1, dcf: 0 }; alertes.push("Synthèse sur les multiples. Le DCF est proposé en option : renseignez la prime de taille dans « Affiner » si votre conseil le souhaite."); }
+  if (okM && !okD) { poids = { multiples: 1, dcf: 0 }; if (e.ponderation && e.ponderation.dcf > 0) alertes.push("Synthèse sur les multiples. Le DCF est proposé en option : renseignez la prime de taille dans « Affiner » si votre conseil le souhaite."); }
   if (!okM && okD) poids = { multiples: 0, dcf: 1 };
   const comb = (cle) => {
     if (!okM && !okD) return null;

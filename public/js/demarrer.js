@@ -373,8 +373,10 @@ function suivante(q) {
     if (reste.length) { S.q = QUESTIONS.indexOf(reste[0]); questions(); } else { S.retour = null; aller("redaction"); }
     return;
   }
+  // Question suivante encore sans réponse (celles validées dans le récapitulatif sont sautées)
   const i = QUESTIONS.indexOf(q);
-  if (i < QUESTIONS.length - 1) { S.q = i + 1; questions(); } else aller(etapeCourante());
+  const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
+  if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante());
 }
 /** Première question : le site internet. Sa lecture se poursuit pendant les questions suivantes. */
 function questionSite() {
@@ -400,8 +402,52 @@ function questionSite() {
         suivanteQ();
       } }, proposition ? "Oui, lire ce site " : "Lire ce site ", fleche())));
 }
+// ---- Récapitulatif : toutes les réponses préparées sur un écran, validées d'un clic (le reste se pose ensuite)
+const cleRecap = `passation-recap-${id}`;
+const recapVu = () => { try { return Boolean(sessionStorage.getItem(cleRecap)); } catch { return S.recapVu; } };
+const marquerRecap = () => { S.recapVu = true; try { sessionStorage.setItem(cleRecap, "1"); } catch { /* sans stockage */ } };
+const clesEnAttente = (q) => Object.keys(S.propositions[q.id]?.valeurs || {}).filter((k) => { const [e, c] = k.split("."); return S.reponses[e]?.[c] == null; });
+const questionsPreparees = () => QUESTIONS.filter((q) => clesEnAttente(q).length && !S.propositions[q.id]?.a_completer && !questionRepondue(q, S.reponses, S.vues));
+/** Valeur proposée en clair (libellé du choix, pourcentage, liste, texte abrégé). */
+function libelleValeur(q, cle, v) {
+  const c = [...q.champs, ...(q.suite?.champs || [])].find((x) => `${x.etape}.${x.cle}` === cle);
+  if (c?.type === "valeurs") return c.options.find(([, val]) => val === v)?.[0] ?? String(v);
+  if (Array.isArray(v)) return v.join(", ");
+  const t = String(v).replace(/\s+/g, " ");
+  return t.length > 170 ? `${t.slice(0, 168).replace(/\s+\S*$/, "")}…` : t;
+}
+function recapitulatif() {
+  const liste = questionsPreparees();
+  const coches = new Map(liste.map((q) => [q.id, true]));
+  const bouton = el("button", { type: "button", class: "btn btn-vert" });
+  const majBouton = () => { const n = [...coches.values()].filter(Boolean).length; bouton.textContent = n ? `Valider ${n} réponse${n > 1 ? "s" : ""} ` : "Continuer "; bouton.append(fleche()); };
+  majBouton();
+  bouton.addEventListener("click", async () => {
+    bouton.disabled = true;
+    try {
+      for (const q of liste) if (coches.get(q.id)) for (const k of clesEnAttente(q)) { const [e, c] = k.split("."); await enregistrer(e, c, S.propositions[q.id].valeurs[k]); }
+      marquerRecap(); message("");
+      aller(etapeCourante());
+    } catch (e) { message(e.message, true); bouton.disabled = false; }
+  });
+  remplir(
+    el("p", { class: "etiquette", text: `${liste.length} réponses préparées` }),
+    ...titre("Nous avons préparé vos réponses", "Vérifiez-les d'un coup d'œil. Décochez ce qui est inexact : vous le corrigerez juste après, avec les quelques questions qui restent."),
+    el("ul", { class: "recap-liste" }, ...liste.map((q) => {
+      const cb = el("input", { type: "checkbox", id: `recap-${q.id}`, checked: true });
+      cb.addEventListener("change", () => { coches.set(q.id, cb.checked); cb.closest("li").classList.toggle("decoche", !cb.checked); majBouton(); });
+      const p = S.propositions[q.id];
+      return el("li", {}, el("label", { for: `recap-${q.id}`, class: "recap-carte" }, cb,
+        el("span", { class: "recap-texte" }, el("strong", { text: q.titre }),
+          el("span", { class: "recap-valeurs" }, ...clesEnAttente(q).map((k) => el("span", { text: libelleValeur(q, k, p.valeurs[k]) }))),
+          el("small", { text: p.source }))));
+    })),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { marquerRecap(); questions(); } }, "Répondre question par question"), bouton));
+}
+
 function questions() {
   if (S.q < 0) return questionSite();
+  if (!recapVu() && questionsPreparees().length >= 3) return recapitulatif();
   const q = QUESTIONS[S.q];
   const champs = [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])];
   const prop = S.propositions[q.id];
@@ -467,7 +513,9 @@ function lancerEtudeMarche() {
   if (S.marche) return S.marche;
   const cle = `passation-marche-${id}`;
   try { const t = Number(localStorage.getItem(cle)); if (t && Date.now() - t < 10 * 60 * 1000) return null; localStorage.setItem(cle, String(Date.now())); } catch { /* stockage indisponible */ }
-  S.marche = api(`${base}/documents/memo`).then((m) => (m.marche?.date ? m : api(`${base}/documents/memo/marche`, { method: "POST" }))).catch(() => null);
+  // En cas d'échec, l'erreur est gardée : la rédaction ne relance pas une deuxième recherche (deux minutes de plus et
+  // un essai consommé), sauf si l'étude était déjà en cours (409), auquel cas elle attend son résultat
+  S.marche = api(`${base}/documents/memo`).then((m) => (m.marche?.date ? m : api(`${base}/documents/memo/marche`, { method: "POST" }))).catch((e) => ({ echec: e }));
   return S.marche;
 }
 
@@ -480,8 +528,18 @@ async function enParallele(taches, n, f) {
 async function redaction() {
   const SECTIONS = [["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]];
   const taches = [
-    ["valorisation", "Valorisation (multiples et actif net ; DCF dès que la prime de taille est réglée)", () => api(`${base}/valuation`, { method: "POST" })],
-    ["etude-marche", "Étude de marché (registres et sources publiques)", async () => { const m = await (S.marche || null); if (!m?.marche?.date) await api(`${base}/documents/memo/marche`, { method: "POST" }); }],
+    ["valorisation", "Valorisation (multiples et actif net ; DCF en option)", () => api(`${base}/valuation`, { method: "POST" })],
+    ["etude-marche", "Étude de marché sur le web (deux minutes au plus)", async () => {
+      const m = await (S.marche || null);
+      if (m?.marche?.date) return;
+      if (m?.echec && m.echec.statut !== 409) throw m.echec; // déjà tentée pendant les questions : pas de seconde recherche
+      try { await api(`${base}/documents/memo/marche`, { method: "POST" }); }
+      catch (e) {
+        if (e.statut !== 409) throw e;
+        // Déjà en cours (lancée au début du parcours) : on attend son résultat, deux minutes au plus
+        for (let k = 0; k < 24; k++) { await new Promise((r) => setTimeout(r, 5000)); const x = await api(`${base}/documents/memo`).catch(() => null); if (x?.marche?.date || !x?.marche?.en_cours) return; }
+      }
+    }],
     ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
     ["teaser", "Teaser anonymisé", () => api(`${base}/documents/teaser`, { method: "POST" })],
     ...SECTIONS.map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
@@ -513,12 +571,14 @@ async function redaction() {
   };
   try {
     await executer(taches[0]); // la valorisation d'abord : le datapack, le teaser et le mémorandum s'en servent
-    // Étude de marché (souvent déjà faite pendant les questions) puis tout le reste, 4 rédactions à la fois en continu
+    // L'étude de marché tourne pendant tout le reste ; seuls les chapitres qui la citent (marché, synthèse,
+    // perspectives) l'attendent, et ils passent en dernier
     const marche = executer(taches[1]);
+    const citent = new Set(["memo-marche", "memo-synthese", "memo-perspectives"]);
     const memo = taches.filter(([k]) => k.startsWith("memo-"));
-    await enParallele(taches.slice(2).filter(([k]) => !k.startsWith("memo-")), 2, executer);
-    await marche; // le chapitre Marché du mémorandum cite l'étude
-    await enParallele(memo, 4, executer);
+    await enParallele([...taches.slice(2).filter(([k]) => !k.startsWith("memo-")), ...memo.filter(([k]) => !citent.has(k))], 4, executer);
+    await marche;
+    await enParallele(memo.filter(([k]) => citent.has(k)), 3, executer);
   } finally { clearInterval(minuterie); }
 
   const suite = $("#redaction-suite");

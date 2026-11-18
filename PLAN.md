@@ -599,7 +599,23 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   df47ead9). Vérifié en ligne : quatre bulles et forme découpée, aucune ressource en erreur (un 404 mis en cache
   juste après le déploiement sur `forme-hero.js` s'est résorbé en moins d'une minute), estimation 434436622 ok,
   routes privées 401. Tests : 359.
-- **18/11/2026, retouches du hero v5** (branche `hero-bulles-gauche`) : bulles de gauche posées par-dessus la vidéo
-  avec une ombre, dépassant un peu (la forme ne se découpe plus qu'autour des deux bulles de droite) ; vidéo élargie ;
-  marges intérieures fluides pour que le texte et les coches ne passent plus sous la bulle du bas à droite ;
-  sur téléphone, deux bulles posées par-dessus avec une ombre (30 s en haut à gauche, nom de code en bas à droite).
+- **18/11/2026, branche `memo-presentation`** (inclut `marche-rapide`), non publiée, retours du dirigeant après son
+  premier test réel :
+  - Étude de marché bornée à deux minutes, jamais lancée deux fois (409 si en cours), chapitres sans attente.
+  - Valorisation : **multiples seuls par défaut, DCF en option** (pondération dans « Affiner ») ;
+    `hypotheses.json` mis à jour ; tests adaptés (le datapack teste les formules avec le DCF à 40 %).
+  - Chapitres courts : sortie structurée (introduction de deux phrases, 4 à 6 points titre + texte), longueurs
+    garanties par `src/documents/concision.js` (testé) ; ce qui manque va dans « À compléter », pas dans le texte.
+  - Mémorandum en mode présentation : une page à la fois, vignettes, flèches du clavier ; panneau à droite avec
+    recommandations (pièces à compléter, photo manquante, chiffres de marché à vérifier, texte trop long) et
+    actions (rédiger à nouveau, modifier le texte) ; sources (site, photos, marché) repliées en bas.
+  - Parcours : récapitulatif des réponses préparées sur un écran (validation d'un clic), puis seulement les
+    questions sans réponse ; une amorce tirée des registres n'est jamais validée d'un clic. Tests : 328.
+  - Intégration avec `main` (branche `integration-memo-presentation`, non publiée) : quatre conflits résolus (quota
+    Claude de `main` conservé, répondu après le 409 pour qu'une demande en double ne consomme rien) ; scénario de
+    démonstration mis à jour (multiples seuls par défaut, 60/40 en option ; `docs/DEMO.md`) ; le parcours ne relance
+    plus une seconde étude de marché après un échec (vérifié avec un Claude simulé en panne : 1 appel au lieu de 2) ;
+    petits textes cuivrés en #8E5530 (contraste AA) ; texte du DCF exact quand la prime de taille manque. Nouveaux
+    tests : verrou 409, quota, budget de 110 s. Tests : 373. axe-core : 0 violation sur le récapitulatif et le
+    mémorandum (1440 et 390 px). `/espace/` garde 6 violations déjà présentes sur `main` (onglets ARIA, contrastes),
+    à traiter avec la refonte de la page dossier.

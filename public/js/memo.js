@@ -750,6 +750,7 @@ function pagesChapitre(s) {
 
 function dessinerMemo() {
   etat.versionPhotos ??= Date.now();
+  $("#studio").classList.remove("actif"); // toutes les pages visibles le temps de les mesurer (découpage, remplissage)
   const enfants = [couverture(), pageSommaire(), pageGlossaire()];
   (etat.parties || []).forEach((pt, k) => {
     enfants.push(pageOuverture(pt, k));
@@ -785,7 +786,86 @@ function dessinerMemo() {
   $("#memo").querySelectorAll("[data-renvoi-partie]").forEach((r) => { const k = diapos.findIndex((d) => d.dataset.partie === r.dataset.renvoiPartie && d.classList.contains("im-ouverture")) + 1; r.textContent = k > 0 ? String(k) : ""; });
   $("#memo").querySelectorAll(".im-som a").forEach((a) => { const h = $("#memo").querySelector(`${a.getAttribute("href")} .im-entete h3`); if (h) a.textContent = h.textContent; });
   $("#memo").querySelectorAll("[data-num-section]").forEach((r) => { r.textContent = numSection[r.dataset.numSection] || ""; });
+  presentation();
 }
+
+// ------------------------------------------------------------------ Présentation : une page à la fois
+// Comme un logiciel de présentation : la page au centre, la liste des pages en dessous, et à droite ce qu'il faut
+// faire sur la page affichée (recommandations, rédiger à nouveau, modifier le texte, ajouter des photos).
+const cleSession = `passation-memo-page-${id}`;
+const pres = { idx: (() => { try { return Number(sessionStorage.getItem(cleSession)) || 0; } catch { return 0; } })(), tout: false };
+const diapos = () => [...$("#memo").querySelectorAll(".diapo")];
+const titrePage = (d) => d.querySelector(".im-entete h3")?.textContent || (d.classList.contains("im-couverture") ? "Couverture" : d.classList.contains("im-ouverture") ? `Partie ${d.dataset.partie} · ${d.querySelector("h2")?.textContent || ""}` : "Page");
+
+function allerPage(k, focus = false) {
+  const l = diapos();
+  pres.idx = Math.max(0, Math.min(l.length - 1, k));
+  try { sessionStorage.setItem(cleSession, String(pres.idx)); } catch { /* sans stockage */ }
+  appliquerPresentation();
+  if (focus) $("#vignettes").querySelectorAll("button")[pres.idx]?.focus();
+}
+function presentation() {
+  const l = diapos();
+  if (!l.length) return;
+  pres.idx = Math.min(pres.idx, l.length - 1);
+  $("#vignettes").replaceChildren(...l.map((d, k) => el("li", {}, el("button", { type: "button", class: d.classList.contains("im-ouverture") ? "partie" : null, onclick: () => allerPage(k, true) },
+    el("b", { text: String(k + 1) }), el("span", { text: titrePage(d) })))));
+  appliquerPresentation();
+}
+function appliquerPresentation() {
+  const l = diapos(), d = l[pres.idx];
+  $("#studio").classList.add("actif");
+  $("#studio").classList.toggle("tout", pres.tout);
+  $("#tout-afficher").setAttribute("aria-pressed", String(pres.tout));
+  $("#tout-afficher").textContent = pres.tout ? "Une page à la fois" : "Voir toutes les pages";
+  l.forEach((x, k) => x.classList.toggle("courante", k === pres.idx));
+  $("#vignettes").querySelectorAll("button").forEach((b, k) => b.setAttribute("aria-current", k === pres.idx ? "page" : "false"));
+  $("#vignettes").querySelectorAll("button")[pres.idx]?.scrollIntoView({ block: "nearest", inline: "center" });
+  $("#page-compteur").textContent = `Page ${pres.idx + 1} sur ${l.length}`;
+  $("#page-prec").disabled = pres.idx === 0; $("#page-suiv").disabled = pres.idx === l.length - 1;
+  if (d) panneau(d);
+}
+
+/** Ce qu'il faut faire sur la page affichée : recommandations tirées des données, et actions. */
+function panneau(d) {
+  const s = d.dataset.section ? section(d.dataset.section) : null;
+  const recos = [];
+  const reco = (texte, action) => recos.push({ texte, action });
+  const vers = (ancre, libelle) => ({ libelle, faire: () => { $("#donnees").open = true; $(ancre)?.scrollIntoView({ behavior: "smooth", block: "start" }); } });
+  if (s) {
+    if (!s.redigee) reco("Ce chapitre n'est pas encore rédigé.");
+    for (const t of s.a_completer || []) reco(t);
+    if (s.cle === "activite" && !photoUrl(0)) reco("Ajoutez une photo de l'atelier, des produits ou des réalisations : c'est ce qui rend la page vivante.", vers("#photos", "Ajouter des photos"));
+    if (s.cle === "organisation" && !photoUrl(1)) reco("Ajoutez une photo de l'équipe ou du site.", vers("#photos", "Ajouter des photos"));
+    if (s.cle === "marche" && !faitsMarche().length) reco("Aucun chiffre de marché sourcé : lancez l'étude de marché, puis gardez les chiffres qui vous paraissent justes.", vers("#marche", "Voir l'étude de marché"));
+    if (s.cle === "marche" && faitsMarche().length) reco(`${faitsMarche().length} chiffres de marché retenus, chacun avec sa source : vérifiez qu'ils correspondent bien à votre marché.`, vers("#marche", "Vérifier les chiffres"));
+    if (d.classList.contains("serre") || d.dataset.suite) reco("Le texte est long pour une page : raccourcissez-le, ou faites-le rédiger à nouveau.");
+    if (s.modifie) reco("Vous avez modifié ce chapitre : une nouvelle rédaction remplacerait vos modifications.");
+  }
+  const etatChap = !s ? null : !s.redigee ? "À rédiger" : s.modifie ? "Modifié par vous" : "Rédigé par Passation";
+  const zoneEdition = el("div", { class: "panneau-edition" });
+  $("#panneau").replaceChildren(
+    el("p", { class: "etiquette", text: `Page ${pres.idx + 1}` }),
+    el("h2", { class: "panneau-titre", text: titrePage(d) }),
+    s ? el("p", { class: "panneau-etat" }, el("span", { class: `pastille-etat ${!s.redigee ? "a-faire" : "ok"}`, text: etatChap }), ` · chapitre ${s.court}`) : null,
+    el("section", { class: "panneau-bloc" }, el("h3", { text: "Recommandations" }),
+      s ? (recos.length ? el("ul", { class: "panneau-recos" }, ...recos.map((r) => el("li", {}, el("span", { text: r.texte }), r.action ? el("button", { type: "button", class: "lien-simple", onclick: r.action.faire }, `${r.action.libelle} →`) : null)))
+        : el("p", { class: "petit ok-reco", text: "Rien à signaler : la page est complète." }))
+        : el("p", { class: "petit", text: "Page construite automatiquement à partir de vos chapitres et de vos chiffres." })),
+    s ? el("section", { class: "panneau-bloc" }, el("h3", { text: "Actions" }),
+      el("div", { class: "panneau-actions" },
+        el("button", { type: "button", class: "btn btn-noir btn-mini", disabled: !etat.deverrouille.ok, onclick: (ev) => rediger(s.cle, ev.currentTarget) }, s.redigee ? "Rédiger à nouveau" : "Rédiger ce chapitre"),
+        s.redigee ? el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => editer(zoneEdition, s) }, "Modifier le texte") : null),
+      zoneEdition) : null);
+}
+$("#page-prec").addEventListener("click", () => allerPage(pres.idx - 1));
+$("#page-suiv").addEventListener("click", () => allerPage(pres.idx + 1));
+$("#tout-afficher").addEventListener("click", () => { pres.tout = !pres.tout; appliquerPresentation(); });
+document.addEventListener("keydown", (ev) => {
+  if (pres.tout || ev.target.closest("input, textarea, select, [contenteditable]")) return;
+  if (ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); allerPage(pres.idx + 1); }
+  if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); allerPage(pres.idx - 1); }
+});
 
 /** Page trop pleine : les derniers éléments du dernier bloc découpable passent sur une page « (suite) ». */
 function decouper() {
@@ -837,6 +917,7 @@ function remplirPages() {
 function editer(outils, s) {
   const titre = el("input", { type: "text", maxlength: "110", value: s.titre_affirme || "", "aria-label": `Titre du chapitre ${s.court}`, placeholder: s.titre });
   const ta = el("textarea", { rows: "12", "aria-label": `Texte : ${s.court}` }); ta.value = s.contenu;
+  ta.rows = 14;
   const ok = el("button", { type: "button", class: "btn btn-noir btn-mini" }, "Enregistrer");
   ok.addEventListener("click", async () => {
     try { etat = await api(`${base}/sections/${s.cle}`, { method: "PUT", body: JSON.stringify({ titre: titre.value, contenu: ta.value }) }); tout(); message("Chapitre enregistré."); } catch (e) { message(e.message, true); }
@@ -849,7 +930,7 @@ function editer(outils, s) {
 async function rediger(cle, bouton) {
   if (bouton) bouton.disabled = true;
   message(`Rédaction de la section en cours… (20 secondes environ)`);
-  try { etat = await api(`${base}/sections/${cle}`, { method: "POST" }); tout(); message("Section rédigée. Relisez-la avant toute diffusion."); $(`#s-${cle}`)?.scrollIntoView({ block: "start" }); }
+  try { etat = await api(`${base}/sections/${cle}`, { method: "POST" }); tout(); message("Chapitre rédigé. Relisez-le avant toute diffusion."); const k = diapos().findIndex((d) => d.dataset.section === cle); if (k >= 0) allerPage(k); }
   catch (e) { message(e.message, true); if (bouton) bouton.disabled = false; }
 }
 function tout() { dessinerVerrou(); dessinerSite(); dessinerPhotos(); dessinerMarche(); dessinerMemo(); }

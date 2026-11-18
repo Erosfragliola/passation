@@ -206,18 +206,30 @@ async function etudeMarche(env, row) {
   const reponses = await lireReponses(env, row.id);
   const avant = reponses.marche || {};
   if ((avant.essais || 0) >= MARCHE.etudesMaxParDossier) return json({ erreur: "limite", message: `L'étude de marché a déjà été lancée ${MARCHE.etudesMaxParDossier} fois pour ce dossier.` }, 429);
+  // Une étude déjà en cours (page rechargée, deuxième onglet) n'est pas relancée : on répond « en cours », avant le
+  // quota (qui décompte un traitement à chaque appel) pour qu'une demande en double ne consomme rien
+  const t0 = maintenant();
+  if (avant.en_cours && t0 - avant.en_cours < 180 && !(avant.date > avant.en_cours)) return json({ erreur: "en_cours", message: "L'étude de marché est déjà en cours." }, 409);
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
   if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
+  const ecrire = (d) => env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'marche', ?, ?)
+    ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(row.id, JSON.stringify(d), maintenant()).run();
+  await ecrire({ ...avant, en_cours: t0 });
   const entreprise = JSON.parse(row.company_json || "{}");
   const secteur = await secteurDe(env, entreprise);
   const contexte = { secteur: SECTEURS_NAF[entreprise.section_naf] ?? null, code_naf: entreprise.naf ?? null, region: regionDe(entreprise.code_postal),
     activite_decrite_par_le_dirigeant: reponses.activite?.description ?? null, zone_commerciale: reponses.activite?.zone ?? null };
   let r;
   try { r = await rechercherMarche(env, contexte); }
-  catch (e) { console.log(`Étude de marché impossible : ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "recherche_echouee", message: "La recherche n'a pas abouti. Réessayez dans un instant." }, 502); }
-  const marche = { secteur, faits: r.faits.map((f, i) => ({ id: i + 1, ...f, valide: true })), date: maintenant(), essais: (avant.essais || 0) + 1 };
-  await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'marche', ?, ?)
-    ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(row.id, JSON.stringify(marche), maintenant()).run();
+  catch (e) {
+    console.log(`Étude de marché impossible : ${e.message}`);
+    // La structure du secteur (registres publics) est gardée même si la recherche web échoue ou dure trop
+    await ecrire({ ...avant, secteur: secteur ?? avant.secteur ?? null, en_cours: null, essais: (avant.essais || 0) + 1 });
+    if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
+    return json({ erreur: "recherche_echouee", message: "La recherche de chiffres de marché n'a pas abouti : le chapitre s'appuiera sur les registres publics. Vous pourrez la relancer depuis la page du mémorandum." }, 502);
+  }
+  const marche = { secteur, faits: r.faits.map((f, i) => ({ id: i + 1, ...f, valide: true })), date: maintenant(), essais: (avant.essais || 0) + 1, en_cours: null };
+  await ecrire(marche);
   return json(await lireMemo(env, row));
 }
 

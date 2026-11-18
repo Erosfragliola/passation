@@ -71,6 +71,8 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   const activiteSite = faits.filter((f) => ["activite", "produits", "clients", "qualite"].includes(f.categorie)).slice(0, 5).map((f) => f.fait).join(" ");
   if (activiteSite) ajouter("activite", { "activite.description": activiteSite }, SOURCES_PROPOSITION.site);
   else if (secteur) ajouter("activite", { "activite.description": [`Entreprise du secteur « ${secteur} »`, annee(entreprise.date_creation) ? `créée en ${annee(entreprise.date_creation)}` : null, entreprise.ville ? `à ${entreprise.ville}` : null, effectif ? `(${effectif})` : null].filter(Boolean).join(" ") + ". Précisez vos métiers, vos produits ou services et vos clients." }, SOURCES_PROPOSITION.registres);
+  // Simple amorce tirée des registres : à compléter par le dirigeant, jamais validée d'un clic dans le récapitulatif
+  if (p.activite?.source === SOURCES_PROPOSITION.registres) p.activite.a_completer = true;
 
   ajouter("operation", { "operation.part_cedee": "100 %", "operation.calendrier": "6 à 12 mois" }, SOURCES_PROPOSITION.frequent);
 

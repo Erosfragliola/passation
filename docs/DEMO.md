@@ -26,7 +26,7 @@ sont vérifiées par `test/demo.test.js` et ont été calculées indépendamment
 | 3 | Déposer `liasse-fictive.pdf` (ou saisir les montants ci-dessous) | Lecture par Claude **proposée**, jamais validée d'office ; contrôles automatiques (le CA diffère des comptes publiés de l'entreprise choisie : alerte attendue) |
 | 4 | Confirmer les exercices 2024 et 2025 | Validation par le dirigeant ; un exercice incomplet est écarté du calcul et signalé |
 | 5 | Valorisation, sans prime de taille | Multiples seuls ; le DCF est « à compléter » et l'écran l'explique |
-| 6 | « Affiner » : prime de taille 3 %, Recalculer | Le DCF est calculé ; synthèse 60 % multiples / 40 % DCF ; ANCC en plancher |
+| 6 | « Affiner » : prime de taille 3 %, Recalculer | Le DCF est calculé et affiché ; la synthèse reste sur les multiples seuls (défaut du 18/11/2026), ANCC en plancher. Pour le montrer pondéré : Multiples / DCF à 60 / 40 |
 | 7 | Télécharger le datapack | 9 onglets, formules vivantes : modifier une cellule jaune recalcule tout |
 | 8 | Teaser, mémorandum (si la clé Claude est active) | Rédaction à partir des seuls faits validés ; contrôle d'anonymat du teaser |
 
@@ -56,7 +56,8 @@ fixer et de la justifier. C'est pourquoi le DCF n'est pas calculé par défaut.
 |---|---:|---:|---:|
 | Multiples d'EBE (4 / 5,6 / 7 × EBE normatif 350 000) | 1 381 818 | 1 941 818 | 2 431 818 |
 | DCF, prime de taille 3 % (CMPC 11,21 % ± 1 pt) | 2 530 797 | 2 819 933 | 3 180 021 |
-| **Synthèse 60 / 40** | **1 841 410** | **2 293 064** | **2 731 099** |
+| **Synthèse par défaut (multiples seuls)** | **1 381 818** | **1 941 818** | **2 431 818** |
+| Synthèse avec le DCF en option à 40 % | 1 841 410 | 2 293 064 | 2 731 099 |
 | Actif net comptable corrigé (plancher) | | 700 000 | |
 
 Les multiples dépendent du secteur de l'entreprise choisie (`src/data/multiples.json`) : avec un autre secteur, les
