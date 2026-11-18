@@ -74,8 +74,8 @@
     ]
   },
   "ponderation": {
-    "multiples": 0.6,
-    "dcf": 0.4,
-    "note": "Décision du dirigeant du 10/11/2026 : multiples (méthode principale) 60 %, DCF (recoupement) 40 %, modifiables ; l'actif net corrigé est présenté à part comme plancher."
+    "multiples": 1,
+    "dcf": 0,
+    "note": "Décision du dirigeant du 18/11/2026 (remplace celle du 10/11) : multiples seuls par défaut ; le DCF est calculé et présenté en option (recoupement), activable par la pondération ; l'actif net corrigé est présenté à part comme plancher."
   }
 }

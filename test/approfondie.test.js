@@ -121,11 +121,16 @@ describe("synthèse de la valorisation approfondie", () => {
     proche(v.dcf.titres.bas, 2_341_609.13, 0.05);
     proche(v.dcf.titres.haut, 2_940_077.98, 0.05);
   });
-  it("valeur centrale = 60 % multiples + 40 % DCF = 2 244 253,18 ; ANCC 890 000 à part (plancher)", () => {
+  it("par défaut (18/11/2026), valeur centrale = multiples seuls = 2 001 585,45 ; le DCF est calculé à côté ; ANCC à part", () => {
     const v = valorisationApprofondie(entree, HYP);
-    proche(v.synthese.central, 2_244_253.18, 0.05);
+    proche(v.synthese.central, 2_001_585.45);
+    expect(v.synthese.ponderation).toEqual({ multiples: 1, dcf: 0 });
+    expect(v.dcf.statut).toBe("ok");
     expect(v.synthese.plancher_ancc).toBe(890_000);
-    expect(v.synthese.ponderation).toEqual({ multiples: 0.6, dcf: 0.4 });
+  });
+  it("DCF activé en option à 40 % : 0,6 × 2 001 585,45 + 0,4 × 2 608 254,77 = 2 244 253,18", () => {
+    const v = valorisationApprofondie({ ...entree, ponderation: { multiples: 0.6, dcf: 0.4 } }, HYP);
+    proche(v.synthese.central, 2_244_253.18, 0.05);
   });
   it("sensibilité : multiple ± 1x → titres 1 632 352,12 et 2 370 818,79", () => {
     const v = valorisationApprofondie(entree, HYP);
@@ -133,7 +138,7 @@ describe("synthèse de la valorisation approfondie", () => {
     proche(v.sensibilites.multiple.plus, 2_370_818.79);
   });
   it("sans prime de taille : DCF à compléter, synthèse sur les multiples seuls, signalée", () => {
-    const v = valorisationApprofondie({ ...entree, primeTaille: null }, HYP);
+    const v = valorisationApprofondie({ ...entree, primeTaille: null, ponderation: { multiples: 0.6, dcf: 0.4 } }, HYP); // DCF demandé
     expect(v.dcf.statut).toBe("a_completer");
     expect(v.synthese.ponderation).toEqual({ multiples: 1, dcf: 0 });
     proche(v.synthese.central, 2_001_585.45);

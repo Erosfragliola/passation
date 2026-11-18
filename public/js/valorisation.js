@@ -343,7 +343,8 @@ function dessinerResultat() {
     s.central != null
       ? [el("p", { class: "valeur-centrale chiffre", text: euros(s.central) }), el("p", { class: "fourchette", text: `Fourchette : ${euros(s.bas)} – ${euros(s.haut)}` })]
       : el("p", { class: "valeur-centrale", text: "À compléter" }),
-    el("p", { class: "petit", text: `Pondération : multiples ${pct(s.ponderation.multiples, 0)}, DCF ${pct(s.ponderation.dcf, 0)}. Actif net corrigé (plancher, présenté à part) : ${euros(s.plancher_ancc)}.` }),
+    el("p", { class: "petit", text: s.ponderation.dcf > 0 ? `Pondération : multiples ${pct(s.ponderation.multiples, 0)}, DCF ${pct(s.ponderation.dcf, 0)}. Actif net corrigé (plancher, présenté à part) : ${euros(s.plancher_ancc)}.`
+      : `Valeur fondée sur les multiples, la référence des cessions de PME. Le DCF est calculé à titre indicatif et peut être ajouté dans « Affiner ». Actif net corrigé (plancher, présenté à part) : ${euros(s.plancher_ancc)}.` }),
     el("p", { class: "estimation-mention", text: "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable ou d'un conseil en cession." }),
     el("a", { class: "btn btn-sable", href: `${base}/documents/datapack`, download: "" }, "Télécharger le datapack Excel ", el("span", { class: "fleche", "aria-hidden": "true", text: "↓" })));
   const alertes = s.alertes.length ? el("ul", { class: "alertes" }, ...s.alertes.map((a) => el("li", { text: a }))) : null;
@@ -394,7 +395,7 @@ function dessinerResultat() {
       champPct("cout_dette_avant_impot", "Coût de la dette avant impôt", reg.cout_dette_avant_impot ?? H.cout_dette_avant_impot.valeur, sourceH(H.cout_dette_avant_impot)),
       champPct("croissance_terminale", "Croissance à l'infini", reg.croissance_terminale ?? H.croissance_terminale.valeur, sourceH(H.croissance_terminale)),
       el("div", { class: "q" }, el("label", { for: "reg-mode-ebe", text: "EBE normatif" }), modeEbe),
-      el("div", { class: "q" }, el("label", { for: "reg-poids", text: "Pondération multiples / DCF" }), poids, poidsLu)),
+      el("div", { class: "q" }, el("label", { for: "reg-poids", text: "Multiples / DCF (le DCF est une option : 0 % par défaut, à activer si votre conseil le souhaite)" }), poids, poidsLu)),
     el("h4", { text: "Décotes et primes" }), el("p", { class: "petit", text: H.decotes_primes.note }),
     el("div", { class: "decotes" }, ...decotes),
     el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {

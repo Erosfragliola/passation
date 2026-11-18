@@ -11,8 +11,9 @@ const exercices = [
   { annee: 2024, chiffre_affaires: 2_200_000, autres_produits: 0, achats_consommes: 880_000, charges_externes: 320_000, impots_taxes: 40_000, charges_personnel: 640_000, dotations_amortissements: 66_000, stocks: 180_000, creances_clients: 370_000, dettes_fournisseurs: 230_000, dettes_fiscales_sociales: 140_000 },
   { annee: 2025, chiffre_affaires: 2_400_000, autres_produits: 0, achats_consommes: 960_000, charges_externes: 340_000, impots_taxes: 40_000, charges_personnel: 680_000, dotations_amortissements: 72_000, stocks: 200_000, creances_clients: 400_000, dettes_fournisseurs: 250_000, dettes_fiscales_sociales: 150_000, tresorerie: 250_000, placements: 50_000, emprunts: 300_000, provisions_risques: 20_000, capitaux_propres: 900_000 },
 ];
+// DCF activé à 40 % (option) : les formules du classeur couvrent les deux méthodes et la pondération
 const base = {
-  secteur: "industrie", exercices,
+  secteur: "industrie", exercices, ponderation: { multiples: 0.6, dcf: 0.4 },
   retraitements: { remuneration_dirigeant_reelle: 150_000, remuneration_normative: 100_000, loyer_paye: 60_000, loyer_marche: 48_000, exceptionnels: [{ annee: 2024, libelle: "Litige", montant: 20_000, justification: "Non récurrent" }] },
   complements: { comptes_courants_remboursables: 50_000, creances_douteuses: 10_000 },
   previsions: { croissance: 0.05, marge_ebe: 0.16, amortissements_pct: 0.03, investissements_pct: 0.03, bfr_jours: 30 },
