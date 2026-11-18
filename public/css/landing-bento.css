@@ -252,3 +252,32 @@
   .hero-bulle { padding: 14px; }
   .hero-bulle > span { font-size: 12.5px; }
 }
+
+/* Accueil v4 : trois bulles à cheval sur les bords de la vidéo (plus d'encoches) */
+.hero-visuel { height: clamp(340px, 38vw, 480px); margin: 6px clamp(0px, 3vw, 40px) 0; }
+.landing .hero-v4 .hero-fond, .landing .hero-v4 .hero-fond.decoupee { border-radius: 28px; clip-path: none; }
+.hero-bulle { box-shadow: 0 22px 50px -20px rgba(35, 30, 24, .45); border: 1px solid var(--trait); }
+.hero-bulle.sombre { border-color: transparent; }
+.bulle-hg { top: 36px; left: -32px; }
+.bulle-hd { top: 44%; right: -32px; transform: translateY(-50%); }
+.bulle-bd { bottom: -28px; left: 50%; right: auto; transform: translateX(-50%); width: 420px; }
+.bulle-bd .bulle-docs { grid-template-columns: repeat(4, 1fr); }
+.landing .hero-v4 .hero-bas { bottom: auto; top: 14px; left: auto; right: 14px; transform: none; }
+.sources-bande { padding-top: 52px; }
+@media (max-width: 900px) {
+  .hero-visuel { margin: 0; }
+  .bulle-hg, .bulle-hd, .bulle-bd { transform: none; width: auto; }
+  .bulle-bd { grid-column: 1 / -1; }
+  .bulle-bd .bulle-docs { grid-template-columns: 1fr 1fr; }
+  .sources-bande { padding-top: 26px; }
+}
+
+/* Police unique sur tout le site (18/11/2026) : titres en capitales étroites, tout le reste en Geist ; plus de
+   serif italique, de chasse fixe ni d'écriture manuscrite */
+.landing { --mot-cle: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; }
+.landing em, .landing h1 em, .landing h2 em, .landing .titre-section em, .landing .resultat .resultat-code, .carte-estimation-code, .confid-apres,
+.hero-bulle > .bulle-code, .bulle-code, .dossier-cta-code, .landing .equipe-citation p { font-style: normal; }
+.hero-bulle > .bulle-code, .dossier-cta-code, .landing .resultat .resultat-code, .confid-apres { font-weight: 600; letter-spacing: -.025em; }
+.hero-bulle > .bulle-code { font-size: 22px; }
+.dossier-cta-code { font-size: 26px; }
+.landing .surtitre.etiquette-kraft, .landing .carte-large .surtitre.etiquette-kraft, .annotation, .etiquette-main { font-family: var(--sans); font-size: 15px; font-weight: 600; }
