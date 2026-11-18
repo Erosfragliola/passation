@@ -5,7 +5,7 @@ import { d1Memoire, r2Memoire } from "./aide/environnement.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
-import { assembler } from "../src/maquette/donnees.js";
+import { assembler, CLE_MAQUETTE } from "../src/maquette/donnees.js";
 import { avancement, CLES_CHECKLIST } from "../public/js/dossier-regles.js";
 
 const BASE = "http://127.0.0.1:8787";
@@ -45,7 +45,7 @@ beforeEach(async () => {
   const f = JSON.parse(readFileSync(new URL(`./fixtures/${SIREN}.json`, import.meta.url)));
   const e = normaliserEntreprise(f.entreprise, SIREN);
   const d = assembler(e, normaliserExercices(f.inpi), normaliserAnnonces(f.bodacc, SIREN, e.date_creation));
-  await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(`maquette:v1:${SIREN}`, JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
+  await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(CLE_MAQUETTE(SIREN), JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
 });
 
 describe("connexion par code", () => {

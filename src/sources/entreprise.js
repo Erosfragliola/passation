@@ -5,9 +5,9 @@ import { requeteJson } from "../lib/requete.js";
 
 export const URL_RECHERCHE = "https://recherche-entreprises.api.gouv.fr/search";
 
-export async function rechercherBrut(q, { fetch: f = fetch, parPage = 1 } = {}) {
+export async function rechercherBrut(q, { fetch: f = fetch, parPage = 1, ...options } = {}) {
   const url = `${URL_RECHERCHE}?q=${encodeURIComponent(q)}&per_page=${parPage}`;
-  return requeteJson(url, "recherche-entreprises", { fetch: f });
+  return requeteJson(url, "recherche-entreprises", { ...options, fetch: f });
 }
 
 /** Extrait la fiche du SIREN demandé (correspondance exacte) ; null si absente. */
