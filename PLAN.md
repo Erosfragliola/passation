@@ -595,3 +595,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   - Puis, sur modèle fourni par le dirigeant : la vidéo est découpée autour de quatre bulles logées dans un coin ou
     sur un bord (« pièces de puzzle »), tous les angles arrondis y compris rentrants : `polygone` + `cheminArrondi`
     (testés, `test/forme-hero.test.js`) ; texte et champ à l'intérieur ; bulles masquées sous 900 px.
+- **18/11/2026, accueil v5 en ligne** : Pull Request #2 (`hero-forme`) fusionnée, déploiement (version Cloudflare
+  df47ead9). Vérifié en ligne : quatre bulles et forme découpée, aucune ressource en erreur (un 404 mis en cache
+  juste après le déploiement sur `forme-hero.js` s'est résorbé en moins d'une minute), estimation 434436622 ok,
+  routes privées 401. Tests : 359.
