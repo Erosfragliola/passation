@@ -9,7 +9,7 @@
 //   6. Votre dossier est prêt : relecture et points à compléter
 import { CHAMPS } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
-import { QUESTIONS, questionRepondue, siteDepuisEmail } from "/js/parcours.js";
+import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail } from "/js/parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
 
 const $ = (s) => document.querySelector(s);
@@ -167,7 +167,13 @@ function saisie() {
         bouton.disabled = true;
         try {
           S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs, valider: false }) });
-          S.saisie = null; message(""); aller("chiffres");
+          // Ce que le dirigeant vient de taper n'a pas à être reconfirmé sur l'écran suivant : on confirme d'office,
+          // sauf si un contrôle automatique signale une incohérence (l'écran « Vos chiffres » l'affiche alors)
+          const alerte = (S.chiffres.controles?.[annee] || []).some((c) => c.niveau === "alerte");
+          if (!alerte && !(S.chiffres.manquants?.[annee] || []).length) S.chiffres = await api(`${base}/financials/${annee}/valider`, { method: "POST" });
+          S.saisie = null;
+          if (alerte || !exercicesComplets()) { message(""); aller("chiffres"); }
+          else { message(`Exercice ${annee} enregistré.`); aller(etapeCourante()); }
         } catch (e) { message(e.message, true); bouton.disabled = false; }
       } }, "Enregistrer cet exercice ", fleche())));
 }
@@ -209,7 +215,7 @@ function chiffres() {
       el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; aller("saisie"); } }, "Saisir un autre exercice"), " · ",
       el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, "Déposer une autre liasse"), " · ",
       el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Mode détaillé (toutes les lignes)" })),
-    el("button", { type: "button", class: "btn btn-vert", disabled: !exercicesComplets(), onclick: () => aller(etapeCourante()) }, exercicesComplets() ? "Continuer" : "Confirmez au moins un exercice complet pour continuer"));
+    exercicesComplets() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller(etapeCourante()) }, "Continuer ", fleche()) : null);
 }
 function ligneAVerifier(annee, cle, cellule) {
   const c = CHAMPS.find((x) => x.cle === cle);
@@ -324,6 +330,12 @@ async function enregistrerEcran() {
 }
 function suivante(q) {
   if (!S.vues.includes(q.id)) S.vues.push(q.id);
+  // Venu de la rédaction pour compléter une réponse indispensable : on y retourne dès que tout est rempli
+  if (S.retour === "redaction") {
+    const reste = questionsIncompletes(S.reponses);
+    if (reste.length) { S.q = QUESTIONS.indexOf(reste[0]); questions(); } else { S.retour = null; aller("redaction"); }
+    return;
+  }
   const i = QUESTIONS.indexOf(q);
   if (i < QUESTIONS.length - 1) { S.q = i + 1; questions(); } else aller(etapeCourante());
 }
@@ -359,6 +371,7 @@ function questions() {
   remplir(
     el("p", { class: "etiquette", text: `Question ${S.q + 2} sur ${QUESTIONS.length + 1}` }),
     ...titre(q.titre, q.aide),
+    q.champs.some((c) => c.requis) ? el("p", { class: "petit requis-note", text: `Indispensable pour rédiger le mémorandum : ${q.champs.filter((c) => c.requis).map((c) => c.requis).join(", ")}.` }) : null,
     ...champs.map((c) => champ(c, q)),
     el("div", { class: "q-nav" },
       el("button", { type: "button", class: "lien-simple", onclick: () => { S.q--; questions(); } }, "Retour"),
@@ -366,7 +379,12 @@ function questions() {
         : el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
           const bouton = ev.currentTarget;
           bouton.disabled = true;
-          try { await enregistrerEcran(); message(""); suivante(q); } catch (e) { message(e.message, true); bouton.disabled = false; }
+          try {
+            await enregistrerEcran();
+            const manque = requisManquants(q, S.reponses);
+            if (manque.length) { message(`Il manque ${manque.join(" et ")} : c'est indispensable pour rédiger le mémorandum.`, true); bouton.disabled = false; $("#ecran").querySelector("textarea, .puces-choix .puce")?.focus(); return; }
+            message(""); suivante(q);
+          } catch (e) { message(e.message, true); bouton.disabled = false; }
         } }, "Continuer ", fleche())));
 }
 
@@ -400,15 +418,34 @@ async function site() {
 }
 
 // ================================================================== 5. Rédaction (tout d'un coup)
+/** Étude de marché lancée dès l'ouverture du parcours (registres + recherche web, une à deux minutes) : elle ne dépend
+ *  que de l'entreprise, et se fait pendant que le dirigeant répond aux questions. Une seule fois par dossier. */
+function lancerEtudeMarche() {
+  if (S.marche) return S.marche;
+  const cle = `passation-marche-${id}`;
+  try { const t = Number(localStorage.getItem(cle)); if (t && Date.now() - t < 10 * 60 * 1000) return null; localStorage.setItem(cle, String(Date.now())); } catch { /* stockage indisponible */ }
+  S.marche = api(`${base}/documents/memo`).then((m) => (m.marche?.date ? m : api(`${base}/documents/memo/marche`, { method: "POST" }))).catch(() => null);
+  return S.marche;
+}
+
+/** Exécute des tâches avec au plus n en parallèle (file continue : une tâche démarre dès qu'une autre finit). */
+async function enParallele(taches, n, f) {
+  const file = [...taches];
+  await Promise.all(Array.from({ length: Math.min(n, file.length) }, async () => { while (file.length) await f(file.shift()); }));
+}
+
 async function redaction() {
+  const SECTIONS = [["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]];
   const taches = [
     ["valorisation", "Valorisation (3 méthodes)", () => api(`${base}/valuation`, { method: "POST" })],
+    ["etude-marche", "Étude de marché (registres et sources publiques)", async () => { const m = await (S.marche || null); if (!m?.marche?.date) await api(`${base}/documents/memo/marche`, { method: "POST" }); }],
     ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
     ["teaser", "Teaser anonymisé", () => api(`${base}/documents/teaser`, { method: "POST" })],
-    ["etude-marche", "Étude de marché (registres et sources publiques)", () => api(`${base}/documents/memo/marche`, { method: "POST" })],
-    ...[["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]]
-      .map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
+    ...SECTIONS.map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
   ];
+  const libelle = Object.fromEntries(taches.map(([k, t]) => [k, t]));
+  // Réponses indispensables au mémorandum : vérifiées avant de lancer quoi que ce soit (sinon 9 échecs sans issue)
+  const incompletes = questionsIncompletes(S.reponses);
   // Ce qui est déjà rédigé n'est pas refait (reprise après une interruption)
   const deja = new Set();
   try {
@@ -419,29 +456,57 @@ async function redaction() {
     for (const x of m.sections || []) if (x.redigee) deja.add(`memo-${x.cle}`);
     if (m.marche?.date) deja.add("etude-marche");
   } catch { /* on refait tout */ }
-  const lignes = Object.fromEntries(taches.map(([k, t]) => [k, el("li", { class: deja.has(k) ? "fait" : null }, el("span", { class: "etat", "aria-hidden": "true" }), t)]));
-  remplir(...titre("Nous rédigeons votre dossier", "Une à deux minutes. Vous pouvez quitter cette page : la rédaction reprendra à votre retour."),
-    el("ul", { class: "guide-taches" }, ...Object.values(lignes)));
+  const lignes = Object.fromEntries(taches.map(([k, t]) => [k, el("li", { class: deja.has(k) ? "fait" : incompletes.length && k.startsWith("memo-") ? "attente" : null }, el("span", { class: "etat", "aria-hidden": "true" }), t)]));
+  const chrono = el("span", { class: "petit guide-chrono", "aria-hidden": "true" });
+  remplir(...titre("Nous rédigeons votre dossier", "Une à deux minutes. Si vous quittez cette page, la rédaction reprendra à votre retour, sans refaire ce qui est fini."),
+    chrono, el("ul", { class: "guide-taches" }, ...Object.values(lignes)), el("div", { id: "redaction-suite" }));
+  const debut = Date.now(), minuterie = setInterval(() => { const s = Math.round((Date.now() - debut) / 1000); chrono.textContent = `${s} s · ${$("#ecran .guide-taches")?.querySelectorAll("li.fait").length ?? 0} sur ${taches.length}`; }, 1000);
   const erreurs = [];
   const executer = async ([k, , f]) => {
-    if (deja.has(k)) return;
+    if (deja.has(k) || (incompletes.length && k.startsWith("memo-"))) return;
     lignes[k].classList.add("en-cours");
     try { await f(); lignes[k].classList.replace("en-cours", "fait"); }
-    catch (e) { lignes[k].classList.replace("en-cours", "erreur"); erreurs.push(`${k} : ${e.message}`); }
+    catch (e) { lignes[k].classList.replace("en-cours", "erreur"); erreurs.push({ k, message: e.message, statut: e.statut }); }
   };
-  await executer(taches[0]);                     // la valorisation d'abord (le reste en dépend)
-  await executer(taches.find(([k]) => k === "etude-marche")); // puis le marché, que le mémorandum cite
-  const reste = taches.slice(1).filter(([k]) => k !== "etude-marche");
-  for (let i = 0; i < reste.length; i += 4) await Promise.all(reste.slice(i, i + 4).map(executer)); // 4 à la fois
-  // Le teaser peut être refusé par le contrôle d'anonymat : ce n'est pas bloquant, il se reprend depuis sa page
-  // Le teaser (contrôle d'anonymat) et l'étude de marché (sources) ne bloquent pas : ils se reprennent depuis leur page
-  const bloquantes = erreurs.filter((e) => !e.startsWith("teaser") && !e.startsWith("etude-marche"));
-  if (erreurs.length && !bloquantes.length) message("Le teaser n'a pas passé le contrôle d'anonymat : reprenez-le depuis sa page (une réponse contient sans doute un nom ou une marque).", true);
-  if (bloquantes.length) {
-    message(`Certaines rédactions ont échoué : ${bloquantes.join(" ; ")}`, true);
-    $("#ecran").append(el("button", { type: "button", class: "btn btn-noir", onclick: () => redaction() }, "Réessayer"));
+  try {
+    await executer(taches[0]); // la valorisation d'abord : le datapack, le teaser et le mémorandum s'en servent
+    // Étude de marché (souvent déjà faite pendant les questions) puis tout le reste, 4 rédactions à la fois en continu
+    const marche = executer(taches[1]);
+    const memo = taches.filter(([k]) => k.startsWith("memo-"));
+    await enParallele(taches.slice(2).filter(([k]) => !k.startsWith("memo-")), 2, executer);
+    await marche; // le chapitre Marché du mémorandum cite l'étude
+    await enParallele(memo, 4, executer);
+  } finally { clearInterval(minuterie); }
+
+  const suite = $("#redaction-suite");
+  // 1. Réponses indispensables manquantes : on les demande ici, avec un accès direct à la question
+  let manquantes = incompletes;
+  if (!manquantes.length && erreurs.some((e) => e.statut === 409 && e.k.startsWith("memo-"))) {
+    S.reponses = (await api(`${base}/answers`).catch(() => ({}))).reponses || S.reponses; // réponses peut-être modifiées ailleurs
+    manquantes = questionsIncompletes(S.reponses);
+  }
+  if (manquantes.length) {
+    suite.replaceChildren(el("div", { class: "carte guide-todo" },
+      el("h2", { text: "Une réponse manque pour rédiger le mémorandum" }),
+      el("p", { class: "petit", text: "La valorisation, le datapack et le teaser sont prêts. Répondez ci-dessous : la rédaction du mémorandum reprendra aussitôt." }),
+      ...manquantes.map((q) => el("button", { type: "button", class: "btn btn-noir", onclick: () => { S.retour = "redaction"; S.q = QUESTIONS.indexOf(q); aller("questions"); } }, `Répondre : ${q.titre} `, fleche()))));
+    $("#ecran").querySelector("#redaction-suite button")?.focus();
     return;
   }
+  // 2. Échecs passagers (service de rédaction indisponible, délai) : un message par cause, et « Réessayer »
+  const nonBloquants = new Set(["teaser", "etude-marche"]);
+  const bloquantes = erreurs.filter((e) => !nonBloquants.has(e.k));
+  if (bloquantes.length) {
+    const causes = new Map();
+    for (const e of bloquantes) causes.set(e.message, [...(causes.get(e.message) || []), libelle[e.k]]);
+    suite.replaceChildren(el("div", { class: "carte guide-todo" },
+      el("h2", { text: `${bloquantes.length} rédaction${bloquantes.length > 1 ? "s n'ont" : " n'a"} pas abouti` }),
+      el("ul", {}, ...[...causes].map(([m, l]) => el("li", {}, el("strong", { text: `${l.join(", ")} : ` }), m))),
+      el("p", { class: "petit", text: "Ce qui est terminé est conservé : seules ces rédactions seront relancées." }),
+      el("button", { type: "button", class: "btn btn-noir", onclick: () => redaction() }, "Relancer ces rédactions")));
+    return;
+  }
+  if (erreurs.some((e) => e.k === "teaser")) message("Le teaser n'a pas passé le contrôle d'anonymat : reprenez-le depuis sa page (une réponse contient sans doute un nom ou une marque).", true);
   await api(`${base}/termine`, { method: "POST" }).catch(() => null);
   S.complet = true;
   aller("pret");
@@ -475,6 +540,7 @@ async function pret() {
     document.title = `${dossier.entreprise.nom} · Passation`;
     S.complet = Boolean(dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && dossier.parcours?.valorisation);
     aller(etapeCourante());
+    if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // pendant les questions, pas à la fin
   } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();

@@ -7,10 +7,10 @@ export const MURS_CESSION = { inclus: "Oui, avec l'entreprise", bail: "Non, un b
 
 export const QUESTIONS = [
   { id: "activite", titre: "En quelques phrases, que fait votre entreprise ?", aide: "Nous avons préparé un brouillon à partir de votre site, s'il existe : corrigez-le librement.",
-    champs: [{ etape: "activite", cle: "description", type: "texte" }] },
+    champs: [{ etape: "activite", cle: "description", type: "texte", requis: "la description de votre activité" }] },
   { id: "operation", titre: "Que souhaitez-vous céder, et quand ?",
     champs: [
-      { etape: "operation", cle: "part_cedee", type: "choix", libelle: "Part du capital", options: ["100 %", "Majoritaire", "Minoritaire", "À définir"] },
+      { etape: "operation", cle: "part_cedee", type: "choix", libelle: "Part du capital", options: ["100 %", "Majoritaire", "Minoritaire", "À définir"], requis: "la part du capital cédée" },
       { etape: "operation", cle: "motif", type: "choix", libelle: "Motif", options: ["Départ à la retraite", "Nouveau projet", "Raisons personnelles", "Autre"] },
       { etape: "operation", cle: "calendrier", type: "choix", libelle: "Calendrier souhaité", options: ["Moins de 6 mois", "6 à 12 mois", "1 à 2 ans", "Plus de 2 ans"] },
     ] },
@@ -45,11 +45,20 @@ export const QUESTIONS = [
     champs: [{ etape: "bilan", cle: "capital_personnes_physiques", type: "valeurs", options: [["Oui", "oui"], ["Non", "non"], ["Je ne sais pas", "non"]] }] },
 ];
 
-/** Une question est-elle répondue ? (les réponses vides « je ne sais pas » comptent comme répondues si l'écran a été vu) */
+const rempli = (v) => v != null && v !== "" && !(typeof v === "string" && !v.trim()) && !(Array.isArray(v) && !v.length);
+/** Réponses indispensables au mémorandum encore vides sur cet écran (libellés), quel que soit le passage du dirigeant. */
+export const requisManquants = (q, r) => q.champs.filter((c) => c.requis && !rempli(r[c.etape]?.[c.cle])).map((c) => c.requis);
+/**
+ * Une question est-elle répondue ? Les réponses facultatives laissées vides comptent comme répondues si l'écran a été
+ * vu ; les réponses indispensables au mémorandum (« requis ») doivent toujours être remplies.
+ */
 export function questionRepondue(q, r, vues = []) {
+  if (requisManquants(q, r).length) return false;
   if (vues.includes(q.id)) return true;
-  return q.champs.every((c) => { const v = r[c.etape]?.[c.cle]; return v != null && v !== "" && !(Array.isArray(v) && !v.length); });
+  return q.champs.every((c) => rempli(r[c.etape]?.[c.cle]));
 }
+/** Questions dont une réponse indispensable manque (l'ordre du parcours). */
+export const questionsIncompletes = (r) => QUESTIONS.filter((q) => requisManquants(q, r).length);
 
 /** Adresse de site proposée à partir d'une adresse e-mail professionnelle (jamais pour une messagerie grand public). */
 const MESSAGERIES = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook.fr", "hotmail.com", "hotmail.fr", "live.com", "live.fr", "msn.com", "yahoo.com", "yahoo.fr", "icloud.com", "me.com", "orange.fr", "wanadoo.fr", "free.fr", "sfr.fr", "neuf.fr", "laposte.net", "aol.com", "protonmail.com", "proton.me", "gmx.fr", "gmx.com", "bbox.fr", "numericable.fr", "club-internet.fr", "exemple.fr"]);
