@@ -45,7 +45,8 @@ function dessiner() {
   if (!scene || !fond) return;
   const W = fond.clientWidth, H = fond.clientHeight;
   if (!W || !H) return;
-  const visibles = bulles.filter((x) => getComputedStyle(x).display !== "none");
+  // Sous 900 px, les bulles sont posées par-dessus (aucune découpe) : seule la forme aux angles asymétriques reste
+  const visibles = W < 860 ? [] : bulles.filter((x) => getComputedStyle(x).display !== "none");
   if (!visibles.length) { fond.style.clipPath = `path('${cheminArrondi(polygone(W, H), 26, (i) => ([1, 3].includes(i) ? 70 : 24))}')`; return; }
   const ecart = 14, f = fond.getBoundingClientRect(), encoches = { h: [], d: [], b: [], g: [] };
   for (const x of visibles) {
