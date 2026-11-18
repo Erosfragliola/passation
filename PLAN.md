@@ -575,3 +575,6 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     20 Mo par fichier, 80 par dossier, types bureautiques et images ; la pièce est cochée au dépôt et décochée à
     la suppression du dernier fichier ; tout est effacé avec le dossier. Tests : 323.
   - En production, appliquer la migration : `npx wrangler d1 migrations apply passation --remote`.
+- **18/11/2026, mise en ligne de `apres-siren`** (accord du dirigeant ; multiples floutés dans le résultat de
+  l'estimation à sa demande, visuellement seulement : ils restent dans la réponse de l'API). Migration
+  `0003_pieces.sql` appliquée en production avant le déploiement.
