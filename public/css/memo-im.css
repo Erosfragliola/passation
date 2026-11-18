@@ -455,3 +455,34 @@
 .im-page[data-section="perspectives"] .im-zone, .im-page[data-section="operation"] .im-zone { justify-content: center; }
 .im-page[data-section="perspectives"] .im-piliers > li { min-height: 17cqw; }
 .im-page[data-section="operation"] .im-couloir { min-height: 15cqw; }
+
+/* v5 : faits à pictogramme, introduction, finances denses */
+.im-puces.pictos { gap: .75cqw; }
+.im-puces.pictos > li { padding-left: 2.6cqw; min-height: 1.9cqw; }
+.im-puces.pictos > li::before { display: none; }
+.im-puce-picto { display: inline-grid; place-items: center; width: 1.85cqw; height: 1.85cqw; border-radius: .55cqw; background: var(--im-pale); flex: none; }
+.im-puces.pictos .im-puce-picto { position: absolute; left: 0; top: -.05cqw; }
+.im-puce-picto .im-picto { width: 1.15cqw; height: 1.15cqw; stroke: var(--im-encre); }
+.im-puces.pictos > li:nth-child(3n+2) .im-puce-picto { background: var(--im-accent-pale); }
+.im-puces.pictos > li:nth-child(3n+2) .im-picto { stroke: var(--im-accent); }
+.im-chapeau-texte { font-size: 1.12cqw; line-height: 1.45; color: var(--im-encre); font-weight: 500; padding: .2cqw 0 .5cqw 1cqw; border-left: .25cqw solid var(--im-accent); margin-bottom: .2cqw !important; text-wrap: pretty; }
+.im-g-finances { grid-template-columns: minmax(0, 1fr) 27cqw; }
+.im-g-finances > .im-pile:first-child { display: flex; flex-direction: column; gap: 1cqw; }
+.im-charges { display: grid; grid-template-columns: 9.5cqw minmax(0, 1fr); gap: 1cqw; align-items: center; }
+.im-anneau-charges { width: 100%; height: auto; }
+.im-anneau-val { font: 700 19px "Big Shoulders", "Arial Narrow", sans-serif; fill: var(--im-encre); }
+.im-anneau-lib { font: 400 10px var(--im-police); fill: var(--im-gris); }
+.im-charges-legende { list-style: none; margin: 0; padding: 0; display: grid; gap: .35cqw; }
+.im-charges-legende li { display: grid; grid-template-columns: .8cqw minmax(0, 1fr) auto; gap: .5cqw; align-items: center; font-size: .82cqw; }
+.im-charges-legende i { width: .8cqw; height: .8cqw; border-radius: .2cqw; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.im-charges-legende strong { font-family: var(--im-affiche); font-size: 1.05cqw; color: var(--im-encre) !important; }
+.im-ratios { display: grid; grid-template-columns: 1fr 1fr; gap: .6cqw; }
+.im-ratio { border-radius: 1cqw; background: var(--im-pale-2); border: 1px solid var(--im-trait); padding: .7cqw .8cqw; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: .6cqw; align-items: center; }
+.im-ratio .im-puce-picto { grid-row: span 2; }
+.im-ratio strong { font-family: var(--im-affiche); font-size: 1.6cqw; line-height: 1; color: var(--im-encre) !important; }
+.im-ratio span:last-child { font-size: .72cqw; color: var(--im-gris); line-height: 1.2; }
+.diapo.im-page.serre { font-size: .96cqw; line-height: 1.32; }
+.im-page.serre .im-puces { gap: .45cqw; }
+.im-page.serre .im-chapeau-texte { font-size: 1.02cqw; }
+.im-puce-picto { width: 2cqw; height: 2cqw; }
+.im-puce-picto .im-picto { width: 1.25cqw; height: 1.25cqw; stroke-width: 1.8; }

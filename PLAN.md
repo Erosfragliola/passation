@@ -549,3 +549,10 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   clés (280vh), les tuiles du hero, les cartes « Pourquoi » et les aperçus des livrables. Feuille
   `public/css/landing-bento.css`, textes nouveaux dans `landing.json` (`hero.carte`, `hero.coches`, `sources`,
   `dossier`). Tests : 312. Le parcours après le SIREN (branche `parcours-performant`) n'est pas encore fusionné.
+- **18/11/2026, mémorandum v5 (branche `memo-bento`, non publiée)** : direction artistique du site (vert, cuivre,
+  crème, capitales étroites, encoche) et pages plus denses à la demande du dirigeant. Consigne de rédaction : 280 à
+  450 mots, 5 à 8 puces de deux ou trois phrases (fait, explication, conséquence pour un repreneur). Pictogramme par
+  puce selon son thème ; introduction mise en avant ; 4.1 avec répartition du chiffre d'affaires (anneau calculé
+  depuis le compte de résultat, omis si les postes ne bouclent pas à 8 % près) et ratios ; BFR en barres ; page
+  resserrée avant d'ouvrir une page « (suite) ». Cas de test du parcours complet : `test/fixtures/` (liasse 2033 de
+  test pour 434436622, CA et résultat 2024 réels, le reste fictif ; réponses aux questions).

@@ -169,7 +169,8 @@ const CONSIGNE_MEMO = `Tu es associé d'une banque d'affaires française spécia
 Style
 - Français, troisième personne, présent. Ton d'un professionnel de la cession : précis, factuel, affirmatif quand les faits le permettent. Aucune formule publicitaire, aucun superlatif non démontré (« leader », « unique », « incontournable », « exceptionnel » sont interdits, sauf s'ils figurent tels quels dans un fait fourni).
 - Titre : la conclusion du chapitre, pas son sujet. Exemple de forme : « Une clientèle fidèle : les cinq premiers clients pèsent 38 % du chiffre d'affaires ». Pas d'exemple de chiffre inventé : n'utilise que ceux fournis.
-- Corps : 140 à 260 mots. Un paragraphe d'introduction de deux phrases au plus, puis 3 à 6 puces. Chaque puce commence par le fait clé en **gras** (quelques mots), puis l'explique en une ou deux phrases.
+- Corps : 280 à 450 mots, aussi dense qu'une page de mémorandum de banque d'affaires. Un paragraphe d'introduction de deux ou trois phrases qui pose le constat, puis 5 à 8 puces. Chaque puce commence par le fait clé en **gras** (3 à 8 mots), suivi de « : », puis l'explique en deux ou trois phrases : le fait et son chiffre, ce qui l'explique, et ce qu'il signifie pour un repreneur (risque, levier, continuité). Pas de phrase creuse : chaque phrase apporte un fait, un chiffre ou une conséquence.
+- Les éléments à compléter restent dans la puce concernée (« **Certifications** : À compléter. »), sans délayer.
 - Chiffres : recopie exactement les montants et pourcentages fournis, dans leur forme (« 1,2 M€ », « 8,4 % », « +4,1 % par an »). Ne calcule aucun nouveau chiffre, ratio, moyenne ou évolution : utilise ceux qui sont fournis dans « indicateurs_calcules » et les tableaux.
 - Les estimations du dirigeant sont présentées comme telles (« le dirigeant anticipe… »). Les faits issus du site internet sont présentés comme des affirmations de l'entreprise.
 
@@ -177,7 +178,7 @@ Règles absolues
 - Utilise uniquement les données fournies : réponses du dirigeant, faits de son site qu'il a validés, données publiques, chiffres validés et indicateurs calculés. N'invente rien : ni chiffre, ni client, ni nom, ni projet, ni certification, ni concurrent, ni tendance de marché.
 - Ne mentionne aucun prix, aucune valeur d'entreprise, aucune fourchette de valorisation.
 - Quand une information attendue manque, écris « À compléter » à l'endroit voulu et ajoute une demande précise dans a_completer (par exemple « Préciser la part du chiffre d'affaires réalisée sous contrat pluriannuel »).
-- Mieux vaut un chapitre court et exact qu'un chapitre long et vague.`;
+- La densité vient des faits fournis, jamais de l'invention : s'ils manquent, le chapitre est plus court et a_completer dit ce qu'il faut apporter.`;
 
 export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   const reponse = await client(env).beta.messages.create({

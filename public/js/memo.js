@@ -134,6 +134,13 @@ const ICONES = {
   horloge: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-13v5l3 2",
   globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18",
   balance: "M12 4v16M6 20h12M5 8h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0z",
+  outil: "M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2zM5 21l2-2",
+  bouclier: "M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z",
+  cible: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-4a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z",
+  usine: "M3 21V10l6 4V10l6 4V6l6 3v12zM3 21h18",
+  camion: "M3 6h11v10H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm10 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
+  graphe: "M4 20V10M10 20V4M16 20v-7M22 20H2",
+  alerte: "M12 3l10 18H2zM12 10v5M12 18v.5",
 };
 const icone = (nom, classe = "dp-picto") => svg("svg", { viewBox: "0 0 24 24", class: classe, "aria-hidden": "true" }, svg("path", { d: ICONES[nom] }));
 
@@ -193,15 +200,33 @@ function eclaterPuce(t) {
   const i = String(t).indexOf(" : ");
   return i > 0 && i < 70 ? { titre: t.slice(0, i), texte: t.slice(i + 3) } : { titre: null, texte: t };
 }
-/** Liste à puces carrées, fait clé en gras ; découpable d'une page à l'autre. */
-function puces(items, { numeros = false } = {}) {
+/** Pictogramme d'un fait selon son thème (mots du fait clé en gras, puis du texte). */
+const THEMES_PICTOS = [
+  [/client|commerc|fid[eé]l|relation/i, "poignee"], [/[ée]quipe|salari|encadr|personnel|compagnon|apprenti|dirigeant/i, "equipe"],
+  [/croissance|progress|hausse|d[ée]velopp|trajectoire|extension/i, "croissance"], [/marge|rentab|ebe|r[ée]sultat/i, "graphe"],
+  [/dette|endett|tr[ée]sorerie|bilan|financ/i, "balance"], [/chiffre d'affaires|\bca\b|€/i, "euro"],
+  [/march[ée]|secteur|concurren|demande/i, "globe"], [/r[ée]glement|norme|certif|qualif|label/i, "bouclier"],
+  [/[ée]quipement|machine|usinage|atelier|production|capacit/i, "usine"], [/qualit|savoir|sur mesure|expertise/i, "qualite"],
+  [/offre|produit|service|gamme/i, "metier"], [/r[ée]gion|zone|g[ée]ograph|implant|site|bretagne|loire/i, "lieu"],
+  [/cr[ée]ation|histoire|ann[ée]e|depuis|aujourd/i, "calendrier"], [/r[ée]current|contrat|r[ée]gulier/i, "horloge"],
+  [/risque|attention|d[ée]pend/i, "alerte"], [/murs|bail|locaux/i, "document"], [/accompagn|transition|calendrier|signature/i, "signature"],
+  [/p[ée]rim[eè]tre|cession|capital|holding/i, "cadenas"], [/livr|pose|chantier/i, "camion"], [/compl[ée]ter/i, "loupe"],
+];
+const pictoDe = (texte) => { const { titre, texte: t } = eclaterPuce(texte); const cherche = `${titre || ""} ${titre ? "" : t}`; return (THEMES_PICTOS.find(([re]) => re.test(cherche)) || THEMES_PICTOS.find(([re]) => re.test(t)) || [null, "valide"])[1]; };
+/** Liste de faits : pictogramme du thème, fait clé en gras ; découpable d'une page à l'autre. */
+function puces(items, { numeros = false, pictos = true } = {}) {
   if (!items?.length) return null;
-  return el("ul", { class: `im-puces${numeros ? " numerotees" : ""}`, "data-decoupable": "" },
-    ...items.map((t, k) => el("li", {}, numeros ? carre(k + 1) : null, el("span", {}, ...enrichi(t)))));
+  return el("ul", { class: `im-puces${numeros ? " numerotees" : ""}${pictos && !numeros ? " pictos" : ""}`, "data-decoupable": "" },
+    ...items.map((t, k) => el("li", {}, numeros ? carre(k + 1) : pictos ? el("span", { class: "im-puce-picto" }, icone(pictoDe(t), "im-picto")) : null, el("span", {}, ...enrichi(t)))));
 }
 /** Texte d'un chapitre → éléments de liste (les paragraphes deviennent des puces, comme dans les mémorandums). */
 const textePuces = (s) => { const { paragraphes, puces: l } = decouperTexte(s.contenu); return [...paragraphes, ...l]; };
-const corpsTexte = (s) => (s.redigee ? puces(textePuces(s)) : aRediger(s.court));
+const corpsTexte = (s) => {
+  if (!s.redigee) return aRediger(s.court);
+  const { paragraphes, puces: l } = decouperTexte(s.contenu);
+  if (!l.length) return puces(paragraphes, { pictos: false });
+  return [paragraphes.length ? el("p", { class: "im-chapeau-texte" }, ...enrichi(paragraphes.join(" "))) : null, puces(l)];
+};
 
 /** Colonne de chiffres clés à pictogrammes cerclés. */
 function colonneChiffres(items) {
@@ -291,6 +316,30 @@ function histogramme({ annees, valeurs, marges = null, libelle, croissance = fal
     marges.forEach((m, i) => { if (!ok(m)) return; g.append(svg("rect", { x: cx(i) - 4, y: y(m) - 4, width: 8, height: 8, transform: `rotate(45 ${cx(i)} ${y(m)})`, class: "im-courbe-point" })); g.append(texte(cx(i), y(m) - 11, pourcent(m), "im-graph-marge")); });
   }
   return g;
+}
+/** Répartition du chiffre d'affaires du dernier exercice : charges et EBE (anneau, parts écrites). */
+function structureCharges() {
+  const c = cr(), i = c.annees.length - 1, ca = serie("chiffre_affaires")[i];
+  if (i < 0 || !ok(ca) || ca <= 0) return null;
+  const v = (cle) => Math.abs(serie(cle)[i] ?? 0);
+  const parts = [["Achats consommés", v("achats_consommes"), "#C9A37E"], ["Charges externes", v("charges_externes"), "#9DB8A8"],
+    ["Personnel", v("charges_personnel"), "#2B5040"], ["Impôts et taxes", v("impots_taxes"), "#D9CDB8"], ["EBE", serie("ebe")[i], "#A8653A"]]
+    .filter(([, x]) => ok(x) && x > 0);
+  const total = parts.reduce((a, [, x]) => a + x, 0);
+  if (Math.abs(total - ca) / ca > 0.08) return null; // autres produits ou postes non détaillés : on ne dessine pas un anneau faux
+  const R = 60, ep = 22, C = 2 * Math.PI * R;
+  const g = svg("svg", { viewBox: "0 0 160 160", class: "im-anneau-charges", role: "img", "aria-label": `Répartition du chiffre d'affaires ${c.annees[i]} : ${parts.map(([l, x]) => `${l} ${pourcent(x / ca, { decimales: 0 })}`).join(", ")}` });
+  let cumul = 0;
+  for (const [, x, coul] of parts) { const l = (x / total) * C; g.append(svg("circle", { cx: 80, cy: 80, r: R, fill: "none", stroke: coul, "stroke-width": ep, "stroke-dasharray": `${l} ${C}`, "stroke-dashoffset": String(-cumul), transform: "rotate(-90 80 80)" })); cumul += l; }
+  const t = svg("text", { x: 80, y: 78, "text-anchor": "middle", class: "im-anneau-val" }); t.textContent = montant(ca); g.append(t);
+  const t2 = svg("text", { x: 80, y: 95, "text-anchor": "middle", class: "im-anneau-lib" }); t2.textContent = `CA ${c.annees[i]}`; g.append(t2);
+  return el("div", { class: "im-charges" }, g, el("ul", { class: "im-charges-legende" }, ...parts.map(([l, x, coul]) => el("li", {}, el("i", { style: `background:${coul}` }), el("span", { text: l }), el("strong", { text: pourcent(x / ca, { decimales: 0 }) })))));
+}
+/** Besoin en fonds de roulement en jours de chiffre d'affaires, par exercice (barres horizontales). */
+function graphiqueBfr() {
+  const bfr = (ch().endettement?.bfr || []).filter((b) => ok(b.jours));
+  if (bfr.length < 2) return null;
+  return barresH(bfr.map((b, k) => ({ libelle: String(b.annee), valeur: Math.max(0, b.jours), texte: `${Math.round(b.jours)} jours`, accent: k === bfr.length - 1 })));
 }
 /** Ligne de graphique : libellé à gauche dans un cartouche, graphique, pastille de croissance. */
 const ligneGraphique = (libelle, graphique, pastille) => (graphique ? el("div", { class: "im-ligne-graph" },
@@ -612,10 +661,20 @@ function pagesChapitre(s) {
       const ebeAnnees = avecRetraite ? er.annees : c.annees, ebeVals = avecRetraite ? er.ebe_retraite : serie("ebe"), marges = avecRetraite ? er.marge_retraitee : serie("ebe_pct");
       const retraite = er?.ebe_retraite?.at(-1), marge = er?.marge_retraitee?.at(-1);
       const tcamTxt = (x) => (t && ok(x) && c.annees.length >= 2 ? `TCAM ${t.de}-${t.a} : ${pourcent(x, { signe: true })}` : null);
+      const charges = structureCharges();
+      const ratios = [ok(marge) ? [pourcent(marge), "Marge d'EBE retraitée", "graphe"] : null,
+        ok(serie("marge_brute_pct").at(-1)) ? [pourcent(serie("marge_brute_pct").at(-1)), "Marge brute", "euro"] : null,
+        ok(serie("resultat_net_pct").at(-1)) ? [pourcent(serie("resultat_net_pct").at(-1)), "Marge nette", "valide"] : null,
+        endet && ok(endet.total) ? [montant(Math.abs(endet.total)), endet.total <= 0 ? "Trésorerie nette" : "Dette nette", "balance"] : null].filter(Boolean);
       const pages = [chapitre(s, { titre: "Chiffres clés financiers", contenu: [
         c.annees.length ? el("div", { class: "im-chevron-titre" }, `Performances historiques · exercices ${c.annees[0]} à ${c.annees.at(-1)}`) : aRediger("Les chiffres (aucun exercice validé)"),
-        ligneGraphique("Chiffre d'affaires (en k€)", histogramme({ annees: c.annees, valeurs: serie("chiffre_affaires"), libelle: "Chiffre d'affaires", croissance: true }), tcamTxt(t?.ca)),
-        ligneGraphique(`${avecRetraite ? "EBE retraité" : "EBE"} (en k€) et marge`, histogramme({ annees: ebeAnnees, valeurs: ebeVals, marges, libelle: avecRetraite ? "EBE retraité" : "EBE" }), avecRetraite ? null : tcamTxt(t?.ebe))],
+        el("div", { class: "im-grille im-g-finances" },
+          el("div", { class: "im-pile" },
+            ligneGraphique("Chiffre d'affaires (en k€)", histogramme({ annees: c.annees, valeurs: serie("chiffre_affaires"), libelle: "Chiffre d'affaires", croissance: true }), tcamTxt(t?.ca)),
+            ligneGraphique(`${avecRetraite ? "EBE retraité" : "EBE"} (en k€) et marge`, histogramme({ annees: ebeAnnees, valeurs: ebeVals, marges, libelle: avecRetraite ? "EBE retraité" : "EBE" }), avecRetraite ? null : tcamTxt(t?.ebe))),
+          el("div", { class: "im-pile" },
+            charges ? encadre(`Où va un euro de chiffre d'affaires (${c.annees.at(-1)})`, charges) : null,
+            ratios.length ? el("div", { class: "im-ratios" }, ...ratios.map(([v, l, ic]) => el("div", { class: "im-ratio" }, el("span", { class: "im-puce-picto" }, icone(ic, "im-picto")), el("strong", { text: v }), el("span", { text: `${l} ${c.annees.at(-1)}` })))) : null))],
         sources: src })];
       pages.push(page({ s, ancre: false, titre: `Compte de résultat ${c.annees.length ? `${c.annees[0]}-${c.annees.at(-1)}` : ""}`.trim(),
         message: ok(ca) ? `Un chiffre d'affaires de ${montant(ca)} en ${an}${t && ok(t.ca) && c.annees.length >= 2 ? `, ${t.ca >= 0 ? "en hausse" : "en baisse"} de ${pourcent(Math.abs(t.ca))} par an depuis ${t.de}` : ""}` : null,
@@ -639,6 +698,7 @@ function pagesChapitre(s) {
               el("li", { text: "Dette positive ; trésorerie et placements en déduction, entre parenthèses." }),
               ok(endet.sur_ebe) && endet.total > 0 ? el("li", {}, el("span", {}, "Dette nette rapportée à l'EBE normatif : ", el("strong", { text: multiple(endet.sur_ebe) }), ".")) : null,
               bfr.length ? el("li", {}, el("span", {}, `Besoin en fonds de roulement de ${kEuros(bfr.at(-1).montant)} k€ en ${bfr.at(-1).annee}, soit `, el("strong", { text: `${Math.round(bfr.at(-1).jours)} jours` }), " de chiffre d'affaires.")) : null),
+              graphiqueBfr() ? encadre("BFR en jours de chiffre d'affaires", graphiqueBfr()) : null,
               encadre("Indicateurs de structure financière", el("div", { class: "im-bande-chiffres grille-2" }, ...[
                 ok(endet.total) ? [montant(Math.abs(endet.total)), endet.total <= 0 ? `Trésorerie nette au 31/12/${endet.annee}` : `Dette nette au 31/12/${endet.annee}`] : null,
                 ok(endet.sur_ebe) && endet.total > 0 ? [multiple(endet.sur_ebe), "Dette nette / EBE normatif"] : null,
@@ -733,6 +793,8 @@ function decouper() {
     for (let garde = 0; garde < 5; garde++) {
       const zone = courante.querySelector(".im-zone");
       if (zone.scrollHeight <= zone.clientHeight + 2) break;
+      // D'abord resserrer légèrement le texte : une page (suite) pour deux puces serait plus vide que pleine
+      if (!courante.classList.contains("serre")) { courante.classList.add("serre"); if (zone.scrollHeight <= zone.clientHeight + 2) break; }
       const cible = [...zone.querySelectorAll("[data-decoupable]")].filter((b) => b.children.length > 1).at(-1);
       if (!cible) break;
       const reports = [];
