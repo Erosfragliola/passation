@@ -599,3 +599,6 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   df47ead9). Vérifié en ligne : quatre bulles et forme découpée, aucune ressource en erreur (un 404 mis en cache
   juste après le déploiement sur `forme-hero.js` s'est résorbé en moins d'une minute), estimation 434436622 ok,
   routes privées 401. Tests : 359.
+- **18/11/2026, retouches du hero v5** (branche `hero-bulles-gauche`) : bulles de gauche posées par-dessus la vidéo
+  avec une ombre, dépassant un peu (la forme ne se découpe plus qu'autour des deux bulles de droite) ; vidéo élargie ;
+  marges intérieures fluides pour que le texte et les coches ne passent plus sous la bulle du bas à droite.
