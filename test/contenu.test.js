@@ -143,11 +143,11 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(PAGE).toMatch(/<li data-si="prix_dossier" data-t="comment\.etapes\.2\.pastilles\.1">/);
     expect(PAGE).not.toMatch(/id="tarifs"|nav\.tarifs/);
   });
-  it("les parties dans l'ordre (v3 du 17/11/2026 : confidentialité dans « Pourquoi », livrables ensuite) ; une seule balise vidéo", () => {
+  it("les parties dans l'ordre (bento du 18/11/2026 : dossier, étapes, confidentialité) ; une seule balise vidéo", () => {
     const ids = [...PAGE.matchAll(/<section id="([^"]+)"/g)].map((m) => m[1]);
-    expect(ids).toEqual(["accueil", "resultat", "histoire", "comment", "pourquoi", "livrables", "equipe", "preuves", "guides", "questions", "relance"]);
+    expect(ids).toEqual(["accueil", "resultat", "livrables", "comment", "confidentialite", "equipe", "preuves", "guides", "questions", "relance"]);
     expect(PAGE).toMatch(/<header class="nav-zone"[\s\S]*<main[\s\S]*<\/main>\s*<footer class="pied">/);
-    expect(PAGE).not.toMatch(/id="essai"|id="parti-pris"|id="tarifs"|etabli-1200|parti-pris-video/);
+    expect(PAGE).not.toMatch(/id="essai"|id="parti-pris"|id="tarifs"|id="histoire"|histoire-page\.js|etabli-1200|parti-pris-video/);
     expect([...PAGE.matchAll(/<video class="([^"]+)"/g)].every((m) => m[1] === "hero-video")).toBe(true);
   });
   it("sections et éléments retirés sans contenu : équipe, preuves (2 témoignages), guides (3), questions à compléter", () => {
@@ -165,20 +165,14 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(legendeTemoignage({ prenom: "Anne", metier: "", ville: "Nantes" })).toBe("Anne, Nantes");
     expect(completer({ cles: { temoignages: [{ prenom: "A" }, { ville: "B" }] }, preuves: { x: 1 } }).preuves).toEqual({ x: 1, legendes: ["A", "B"] });
   });
-  it("v3 : frise sans onglets, un seul dossier fictif, livrables dans le menu, cartes « Pourquoi » de même structure", () => {
-    expect(PAGE).not.toMatch(/role="tablist"|role="tabpanel"|onglets\.js/);
+  it("bento : trois étapes, trois blocs, encoche du hero avec un exemple marqué fictif, sources réelles", () => {
+    expect(PAGE).not.toMatch(/role="tablist"|role="tabpanel"|onglets\.js|data-dossier-final|hero-tuiles/);
     expect([...PAGE.matchAll(/<li class="comment-etape" id="comment-(\d)">/g)].map((m) => m[1])).toEqual(["1", "2", "3"]);
-    expect(PAGE.match(/data-dossier-final/g)).toHaveLength(1);                         // plus de doublon du dossier
-    expect(PAGE).toMatch(/<div class="carte-large carte-verte confid-carte" id="confidentialite"/);
-    expect(PAGE).not.toMatch(/pourquoi-chiffre/);
-    expect(PAGE.match(/href="#livrables"/g).length).toBeGreaterThanOrEqual(3);           // menu, menu mobile, tuile du hero
-    const pourquoi = PAGE.slice(PAGE.indexOf('<section id="pourquoi"'), PAGE.indexOf('<section id="livrables"'));
-    expect(pourquoi.match(/<article class="carte-claire">/g)).toHaveLength(3);
-    expect(pourquoi.match(/class="pourquoi-visuel/g)).toHaveLength(3);
-    expect(contenu.hero.note_comptes).toBe("");                                          // une seule ligne sous le champ
-  });
-  it("photo de la carte « Pourquoi » : celle du dirigeant si fournie, sinon une image de la vidéo", () => {
-    expect(PAGE).toMatch(/<img class="pourquoi-photo" data-si="photo_dirigeant"/);
-    expect(PAGE).toMatch(/<img class="pourquoi-photo" data-sinon="photo_dirigeant" src="\/img\/photos\/hero-poster-800\.webp"/);
+    expect(PAGE.match(/<article class="bento-bloc /g)).toHaveLength(3);
+    expect(PAGE.match(/href="#livrables"/g).length).toBeGreaterThanOrEqual(2);           // menu, menu mobile
+    expect(PAGE).toMatch(/<aside class="hero-encoche" id="hero-encoche"/);
+    expect(contenu.hero.carte.fictif).toBe("exemple fictif");                            // jamais présenté comme réel
+    expect(contenu.sources.liste).toEqual(["INSEE", "INPI", "BODACC"]);                  // registres réellement utilisés
+    expect(contenu.hero.note_comptes).toBe("");
   });
 });

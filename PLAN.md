@@ -540,3 +540,12 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     renvois numérotés, endettement et BFR) ; perspectives ; organigramme juridique ; processus en cinq couloirs.
   - Emplacements photo « à ajouter » quand le dirigeant n'a pas déposé de photo. Espace des milliers insécable
     (U+00A0) pour l'affichage en gras. Tests : 313. Vérifié en local : 24 pages, aucun débordement, PDF 24 pages.
+- **18/11/2026, accueil « bento » mis en ligne** (maquette validée par le dirigeant, inspirée de skarlett.fr pour la
+  forme, rien repris) : la vidéo en haut, découpée d'une encoche (bas à droite) où se loge un exemple d'estimation
+  marqué « exemple fictif » (`public/js/landing/encoche.js`, chemin de découpe recalculé à chaque taille ; sur
+  téléphone la carte se pose sur le bas de la vidéo) ; titres en capitales étroites (Big Shoulders, déjà présente) ;
+  ligne « Données issues de INSEE · INPI · BODACC » ; dossier en 3 blocs ; étapes à grands numéros ; confidentialité
+  en un bloc vert (nom masqué qui devient « Projet Chêne ») ; FAQ et appel final conservés. Retirés : l'histoire des
+  clés (280vh), les tuiles du hero, les cartes « Pourquoi » et les aperçus des livrables. Feuille
+  `public/css/landing-bento.css`, textes nouveaux dans `landing.json` (`hero.carte`, `hero.coches`, `sources`,
+  `dossier`). Tests : 312. Le parcours après le SIREN (branche `parcours-performant`) n'est pas encore fusionné.

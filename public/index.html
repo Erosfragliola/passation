@@ -20,10 +20,11 @@
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="/img/photos/hero-poster-1600.webp" imagesrcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w" imagesizes="100vw" fetchpriority="high">
   <link rel="preload" href="/fonts/geist-var.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/big-shoulders-bold.woff2" as="font" type="font/woff2" crossorigin>
   <script>try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&!location.hash&&!location.search&&!sessionStorage.getItem("passation-intro"))d.classList.add("avec-intro")}catch(e){}</script>
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/landing-bento.css">
 </head>
 <body class="landing">
 <!-- Intro (première visite) : le seuil du logo se dessine, la porte s'allume, on entre. public/js/landing/intro.js -->
@@ -107,7 +108,7 @@
     </div>
     <div class="conteneur hero-contenu">
       <p class="surtitre" data-t="hero.surtitre"></p>
-      <h1 id="titre-hero" data-t="hero.titre"></h1>
+      <h1 id="titre-hero" class="affiche" data-t="hero.titre"></h1>
       <p class="chapo" data-t="hero.sous_titre"></p>
       <form class="recherche" action="/connexion" method="get" role="search" data-champ-siren="accueil" data-t-attr="aria-label=champ.zone">
         <div class="recherche-champ">
@@ -120,7 +121,9 @@
         <ul class="suggestions" id="suggestions" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
         <p class="recherche-message" id="recherche-message" role="status" data-message hidden></p>
         <div class="recherche-note" id="note-recherche">
-          <p data-t="hero.note"></p>
+          <ul class="hero-coches">
+            <li data-t="hero.coches.0"></li><li data-t="hero.coches.1"></li><li data-t="hero.coches.2"></li>
+          </ul>
           <p data-t="hero.note_comptes"></p>
         </div>
       </form>
@@ -130,24 +133,29 @@
         <li data-t="hero.preuves.registres"></li>
       </ul>
     </div>
+    <!-- Bento du 18/11/2026 : la vidéo est découpée d'une encoche (bas à droite) où se loge un exemple d'estimation
+         (public/js/landing/encoche.js) ; sur téléphone, la carte se pose sur le bas de la vidéo -->
     <div class="hero-bas">
-      <div class="hero-bas-entete">
-        <p class="hero-metier" aria-hidden="true" hidden></p>
-        <p class="hero-tuiles-libelle" id="hero-tuiles-libelle" data-t="hero.tuiles.libelle"></p>
-        <button class="hero-pause" type="button" hidden>
-          <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
-          <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
-          <span class="visuellement-cache"></span>
-        </button>
-      </div>
-      <ul class="hero-tuiles" aria-labelledby="hero-tuiles-libelle">
-        <li><a href="#comment-1"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><strong data-t="hero.tuiles.liste.0.titre"></strong><span data-t="hero.tuiles.liste.0.texte"></span></a></li>
-        <li><a href="#comment-2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11M10 20V5M16 20v-6M2.5 20h19"/></svg><strong data-t="hero.tuiles.liste.1.titre"></strong><span data-t="hero.tuiles.liste.1.texte"></span></a></li>
-        <li><a href="#confidentialite"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><strong data-t="hero.tuiles.liste.2.titre"></strong><span data-t="hero.tuiles.liste.2.texte"></span></a></li>
-        <li><a href="#livrables"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8.5L19 7.5V21H6z"/><path d="M14 3v5h5M9 12.5h7M9 16.5h5"/></svg><strong data-t="hero.tuiles.liste.3.titre"></strong><span data-t="hero.tuiles.liste.3.texte"></span></a></li>
-      </ul>
+      <p class="hero-metier" aria-hidden="true" hidden></p>
+      <button class="hero-pause" type="button" hidden>
+        <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
+        <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
+        <span class="visuellement-cache"></span>
+      </button>
     </div>
+    <aside class="hero-encoche" id="hero-encoche" data-t-attr="aria-label=hero.carte.titre">
+      <div class="carte-estimation">
+        <p class="carte-estimation-tete"><span data-t="hero.carte.titre"></span><em data-t="hero.carte.fictif"></em></p>
+        <p class="carte-estimation-code" data-t="hero.carte.code"></p>
+        <p class="carte-estimation-valeur chiffre" data-t="hero.carte.valeur"></p>
+        <p class="carte-estimation-pied" data-t="hero.carte.pied"></p>
+      </div>
+    </aside>
   </section>
+
+  <div class="sources-bande" data-t-attr="aria-label=pourquoi.sources">
+    <span data-t="sources.libelle"></span><b data-t="sources.liste.0"></b><b data-t="sources.liste.1"></b><b data-t="sources.liste.2"></b>
+  </div>
 
   <!-- Résultat de l'estimation (public/js/landing/resultat.js) : nom de code, fourchette, teaser anonyme, deux suites.
        Aucun compte n'est demandé avant de voir la valeur. -->
@@ -189,277 +197,97 @@
     </div>
   </section>
 
-  <!-- 2. Histoire : comprendre. L'établi et le trousseau (public/js/landing/histoire.js) : scène collante pilotée par
-       le défilement sur ordinateur, panneaux empilés sur téléphone, tablette et en mouvement réduit. Quatre temps :
-       les clés, les chapitres, le dossier, puis « Et la vôtre ? » (nom de code d'un exemple fictif, champ SIREN). -->
-  <section id="histoire" class="histoire" aria-labelledby="titre-histoire">
-    <div class="histoire-collant">
-      <div class="histoire-temps histoire-temps-1">
-        <div class="histoire-visuel" aria-hidden="true"></div>
-        <div class="histoire-texte">
-          <p class="surtitre" data-t="histoire.temps1.surtitre"></p>
-          <h2 id="titre-histoire" data-t="histoire.temps1.titre"></h2>
-          <p class="chapo" data-t="histoire.temps1.texte"></p>
-        </div>
+  <!-- 2. Le dossier, en trois blocs (bento du 18/11/2026) -->
+  <section id="livrables" class="bloc dossier" aria-labelledby="titre-dossier">
+    <div class="conteneur">
+      <h2 id="titre-dossier" class="affiche" data-t="dossier.titre"></h2>
+      <p class="chapo" data-t="dossier.texte"></p>
+      <div class="bento">
+        <article class="bento-bloc bento-documents">
+          <img class="bento-photo" src="/img/photos/etape-artisane-1600.webp" srcset="/img/photos/etape-artisane-800.webp 800w, /img/photos/etape-artisane-1600.webp 1600w" sizes="(min-width: 1024px) 700px, 100vw" data-t-attr="alt=dossier.documents.photo_alt" width="1600" height="900" loading="lazy">
+          <div class="bento-panneau">
+            <h3 class="affiche" data-t="dossier.documents.titre"></h3>
+            <p data-t="dossier.documents.texte"></p>
+            <ul class="bento-pilules"><li data-t="dossier.documents.pilules.0"></li><li data-t="dossier.documents.pilules.1"></li><li data-t="dossier.documents.pilules.2"></li></ul>
+          </div>
+        </article>
+        <article class="bento-bloc bento-methodes">
+          <p class="bento-chiffre affiche" aria-hidden="true" data-t="dossier.methodes.chiffre"></p>
+          <h3><span class="visuellement-cache" data-t="dossier.methodes.chiffre"></span> <span data-t="dossier.methodes.titre"></span></h3>
+          <p data-t="dossier.methodes.texte"></p>
+        </article>
+        <article class="bento-bloc bento-liste">
+          <div>
+            <ul class="liste-dossier" data-t-attr="aria-label=dossier.liste.alt">
+              <li class="fait" data-t="dossier.liste.etapes.0"></li>
+              <li class="fait" data-t="dossier.liste.etapes.1"></li>
+              <li class="fait" data-t="dossier.liste.etapes.2"></li>
+              <li data-t="dossier.liste.etapes.3"></li>
+            </ul>
+            <p class="liste-legende" data-t="dossier.liste.legende"></p>
+          </div>
+        </article>
       </div>
-      <div class="histoire-temps histoire-temps-2">
-        <div class="histoire-visuel" aria-hidden="true"></div>
-        <div class="histoire-texte">
-          <p class="surtitre" data-t="histoire.temps2.surtitre"></p>
-          <h3 class="titre-section" data-t="histoire.temps2.titre"></h3>
-          <p class="chapo" data-t="histoire.temps2.texte"></p>
-        </div>
-        <ol class="visuellement-cache">
-          <li><span data-t="histoire.chapitres.0.numero"></span> <span data-t="histoire.chapitres.0.titre"></span> : <span data-t="histoire.chapitres.0.detail"></span></li>
-          <li><span data-t="histoire.chapitres.1.numero"></span> <span data-t="histoire.chapitres.1.titre"></span> : <span data-t="histoire.chapitres.1.detail"></span></li>
-          <li><span data-t="histoire.chapitres.2.numero"></span> <span data-t="histoire.chapitres.2.titre"></span> : <span data-t="histoire.chapitres.2.detail"></span></li>
-          <li><span data-t="histoire.chapitres.3.numero"></span> <span data-t="histoire.chapitres.3.titre"></span> : <span data-t="histoire.chapitres.3.detail"></span></li>
-          <li><span data-t="histoire.chapitres.4.numero"></span> <span data-t="histoire.chapitres.4.titre"></span> : <span data-t="histoire.chapitres.4.detail"></span></li>
-          <li><span data-t="histoire.chapitres.5.numero"></span> <span data-t="histoire.chapitres.5.titre"></span> : <span data-t="histoire.chapitres.5.detail"></span></li>
-          <li><span data-t="histoire.chapitres.6.numero"></span> <span data-t="histoire.chapitres.6.titre"></span> : <span data-t="histoire.chapitres.6.detail"></span></li>
-          <li><span data-t="histoire.chapitres.7.numero"></span> <span data-t="histoire.chapitres.7.titre"></span> : <span data-t="histoire.chapitres.7.detail"></span></li>
-          <li><span data-t="histoire.chapitres.8.numero"></span> <span data-t="histoire.chapitres.8.titre"></span> : <span data-t="histoire.chapitres.8.detail"></span></li>
-        </ol>
-      </div>
-      <div class="histoire-temps histoire-temps-3">
-        <div class="histoire-visuel" aria-hidden="true"></div>
-        <div class="histoire-texte">
-          <p class="surtitre" data-t="histoire.temps3.surtitre"></p>
-          <h3 class="titre-section" data-t="histoire.temps3.titre"></h3>
-          <p class="chapo" data-t="histoire.temps3.texte"></p>
-        </div>
-      </div>
-      <!-- 4. Et la vôtre ? Le dossier reçoit son nom de code (exemple fictif), puis le champ partagé -->
-      <div class="histoire-temps histoire-temps-4">
-        <div class="histoire-texte">
-          <h3 class="titre-section" data-t="histoire.temps4.titre"></h3>
-          <p class="chapo" data-t="histoire.temps4.texte"></p>
-          <form class="recherche recherche-histoire" action="/connexion" method="get" data-champ-siren="histoire">
-            <div class="recherche-champ">
-              <label for="q-histoire" data-t="champ.libelle"></label>
-              <input id="q-histoire" name="q" type="search" autocomplete="off" data-t-attr="placeholder=histoire.temps4.champ"
-                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-histoire">
-              <button class="btn btn-vert" type="submit"><span data-t="champ.bouton_court"></span> <span class="fleche" aria-hidden="true">→</span></button>
-            </div>
-            <ul class="suggestions" id="suggestions-histoire" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
-            <p class="recherche-message" id="message-histoire" role="status" data-message hidden></p>
-          </form>
-        </div>
-      </div>
-      <div class="histoire-progression" aria-hidden="true"><span></span></div>
     </div>
   </section>
 
-  <!-- 3. Comment ça marche : les trois étapes visibles d'un coup, en frise (horizontale sur ordinateur, verticale
-       sur téléphone). Les liens #comment-1, -2, -3 mènent à chaque étape. -->
+  <!-- 3. Comment ça marche : trois étapes, grands numéros. Les liens #comment-1, -2, -3 mènent à chaque étape. -->
   <section id="comment" class="bloc comment" aria-labelledby="titre-comment">
     <div class="conteneur">
-      <p class="surtitre etiquette-kraft" data-t="comment.surtitre"></p>
-      <h2 id="titre-comment" data-t="comment.titre"></h2>
-      <ol class="comment-frise">
+      <h2 id="titre-comment" class="affiche" data-t="comment.titre"></h2>
+      <ol class="etapes-simples">
         <li class="comment-etape" id="comment-1">
-          <span class="etape-numero" aria-hidden="true">1</span>
-        <div class="etape-visuel">
-          <div class="carte-resultat">
-            <p class="mono-ocre" data-t="comment.visuel1.entete"></p>
-            <p class="carte-resultat-nom" data-t="comment.visuel1.nom"></p>
-            <p class="carte-resultat-infos" data-t="comment.visuel1.infos"></p>
-            <p class="carte-resultat-valeur"><span data-t="comment.visuel1.valeur_libelle"></span> <strong data-t="comment.visuel1.valeur"></strong></p>
-            <p class="carte-resultat-mention" data-t="comment.visuel1.mention"></p>
-          </div>
-          <!-- Annotation manuscrite (décorative, le texte est déjà dans la carte) -->
-          <p class="annotation annotation-valeur" aria-hidden="true"><svg class="annotation-fleche" viewBox="0 0 90 56"><path d="M84 50c-18 3-44-2-62-26"/><path d="M22 24l11 2M22 24l1 11"/></svg><span data-t="comment.visuel1.annotation"></span></p>
-        </div>
-        <div class="etape-texte">
+          <span class="etape-numero" aria-hidden="true">01</span>
           <p class="etape-surtitre" data-t="comment.etapes.0.surtitre"></p>
-          <p class="etape-chiffre" data-t="comment.etapes.0.chiffre"></p>
           <h3 data-t="comment.etapes.0.titre"></h3>
           <p class="etape-description" data-t="comment.etapes.0.texte"></p>
-          <ul class="pastilles">
-            <li data-t="comment.etapes.0.pastilles.0"></li>
-            <li data-t="comment.etapes.0.pastilles.1"></li>
-          </ul>
-        </div>
-      </li>
+          <ul class="pastilles"><li data-t="comment.etapes.0.pastilles.0"></li><li data-t="comment.etapes.0.pastilles.1"></li></ul>
+        </li>
         <li class="comment-etape" id="comment-2">
-          <span class="etape-numero" aria-hidden="true">2</span>
-        <div class="etape-visuel">
-          <div class="carte-methodes">
-            <svg class="trombone" viewBox="0 0 24 64" aria-hidden="true"><path d="M15 20v28a4.5 4.5 0 0 1-9 0V11a7.5 7.5 0 0 1 15 0v40a10.5 10.5 0 0 1-21 0V22"/></svg>
-            <p class="mono-ocre" data-t="comment.visuel2.entete"></p>
-            <div class="methode" style="--debut: 22%; --largeur: 46%"><p data-t="comment.visuel2.methodes.0"></p><span aria-hidden="true"><i></i></span></div>
-            <div class="methode" style="--debut: 30%; --largeur: 40%"><p data-t="comment.visuel2.methodes.1"></p><span aria-hidden="true"><i></i></span></div>
-            <div class="methode" style="--debut: 18%; --largeur: 44%"><p data-t="comment.visuel2.methodes.2"></p><span aria-hidden="true"><i></i></span></div>
-            <div class="methode methode-retenue" style="--debut: 30%; --largeur: 32%"><p data-t="comment.visuel2.retenue"></p><span aria-hidden="true"><i></i></span></div>
-          </div>
-        </div>
-        <div class="etape-texte">
+          <span class="etape-numero" aria-hidden="true">02</span>
           <p class="etape-surtitre" data-t="comment.etapes.1.surtitre"></p>
-          <p class="etape-chiffre" data-t="comment.etapes.1.chiffre"></p>
           <h3 data-t="comment.etapes.1.titre"></h3>
           <p class="etape-description" data-t="comment.etapes.1.texte"></p>
           <ul class="pastilles">
             <li data-si="duree_etape2" data-t="comment.etapes.1.pastilles.0"></li>
             <li data-si="prix_etape2" data-t="comment.etapes.1.pastilles.1"></li>
           </ul>
-        </div>
-      </li>
+        </li>
         <li class="comment-etape" id="comment-3">
-          <span class="etape-numero" aria-hidden="true">3</span>
-        <div class="etape-visuel">
-          <div class="rangee-cles" role="img" data-t-attr="aria-label=comment.visuel3.alt" data-rangee-cles></div>
-        </div>
-        <div class="etape-texte">
+          <span class="etape-numero" aria-hidden="true">03</span>
           <p class="etape-surtitre" data-t="comment.etapes.2.surtitre"></p>
-          <p class="etape-chiffre" data-t="comment.etapes.2.chiffre"></p>
           <h3 data-t="comment.etapes.2.titre"></h3>
           <p class="etape-description" data-t="comment.etapes.2.texte"></p>
           <ul class="pastilles">
             <li data-t="comment.etapes.2.pastilles.0"></li>
             <li data-si="prix_dossier" data-t="comment.etapes.2.pastilles.1"></li>
           </ul>
-        </div>
-      </li>
+        </li>
       </ol>
     </div>
   </section>
 
-  <!-- 4. Pourquoi Passation : la confidentialité d'abord (carte verte, le dossier fictif sous nom de code), puis trois
-       cartes de même structure (titre, texte, visuel en bas) -->
-  <section id="pourquoi" class="bloc pourquoi" aria-labelledby="titre-pourquoi">
+  <!-- 4. Confidentialité : un seul bloc vert, le nom de l'entreprise (fictive) devient un nom de code -->
+  <section id="confidentialite" class="bloc confid" aria-labelledby="titre-confid">
     <div class="conteneur">
-      <p class="surtitre etiquette-kraft" data-t="pourquoi.surtitre"></p>
-      <h2 id="titre-pourquoi" data-t="pourquoi.titre"></h2>
-      <div class="carte-large carte-verte confid-carte" id="confidentialite" aria-labelledby="titre-confid">
-        <div class="confid-texte">
-          <p class="surtitre etiquette-kraft" data-t="confidentialite.surtitre"></p>
-          <h3 class="titre-section" id="titre-confid" data-t="confidentialite.titre"></h3>
+      <div class="confid-bloc">
+        <div>
+          <h2 id="titre-confid" class="affiche" data-t="confidentialite.titre"></h2>
           <p class="chapo" data-t="confidentialite.texte"></p>
-          <ul class="garanties-cochees">
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.0.titre"></p><p data-t="confidentialite.garanties.0.texte"></p></div></li>
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.1.titre"></p><p data-t="confidentialite.garanties.1.texte"></p></div></li>
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.2.titre"></p><p data-t="confidentialite.garanties.2.texte"></p></div></li>
-          <li><svg class="coche" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m7.5 12.5 3 3 6-6.5"/></svg><div><p class="garantie-titre" data-t="confidentialite.garanties.3.titre"></p><p data-t="confidentialite.garanties.3.texte"></p></div></li>
-        </ul>
           <a class="btn btn-creme" href="/confidentialite" data-t="confidentialite.politique"></a>
         </div>
-        <div class="confid-dossier">
-          <div class="dossier-vitrine" aria-hidden="true" data-dossier-final></div>
-          <p class="histoire-fictif" data-t="confidentialite.fictif"></p>
+        <div class="confid-masque" role="img" data-t-attr="aria-label=confidentialite.exemple_alt">
+          <span class="confid-avant" aria-hidden="true" data-t="confidentialite.avant"></span>
+          <span class="confid-apres" aria-hidden="true" data-t="confidentialite.apres"></span>
+          <p class="confid-fictif" data-t="confidentialite.fictif"></p>
         </div>
+        <ul class="confid-garanties">
+          <li><strong data-t="confidentialite.garanties.0.titre"></strong><span data-t="confidentialite.garanties.0.texte"></span></li>
+          <li><strong data-t="confidentialite.garanties.1.titre"></strong><span data-t="confidentialite.garanties.1.texte"></span></li>
+          <li><strong data-t="confidentialite.garanties.2.titre"></strong><span data-t="confidentialite.garanties.2.texte"></span></li>
+          <li><strong data-t="confidentialite.garanties.3.titre"></strong><span data-t="confidentialite.garanties.3.texte"></span></li>
+        </ul>
       </div>
-      <div class="pourquoi-cartes">
-        <article class="carte-claire">
-          <h3 data-t="pourquoi.cartes.0.titre"></h3>
-          <p data-t="pourquoi.cartes.0.texte"></p>
-          <div class="pourquoi-visuel">
-            <img class="pourquoi-photo" data-si="photo_dirigeant" data-t-attr="src=cles.photo_dirigeant; alt=pourquoi.photo_alt" width="720" height="540" loading="lazy">
-            <img class="pourquoi-photo" data-sinon="photo_dirigeant" src="/img/photos/hero-poster-800.webp" srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w"
-                 sizes="(min-width: 1024px) 400px, 100vw" data-t-attr="alt=pourquoi.photo_alt" width="800" height="422" loading="lazy">
-          </div>
-        </article>
-        <article class="carte-claire">
-          <h3 data-t="pourquoi.cartes.1.titre"></h3>
-          <p data-t="pourquoi.cartes.1.texte"></p>
-          <div class="pourquoi-visuel hypotheses" aria-hidden="true">
-            <p class="mono-ocre" data-t="pourquoi.cartes.1.visuel.entete"></p>
-            <ul>
-              <li><span data-t="pourquoi.cartes.1.visuel.lignes.0"></span><i class="cellule"></i><small data-t="pourquoi.cartes.1.visuel.source"></small></li>
-              <li><span data-t="pourquoi.cartes.1.visuel.lignes.1"></span><i class="cellule"></i><small data-t="pourquoi.cartes.1.visuel.source"></small></li>
-              <li><span data-t="pourquoi.cartes.1.visuel.lignes.2"></span><i class="cellule"></i><small data-t="pourquoi.cartes.1.visuel.source"></small></li>
-            </ul>
-            <p class="hypotheses-legende"><i class="cellule"></i> <span data-t="pourquoi.cartes.1.visuel.modifiable"></span></p>
-          </div>
-        </article>
-        <article class="carte-claire">
-          <h3 data-t="pourquoi.cartes.2.titre"></h3>
-          <p data-t="pourquoi.cartes.2.texte"></p>
-          <div class="pourquoi-visuel fichiers" aria-hidden="true">
-            <p class="fichier fichier-xlsx"><b>XLSX</b><span data-t="pourquoi.cartes.2.visuel.fichiers.0"></span></p>
-            <p class="fichier fichier-pdf"><b>PDF</b><span data-t="pourquoi.cartes.2.visuel.fichiers.1"></span></p>
-            <p class="fichier fichier-pdf"><b>PDF</b><span data-t="pourquoi.cartes.2.visuel.fichiers.2"></span></p>
-            <p class="fichiers-mention" data-t="pourquoi.cartes.2.visuel.mention"></p>
-          </div>
-        </article>
-      </div>
-      <p class="pourquoi-sources"><span data-t="pourquoi.sources"></span><span data-si="hebergement" data-t="pourquoi.hebergement"></span><span data-si="partenaires" data-t="pourquoi.partenaires"></span></p>
-    </div>
-  </section>
-
-  <!-- 5. Ce que vous recevez : les trois documents en aperçu (exemple fictif « Projet Chêne », décor en HTML) -->
-  <section id="livrables" class="bloc livrables" aria-labelledby="titre-livrables">
-    <div class="conteneur">
-      <p class="surtitre etiquette-kraft" data-t="livrables.surtitre"></p>
-      <h2 id="titre-livrables" data-t="livrables.titre"></h2>
-      <p class="chapo" data-t="livrables.texte"></p>
-      <ul class="livrables-liste">
-        <li class="livrable">
-          <div class="livrable-apercu" aria-hidden="true">
-            <div class="feuille feuille-teaser">
-              <p class="feuille-entete" data-t="livrables.teaser.entete"></p>
-              <p class="mini-tampon" data-t="livrables.teaser.nom"></p>
-              <dl>
-                <div><dt data-t="livrables.teaser.lignes.0.0"></dt><dd data-t="livrables.teaser.lignes.0.1"></dd></div>
-                <div><dt data-t="livrables.teaser.lignes.1.0"></dt><dd data-t="livrables.teaser.lignes.1.1"></dd></div>
-                <div><dt data-t="livrables.teaser.lignes.2.0"></dt><dd data-t="livrables.teaser.lignes.2.1"></dd></div>
-                <div><dt data-t="livrables.teaser.lignes.3.0"></dt><dd data-t="livrables.teaser.lignes.3.1"></dd></div>
-              </dl>
-              <p class="feuille-texte"><i></i><i></i><i></i></p>
-              <p class="feuille-valeur"><span data-t="livrables.teaser.valeur_libelle"></span> <b data-t="livrables.teaser.valeur"></b></p>
-            </div>
-          </div>
-          <p class="livrable-type" data-t="livrables.docs.0.type"></p>
-          <h3 data-t="livrables.docs.0.titre"></h3>
-          <p data-t="livrables.docs.0.texte"></p>
-          <p class="livrable-format" data-t="livrables.docs.0.format"></p>
-        </li>
-        <li class="livrable">
-          <div class="livrable-apercu" aria-hidden="true">
-            <div class="feuille feuille-memo">
-              <p class="feuille-entete"><span data-t="livrables.memo.entete"></span><span data-t="livrables.memo.mention"></span></p>
-              <p class="feuille-titre" data-t="livrables.memo.nom"></p>
-              <p class="feuille-sommaire" data-t="livrables.memo.sommaire"></p>
-              <ol>
-                <li><b data-t="livrables.memo.chapitres.0.numero"></b><span data-t="livrables.memo.chapitres.0.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.1.numero"></b><span data-t="livrables.memo.chapitres.1.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.2.numero"></b><span data-t="livrables.memo.chapitres.2.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.3.numero"></b><span data-t="livrables.memo.chapitres.3.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.4.numero"></b><span data-t="livrables.memo.chapitres.4.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.5.numero"></b><span data-t="livrables.memo.chapitres.5.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.6.numero"></b><span data-t="livrables.memo.chapitres.6.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.7.numero"></b><span data-t="livrables.memo.chapitres.7.titre"></span></li>
-                <li><b data-t="livrables.memo.chapitres.8.numero"></b><span data-t="livrables.memo.chapitres.8.titre"></span></li>
-              </ol>
-            </div>
-          </div>
-          <p class="livrable-type" data-t="livrables.docs.1.type"></p>
-          <h3 data-t="livrables.docs.1.titre"></h3>
-          <p data-t="livrables.docs.1.texte"></p>
-          <p class="livrable-format" data-t="livrables.docs.1.format"></p>
-        </li>
-        <li class="livrable">
-          <div class="livrable-apercu" aria-hidden="true">
-            <div class="feuille feuille-tableur">
-              <p class="tableur-fichier" data-t="livrables.datapack.fichier"></p>
-              <p class="tableur-formule"><b>fx</b><span data-t="livrables.datapack.formule"></span></p>
-              <div class="tableur-grille">
-                <span></span><span>A</span><span>B</span><span>C</span>
-                <span>1</span><span data-t="livrables.datapack.lignes.0"></span><span class="barre" style="--d: 22%; --l: 46%"></span><span></span>
-                <span>2</span><span data-t="livrables.datapack.lignes.1"></span><span class="barre" style="--d: 30%; --l: 40%"></span><span class="jaune"></span>
-                <span>3</span><span data-t="livrables.datapack.lignes.2"></span><span class="barre" style="--d: 18%; --l: 44%"></span><span></span>
-                <span>4</span><span class="gras" data-t="livrables.datapack.retenue"></span><span class="gras valeur" data-t="livrables.datapack.valeur"></span><span class="actif"></span>
-              </div>
-              <p class="tableur-onglets"><span data-t="livrables.datapack.onglets.0"></span><span data-t="livrables.datapack.onglets.1"></span><span data-t="livrables.datapack.onglets.2"></span><span data-t="livrables.datapack.onglets.3"></span><span data-t="livrables.datapack.onglets.4"></span><span data-t="livrables.datapack.onglets.5"></span><span data-t="livrables.datapack.onglets.6"></span><span data-t="livrables.datapack.onglets.7"></span><span class="actif" data-t="livrables.datapack.onglets.8"></span></p>
-              <p class="tableur-legende"><i class="jaune"></i> <span data-t="livrables.datapack.hypothese"></span></p>
-            </div>
-          </div>
-          <p class="livrable-type" data-t="livrables.docs.2.type"></p>
-          <h3 data-t="livrables.docs.2.titre"></h3>
-          <p data-t="livrables.docs.2.texte"></p>
-          <p class="livrable-format" data-t="livrables.docs.2.format"></p>
-        </li>
-      </ul>
-      <p class="livrables-fictif" data-t="livrables.fictif"></p>
     </div>
   </section>
 
@@ -535,7 +363,7 @@
     <div class="conteneur faq-grille">
       <div>
         <p class="surtitre etiquette-kraft" data-t="questions.surtitre"></p>
-        <h2 id="titre-faq" data-t="questions.titre"></h2>
+        <h2 id="titre-faq" class="affiche" data-t="questions.titre"></h2>
       </div>
       <div class="faq">
         <details data-si="faq_prix"><summary><span data-t="questions.liste.0.q"></span><span class="plus" aria-hidden="true"></span></summary><div class="reponse" data-t="questions.liste.0.r"></div></details>
@@ -556,7 +384,7 @@
   <!-- 11. Appel final : carte ocre clair, le champ partagé -->
   <section id="relance" class="bloc-carte relance" aria-labelledby="titre-relance">
     <div class="carte-large carte-relance">
-      <h2 id="titre-relance" data-t="relance.titre"></h2>
+      <h2 id="titre-relance" class="affiche" data-t="relance.titre"></h2>
       <p class="relance-texte" data-t="relance.texte"></p>
       <form class="recherche relance-champ" action="/connexion" method="get" data-champ-siren="relance" data-zone-champ>
         <div class="recherche-champ">
@@ -568,13 +396,6 @@
         <ul class="suggestions" id="suggestions-relance" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
         <p class="recherche-message" id="message-relance" role="status" data-message hidden></p>
       </form>
-      <!-- Tampon décoratif (le texte est déjà dans la phrase au-dessus) -->
-      <svg class="tampon-rond" viewBox="0 0 140 140" aria-hidden="true">
-        <defs><path id="tampon-cercle" d="M70 70m-51 0a51 51 0 1 1 102 0a51 51 0 1 1-102 0"/></defs>
-        <circle cx="70" cy="70" r="66" stroke-width="3"/><circle cx="70" cy="70" r="61" stroke-width="1"/><circle cx="70" cy="70" r="37" stroke-width="1.5"/>
-        <text textLength="312" lengthAdjust="spacing"><textPath href="#tampon-cercle" data-t="relance.tampon"></textPath></text>
-        <g transform="translate(54 50)" stroke-width="2.2"><path d="M9 27V15a7 7 0 0 1 14 0v12"/><path d="M5 27h22"/><circle cx="16" cy="21" r="2.6" class="plein"/></g>
-      </svg>
       <p class="relance-telephone" data-si="telephone"><span data-t="relance.telephone"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a>.</p>
     </div>
   </section>
@@ -622,7 +443,7 @@
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/landing/intro.js"></script>
 <script type="module" src="/js/landing/landing.js"></script>
-<script type="module" src="/js/landing/histoire-page.js"></script>
+<script type="module" src="/js/landing/encoche.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>

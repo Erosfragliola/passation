@@ -5,9 +5,8 @@
 // propres animations et ne sont pas concernés.
 const CIBLES = [
   "#comment .surtitre", "#comment h2", "#comment .comment-etape",
-  "#pourquoi .surtitre", "#pourquoi h2", "#confidentialite .confid-texte > *", "#confidentialite .confid-dossier",
-  "#pourquoi .pourquoi-cartes > *", "#pourquoi .pourquoi-sources",
-  "#livrables .surtitre", "#livrables h2", "#livrables .chapo", "#livrables .livrable",
+  "#confidentialite .confid-bloc",
+  "#livrables h2", "#livrables .chapo", "#livrables .bento-bloc",
   "#questions .surtitre", "#questions h2", "#questions .faq > *",
   "#relance .carte-relance",
 ];

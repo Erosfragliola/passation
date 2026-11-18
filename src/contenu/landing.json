@@ -96,7 +96,19 @@
           "texte": "Le dossier complet"
         }
       ]
-    }
+    },
+    "carte": {
+      "titre": "Votre première estimation",
+      "fictif": "exemple fictif",
+      "code": "Projet Chêne",
+      "valeur": "2,1 – 2,8 M€",
+      "pied": "Calculée en 30 secondes depuis les comptes publics"
+    },
+    "coches": [
+      "Gratuit, sans compte",
+      "Personne n’est averti",
+      "Registres officiels"
+    ]
   },
   "histoire": {
     "temps1": {
@@ -438,7 +450,10 @@
       }
     ],
     "politique": "Lire notre politique",
-    "fictif": "Exemple fictif"
+    "fictif": "Exemple fictif",
+    "avant": "Menuiserie Durand & Fils",
+    "apres": "Projet Chêne",
+    "exemple_alt": "Exemple fictif : le nom de l’entreprise devient Projet Chêne"
   },
   "equipe": {
     "surtitre": "Qui est derrière Passation",
@@ -604,6 +619,43 @@
     "video": {
       "pause": "Mettre la vidéo en pause",
       "lecture": "Lire la vidéo"
+    }
+  },
+  "sources": {
+    "libelle": "Données issues de",
+    "liste": [
+      "INSEE",
+      "INPI",
+      "BODACC"
+    ]
+  },
+  "dossier": {
+    "titre": "Le dossier d’une grande cession, pour votre PME.",
+    "texte": "Ce que les banques d’affaires préparent pour les grandes entreprises, Passation le prépare pour la vôtre.",
+    "documents": {
+      "titre": "Trois documents, rédigés d’un coup",
+      "texte": "Au format des banques d’affaires, à partir de vos chiffres. Vous relisez, vous corrigez, vous transmettez.",
+      "pilules": [
+        "Teaser anonyme",
+        "Mémorandum",
+        "Datapack Excel"
+      ],
+      "photo_alt": "Photo d’illustration : artisane à l’établi"
+    },
+    "methodes": {
+      "chiffre": "3",
+      "titre": "méthodes de valorisation croisées",
+      "texte": "Multiples, flux actualisés, actif net. Chaque hypothèse est sourcée, datée et modifiable : une valeur que vous pouvez défendre."
+    },
+    "liste": {
+      "etapes": [
+        "Valorisation",
+        "Teaser anonyme",
+        "Mémorandum",
+        "Datapack Excel"
+      ],
+      "legende": "Rédigé par l’IA, vérifié par vous",
+      "alt": "Exemple de dossier en cours : valorisation, teaser et mémorandum prêts, datapack en cours"
     }
   }
 }
