@@ -592,3 +592,6 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   rectangulaire (angles asymétriques 40/120 px, encoche en bas au centre où se loge le champ SIREN,
   `public/js/landing/forme-hero.js`, chemin recalculé à chaque taille) ; titre et texte à l'intérieur ; trois bulles
   à cheval sur les bords (masquées sous 900 px) ; sur téléphone, angles asymétriques et champ dans la forme.
+  - Puis, sur modèle fourni par le dirigeant : la vidéo est découpée autour de quatre bulles logées dans un coin ou
+    sur un bord (« pièces de puzzle »), tous les angles arrondis y compris rentrants : `polygone` + `cheminArrondi`
+    (testés, `test/forme-hero.test.js`) ; texte et champ à l'intérieur ; bulles masquées sous 900 px.
