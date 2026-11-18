@@ -259,9 +259,9 @@ const chapitre = (s, options = {}) => page({ s, titre: s.titre, message: s.titre
 
 // ------------------------------------------------------------------ Graphiques et tableaux
 /** Histogramme par exercice (valeurs en k€ écrites), avec en option la courbe de marge au-dessus. */
-function histogramme({ annees, valeurs, marges = null, libelle }) {
+function histogramme({ annees, valeurs, marges = null, libelle, croissance = false }) {
   if (!annees?.length || !valeurs.some(ok)) return null;
-  const L = 640, H = 200, bas = 172, pas = L / annees.length, w = Math.min(64, pas * 0.4);
+  const L = 640, H = 200, bas = 172, pas = L / annees.length, w = Math.min(croissance ? 84 : 64, pas * 0.4);
   const avecMarge = marges && marges.filter(ok).length > 0, hautBarres = avecMarge ? 92 : 122, max = Math.max(...valeurs.filter(ok).map(Math.abs), 1);
   const g = svg("svg", { viewBox: `0 0 ${L} ${H}`, class: "im-graph", role: "img",
     "aria-label": `${libelle} : ${annees.map((a, i) => `${a} : ${kEuros(valeurs[i])} k€${avecMarge && ok(marges[i]) ? `, marge ${pourcent(marges[i])}` : ""}`).join(" ; ")}` });
@@ -273,6 +273,15 @@ function histogramme({ annees, valeurs, marges = null, libelle }) {
     g.append(svg("rect", { x: cx(i) - w / 2, y: bas - h, width: w, height: h, class: `im-barre${i === annees.length - 1 ? " derniere" : ""}` }));
     g.append(texte(cx(i), bas - h - 7, ok(v) ? kEuros(v) : "n.d.", "im-graph-val"));
     g.append(texte(cx(i), bas + 21, String(a), "im-graph-an"));
+  });
+  // Croissance d'un exercice à l'autre : petite flèche courbe au-dessus de l'intervalle
+  if (croissance && !avecMarge) annees.forEach((a, i) => {
+    if (!i || !ok(valeurs[i]) || !ok(valeurs[i - 1]) || valeurs[i - 1] <= 0) return;
+    const v = valeurs[i] / valeurs[i - 1] - 1, x0 = cx(i - 1) + w / 2 + 4, x1 = cx(i) - w / 2 - 4;
+    const yh = bas - (Math.max(valeurs[i], valeurs[i - 1]) / max) * hautBarres - 30;
+    g.append(svg("path", { d: `M ${x0} ${yh + 12} Q ${(x0 + x1) / 2} ${yh - 6} ${x1} ${yh + 6}`, class: "im-fleche-croissance" }));
+    g.append(svg("path", { d: `M ${x1 - 7} ${yh + 1} L ${x1} ${yh + 6} L ${x1 - 6} ${yh + 12}`, class: "im-fleche-croissance" }));
+    g.append(texte((x0 + x1) / 2, yh - 6, pourcent(v, { signe: true, decimales: 1 }), "im-graph-croissance"));
   });
   if (avecMarge) {
     const mv = marges.filter(ok), mn = Math.min(...mv), mx = Math.max(...mv);
@@ -428,20 +437,50 @@ const faitsMarche = () => (etat.marche?.faits || []).filter((f) => f.valide);
 const LIBELLES_THEMES = { taille: "Taille du marché", tendance: "Tendance", demande: "Demande", reglementation: "Réglementation", concurrence: "Concurrence" };
 const srcFait = (f) => `${f.source || new URL(f.url).hostname}${f.annee ? `, ${f.annee}` : ""}`;
 
+/** Structure du secteur en cercles emboîtés, aires proportionnelles aux effectifs (registres publics). */
+function cerclesSecteur(sct) {
+  const n = (cles) => cles.reduce((a, k) => a + (sct.repartition.find((x) => x.cle === k)?.n || 0), 0);
+  const niveaux = [
+    { n: sct.region_total, lib: `entreprises actives en ${sct.region}`, classe: "c1", pref: sct.region_plafonne ? "> " : "" },
+    { n: n(["1_9", "10_49", "50_plus"]), lib: "ont au moins un salarié", classe: "c2" },
+    { n: n(["10_49", "50_plus"]), lib: "ont 10 salariés et plus", classe: "c3" },
+  ].filter((x) => x.n > 0);
+  if (niveaux.length < 2) return null;
+  const R = 150, cx = 160, bas = 312;
+  const g = svg("svg", { viewBox: "0 0 320 330", class: "im-cercles", role: "img", "aria-label": niveaux.map((x) => `${entier(x.n)} ${x.lib}`).join(" ; ") });
+  niveaux.forEach((x, k) => {
+    const r = R * Math.sqrt(x.n / niveaux[0].n);
+    g.append(svg("circle", { cx, cy: bas - r, r, class: `im-cercle ${x.classe}` }));
+    const rSuivant = niveaux[k + 1] ? R * Math.sqrt(niveaux[k + 1].n / niveaux[0].n) : 0;
+    const ty = k === niveaux.length - 1 ? bas - r + 8 : bas - 2 * r + Math.max(26, (2 * r - 2 * rSuivant) / 2 + 8);
+    const t1 = svg("text", { x: cx, y: ty, class: `im-cercle-val ${x.classe}`, "text-anchor": "middle" }); t1.textContent = `${x.pref || ""}${entier(x.n)}`; g.append(t1);
+  });
+  const legende = el("ul", { class: "im-cercles-legende" }, ...niveaux.map((x) => el("li", { class: x.classe }, el("i"), el("strong", { text: `${x.pref || ""}${entier(x.n)}` }), el("span", { text: x.lib }))));
+  return el("figure", { class: "im-cercles-zone" }, el("p", { class: "im-encoche-titre", text: `Code NAF ${sct.naf}` }), g, legende,
+    sct.part_meme_taille_ou_plus != null ? el("p", { class: "im-cercles-note" }, el("strong", { text: pct0(sct.part_meme_taille_ou_plus) }), " des entreprises de la région sont de sa taille ou plus grandes") : null);
+}
+
 // ------------------------------------------------------------------ Pages fixes
 function couverture() {
   const q = p();
-  return el("div", { class: "diapo im-couverture" }, motif(),
-    el("div", { class: "im-couv-titre" }, el("h2", { text: q.nom_de_code || "Projet" }), el("p", { text: "Mémorandum d'information" }),
-      q.secteur || q.region ? el("p", { class: "im-couv-sous", text: [q.secteur, q.region].filter(Boolean).join(" · ") }) : null),
-    el("div", { class: "im-couv-bas" }, el("span", { text: majuscule(moisAnnee()) }), el("span", { text: "Strictement confidentiel" }), logoPassation(true)));
+  return el("div", { class: "diapo im-couverture" },
+    el("div", { class: "im-couv-cadre" }, motif(),
+      el("div", { class: "im-couv-titre" }, el("p", { class: "im-couv-etiquette", text: "Mémorandum d'information" }), el("h2", { text: q.nom_de_code || "Projet" }),
+        q.secteur || q.region ? el("p", { class: "im-couv-sous", text: [q.secteur, q.region].filter(Boolean).join(" · ") }) : null)),
+    el("div", { class: "im-encoche-carte im-couv-encoche" },
+      el("span", { class: "im-pilule", text: "Strictement confidentiel" }), el("strong", { text: majuscule(moisAnnee()) }), logoPassation()));
 }
 function pageOuverture(partie, k) {
   const u = photoUrl(k % Math.max(1, etat.photos?.length || 1));
+  const num = String(partie.n).padStart(2, "0");
+  const chapitres = etat.sections.filter((s) => s.partie === partie.n);
   return el("div", { class: "diapo im-ouverture", "data-partie": String(partie.n) },
     el("div", { class: "im-ouv-cadre" }, u ? el("div", { class: "im-ouv-photo", style: `background-image:url('${u}')` }) : motif(),
-      el("p", { class: "im-ouv-num", "aria-hidden": "true", text: String(partie.n).padStart(2, "0") }),
-      el("div", { class: "im-ouv-bande" }, el("h2", { text: partie.titre }))));
+      el("div", { class: "im-ouv-titre" },
+        el("p", { class: "im-ouv-num", "aria-hidden": "true" }, el("span", { class: "zero", text: num[0] }), num[1]),
+        el("h2", { text: partie.titre }), partie.detail ? el("p", { class: "im-ouv-detail", text: partie.detail }) : null)),
+    el("div", { class: "im-encoche-carte im-ouv-encoche" }, el("p", { class: "im-encoche-titre", text: "Dans cette partie" }),
+      el("ol", {}, ...chapitres.map((s) => el("li", {}, el("span", { class: "im-som-sous", "data-num-section": s.cle }), el("span", { text: s.titre }))))));
 }
 function pageSommaire() {
   return page({ titre: "Sommaire", numerotee: false, classe: "im-sommaire", contenu: [el("ol", { class: "im-som" }, ...(etat.parties || []).map((pt) => el("li", {},
@@ -486,25 +525,30 @@ function pagesSynthese(s) {
   const an = cr().annees.at(-1), ca = derniere("chiffre_affaires"), t = cr().tcam, retraite = er.ebe_retraite?.at(-1), marge = er.marge_retraitee?.at(-1), endet = ch().endettement;
   const age = q.creation ? new Date().getFullYear() - q.creation : null;
   const op = q.operation || {};
+  const tuile = (valeur, libelle, classe = "") => el("div", { class: `im-tuile-kpi ${classe}`.trim() }, el("strong", { text: valeur }), el("span", { text: libelle }));
   const p1 = chapitre(s, { titre: `${q.nom_de_code || "Le projet"}, en bref`, contenu: [el("div", { class: "im-grille im-g-synthese" },
-    colonneChiffres([
-      ok(ca) ? ["euro", montant(ca), `Chiffre d'affaires ${an}`] : null,
-      t && ok(t.ca) ? ["croissance", pourcent(t.ca, { signe: true }), `TCAM du CA ${t.de}-${t.a}`] : null,
-      ok(retraite) ? ["valide", montant(retraite), `EBE retraité ${an}${ok(marge) ? ` (${pourcent(marge)})` : ""}`] : null,
-      endet && ok(endet.total) ? ["balance", montant(Math.abs(endet.total)), endet.total <= 0 ? `Trésorerie nette ${endet.annee}` : `Dette nette ${endet.annee}`] : null,
-      ok(cl.recurrent) ? ["horloge", pct0(cl.recurrent), "CA récurrent"] : ["equipe", effectifCourt(), "Salariés"],
-      age ? ["calendrier", `${age} ans`, `D'existence (${q.creation})`] : null,
-    ]),
     el("div", { class: "im-col-texte" }, corpsTexte(s)),
-    el("div", { class: "im-pile" }, encadre("Implantation", carteFrance()),
-      encadre("Opération envisagée", tableCles([["Part du capital cédée", op.part_cedee || "À compléter"], ["Motif du cédant", op.motif || "À compléter"], ["Calendrier souhaité", op.calendrier || "À compléter"], ["Accompagnement", op.accompagnement || "À compléter"]]))))],
+    el("div", { class: "im-synthese-droite" },
+      el("div", { class: "im-kpis" },
+        ok(ca) ? tuile(montant(ca), `Chiffre d'affaires ${an}`, "vert") : null,
+        ok(retraite) ? tuile(montant(retraite), `EBE retraité ${an}${ok(marge) ? ` · ${pourcent(marge)}` : ""}`) : null,
+        endet && ok(endet.total) ? tuile(montant(Math.abs(endet.total)), endet.total <= 0 ? `Trésorerie nette ${endet.annee}` : `Dette nette ${endet.annee}`) : null,
+        ok(cl.recurrent) ? tuile(pct0(cl.recurrent), "Chiffre d'affaires récurrent", "sable") : tuile(effectifCourt(), "Salariés", "sable"),
+        age ? tuile(`${age} ans`, `D'existence (${q.creation})`) : null,
+        t && ok(t.ca) ? tuile(pourcent(t.ca, { signe: true }), `Croissance annuelle ${t.de}-${t.a}`, "cuivre") : null),
+      cr().annees.length ? el("div", { class: "im-carte-graph" }, el("p", { class: "im-carte-graph-titre", text: "Chiffre d'affaires (en k€)" }),
+        histogramme({ annees: cr().annees, valeurs: serie("chiffre_affaires"), libelle: "Chiffre d'affaires", croissance: true })) : null,
+      el("div", { class: "im-operation-mini" }, el("p", { class: "im-encoche-titre", text: "Opération envisagée" }),
+        tableCles([["Part cédée", op.part_cedee || "À compléter"], ["Motif", op.motif || "À compléter"], ["Calendrier", op.calendrier || "À compléter"]]))))],
     sources: [sourceChiffres(), SOURCES.publiques, SOURCES.dirigeant, SOURCES.calculs] });
   const pf = [1, 2, 3, 4, 5, 6].map((n) => etat.sections.find((x) => x.point_fort === n)).filter(Boolean);
   const p2 = page({ s, ancre: false, titre: "Considérations clés d'investissement", message: "Six points forts, développés dans les chapitres du mémorandum", contenu: [
-    el("div", { class: "im-considerations" }, ...pf.map((x) => el("div", { class: "im-cons" },
-      el("div", { class: "im-cons-tete" }, carre(x.point_fort), el("strong", { text: x.titre })),
-      el("div", { class: "im-cons-corps" }, x.redigee ? el("ul", { class: "im-puces" }, el("li", {}, el("strong", { text: titreDe(x) })), x.accroche ? el("li", { text: x.accroche }) : null) : aRediger(x.court),
-        el("a", { class: "im-voir", href: `#s-${x.cle}`, "data-renvoi": x.cle, text: "" })))))],
+    el("div", { class: "im-considerations" }, ...pf.map((x, k) => el("article", { class: `im-cons${k === 0 ? " vert" : k === 4 ? " sable" : ""}` },
+      el("div", { class: "im-cons-tete" }, el("span", { class: "im-cons-num", text: String(x.point_fort).padStart(2, "0") }), el("span", { class: "im-cons-fleche", "aria-hidden": "true", text: "↗" })),
+      el("p", { class: "im-cons-theme", text: x.titre }),
+      x.redigee ? el("strong", { class: "im-cons-titre", text: titreDe(x) }) : aRediger(x.court),
+      x.redigee && x.accroche ? el("p", { class: "im-cons-texte", text: x.accroche }) : null,
+      el("a", { class: "im-voir", href: `#s-${x.cle}`, "data-renvoi": x.cle, text: "" }))))],
     sources: [SOURCES.dirigeant, SOURCES.calculs] });
   return [p1, p2];
 }
@@ -532,12 +576,7 @@ function pagesChapitre(s) {
     case "marche": {
       const sct = etat.marche?.secteur, faits = faitsMarche();
       const pages = [chapitre(s, { contenu: [el("div", { class: `im-grille ${sct ? "im-g-marche" : "im-g-texte-encadre"}` }, el("div", { class: "im-col-texte" }, corpsTexte(s)),
-        sct ? el("aside", { class: "im-bande-v" }, el("h4", { class: "im-bande-v-titre", text: "Données clés" }),
-          ...[[`${sct.region_plafonne ? "> " : ""}${entier(sct.region_total)}`, `Entreprises actives en ${sct.region}`],
-            [pct0(sct.part_moins_10), "Ont moins de 10 salariés"],
-            sct.part_meme_taille_ou_plus != null ? [pct0(sct.part_meme_taille_ou_plus), "Sont de sa taille ou plus grandes"] : null,
-            sct.france_10_plus != null ? [`${sct.france_10_plus_plafonne ? "> " : ""}${entier(sct.france_10_plus)}`, "Entreprises de 10 salariés et plus en France"] : null]
-            .filter(Boolean).map(([v, l]) => el("div", { class: "im-bv" }, el("strong", { text: v }), el("span", { text: l })))) : null,
+        sct ? cerclesSecteur(sct) : null,
         sct ? encadre(`Structure du secteur · ${sct.region}`, el("p", { class: "im-legende-graph", text: `Entreprises actives du code NAF ${sct.naf}, par tranche d'effectif` }),
           barresH(sct.repartition.map((x) => ({ libelle: x.libelle, valeur: x.n || 0, texte: `${x.n == null ? "n.d." : entier(x.n)} · ${pct0(x.part)}`, accent: x.cle === sct.bande_entreprise }))),
           sct.part_meme_taille_ou_plus != null ? info(`En couleur, la tranche de l'entreprise : ${entier(sct.nombre_meme_taille_ou_plus_region)} entreprises de la région sont de sa taille ou plus grandes.`) : null)
@@ -575,7 +614,7 @@ function pagesChapitre(s) {
       const tcamTxt = (x) => (t && ok(x) && c.annees.length >= 2 ? `TCAM ${t.de}-${t.a} : ${pourcent(x, { signe: true })}` : null);
       const pages = [chapitre(s, { titre: "Chiffres clés financiers", contenu: [
         c.annees.length ? el("div", { class: "im-chevron-titre" }, `Performances historiques · exercices ${c.annees[0]} à ${c.annees.at(-1)}`) : aRediger("Les chiffres (aucun exercice validé)"),
-        ligneGraphique("Chiffre d'affaires (en k€)", histogramme({ annees: c.annees, valeurs: serie("chiffre_affaires"), libelle: "Chiffre d'affaires" }), tcamTxt(t?.ca)),
+        ligneGraphique("Chiffre d'affaires (en k€)", histogramme({ annees: c.annees, valeurs: serie("chiffre_affaires"), libelle: "Chiffre d'affaires", croissance: true }), tcamTxt(t?.ca)),
         ligneGraphique(`${avecRetraite ? "EBE retraité" : "EBE"} (en k€) et marge`, histogramme({ annees: ebeAnnees, valeurs: ebeVals, marges, libelle: avecRetraite ? "EBE retraité" : "EBE" }), avecRetraite ? null : tcamTxt(t?.ebe))],
         sources: src })];
       pages.push(page({ s, ancre: false, titre: `Compte de résultat ${c.annees.length ? `${c.annees[0]}-${c.annees.at(-1)}` : ""}`.trim(),
@@ -617,10 +656,10 @@ function pagesChapitre(s) {
         t && ok(t.ca) ? [pourcent(t.ca, { signe: true }), "Croissance historique du CA", `TCAM ${t.de}-${t.a}`] : null].filter(Boolean);
       const { paragraphes, puces: axes } = decouperTexte(s.redigee ? s.contenu : "");
       const items = axes.length ? axes : paragraphes;
-      return [chapitre(s, { contenu: [el("div", { class: `im-grille ${tuiles.length ? "im-g-persp" : ""}` },
-        s.redigee ? el("div", { class: "im-col-texte" }, axes.length && paragraphes.length ? el("p", { class: "im-chapeau" }, ...enrichi(paragraphes.join(" "))) : null,
-          el("ol", { class: "im-moteurs", "data-decoupable": "" }, ...items.map((it, k) => { const { titre, texte } = eclaterPuce(it); return el("li", {}, el("span", { class: "im-rond", text: String(k + 1) }), el("div", {}, titre ? el("h5", {}, ...enrichi(titre)) : null, el("p", {}, ...enrichi(majuscule(texte))))); }))) : aRediger(s.court),
-        tuiles.length ? el("aside", { class: "im-tuiles" }, ...tuiles.map(([v, l, d]) => el("div", { class: "im-tuile" }, el("strong", { text: v }), el("span", { text: l }), el("em", { text: d })))) : null),
+      return [chapitre(s, { contenu: [
+        tuiles.length ? el("div", { class: "im-kpis rangee" }, ...tuiles.map(([v, l, d], k) => el("div", { class: `im-tuile-kpi${k === 0 ? " vert" : ""}` }, el("strong", { text: v }), el("span", { text: `${l} · ${d}` })))) : null,
+        s.redigee && axes.length && paragraphes.length ? el("p", { class: "im-chapeau" }, ...enrichi(paragraphes.join(" "))) : null,
+        s.redigee ? el("ol", { class: `im-piliers n${Math.min(4, items.length)}`, "data-decoupable": "" }, ...items.map((it, k) => { const { titre, texte } = eclaterPuce(it); return el("li", {}, el("span", { class: "im-pilier-num", text: String(k + 1).padStart(2, "0") }), titre ? el("h5", {}, ...enrichi(titre)) : null, el("p", {}, ...enrichi(majuscule(texte)))); })) : aRediger(s.court),
         info("Les perspectives présentées sont celles du dirigeant. Elles n'ont fait l'objet d'aucun audit.")],
         sources: [SOURCES.dirigeant, t && ok(t.ca) ? sourceChiffres() : null, faitsMarche().length ? "étude de marché (sources citées au chapitre Marché)" : null] })];
     }
