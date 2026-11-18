@@ -373,8 +373,10 @@ function suivante(q) {
     if (reste.length) { S.q = QUESTIONS.indexOf(reste[0]); questions(); } else { S.retour = null; aller("redaction"); }
     return;
   }
+  // Question suivante encore sans réponse (celles validées dans le récapitulatif sont sautées)
   const i = QUESTIONS.indexOf(q);
-  if (i < QUESTIONS.length - 1) { S.q = i + 1; questions(); } else aller(etapeCourante());
+  const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
+  if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante());
 }
 /** Première question : le site internet. Sa lecture se poursuit pendant les questions suivantes. */
 function questionSite() {
@@ -400,8 +402,52 @@ function questionSite() {
         suivanteQ();
       } }, proposition ? "Oui, lire ce site " : "Lire ce site ", fleche())));
 }
+// ---- Récapitulatif : toutes les réponses préparées sur un écran, validées d'un clic (le reste se pose ensuite)
+const cleRecap = `passation-recap-${id}`;
+const recapVu = () => { try { return Boolean(sessionStorage.getItem(cleRecap)); } catch { return S.recapVu; } };
+const marquerRecap = () => { S.recapVu = true; try { sessionStorage.setItem(cleRecap, "1"); } catch { /* sans stockage */ } };
+const clesEnAttente = (q) => Object.keys(S.propositions[q.id]?.valeurs || {}).filter((k) => { const [e, c] = k.split("."); return S.reponses[e]?.[c] == null; });
+const questionsPreparees = () => QUESTIONS.filter((q) => clesEnAttente(q).length && !S.propositions[q.id]?.a_completer && !questionRepondue(q, S.reponses, S.vues));
+/** Valeur proposée en clair (libellé du choix, pourcentage, liste, texte abrégé). */
+function libelleValeur(q, cle, v) {
+  const c = [...q.champs, ...(q.suite?.champs || [])].find((x) => `${x.etape}.${x.cle}` === cle);
+  if (c?.type === "valeurs") return c.options.find(([, val]) => val === v)?.[0] ?? String(v);
+  if (Array.isArray(v)) return v.join(", ");
+  const t = String(v).replace(/\s+/g, " ");
+  return t.length > 170 ? `${t.slice(0, 168).replace(/\s+\S*$/, "")}…` : t;
+}
+function recapitulatif() {
+  const liste = questionsPreparees();
+  const coches = new Map(liste.map((q) => [q.id, true]));
+  const bouton = el("button", { type: "button", class: "btn btn-vert" });
+  const majBouton = () => { const n = [...coches.values()].filter(Boolean).length; bouton.textContent = n ? `Valider ${n} réponse${n > 1 ? "s" : ""} ` : "Continuer "; bouton.append(fleche()); };
+  majBouton();
+  bouton.addEventListener("click", async () => {
+    bouton.disabled = true;
+    try {
+      for (const q of liste) if (coches.get(q.id)) for (const k of clesEnAttente(q)) { const [e, c] = k.split("."); await enregistrer(e, c, S.propositions[q.id].valeurs[k]); }
+      marquerRecap(); message("");
+      aller(etapeCourante());
+    } catch (e) { message(e.message, true); bouton.disabled = false; }
+  });
+  remplir(
+    el("p", { class: "etiquette", text: `${liste.length} réponses préparées` }),
+    ...titre("Nous avons préparé vos réponses", "Vérifiez-les d'un coup d'œil. Décochez ce qui est inexact : vous le corrigerez juste après, avec les quelques questions qui restent."),
+    el("ul", { class: "recap-liste" }, ...liste.map((q) => {
+      const cb = el("input", { type: "checkbox", id: `recap-${q.id}`, checked: true });
+      cb.addEventListener("change", () => { coches.set(q.id, cb.checked); cb.closest("li").classList.toggle("decoche", !cb.checked); majBouton(); });
+      const p = S.propositions[q.id];
+      return el("li", {}, el("label", { for: `recap-${q.id}`, class: "recap-carte" }, cb,
+        el("span", { class: "recap-texte" }, el("strong", { text: q.titre }),
+          el("span", { class: "recap-valeurs" }, ...clesEnAttente(q).map((k) => el("span", { text: libelleValeur(q, k, p.valeurs[k]) }))),
+          el("small", { text: p.source }))));
+    })),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { marquerRecap(); questions(); } }, "Répondre question par question"), bouton));
+}
+
 function questions() {
   if (S.q < 0) return questionSite();
+  if (!recapVu() && questionsPreparees().length >= 3) return recapitulatif();
   const q = QUESTIONS[S.q];
   const champs = [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])];
   const prop = S.propositions[q.id];

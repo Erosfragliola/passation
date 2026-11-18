@@ -578,3 +578,15 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
 - **18/11/2026, mise en ligne de `apres-siren`** (accord du dirigeant ; multiples floutés dans le résultat de
   l'estimation à sa demande, visuellement seulement : ils restent dans la réponse de l'API). Migration
   `0003_pieces.sql` appliquée en production avant le déploiement.
+- **18/11/2026, branche `memo-presentation`** (inclut `marche-rapide`), non publiée, retours du dirigeant après son
+  premier test réel :
+  - Étude de marché bornée à deux minutes, jamais lancée deux fois (409 si en cours), chapitres sans attente.
+  - Valorisation : **multiples seuls par défaut, DCF en option** (pondération dans « Affiner ») ;
+    `hypotheses.json` mis à jour ; tests adaptés (le datapack teste les formules avec le DCF à 40 %).
+  - Chapitres courts : sortie structurée (introduction de deux phrases, 4 à 6 points titre + texte), longueurs
+    garanties par `src/documents/concision.js` (testé) ; ce qui manque va dans « À compléter », pas dans le texte.
+  - Mémorandum en mode présentation : une page à la fois, vignettes, flèches du clavier ; panneau à droite avec
+    recommandations (pièces à compléter, photo manquante, chiffres de marché à vérifier, texte trop long) et
+    actions (rédiger à nouveau, modifier le texte) ; sources (site, photos, marché) repliées en bas.
+  - Parcours : récapitulatif des réponses préparées sur un écran (validation d'un clic), puis seulement les
+    questions sans réponse ; une amorce tirée des registres n'est jamais validée d'un clic. Tests : 328.
