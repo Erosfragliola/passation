@@ -378,3 +378,18 @@
 .landing .hero-v5 .recherche { width: min(620px, 100%); }
 @media (max-width: 1180px) and (min-width: 901px) { .landing .hero-v5 .hero-contenu { padding: 40px 150px 150px; } }
 @media (min-width: 901px) { .landing .hero-v5 .hero-contenu { padding: 40px clamp(130px, 18vw, 320px) 150px; } }
+
+/* Téléphone et tablette : deux bulles posées par-dessus la vidéo, avec une ombre, qui dépassent un peu */
+@media (max-width: 900px) {
+  .hero-scene { margin-bottom: 44px; }
+  .hero-v5 .bulle-hg, .hero-v5 .bulle-d1 { display: grid; gap: 2px; padding: 12px 14px; border-radius: 18px; box-shadow: 0 20px 40px -14px rgba(20, 16, 12, .55), 0 2px 6px rgba(20, 16, 12, .12); }
+  .hero-v5 .bulle-hg { top: -16px; left: -8px; width: 168px; }
+  .hero-v5 .bulle-d1 { top: auto; bottom: -26px; right: -8px; width: 196px; }
+  .hero-v5 .hero-bulle strong.affiche { font-size: 26px; }
+  .hero-v5 .hero-bulle > span { font-size: 12.5px; }
+  .hero-v5 .bulle-d1 .bulle-titre { font-size: 11.5px; }
+  .hero-v5 .bulle-d1 .bulle-code { font-size: 19px; }
+  .hero-v5 .bulle-d1 .bulle-valeur { font-size: 22px !important; }
+  .landing .hero-v5 .hero-contenu { padding: 104px 28px 92px; }
+}
+@media (max-width: 700px) { .landing .hero-v5 .hero-contenu { padding: 100px 18px 96px; } .hero-scene { height: clamp(620px, 96svh, 740px); } }
