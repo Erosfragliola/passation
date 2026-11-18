@@ -693,18 +693,18 @@ function pagesChapitre(s) {
         const bfr = (endet.bfr || []).filter((b) => ok(b.jours));
         pages.push(page({ s, ancre: false, titre: "Endettement net et besoin en fonds de roulement",
           message: ok(endet.total) ? (endet.total <= 0 ? `Une trésorerie nette de ${montant(-endet.total)} au 31 décembre ${endet.annee}` : `Une dette financière nette de ${montant(endet.total)} au 31 décembre ${endet.annee}${ok(endet.sur_ebe) ? `, soit ${multiple(endet.sur_ebe)} l'EBE retraité` : ""}`) : null,
-          contenu: [el("div", { class: "im-grille im-g-tableau" }, el("div", { class: "im-pile" }, tableauDette(), tableauBfr()),
+          contenu: [el("div", { class: "im-grille im-g-tableau" }, el("div", { class: "im-pile" }, tableauDette(), tableauBfr(), encadre("Indicateurs de structure financière", el("div", { class: "im-bande-chiffres grille-2" }, ...[
+                ok(endet.total) ? [montant(Math.abs(endet.total)), endet.total <= 0 ? `Trésorerie nette au 31/12/${endet.annee}` : `Dette nette au 31/12/${endet.annee}`] : null,
+                ok(endet.sur_ebe) && endet.total > 0 ? [multiple(endet.sur_ebe), "Dette nette / EBE normatif"] : null,
+                bfr.length ? [`${Math.round(bfr.at(-1).jours)} j`, `BFR en jours de CA (${bfr.at(-1).annee})`] : null,
+                bfr.length >= 2 ? [`${Math.round(bfr[0].jours)} j`, `BFR en jours de CA (${bfr[0].annee})`] : null,
+              ].filter(Boolean).map(([v, l]) => el("div", { class: "im-bc" }, el("strong", { text: v }), el("span", { text: l })))))),
             el("div", { class: "im-col-texte" }, intertitre("Commentaires"), el("ul", { class: "im-puces" },
               el("li", { text: "Dette positive ; trésorerie et placements en déduction, entre parenthèses." }),
               ok(endet.sur_ebe) && endet.total > 0 ? el("li", {}, el("span", {}, "Dette nette rapportée à l'EBE normatif : ", el("strong", { text: multiple(endet.sur_ebe) }), ".")) : null,
               bfr.length ? el("li", {}, el("span", {}, `Besoin en fonds de roulement de ${kEuros(bfr.at(-1).montant)} k€ en ${bfr.at(-1).annee}, soit `, el("strong", { text: `${Math.round(bfr.at(-1).jours)} jours` }), " de chiffre d'affaires.")) : null),
               graphiqueBfr() ? encadre("BFR en jours de chiffre d'affaires", graphiqueBfr()) : null,
-              encadre("Indicateurs de structure financière", el("div", { class: "im-bande-chiffres grille-2" }, ...[
-                ok(endet.total) ? [montant(Math.abs(endet.total)), endet.total <= 0 ? `Trésorerie nette au 31/12/${endet.annee}` : `Dette nette au 31/12/${endet.annee}`] : null,
-                ok(endet.sur_ebe) && endet.total > 0 ? [multiple(endet.sur_ebe), "Dette nette / EBE normatif"] : null,
-                bfr.length ? [`${Math.round(bfr.at(-1).jours)} j`, `BFR en jours de CA (${bfr.at(-1).annee})`] : null,
-                bfr.length >= 2 ? [`${Math.round(bfr[0].jours)} j`, `BFR en jours de CA (${bfr[0].annee})`] : null,
-              ].filter(Boolean).map(([v, l]) => el("div", { class: "im-bc" }, el("strong", { text: v }), el("span", { text: l })))))))],
+              null))],
           sources: src }));
       }
       return pages;
@@ -767,6 +767,7 @@ function dessinerMemo() {
   enfants.push(pageAvertissement());
   $("#memo").replaceChildren(...enfants);
   decouper();
+  remplirPages();
   // Numéros « partie.page » (une suite garde le numéro de sa page), pages, renvois du sommaire et des points forts
   const diapos = [...$("#memo").querySelectorAll(".diapo")];
   const numSection = {};
@@ -805,6 +806,30 @@ function decouper() {
       suite.querySelector(".im-pied-sources").replaceWith(courante.querySelector(".im-pied-sources").cloneNode(true));
       courante.after(suite);
       courante = suite;
+    }
+  }
+}
+
+/**
+ * Page trop vide : le texte grandit (variable --k, de 1 à 1,3) tant que la zone n'est pas remplie et que rien ne
+ * déborde. Le remplissage est mesuré au bas du contenu le plus bas (textes, tableaux, graphiques).
+ */
+function remplirPages() {
+  const debord = (z) => z.scrollHeight > z.clientHeight + 2;
+  const remplissage = (z) => {
+    const haut = z.getBoundingClientRect().top, h = z.clientHeight || 1;
+    let bas = haut;
+    for (const e of z.querySelectorAll("p, li, tr, h4, h5, strong, svg, img, .im-tuile-kpi")) { const r = e.getBoundingClientRect(); if (r.height) bas = Math.max(bas, r.bottom); }
+    return (bas - haut) / h;
+  };
+  for (const d of $("#memo").querySelectorAll(".im-page")) {
+    const z = d.querySelector(".im-zone");
+    if (!z || d.classList.contains("serre") || debord(z)) continue;
+    let k = 1;
+    while (k < 1.3 && remplissage(z) < 0.9) {
+      d.style.setProperty("--k", (k + 0.04).toFixed(2));
+      if (debord(z) || remplissage(z) > 0.98) { d.style.setProperty("--k", k.toFixed(2)); break; }
+      k += 0.04;
     }
   }
 }

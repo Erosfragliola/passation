@@ -486,3 +486,26 @@
 .im-page.serre .im-chapeau-texte { font-size: 1.02cqw; }
 .im-puce-picto { width: 2cqw; height: 2cqw; }
 .im-puce-picto .im-picto { width: 1.25cqw; height: 1.25cqw; stroke-width: 1.8; }
+
+/* Remplissage des pages (remplirPages) : le texte courant suit le coefficient --k */
+.diapo.im-page { font-size: calc(1.07cqw * var(--k, 1)); }
+.im-puces.pictos { gap: calc(.75cqw * var(--k, 1)); }
+.im-chapeau-texte { font-size: calc(1.12cqw * var(--k, 1)); }
+.im-tableau { font-size: calc(.95cqw * var(--k, 1)); }
+.im-tableau th, .im-tableau td { padding-top: calc(.3cqw * var(--k, 1)); padding-bottom: calc(.3cqw * var(--k, 1)); }
+.im-table-cles { font-size: calc(.9cqw * var(--k, 1)); }
+.im-renvois { font-size: calc(1cqw * var(--k, 1)); }
+.im-moteurs .im-puces > li, .im-piliers p, .im-couloir p { font-size: calc(.95cqw * var(--k, 1)); }
+.im-cons-texte { font-size: calc(.88cqw * var(--k, 1)); }
+.im-cons-titre { font-size: calc(1.1cqw * var(--k, 1)); }
+.im-frise-txt { font-size: calc(.8cqw * var(--k, 1)); }
+.im-avert { font-size: calc(1.02cqw * var(--k, 1)); }
+/* Graphiques qui prennent la hauteur libre */
+.im-zone > .im-encadre:has(.im-pont) { flex: 1 1 auto; min-height: 0; }
+.im-encadre:has(.im-pont) .im-encadre-corps { justify-content: stretch; }
+.im-pont { height: auto; flex: 1 1 auto; min-height: 12cqw; }
+.im-som { gap: calc(.8cqw * var(--k, 1)); }
+.im-som-partie strong { font-size: calc(1.5cqw * var(--k, 1)); }
+.im-som ul li { font-size: calc(.95cqw * var(--k, 1)); padding-block: calc(.12cqw * var(--k, 1)); }
+.im-gloss { font-size: calc(.9cqw * var(--k, 1)); }
+.im-gloss th, .im-gloss td { padding-block: calc(.32cqw * var(--k, 1)); }
