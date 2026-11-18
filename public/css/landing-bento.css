@@ -135,3 +135,120 @@
 @media (prefers-reduced-motion: reduce) { .analyse-etapes li.en-cours i { animation: none; } }
 @media (max-width: 600px) { .resultat-lu li { grid-template-columns: 22px minmax(0, 1fr); } .resultat-lu b { grid-column: 2; text-align: left; } }
 .landing .floute { filter: blur(5px); user-select: none; -webkit-user-select: none; display: inline-block; padding: 0 2px; }
+
+/* =================================================================== Accueil v4 (18/11/2026) */
+/* Polices réduites */
+.landing { font-size: 17px; }
+.landing .chapo { font-size: clamp(1.05rem, 1.25vw, 1.2rem); }
+.landing .dossier h2, .landing .comment h2, .landing .confid h2, .landing #questions h2.affiche { font-size: clamp(2.1rem, 3.8vw, 3.2rem); }
+.landing .bento-panneau h3 { font-size: clamp(1.6rem, 2.4vw, 2.1rem); }
+.landing .bento-chiffre { font-size: 80px; }
+.landing .bento-methodes h3 { font-size: 24px; }
+
+/* Hero : texte en haut, vidéo plus petite avec quatre bulles */
+.landing .hero.hero-v4 { min-height: auto; height: auto; margin: 0 auto; padding: calc(var(--haut-entete, 80px) + 34px) var(--gouttiere) 0; max-width: 1240px; display: block; }
+.landing .hero-v4::before, .landing .hero-v4::after { content: none; }
+.landing .hero-v4 .hero-contenu { position: relative; z-index: 2; padding: 0 0 30px; color: var(--espresso); }
+.landing .hero-v4 .surtitre { color: var(--ocre-texte); }
+.landing .hero-v4 h1 { font-size: clamp(2.3rem, 4.6vw, 4.2rem); color: var(--vert); text-shadow: none; max-width: 16ch; margin: 0 auto 16px; }
+.landing .hero-v4 h1 em { color: var(--vert); }
+.landing .hero-v4 .chapo { color: var(--pierre-texte); margin: 0 auto 26px; }
+.landing .hero-v4 .hero-coches { color: var(--pierre-texte); font-size: 14.5px; }
+.landing .hero-v4 .hero-coches li::before { background: var(--vert); color: #fff; }
+.landing .hero-v4 .recherche-champ { box-shadow: 0 14px 40px rgba(35, 30, 24, .12), 0 0 0 6px rgba(168, 101, 58, .08); border: 1px solid var(--trait); }
+.landing .hero-v4 .hero-preuves { color: var(--pierre-texte); }
+.hero-visuel { position: relative; height: clamp(360px, 40vw, 500px); margin: 6px auto 0; }
+.landing .hero-v4 .hero-fond { position: absolute; inset: 0; z-index: 0; border-radius: 26px; border-top: 0; overflow: hidden; background: var(--espresso); }
+.landing .hero-v4 .hero-fond::after { background: linear-gradient(180deg, rgba(35, 30, 24, .05), rgba(35, 30, 24, .3)); }
+.landing .hero-v4 .hero-fond.decoupee { border-radius: 0; }
+.landing .hero-v4 .hero-bas { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); padding: 0; z-index: 3; }
+.hero-bulle { position: absolute; z-index: 3; width: 238px; display: grid; gap: 4px; padding: 16px 18px; border-radius: 22px; background: #FFFDF8; color: var(--espresso); box-shadow: 0 18px 40px -24px rgba(35, 30, 24, .45); }
+.hero-bulle.sombre { background: var(--vert); color: #F6F1E6; }
+.hero-bulle strong.affiche { font-size: 34px; line-height: 1; color: var(--vert); }
+.hero-bulle.sombre strong.affiche { color: #E9C9A4; }
+.hero-bulle > span { font-size: 13.5px; line-height: 1.35; color: var(--pierre-texte); }
+.hero-bulle.sombre > span { color: #C9D6CD; }
+.bulle-hg { top: 0; left: 0; } .bulle-hd { top: 0; right: 0; } .bulle-bg { bottom: 0; left: 0; } .bulle-bd { bottom: 0; right: 0; width: 262px; }
+.bulle-titre { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--pierre-texte); }
+.bulle-titre em { font-style: normal; font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--trait-fort); border-radius: 99px; padding: 0 7px; white-space: nowrap; }
+.bulle-code { font-family: var(--mot-cle); font-style: italic; font-size: 26px; line-height: 1.1; color: var(--ocre); }
+.bulle-valeur { font-size: 28px !important; }
+.bulle-docs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.bulle-docs li { border-radius: 12px; padding: 8px 10px; background: var(--sable); font-size: 13.5px; font-weight: 600; color: var(--vert); text-align: center; }
+.bulle-docs li:first-child { background: var(--vert); color: #F6F1E6; }
+.sources-bande { padding-top: 26px; }
+.sources-bande b { font-size: 24px; }
+
+/* Résultat de l'estimation : compact, une seule suite */
+.landing .resultat .resultat-grille { max-width: 1040px; margin: 0 auto; padding: clamp(22px, 3vw, 36px); gap: 28px; border-radius: 28px; }
+@media (min-width: 960px) { .landing .resultat .resultat-grille { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 36px; } }
+.landing #titre-resultat { font-size: clamp(1.9rem, 3.4vw, 2.8rem); }
+.landing .resultat-code-intro { font-size: 15px; margin-bottom: 6px; }
+.landing .resultat-libelle { margin-top: 18px; font-size: 14px; }
+.landing .resultat .estimation-valeur { font-size: clamp(2.4rem, 4.4vw, 3.6rem); }
+.landing .resultat-methodes { font-size: 14.5px; margin-top: 10px; }
+.landing .resultat .resultat-note { font-size: 13.5px; }
+.resultat-chargement { min-height: 260px; }
+.analyse-etapes li { font-size: 15px; padding: 10px 14px; }
+.landing .resultat-dossier { align-content: center; }
+.dossier-cta { display: grid; gap: 12px; padding: 24px; border-radius: 24px; background: #FFFDF8; color: var(--espresso); text-decoration: none; box-shadow: 0 24px 50px -28px rgba(0, 0, 0, .55); transition: transform .18s ease, box-shadow .18s ease; }
+.dossier-cta:hover { transform: translateY(-3px); box-shadow: 0 30px 60px -28px rgba(0, 0, 0, .6); }
+.dossier-cta-eti { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ocre-texte); }
+.dossier-cta-code { font-family: var(--mot-cle); font-style: italic; font-weight: 400; font-size: 32px; line-height: 1.05; color: var(--ocre); }
+.dossier-cta-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.dossier-cta-liste li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 15px; }
+.dossier-cta-liste li::before { content: ""; width: 22px; height: 22px; border-radius: 7px; background: var(--sable) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E3A2E' stroke-width='2' stroke-linecap='round'%3E%3Crect x='6' y='11' width='12' height='9' rx='2'/%3E%3Cpath d='M9 11V8a3 3 0 0 1 6 0v3'/%3E%3C/svg%3E") center / 15px no-repeat; }
+.dossier-cta-bouton { display: flex; justify-content: center; align-items: center; gap: 6px; min-height: 52px; border-radius: 999px; background: var(--ocre); color: #fff; font-weight: 700; font-size: 17px; margin-top: 4px; }
+.dossier-cta:hover .dossier-cta-bouton { background: #8E5530; }
+.dossier-cta-note { font-size: 13px; color: var(--pierre-texte); text-align: center; }
+
+/* Étapes : effet bento accentué */
+.etapes-simples { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+.etapes-simples .comment-etape { border-top: 0; padding: 26px; border-radius: 28px; background: #FFFDF8; border: 1px solid var(--trait); }
+.etapes-simples .comment-etape:nth-child(1) { grid-column: span 5; background: var(--vert); border-color: transparent; }
+.etapes-simples .comment-etape:nth-child(2) { grid-column: span 4; background: var(--sable); border-color: transparent; }
+.etapes-simples .comment-etape:nth-child(3) { grid-column: span 3; }
+.etapes-simples .comment-etape:nth-child(1) .etape-numero { color: #E9C9A4; }
+.landing .etapes-simples .comment-etape:nth-child(1) h3 { color: #F6F1E6; }
+.etapes-simples .comment-etape:nth-child(1) .etape-surtitre, .etapes-simples .comment-etape:nth-child(1) .etape-description { color: #C9D6CD; }
+.etapes-simples .comment-etape:nth-child(1) .pastilles li { background: rgba(255, 255, 255, .1); color: #F6F1E6; }
+
+/* Confidentialité : garanties en tuiles */
+.confid-garanties { border-top: 0; padding-top: 0; gap: 12px; }
+.confid-garanties li { padding: 16px; border-radius: 18px; background: rgba(255, 255, 255, .07); }
+
+/* Appel final à la manière d'une carte claire, puis grand pied de page vert */
+.landing .carte-relance { background: #F5E7D6; color: var(--espresso); border-radius: 32px; max-width: 1100px; margin: 0 auto; padding: clamp(36px, 5vw, 64px) clamp(20px, 4vw, 48px); }
+.landing .relance h2.affiche { color: var(--vert); font-size: clamp(2.2rem, 4.4vw, 3.6rem); }
+.landing .relance h2.affiche em { color: var(--ocre); }
+.landing .relance-texte { color: var(--pierre-texte); font-size: 17px; }
+.carte-relance .recherche-message, .landing .carte-relance .relance-telephone { color: var(--pierre-texte); }
+.landing .pied { background: var(--vert); border-radius: 44px 44px 0 0; margin-top: 72px; }
+.landing .pied a:hover { color: #E9C9A4; }
+.pied-legal, .landing .pied-copyright { color: #BCCBC0; }
+.landing .pied-marque { margin: 18px 0 -0.14em; font: 700 22vw/0.8 "Big Shoulders", "Arial Narrow", sans-serif; text-transform: uppercase; text-align: center; letter-spacing: -.01em; color: #F6F1E6; white-space: nowrap; overflow: hidden; }
+
+/* Téléphone et tablette */
+@media (max-width: 900px) {
+  .hero-visuel { height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .landing .hero-v4 .hero-fond { position: relative; grid-column: 1 / -1; aspect-ratio: 16 / 10; }
+  .hero-bulle { position: static; width: auto; }
+  .bulle-bd { grid-column: 1 / -1; }
+  .landing .hero-v4 .hero-bas { bottom: auto; top: 12px; transform: none; left: auto; right: 12px; }
+  .etapes-simples .comment-etape:nth-child(n) { grid-column: 1 / -1; }
+}
+@media (max-width: 520px) { .hero-visuel { grid-template-columns: 1fr; } .bulle-docs { grid-template-columns: 1fr 1fr; } .hero-bulle strong.affiche { font-size: 28px; } }
+.landing .hero-v4 h1 { font-size: clamp(2.1rem, 3.7vw, 3.5rem); max-width: 22ch; }
+.hero-bulle strong.affiche { text-transform: none; }
+.bulle-titre { flex-wrap: wrap; align-items: center; }
+.bulle-code { font-size: 28px; }
+.landing .resultat-methodes li:nth-child(2) { display: none; }
+.landing .pied-marque { margin: 18px 0 0; padding-bottom: 2vw; line-height: .78; }
+.hero-bulle > .bulle-code { font-family: var(--mot-cle); font-style: italic; font-size: 28px; line-height: 1.1; color: var(--ocre); }
+.hero-bulle > .bulle-titre { font-size: 12.5px; }
+@media (max-width: 520px) {
+  .hero-visuel { grid-template-columns: 1fr 1fr; }
+  .bulle-hd, .bulle-bd { grid-column: 1 / -1; }
+  .hero-bulle { padding: 14px; }
+  .hero-bulle > span { font-size: 12.5px; }
+}
