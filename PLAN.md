@@ -619,3 +619,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     tests : verrou 409, quota, budget de 110 s. Tests : 373. axe-core : 0 violation sur le récapitulatif et le
     mémorandum (1440 et 390 px). `/espace/` garde 6 violations déjà présentes sur `main` (onglets ARIA, contrastes),
     à traiter avec la refonte de la page dossier.
+- **18/11/2026, mise en ligne de la PR #5** (intégration de `memo-presentation`, accord du dirigeant) : déploiement
+  depuis `main` (version Cloudflare c9c46e37), aucune migration à appliquer. Vérifié en ligne : mémorandum page par
+  page et récapitulatif servis, routes privées 401, estimation 434436622 ok, aucune ressource en erreur sur
+  l'accueil. Tests : 373. Les mémorandums déjà rédigés gardent leurs anciens textes jusqu'à « Rédiger à nouveau ».
