@@ -170,7 +170,8 @@ describe("fichier de contenu et page d'accueil", () => {
     expect([...PAGE.matchAll(/<li class="comment-etape" id="comment-(\d)">/g)].map((m) => m[1])).toEqual(["1", "2", "3"]);
     expect(PAGE.match(/<article class="bento-bloc /g)).toHaveLength(3);
     expect(PAGE.match(/href="#livrables"/g).length).toBeGreaterThanOrEqual(2);           // menu, menu mobile
-    expect(PAGE).toMatch(/<aside class="hero-encoche" id="hero-encoche"/);
+    expect(PAGE.match(/class="hero-bulle /g)).toHaveLength(3);                           // trois bulles à cheval sur la vidéo
+    expect(PAGE).not.toMatch(/pied-trousseau|resultat-suites|btn-autre/);
     expect(contenu.hero.carte.fictif).toBe("exemple fictif");                            // jamais présenté comme réel
     expect(contenu.sources.liste).toEqual(["INSEE", "INPI", "BODACC"]);                  // registres réellement utilisés
     expect(contenu.hero.note_comptes).toBe("");

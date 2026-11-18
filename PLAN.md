@@ -578,3 +578,13 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
 - **18/11/2026, mise en ligne de `apres-siren`** (accord du dirigeant ; multiples floutés dans le résultat de
   l'estimation à sa demande, visuellement seulement : ils restent dans la réponse de l'API). Migration
   `0003_pieces.sql` appliquée en production avant le déploiement.
+- **18/11/2026, accueil v4** (branche `accueil-v4`, partie de `main`, non publiée) : polices réduites ; hero en deux
+  temps (texte et champ en haut, vidéo plus petite dessous) avec quatre bulles logées dans des encoches
+  (`encoche.js`, `cheminEncoches`) : 30 s, 3 méthodes, nom de code et estimation d'exemple marquée fictive,
+  documents ; résultat de l'estimation compact avec une seule suite (« Voir mon dossier », tuile qui liste ce que
+  contient le dossier) ; étapes et garanties en tuiles ; appel final en carte claire et pied de page vert arrondi
+  avec le nom en très grand (à la manière de skarlett.fr, rien repris) ; trousseau de clés retiré. Tests : 323.
+  - Retouches validées par le dirigeant : trois bulles posées à cheval sur les bords de la vidéo (plus d'encoches,
+    `encoche.js` supprimé) ; **police unique sur tout le site** : titres en capitales étroites (Big Shoulders), tout le
+    reste en Geist (plus de serif italique, de chasse fixe ni d'écriture manuscrite dans l'interface ; le mémorandum
+    garde sa propre typographie). Mise en ligne le 18/11/2026.

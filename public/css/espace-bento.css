@@ -135,3 +135,10 @@
 .espace-bento #checklist-groupes { margin-top: 0; grid-template-columns: minmax(0, 1fr); }
 .tuile-valeur .affiche { text-transform: none; }
 .piece-fichiers .lien-simple { margin-left: 8px; }
+
+/* Police unique (18/11/2026) : plus de serif italique ni de chasse fixe dans l'espace */
+:root { --b-serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; }
+.nom-code, .page-guidee #guide-entreprise { font-style: normal; font-weight: 600; letter-spacing: -.03em; }
+.nom-code { font-size: clamp(36px, 4.4vw, 54px); }
+.page-guidee #guide-entreprise { font-size: clamp(24px, 2.8vw, 32px); }
+.studio-tete h1 em { font-style: normal; }

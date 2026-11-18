@@ -108,7 +108,29 @@
       "Gratuit, sans compte",
       "Personne n’est averti",
       "Registres officiels"
-    ]
+    ],
+    "bulles": {
+      "delai": {
+        "chiffre": "30 s",
+        "texte": "pour une première fourchette de valeur"
+      },
+      "methodes": {
+        "chiffre": "3 méthodes",
+        "texte": "croisées pour une valeur que vous pouvez défendre"
+      },
+      "code": {
+        "titre": "Votre nom de code",
+        "code": "Projet Chêne",
+        "valeur": "2,1 – 2,8 M€",
+        "fictif": "exemple fictif"
+      },
+      "docs": [
+        "Valorisation",
+        "Teaser",
+        "Mémorandum",
+        "Datapack"
+      ]
+    }
   },
   "histoire": {
     "temps1": {
@@ -574,7 +596,8 @@
     "cgu": "Conditions d’utilisation",
     "joindre": "Nous joindre",
     "telephone_lien": "tel:{telephone}",
-    "email_lien": "mailto:{email_contact}"
+    "email_lien": "mailto:{email_contact}",
+    "marque": "Passation"
   },
   "js": {
     "chargement": "Nous lisons les registres publics...",
@@ -622,7 +645,16 @@
         "Teaser anonyme",
         "Mémorandum",
         "Datapack Excel"
-      ]
+      ],
+      "dossier_titre": "Votre dossier est prêt à être ouvert",
+      "dossier_liste": [
+        "Une valeur argumentée par vos chiffres",
+        "Un teaser anonyme",
+        "Le mémorandum complet",
+        "Le datapack Excel"
+      ],
+      "dossier_bouton": "Voir mon dossier",
+      "dossier_note": "Gratuit · un code par e-mail · aucun mot de passe"
     },
     "video": {
       "pause": "Mettre la vidéo en pause",

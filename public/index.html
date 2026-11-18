@@ -93,19 +93,7 @@
 <main id="contenu">
 
   <!-- 1. Hero : agir -->
-  <section id="accueil" class="hero" aria-labelledby="titre-hero">
-    <div class="hero-fond">
-      <img src="/img/photos/hero-poster-1600.webp"
-           srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
-           sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
-      <!-- Vidéo (public/js/landing/video.js) : 1080p, 2160p seulement à partir de 1 600 px de large ; clips des métiers
-           en alternance si la liste est fournie (second lecteur créé à ce moment) ; jamais avec « réduire les
-           animations » ni en économie de données (l'image reste) -->
-      <div class="hero-videos" data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
-           data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'>
-        <video class="hero-video" muted playsinline preload="metadata" aria-hidden="true" hidden></video>
-      </div>
-    </div>
+  <section id="accueil" class="hero hero-v4" aria-labelledby="titre-hero">
     <div class="conteneur hero-contenu">
       <p class="surtitre" data-t="hero.surtitre"></p>
       <h1 id="titre-hero" class="affiche" data-t="hero.titre"></h1>
@@ -133,8 +121,21 @@
         <li data-t="hero.preuves.registres"></li>
       </ul>
     </div>
-    <!-- Bento du 18/11/2026 : la vidéo est découpée d'une encoche (bas à droite) où se loge un exemple d'estimation
-         (public/js/landing/encoche.js) ; sur téléphone, la carte se pose sur le bas de la vidéo -->
+    <!-- Accueil v4 (18/11/2026) : la vidéo, plus petite, avec trois bulles posées à cheval sur ses bords.
+         Sur téléphone, les bulles se rangent sous la vidéo. -->
+    <div class="hero-visuel" id="hero-visuel">
+      <div class="hero-fond">
+      <img src="/img/photos/hero-poster-1600.webp"
+           srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
+           sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
+      <!-- Vidéo (public/js/landing/video.js) : 1080p, 2160p seulement à partir de 1 600 px de large ; clips des métiers
+           en alternance si la liste est fournie (second lecteur créé à ce moment) ; jamais avec « réduire les
+           animations » ni en économie de données (l'image reste) -->
+      <div class="hero-videos" data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
+           data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'>
+        <video class="hero-video" muted playsinline preload="metadata" aria-hidden="true" hidden></video>
+      </div>
+    </div>
     <div class="hero-bas">
       <p class="hero-metier" aria-hidden="true" hidden></p>
       <button class="hero-pause" type="button" hidden>
@@ -143,14 +144,10 @@
         <span class="visuellement-cache"></span>
       </button>
     </div>
-    <aside class="hero-encoche" id="hero-encoche" data-t-attr="aria-label=hero.carte.titre">
-      <div class="carte-estimation">
-        <p class="carte-estimation-tete"><span data-t="hero.carte.titre"></span><em data-t="hero.carte.fictif"></em></p>
-        <p class="carte-estimation-code" data-t="hero.carte.code"></p>
-        <p class="carte-estimation-valeur chiffre" data-t="hero.carte.valeur"></p>
-        <p class="carte-estimation-pied" data-t="hero.carte.pied"></p>
-      </div>
-    </aside>
+      <div class="hero-bulle bulle-hg sombre"><strong class="affiche" data-t="hero.bulles.delai.chiffre"></strong><span data-t="hero.bulles.delai.texte"></span></div>
+      <div class="hero-bulle bulle-hd"><span class="bulle-titre"><span data-t="hero.bulles.code.titre"></span><em data-t="hero.bulles.code.fictif"></em></span><span class="bulle-code" data-t="hero.bulles.code.code"></span><strong class="affiche bulle-valeur" data-t="hero.bulles.code.valeur"></strong></div>
+      <div class="hero-bulle bulle-bd"><ul class="bulle-docs"><li data-t="hero.bulles.docs.0"></li><li data-t="hero.bulles.docs.1"></li><li data-t="hero.bulles.docs.2"></li><li data-t="hero.bulles.docs.3"></li></ul></div>
+    </div>
   </section>
 
   <div class="sources-bande" data-t-attr="aria-label=pourquoi.sources">
@@ -189,14 +186,9 @@
             <p class="petit" data-t="js.resultat.saisie_note"></p>
           </form>
           <p class="resultat-message" id="resultat-message" role="status" hidden></p>
-          <ul class="resultat-suites">
-            <li><a class="suite" href="/connexion" data-connexion data-suite="ouvrir"><strong data-t="js.resultat.ouvrir_titre"></strong><span data-t="js.resultat.ouvrir_texte"></span></a></li>
-            <li><a class="suite" href="mailto:" data-suite="inviter"><strong data-t="js.resultat.inviter_titre"></strong><span data-t="js.resultat.inviter_texte"></span></a></li>
-          </ul>
-          <p class="resultat-autre"><button class="lien" type="button" id="btn-autre" data-t="js.resultat.autre"></button></p>
         </div>
       </div>
-      <div class="resultat-dossier" aria-hidden="true"></div>
+      <div class="resultat-dossier"></div>
     </div>
   </section>
 
@@ -406,20 +398,6 @@
 
 <footer class="pied">
   <div class="pied-interieur">
-    <!-- Le trousseau : les neuf clés de l'histoire, suspendues à leur anneau (décoratif) -->
-    <div class="pied-trousseau" aria-hidden="true">
-      <img src="/img/landing/cles/k3.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -44deg; --z: 1">
-      <img src="/img/landing/cles/k1.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -33deg; --z: 3">
-      <img src="/img/landing/cles/k6.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -22deg; --z: 2">
-      <img src="/img/landing/cles/k0.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -11deg; --z: 5">
-      <img src="/img/landing/cles/k4.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 0deg; --z: 4">
-      <img src="/img/landing/cles/k8.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 11deg; --z: 6">
-      <img src="/img/landing/cles/k2.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 22deg; --z: 3">
-      <img src="/img/landing/cles/k7.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 33deg; --z: 2">
-      <img src="/img/landing/cles/k5.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 44deg; --z: 1">
-      <span class="pied-anneau"></span>
-    </div>
-    <p class="pied-logo" aria-hidden="true">Passation</p>
     <div class="pied-colonnes">
       <div class="pied-legal">
         <p data-t="pied.identite"></p>
@@ -438,6 +416,7 @@
     </div>
     <p class="pied-copyright">© <span data-annee>2026</span> Passation</p>
   </div>
+  <p class="pied-marque" aria-hidden="true" data-t="pied.marque"></p>
 </footer>
 
 <script type="application/json" id="textes" data-t-json="js"></script>
@@ -446,7 +425,6 @@
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/landing/intro.js"></script>
 <script type="module" src="/js/landing/landing.js"></script>
-<script type="module" src="/js/landing/encoche.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>
