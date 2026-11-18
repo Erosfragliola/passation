@@ -77,7 +77,11 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
     const tuile = el("div", "resultat-tuile"), liste = el("ul", "resultat-lu");
     tuile.append(el("p", "resultat-tuile-titre", R.analyse_titre || ""), liste);
-    for (const [lib, val] of lignes) { const li = el("li"); li.append(el("i"), el("span", null, lib || ""), el("b", null, val || "")); liste.append(li); }
+    lignes.forEach(([lib, val], k) => {
+      const li = el("li"), b = el("b", null, val || "");
+      if (k === 2 && est.statut === "ok") { b.className = "floute"; b.setAttribute("aria-hidden", "true"); li.setAttribute("aria-label", `${lib} : multiples réservés à votre dossier`); }
+      li.append(el("i"), el("span", null, lib || ""), b); liste.append(li);
+    });
     const obtenir = el("div", "resultat-tuile claire");
     const pil = el("div", "resultat-pilules");
     for (const x of R.obtenir || []) pil.append(el("span", null, x));
@@ -96,7 +100,14 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     const li = (texte) => { const e = document.createElement("li"); e.textContent = texte; methodes.append(e); };
     if (est.statut === "ok") {
       valeur.textContent = fourchette(est.bas, est.haut);
-      li(remplir(R.methode, { bas: multiple(est.multiples.bas), haut: multiple(est.multiples.haut), central: multiple(est.multiples.central) }));
+      // Les multiples restent floutés (dévoilés dans le dossier) : la ligne garde sa forme, les chiffres sont illisibles
+      const e = document.createElement("li"), valeurs = { bas: multiple(est.multiples.bas), haut: multiple(est.multiples.haut), central: multiple(est.multiples.central) };
+      for (const [k, morceau] of String(R.methode || "").split(/\{(bas|haut|central)\}/).entries()) {
+        if (k % 2) { const f = document.createElement("span"); f.className = "floute"; f.setAttribute("aria-hidden", "true"); f.textContent = valeurs[morceau]; e.append(f); }
+        else e.append(document.createTextNode(morceau));
+      }
+      e.setAttribute("aria-label", "Multiples de l'EBE du secteur : détaillés dans votre dossier.");
+      methodes.append(e);
       li(R.methodes_approfondies);
       note.textContent = (saisie ? R.note_saisie : remplir(R.note, { exercice: est.exercice })) + (est.avertissement ? ` ${est.avertissement}` : "");
     } else if (est.statut === "non_calculable") {

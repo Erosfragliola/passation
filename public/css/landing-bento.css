@@ -134,3 +134,4 @@
 .resultat-pilules span { border-radius: 999px; padding: 7px 14px; background: var(--sable); font-size: 15px; font-weight: 500; }
 @media (prefers-reduced-motion: reduce) { .analyse-etapes li.en-cours i { animation: none; } }
 @media (max-width: 600px) { .resultat-lu li { grid-template-columns: 22px minmax(0, 1fr); } .resultat-lu b { grid-column: 2; text-align: left; } }
+.landing .floute { filter: blur(5px); user-select: none; -webkit-user-select: none; display: inline-block; padding: 0 2px; }
