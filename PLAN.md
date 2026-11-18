@@ -588,3 +588,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     `encoche.js` supprimé) ; **police unique sur tout le site** : titres en capitales étroites (Big Shoulders), tout le
     reste en Geist (plus de serif italique, de chasse fixe ni d'écriture manuscrite dans l'interface ; le mémorandum
     garde sa propre typographie). Mise en ligne le 18/11/2026.
+- **18/11/2026, accueil v5** (branche `hero-forme`) : le hero redevient grand, la vidéo dans une forme non
+  rectangulaire (angles asymétriques 40/120 px, encoche en bas au centre où se loge le champ SIREN,
+  `public/js/landing/forme-hero.js`, chemin recalculé à chaque taille) ; titre et texte à l'intérieur ; trois bulles
+  à cheval sur les bords (masquées sous 900 px) ; sur téléphone, angles asymétriques et champ dans la forme.

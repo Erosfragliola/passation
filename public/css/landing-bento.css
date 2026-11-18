@@ -281,3 +281,42 @@
 .hero-bulle > .bulle-code { font-size: 22px; }
 .dossier-cta-code { font-size: 26px; }
 .landing .surtitre.etiquette-kraft, .landing .carte-large .surtitre.etiquette-kraft, .annotation, .etiquette-main { font-family: var(--sans); font-size: 15px; font-weight: 600; }
+
+/* =================================================================== Accueil v5 : grande forme, texte à l'intérieur */
+.landing .hero.hero-v5 { min-height: auto; height: auto; max-width: 1320px; margin: 0 auto; padding: calc(var(--haut-entete, 80px) + 12px) var(--gouttiere) 0; display: block; }
+.landing .hero-v5::before, .landing .hero-v5::after { content: none; }
+.hero-scene { position: relative; height: clamp(600px, 86vh, 780px); margin: 0 clamp(0px, 2.4vw, 34px) 66px; }
+.landing .hero-v5 .hero-fond { position: absolute; inset: 0; z-index: 0; border: 0; border-radius: 0; overflow: hidden; background: var(--espresso); }
+.landing .hero-v5 .hero-fond::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(20, 16, 12, .55) 0%, rgba(20, 16, 12, .32) 45%, rgba(20, 16, 12, .62) 100%); }
+.landing .hero-v5 .hero-contenu { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px calc(var(--encoche-p, 0px) + 40px); color: #fff; max-width: none; }
+.landing .hero-v5 .surtitre { color: #E9C9A4; }
+.landing .hero-v5 h1 { font-size: clamp(2.6rem, 5.4vw, 5.2rem); color: #fff; max-width: 15ch; margin: 0 auto 18px; text-shadow: 0 2px 30px rgba(0, 0, 0, .25); }
+.landing .hero-v5 h1 em { color: #fff; }
+.landing .hero-v5 .chapo { color: rgba(255, 255, 255, .9); margin: 0 auto; max-width: 40rem; }
+.landing .hero-v5 .hero-preuves { color: rgba(255, 255, 255, .85); }
+/* Le champ dans l'encoche, en bas au centre ; les coches dessous, sous la forme */
+.landing .hero-v5 .recherche { position: absolute; left: 50%; transform: translateX(-50%); top: calc(100% - var(--encoche-p, 0px) + 14px); width: min(620px, calc(100% - 48px)); z-index: 4; }
+.landing .hero-v5 .recherche-champ { border: 1px solid var(--trait); box-shadow: 0 16px 40px -18px rgba(35, 30, 24, .35); }
+.landing .hero-v5 .recherche-note { margin-top: 12px; }
+.landing .hero-v5 .hero-coches { color: var(--pierre-texte); font-size: 14.5px; }
+.landing .hero-v5 .hero-coches li::before { background: var(--vert); color: #fff; }
+.landing .hero-v5 .hero-bas { position: absolute; top: 18px; right: 132px; left: auto; bottom: auto; transform: none; padding: 0; z-index: 4; }
+/* Bulles à cheval sur les bords */
+.hero-v5 .hero-bulle { position: absolute; z-index: 3; }
+.hero-v5 .bulle-hg { top: 30%; left: -34px; transform: none; }
+.hero-v5 .bulle-hd { top: 18%; right: -34px; transform: none; }
+.hero-v5 .bulle-bd { top: auto; bottom: 22%; left: auto; right: -34px; transform: none; width: 300px; }
+.hero-v5 .bulle-bd .bulle-docs { grid-template-columns: 1fr 1fr; }
+.landing .hero-v5 ~ .sources-bande { padding-top: 6px; }
+@media (max-width: 1100px) { .hero-v5 .bulle-hd, .hero-v5 .bulle-bd { right: -14px; } .hero-v5 .bulle-hg { left: -14px; } .hero-v5 .hero-bulle { width: 210px; } .hero-v5 .bulle-bd { width: 260px; } }
+@media (max-width: 900px) {
+  .hero-v5 .hero-bulle { display: none; }
+}
+@media (max-width: 700px) {
+  .hero-scene { height: clamp(560px, 92svh, 700px); margin: 0 0 24px; }
+  .landing .hero-v5 .hero-contenu { justify-content: flex-start; padding: 64px 18px 24px; }
+  .landing .hero-v5 h1 { font-size: clamp(2.3rem, 10vw, 3rem); }
+  .landing .hero-v5 .recherche { position: relative; left: auto; top: auto; transform: none; width: 100%; margin-top: auto; }
+  .landing .hero-v5 .hero-coches { color: rgba(255, 255, 255, .9); }
+  .landing .hero-v5 .hero-coches li::before { background: #E9C9A4; color: var(--vert); }
+}
