@@ -1,10 +1,9 @@
 // Écran de résultat, branché sur l'estimation express existante (GET /api/maquette/:siren, POST /api/estimation).
-// Chargement (au moins 1,2 s pour éviter un éclair, jamais plus que la réponse) ; puis à gauche le nom de code, la
-// première fourchette et la méthode réellement employée ; à droite le dossier : le vrai nom s'écrit (seul le
-// dirigeant le voit), des bandeaux noirs le recouvrent, le tampon tombe, le teaser anonyme s'affiche.
-// Comptes confidentiels : deux chiffres sur le même écran. Deux suites : ouvrir le dossier (connexion par code, puis
-// le parcours guidé), inviter l'expert-comptable (e-mail prérempli, aucune donnée jointe).
-import { estimationManuelle, fourchette, multiple, remplir } from "/js/landing/estimation.js";
+// Chargement : l'analyse en quatre étapes (au moins 2,4 s, jamais plus que la réponse). Puis une fiche de synthèse
+// (lot 1, 18/11/2026) : nom de code, fourchette en grand avec la barre bas / central / haut, la méthode (multiples
+// floutés), une ligne de sources datées et une seule action, « Voir mon dossier » (connexion par code, puis le
+// parcours guidé). Comptes confidentiels : deux chiffres sur la même fiche.
+import { estimationManuelle, fourchette, montant, positionRepere, moisSource, multiple, remplir } from "/js/landing/estimation.js";
 import { formaterSiren } from "/js/siren.js";
 
 const DUREE_MIN = 2400; // le temps de voir les quatre étapes de l'analyse
@@ -15,7 +14,6 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
   const R = textes.resultat || {};
   const $ = (s) => section.querySelector(s);
   const chargement = $(".resultat-chargement"), contenu = $(".resultat-contenu");
-  const zoneDossier = $(".resultat-dossier");
   const etapes = [...section.querySelectorAll(".analyse-etapes li")];
   const etat = { donnees: null, anim: 0 };
 
@@ -28,7 +26,8 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     section.setAttribute("aria-busy", "true");
     chargement.hidden = false;
     contenu.hidden = true;
-    zoneDossier.hidden = true;
+    section.classList.remove("resultat-pret");
+    $(".resultat-grille").classList.add("carte-verte", "nuit");
     section.scrollIntoView({ behavior: reduit() ? "auto" : "smooth", block: "start" });
     // Les étapes de l'analyse s'allument l'une après l'autre pendant le chargement
     etapes.forEach((li) => { li.className = ""; });
@@ -50,30 +49,19 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
   function afficher(d) {
     etat.donnees = d;
     contenu.hidden = false;
-    zoneDossier.hidden = false;
+    section.classList.add("resultat-pret");
+    $(".resultat-grille").classList.remove("carte-verte", "nuit"); // la fiche, sur papier clair
     const code = d.nom_de_code ? `Projet ${d.nom_de_code}` : "";
     $(".resultat-code").textContent = code;
     $(".resultat-code-intro").hidden = !code;
     const t = d.teaser || {};
     const ou = (v) => v || R.non_renseigne;
     $("#resultat-teaser").textContent = remplir(R.teaser, { nom: d.nom, secteur: ou(t.secteur), region: ou(t.region), anciennete: ou(t.anciennete), effectif: ou(t.effectif) });
-    // Suites : connexion par code pour ce SIREN ; e-mail prérempli sans aucune donnée du dossier
-    // Toutes les entrées « Espace dirigeant » (barre, menu mobile) mènent aussi à ce dossier : sinon, après le code,
-    // le dirigeant revenait sur l'accueil sans dossier (constaté le 17/11/2026)
+    // Une seule suite : la connexion par code pour ce SIREN. Toutes les entrées « Espace dirigeant » (barre, menu
+    // mobile) mènent aussi à ce dossier : sinon, après le code, le dirigeant revenait sur l'accueil sans dossier
+    // (constaté le 17/11/2026)
     document.querySelectorAll("a[data-connexion]").forEach((a) => { a.href = `/connexion?siren=${d.siren}`; a.dataset.siren = d.siren; });
     afficherEstimation(d.estimation);
-
-    const dep = departement(d.code_postal);
-    // À droite, une seule suite : la tuile du dossier, qui donne envie de l'ouvrir (connexion par code, puis le parcours)
-    const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-    const lien = el("a", "dossier-cta");
-    lien.href = `/connexion?siren=${d.siren}`; lien.dataset.connexion = ""; lien.dataset.siren = d.siren;
-    const liste = el("ul", "dossier-cta-liste");
-    for (const x of R.dossier_liste || []) liste.append(el("li", null, x));
-    const bouton = el("span", "dossier-cta-bouton", R.dossier_bouton || "");
-    bouton.append(el("span", "fleche", " →"));
-    lien.append(el("span", "dossier-cta-eti", R.dossier_titre || ""), el("strong", "dossier-cta-code", code || ""), liste, bouton, el("span", "dossier-cta-note", R.dossier_note || ""));
-    zoneDossier.replaceChildren(lien);
   }
 
   function afficherEstimation(est, { saisie = false } = {}) {
@@ -81,12 +69,23 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     const sansComptes = !est || est.statut === "comptes_absents";
     comptes.hidden = !sansComptes;
     bloc.hidden = sansComptes;
+    const barre = $("#estimation-barre"), sources = $("#resultat-sources");
+    barre.hidden = true; sources.hidden = true;
     if (sansComptes) return;
     const valeur = $("#estimation-valeur"), note = $("#estimation-note"), methodes = $("#estimation-methodes");
     methodes.replaceChildren();
     const li = (texte) => { const e = document.createElement("li"); e.textContent = texte; methodes.append(e); };
     if (est.statut === "ok") {
       valeur.textContent = fourchette(est.bas, est.haut);
+      // Barre bas / central / haut, dans l'unité de la fourchette
+      $("#borne-bas").textContent = montant(est.bas, est.haut);
+      $("#borne-central").textContent = montant(est.central, est.haut);
+      $("#borne-haut").textContent = montant(est.haut, est.haut);
+      barre.style.setProperty("--repere", `${positionRepere(est.bas, est.central, est.haut).toFixed(1)}%`);
+      barre.hidden = false;
+      // Sources datées : l'exercice des comptes publics (ou la saisie) et le mois de la référence des multiples
+      const mois = moisSource(est.source);
+      if (mois && (saisie || est.exercice)) { sources.textContent = remplir(saisie ? R.sources_saisie : R.sources, { exercice: est.exercice, mois }); sources.hidden = false; }
       // Les multiples restent floutés (dévoilés dans le dossier) : la ligne garde sa forme, les chiffres sont illisibles
       const e = document.createElement("li"), valeurs = { bas: multiple(est.multiples.bas), haut: multiple(est.multiples.haut), central: multiple(est.multiples.central) };
       for (const [k, morceau] of String(R.methode || "").split(/\{(bas|haut|central)\}/).entries()) {
@@ -95,7 +94,6 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
       }
       e.setAttribute("aria-label", "Multiples de l'EBE du secteur : détaillés dans votre dossier.");
       methodes.append(e);
-      li(R.methodes_approfondies);
       note.textContent = (saisie ? R.note_saisie : remplir(R.note, { exercice: est.exercice })) + (est.avertissement ? ` ${est.avertissement}` : "");
     } else if (est.statut === "non_calculable") {
       valeur.textContent = R.sur_mesure;

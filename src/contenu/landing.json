@@ -243,6 +243,7 @@
         "chiffre": "30 secondes",
         "titre": "Une première fourchette de valeur",
         "texte": "Tapez le nom ou le SIREN de votre société : la fourchette s’affiche aussitôt, à partir des registres publics. Sans compte, et personne n’est averti.",
+        "obtenez": "Vous obtenez une fourchette de valeur et le nom de code de votre dossier.",
         "pastilles": [
           "Gratuit",
           "Sans compte"
@@ -253,6 +254,7 @@
         "chiffre": "3 méthodes",
         "titre": "Une valeur argumentée",
         "texte": "Vous complétez quelques chiffres clés. Passation croise trois méthodes de valorisation et vous montre d’où vient chaque écart, pour une valeur que vous pouvez défendre.",
+        "obtenez": "Vous obtenez une valeur centrale, avec le détail du calcul et ses sources.",
         "pastilles": [
           "{duree_etape2}",
           "{prix_etape2}"
@@ -263,6 +265,7 @@
         "chiffre": "9 chapitres",
         "titre": "Teaser, mémo et datapack",
         "texte": "Le teaser, anonyme, pour intéresser des repreneurs. Le mémo pour raconter toute votre entreprise. Le datapack, le fichier Excel des chiffres. Vous relisez, vous partagez.",
+        "obtenez": "Vous obtenez le teaser, le mémorandum et le datapack Excel, modifiables.",
         "pastilles": [
           "À votre rythme",
           "{prix_dossier}"
@@ -289,6 +292,39 @@
     },
     "visuel3": {
       "alt": "Les neuf clés alignées, chacune sous l’étiquette de son chapitre, de la synthèse jusqu’à la valeur."
+    },
+    "illustrations": {
+      "fictif": "exemple fictif",
+      "siren": {
+        "saisie": "Menuiserie Durand & Fils",
+        "libelle": "Première fourchette",
+        "valeur": "1,4 – 2,4 M€"
+      },
+      "chiffres": {
+        "lignes": [
+          {
+            "poste": "Chiffre d'affaires",
+            "montant": "2,4 M€"
+          },
+          {
+            "poste": "EBE",
+            "montant": "380 k€"
+          },
+          {
+            "poste": "Endettement net",
+            "montant": "20 k€"
+          }
+        ],
+        "libelle": "Valeur centrale des titres",
+        "centrale": "1,9 M€",
+        "bas": "1,4 M€",
+        "haut": "2,4 M€"
+      },
+      "documents": [
+        "Teaser",
+        "Mémorandum",
+        "Datapack"
+      ]
     }
   },
   "pourquoi": {
@@ -473,6 +509,7 @@
     ],
     "politique": "Lire notre politique",
     "fictif": "Exemple fictif",
+    "fiche": "Mémorandum d’information",
     "avant": "Menuiserie Durand & Fils",
     "apres": "Projet Chêne",
     "exemple_alt": "Exemple fictif : le nom de l’entreprise devient Projet Chêne"
@@ -585,7 +622,14 @@
     "titre": "Et si on regardait *votre entreprise* ?",
     "texte": "C’est gratuit, sans compte, et vous aurez en 30 secondes une première idée de sa valeur.",
     "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
-    "tampon": "Gratuit · sans compte · 30 secondes ·"
+    "tampon": "Gratuit · sans compte · 30 secondes ·",
+    "livrables_titre": "Ce que contient votre dossier",
+    "livrables": [
+      "Une page anonyme, sous nom de code, pour intéresser des repreneurs.",
+      "La présentation complète de votre entreprise, en neuf chapitres.",
+      "Le fichier Excel de vos chiffres et du calcul de la valeur, en formules."
+    ],
+    "garanties_titre": "Nos garanties"
   },
   "pied": {
     "identite": "",
@@ -595,6 +639,9 @@
     "confidentialite": "Confidentialité",
     "cgu": "Conditions d’utilisation",
     "joindre": "Nous joindre",
+    "documents_titre": "Votre dossier",
+    "utiles_titre": "Liens utiles",
+    "sources_note": "Registres lus à chaque estimation (mis en cache 24 heures). Multiples sectoriels sourcés et datés.",
     "telephone_lien": "tel:{telephone}",
     "email_lien": "mailto:{email_contact}",
     "marque": "Passation"
@@ -653,6 +700,11 @@
         "Le mémorandum complet",
         "Le datapack Excel"
       ],
+      "bas": "Bas",
+      "central": "Central",
+      "haut": "Haut",
+      "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
+      "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
       "dossier_bouton": "Voir mon dossier",
       "dossier_note": "Gratuit · un code par e-mail · aucun mot de passe"
     },

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr" class="sans-js">
+<html lang="fr" class="sans-js fin-a">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -157,7 +157,8 @@
     <span data-t="sources.libelle"></span><b data-t="sources.liste.0"></b><b data-t="sources.liste.1"></b><b data-t="sources.liste.2"></b>
   </div>
 
-  <!-- Résultat de l'estimation (public/js/landing/resultat.js) : nom de code, fourchette, teaser anonyme, deux suites.
+  <!-- Résultat de l'estimation (public/js/landing/resultat.js) : l'analyse en quatre étapes (inchangée), puis une fiche
+       de synthèse (lot 1) : nom de code, fourchette et barre bas / central / haut, sources datées, une seule action.
        Aucun compte n'est demandé avant de voir la valeur. -->
   <section id="resultat" class="resultat" aria-labelledby="titre-resultat" hidden>
     <div class="carte-large carte-verte nuit resultat-grille">
@@ -171,13 +172,23 @@
           </ol>
           <p class="resultat-chargement-texte" data-t="js.chargement"></p>
         </div>
-        <div class="resultat-contenu" hidden>
-          <p class="surtitre" data-t="js.resultat.titre"></p>
-          <h2 id="titre-resultat"><span class="resultat-code-intro" data-t="js.resultat.code_intro"></span> <em class="resultat-code"></em></h2>
+        <div class="resultat-contenu fiche" hidden>
+          <div class="fiche-tete">
+            <p class="fiche-titre" data-t="js.resultat.titre"></p>
+            <h2 id="titre-resultat"><span class="resultat-code-intro" data-t="js.resultat.code_intro"></span> <em class="resultat-code"></em></h2>
+          </div>
           <p class="visuellement-cache" id="resultat-teaser"></p>
           <div class="resultat-valeur" id="resultat-estimation">
             <p class="resultat-libelle" data-t="js.resultat.fourchette_titre"></p>
             <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
+            <div class="fiche-barre" id="estimation-barre" hidden>
+              <div class="fiche-piste" aria-hidden="true"><span class="fiche-repere"></span></div>
+              <dl class="fiche-bornes">
+                <div><dt data-t="js.resultat.bas"></dt><dd id="borne-bas"></dd></div>
+                <div class="central"><dt data-t="js.resultat.central"></dt><dd id="borne-central"></dd></div>
+                <div><dt data-t="js.resultat.haut"></dt><dd id="borne-haut"></dd></div>
+              </dl>
+            </div>
             <ul class="resultat-methodes" id="estimation-methodes"></ul>
             <p class="resultat-note" id="estimation-note"></p>
           </div>
@@ -188,10 +199,14 @@
             <button class="btn btn-vert" type="submit" data-t="js.resultat.voir"></button>
             <p class="petit" data-t="js.resultat.saisie_note"></p>
           </form>
+          <p class="fiche-sources" id="resultat-sources" hidden></p>
+          <div class="fiche-action">
+            <a class="btn btn-vert" id="resultat-ouvrir" href="/connexion" data-connexion><span data-t="js.resultat.dossier_bouton"></span> <span class="fleche" aria-hidden="true">→</span></a>
+            <p data-t="js.resultat.dossier_note"></p>
+          </div>
           <p class="resultat-message" id="resultat-message" role="status" hidden></p>
         </div>
       </div>
-      <div class="resultat-dossier"></div>
     </div>
   </section>
 
@@ -229,34 +244,92 @@
     </div>
   </section>
 
-  <!-- 3. Comment ça marche : trois étapes, grands numéros. Les liens #comment-1, -2, -3 mènent à chaque étape. -->
+  <!-- 3. Comment ça marche (lot 1, 18/11/2026) : trois étapes reliées par un trait de progression ; chacune montre ce
+       qui se passe (petite scène SVG jouée une fois à l'entrée dans l'écran, public/js/landing/scenes.js ; état final
+       sans animation), son chiffre clé et ce que l'on obtient. Exemples fictifs signalés. Liens #comment-1, -2, -3. -->
   <section id="comment" class="bloc comment" aria-labelledby="titre-comment">
     <div class="conteneur">
       <h2 id="titre-comment" class="affiche" data-t="comment.titre"></h2>
-      <ol class="etapes-simples">
-        <li class="comment-etape" id="comment-1">
-          <span class="etape-numero" aria-hidden="true">01</span>
-          <p class="etape-surtitre" data-t="comment.etapes.0.surtitre"></p>
+      <ol class="etapes-parcours">
+        <li class="parcours-etape" id="comment-1" data-scene>
+          <span class="parcours-noeud" aria-hidden="true">01</span>
+          <div class="parcours-scene" aria-hidden="true">
+            <svg class="scene-svg scene-siren" viewBox="0 0 320 196" focusable="false">
+              <clipPath id="frappe-siren"><rect class="s-frappe" x="34" y="26" width="196" height="36"/></clipPath>
+              <rect class="s-champ" x="14" y="22" width="292" height="44" rx="22"/>
+              <text class="s-saisie" x="34" y="49" clip-path="url(#frappe-siren)" data-t="comment.illustrations.siren.saisie"></text>
+              <rect class="s-bouton" x="250" y="28" width="50" height="32" rx="16"/>
+              <path class="s-fleche" d="M267 44h16m-6-6 6 6-6 6"/>
+              <g class="s-resultat">
+                <rect class="s-fiche" x="14" y="84" width="292" height="98" rx="16"/>
+                <text class="s-libelle" x="32" y="110" data-t="comment.illustrations.siren.libelle"></text>
+                <text class="s-fictif" x="288" y="110" text-anchor="end" data-t="comment.illustrations.fictif"></text>
+                <text class="s-valeur" x="32" y="160" data-t="comment.illustrations.siren.valeur"></text>
+              </g>
+            </svg>
+          </div>
+          <p class="parcours-chiffre affiche" data-t="comment.etapes.0.chiffre"></p>
           <h3 data-t="comment.etapes.0.titre"></h3>
           <p class="etape-description" data-t="comment.etapes.0.texte"></p>
-          <ul class="pastilles"><li data-t="comment.etapes.0.pastilles.0"></li><li data-t="comment.etapes.0.pastilles.1"></li></ul>
+          <p class="parcours-obtenez" data-t="comment.etapes.0.obtenez"></p>
+          <ul class="parcours-mentions"><li data-t="comment.etapes.0.pastilles.0"></li><li data-t="comment.etapes.0.pastilles.1"></li></ul>
         </li>
-        <li class="comment-etape" id="comment-2">
-          <span class="etape-numero" aria-hidden="true">02</span>
-          <p class="etape-surtitre" data-t="comment.etapes.1.surtitre"></p>
+        <li class="parcours-etape" id="comment-2" data-scene>
+          <span class="parcours-noeud" aria-hidden="true">02</span>
+          <div class="parcours-scene" aria-hidden="true">
+            <svg class="scene-svg scene-chiffres" viewBox="0 0 320 196" focusable="false">
+              <text class="s-fictif" x="306" y="20" text-anchor="end" data-t="comment.illustrations.fictif"></text>
+              <g class="s-ligne s-l1"><text class="s-poste" x="14" y="44" data-t="comment.illustrations.chiffres.lignes.0.poste"></text><text class="s-montant" x="306" y="44" text-anchor="end" data-t="comment.illustrations.chiffres.lignes.0.montant"></text><path class="s-trait" d="M14 54h292"/></g>
+              <g class="s-ligne s-l2"><text class="s-poste" x="14" y="74" data-t="comment.illustrations.chiffres.lignes.1.poste"></text><text class="s-montant" x="306" y="74" text-anchor="end" data-t="comment.illustrations.chiffres.lignes.1.montant"></text><path class="s-trait" d="M14 84h292"/></g>
+              <g class="s-ligne s-l3"><text class="s-poste" x="14" y="104" data-t="comment.illustrations.chiffres.lignes.2.poste"></text><text class="s-montant" x="306" y="104" text-anchor="end" data-t="comment.illustrations.chiffres.lignes.2.montant"></text><path class="s-trait" d="M14 114h292"/></g>
+              <g class="s-synthese">
+                <text class="s-libelle" x="14" y="140" data-t="comment.illustrations.chiffres.libelle"></text>
+                <text class="s-valeur s-valeur-droite" x="306" y="146" text-anchor="end" data-t="comment.illustrations.chiffres.centrale"></text>
+                <path class="s-barre" d="M14 172h292"/>
+                <path class="s-barre-pleine" d="M14 172h292"/>
+                <circle class="s-repere" cx="169" cy="172" r="6"/>
+                <text class="s-borne" x="14" y="192" data-t="comment.illustrations.chiffres.bas"></text>
+                <text class="s-borne" x="306" y="192" text-anchor="end" data-t="comment.illustrations.chiffres.haut"></text>
+              </g>
+            </svg>
+          </div>
+          <p class="parcours-chiffre affiche" data-t="comment.etapes.1.chiffre"></p>
           <h3 data-t="comment.etapes.1.titre"></h3>
           <p class="etape-description" data-t="comment.etapes.1.texte"></p>
-          <ul class="pastilles">
+          <p class="parcours-obtenez" data-t="comment.etapes.1.obtenez"></p>
+          <ul class="parcours-mentions">
             <li data-si="duree_etape2" data-t="comment.etapes.1.pastilles.0"></li>
             <li data-si="prix_etape2" data-t="comment.etapes.1.pastilles.1"></li>
           </ul>
         </li>
-        <li class="comment-etape" id="comment-3">
-          <span class="etape-numero" aria-hidden="true">03</span>
-          <p class="etape-surtitre" data-t="comment.etapes.2.surtitre"></p>
+        <li class="parcours-etape" id="comment-3" data-scene>
+          <span class="parcours-noeud" aria-hidden="true">03</span>
+          <div class="parcours-scene" aria-hidden="true">
+            <svg class="scene-svg scene-documents" viewBox="0 0 320 196" focusable="false">
+              <g class="s-doc s-d1">
+                <rect class="s-feuille" x="34" y="12" width="184" height="112" rx="6"/>
+                <text class="s-titre-doc" x="48" y="32" data-t="comment.illustrations.documents.2"></text>
+                <path class="s-grille" d="M48 44h156M48 60h156M48 76h156M48 92h156M100 44v64M152 44v64"/>
+              </g>
+              <g class="s-doc s-d2">
+                <rect class="s-feuille" x="68" y="44" width="184" height="112" rx="6"/>
+                <text class="s-titre-doc" x="82" y="64" data-t="comment.illustrations.documents.1"></text>
+                <path class="s-lignes" d="M82 82h150M82 96h120M82 110h150M82 124h96"/>
+              </g>
+              <g class="s-doc s-d3">
+                <rect class="s-feuille" x="102" y="76" width="184" height="112" rx="6"/>
+                <text class="s-titre-doc" x="116" y="96" data-t="comment.illustrations.documents.0"></text>
+                <rect class="s-mini-tampon" x="184" y="82" width="98" height="22" rx="2" transform="rotate(-5 233 93)"/>
+                <text class="s-mini-tampon-texte" x="233" y="97.5" text-anchor="middle" transform="rotate(-5 233 93)" data-t="confidentialite.apres"></text>
+                <path class="s-lignes" d="M116 122h150M116 136h120M116 150h150M116 164h86"/>
+              </g>
+            </svg>
+          </div>
+          <p class="parcours-chiffre affiche" data-t="comment.etapes.2.chiffre"></p>
           <h3 data-t="comment.etapes.2.titre"></h3>
           <p class="etape-description" data-t="comment.etapes.2.texte"></p>
-          <ul class="pastilles">
+          <p class="parcours-obtenez" data-t="comment.etapes.2.obtenez"></p>
+          <ul class="parcours-mentions">
             <li data-t="comment.etapes.2.pastilles.0"></li>
             <li data-si="prix_dossier" data-t="comment.etapes.2.pastilles.1"></li>
           </ul>
@@ -274,9 +347,15 @@
           <p class="chapo" data-t="confidentialite.texte"></p>
           <a class="btn btn-creme" href="/confidentialite" data-t="confidentialite.politique"></a>
         </div>
-        <div class="confid-masque" role="img" data-t-attr="aria-label=confidentialite.exemple_alt">
-          <span class="confid-avant" aria-hidden="true" data-t="confidentialite.avant"></span>
-          <span class="confid-apres" aria-hidden="true" data-t="confidentialite.apres"></span>
+        <!-- Tampon (lot 1) : sur une fiche, le nom fictif est barré puis le tampon « Projet Chêne » s'abat (scenes.js,
+             une fois à l'entrée dans l'écran ; état final sans animation). Exemple fictif signalé. -->
+        <div class="confid-masque" role="img" data-t-attr="aria-label=confidentialite.exemple_alt" data-scene>
+          <div class="confid-fiche" aria-hidden="true">
+            <p class="confid-fiche-titre" data-t="confidentialite.fiche"></p>
+            <p class="confid-avant"><span data-t="confidentialite.avant"></span></p>
+            <span class="confid-ligne"></span><span class="confid-ligne courte"></span><span class="confid-ligne"></span>
+            <span class="confid-tampon"><span data-t="confidentialite.apres"></span></span>
+          </div>
           <p class="confid-fictif" data-t="confidentialite.fictif"></p>
         </div>
         <ul class="confid-garanties">
@@ -379,29 +458,79 @@
     </div>
   </section>
 
-  <!-- 11. Appel final : carte ocre clair, le champ partagé -->
+  <!-- 11. Fin de page (lot 1) : l'appel final avec le champ, les quatre garanties en une ligne et les trois documents ;
+       puis le pied de page (documents, liens, contact s'il est renseigné, sources, mentions) et le grand nom.
+       Deux mises en page proposées au propriétaire : .fin-a (carte claire + pied structuré, par défaut) et .fin-b
+       (un seul bloc vert) ; la variante non retenue sera retirée. Contenu vrai uniquement. -->
   <section id="relance" class="bloc-carte relance" aria-labelledby="titre-relance">
     <div class="carte-large carte-relance">
-      <h2 id="titre-relance" class="affiche" data-t="relance.titre"></h2>
-      <p class="relance-texte" data-t="relance.texte"></p>
-      <form class="recherche relance-champ" action="/connexion" method="get" data-champ-siren="relance" data-zone-champ>
-        <div class="recherche-champ">
-          <label for="q-relance" data-t="champ.libelle"></label>
-          <input id="q-relance" name="q" type="search" autocomplete="off" data-t-attr="placeholder=champ.libelle"
-                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-relance">
-          <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
-        </div>
-        <ul class="suggestions" id="suggestions-relance" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
-        <p class="recherche-message" id="message-relance" role="status" data-message hidden></p>
-      </form>
-      <p class="relance-telephone" data-si="telephone"><span data-t="relance.telephone"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a>.</p>
+      <div class="relance-principal">
+        <h2 id="titre-relance" class="affiche" data-t="relance.titre"></h2>
+        <p class="relance-texte" data-t="relance.texte"></p>
+        <form class="recherche relance-champ" action="/connexion" method="get" data-champ-siren="relance" data-zone-champ>
+          <div class="recherche-champ">
+            <label for="q-relance" data-t="champ.libelle"></label>
+            <input id="q-relance" name="q" type="search" autocomplete="off" data-t-attr="placeholder=champ.libelle"
+                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-relance">
+            <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
+          </div>
+          <ul class="suggestions" id="suggestions-relance" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+          <p class="recherche-message" id="message-relance" role="status" data-message hidden></p>
+        </form>
+        <p class="relance-telephone" data-si="telephone"><span data-t="relance.telephone"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a>.</p>
+      </div>
+      <div class="relance-livrables">
+        <p class="relance-livrables-titre" data-t="relance.livrables_titre"></p>
+        <ol>
+          <li><strong data-t="dossier.documents.pilules.0"></strong><span data-t="relance.livrables.0"></span></li>
+          <li><strong data-t="dossier.documents.pilules.1"></strong><span data-t="relance.livrables.1"></span></li>
+          <li><strong data-t="dossier.documents.pilules.2"></strong><span data-t="relance.livrables.2"></span></li>
+        </ol>
+      </div>
+      <ul class="relance-garanties" data-t-attr="aria-label=relance.garanties_titre">
+        <li data-t="confidentialite.garanties.0.titre"></li>
+        <li data-t="confidentialite.garanties.1.titre"></li>
+        <li data-t="confidentialite.garanties.2.titre"></li>
+        <li data-t="confidentialite.garanties.3.titre"></li>
+      </ul>
     </div>
   </section>
 </main>
 
 <footer class="pied">
   <div class="pied-interieur">
-    <div class="pied-colonnes">
+    <div class="pied-colonnes pied-grille">
+      <div class="pied-col pied-documents">
+        <p class="pied-titre" data-t="pied.documents_titre"></p>
+        <ul>
+          <li data-t="dossier.documents.pilules.0"></li>
+          <li data-t="dossier.documents.pilules.1"></li>
+          <li data-t="dossier.documents.pilules.2"></li>
+        </ul>
+      </div>
+      <nav class="pied-col pied-utiles" data-t-attr="aria-label=pied.utiles_titre">
+        <p class="pied-titre" data-t="pied.utiles_titre"></p>
+        <ul>
+          <li><a href="#comment" data-t="nav.comment"></a></li>
+          <li><a href="#livrables" data-t="nav.livrables"></a></li>
+          <li><a href="#confidentialite" data-t="nav.confidentialite"></a></li>
+          <li data-si="guides:3"><a href="#guides" data-t="nav.guides"></a></li>
+          <li><a href="#questions" data-t="nav.questions"></a></li>
+          <li><a href="/connexion" data-connexion data-t="nav.espace"></a></li>
+        </ul>
+      </nav>
+      <div class="pied-col pied-contact" data-si-un="telephone email_contact">
+        <p class="pied-titre" data-t="pied.joindre"></p>
+        <p data-si="telephone"><a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a></p>
+        <p data-si="email_contact"><a data-t="cles.email_contact" data-t-attr="href=pied.email_lien"></a></p>
+      </div>
+      <div class="pied-col pied-sources">
+        <p class="pied-titre" data-t="sources.libelle"></p>
+        <p><span data-t="sources.liste.0"></span> · <span data-t="sources.liste.1"></span> · <span data-t="sources.liste.2"></span></p>
+        <p class="pied-sources-note" data-t="pied.sources_note"></p>
+      </div>
+    </div>
+    <div class="pied-bas">
       <div class="pied-legal">
         <p data-t="pied.identite"></p>
         <p data-t="pied.avertissement"></p>
@@ -411,13 +540,8 @@
         <a href="/confidentialite" data-t="pied.confidentialite"></a>
         <a href="/cgu" data-t="pied.cgu"></a>
       </nav>
-      <div class="pied-contact" data-si-un="telephone email_contact">
-        <p class="pied-contact-titre" data-t="pied.joindre"></p>
-        <p data-si="telephone"><a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a></p>
-        <p data-si="email_contact"><a data-t="cles.email_contact" data-t-attr="href=pied.email_lien"></a></p>
-      </div>
+      <p class="pied-copyright">© <span data-annee>2026</span> Passation</p>
     </div>
-    <p class="pied-copyright">© <span data-annee>2026</span> Passation</p>
   </div>
   <p class="pied-marque" aria-hidden="true" data-t="pied.marque"></p>
 </footer>

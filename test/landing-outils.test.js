@@ -2,7 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { sirenValide, nettoyerSiren, ressembleASiren, formaterSiren } from "../public/js/siren.js";
-import { fourchette, multiple, remplir } from "../public/js/landing/estimation.js";
+import { fourchette, multiple, remplir, montant, positionRepere, moisSource } from "../public/js/landing/estimation.js";
 
 const css = ["styles.css", "landing.css"].map((f) => readFileSync(new URL(`../public/css/${f}`, import.meta.url), "utf8")).join("\n");
 const jeton = (nom) => css.match(new RegExp(`--${nom}:\\s*(#[0-9A-Fa-f]{6})`))?.[1];
@@ -78,6 +78,26 @@ describe("format des montants", () => {
   });
   it("en k€ arrondis à la dizaine sous 1 M€", () => {
     expect(fourchette(152000, 228000)).toBe("150 – 230 k€");
+  });
+  it("montant seul dans l'unité de sa fourchette (fiche de résultat)", () => {
+    // 434436622 (estimation du 18/11/2026) : 293 234,7 / 399 865,5 / 488 724,5 € → 290 / 400 / 490 k€
+    expect(montant(293234.7, 488724.5)).toBe("290 k€");
+    expect(montant(399865.5, 488724.5)).toBe("400 k€");
+    // Scénario fictif de docs/DEMO.md : 1 381 818 / 1 941 818 / 2 431 818 € → 1,4 / 1,9 / 2,4 M€
+    expect(montant(1941818.18, 2431818.18)).toBe("1,9 M€");
+    expect(montant(1381818.18, 2431818.18)).toBe("1,4 M€");
+  });
+  it("position de la valeur centrale sur la barre", () => {
+    expect(positionRepere(293234.7, 399865.5, 488724.5)).toBeCloseTo(54.545, 2); // 106 630,8 / 195 489,8
+    expect(positionRepere(1381818.18, 1941818.18, 2431818.18)).toBeCloseTo(53.333, 2); // 560 000 / 1 050 000
+    expect(positionRepere(100, 100, 100)).toBe(50);
+    expect(positionRepere(100, 300, 200)).toBe(100);
+  });
+  it("date de la référence des multiples", () => {
+    expect(moisSource("croisement-2026-11")).toBe("novembre 2026");
+    expect(moisSource("croisement-2027-01")).toBe("janvier 2027");
+    expect(moisSource("")).toBeNull();
+    expect(moisSource("croisement-2026-13")).toBeNull();
   });
   it("multiples et modèles", () => {
     expect(multiple(5.6)).toBe("5,6");
