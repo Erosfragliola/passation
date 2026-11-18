@@ -93,37 +93,11 @@
 <main id="contenu">
 
   <!-- 1. Hero : agir -->
-  <section id="accueil" class="hero hero-v4" aria-labelledby="titre-hero">
-    <div class="conteneur hero-contenu">
-      <p class="surtitre" data-t="hero.surtitre"></p>
-      <h1 id="titre-hero" class="affiche" data-t="hero.titre"></h1>
-      <p class="chapo" data-t="hero.sous_titre"></p>
-      <form class="recherche" action="/connexion" method="get" role="search" data-champ-siren="accueil" data-t-attr="aria-label=champ.zone">
-        <div class="recherche-champ">
-          <label for="q" data-t="champ.libelle"></label>
-          <input id="q" name="q" type="search" autocomplete="off" required minlength="3" aria-describedby="note-recherche"
-                 data-t-attr="placeholder=champ.libelle"
-                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions">
-          <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
-        </div>
-        <ul class="suggestions" id="suggestions" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
-        <p class="recherche-message" id="recherche-message" role="status" data-message hidden></p>
-        <div class="recherche-note" id="note-recherche">
-          <ul class="hero-coches">
-            <li data-t="hero.coches.0"></li><li data-t="hero.coches.1"></li><li data-t="hero.coches.2"></li>
-          </ul>
-          <p data-t="hero.note_comptes"></p>
-        </div>
-      </form>
-      <ul class="hero-preuves">
-        <li data-si="nb_dirigeants" data-t="hero.preuves.dirigeants"></li>
-        <li data-si="note_avis nb_avis"><span class="etoiles" aria-hidden="true"><svg viewBox="0 0 90 16" width="90" height="16"><g fill="currentColor"><path id="etoile" d="M8 1l2.1 4.6 5 .5-3.8 3.3 1.1 4.9L8 11.8 3.6 14.3l1.1-4.9L.9 6.1l5-.5z"/><use href="#etoile" x="18"/><use href="#etoile" x="36"/><use href="#etoile" x="54"/><use href="#etoile" x="72"/></g></svg></span> <span data-t="hero.preuves.avis"></span></li>
-        <li data-t="hero.preuves.registres"></li>
-      </ul>
-    </div>
-    <!-- Accueil v4 (18/11/2026) : la vidéo, plus petite, avec trois bulles posées à cheval sur ses bords.
-         Sur téléphone, les bulles se rangent sous la vidéo. -->
-    <div class="hero-visuel" id="hero-visuel">
+  <section id="accueil" class="hero hero-v5" aria-labelledby="titre-hero">
+    <!-- Accueil v5 (18/11/2026) : la vidéo dans une grande forme non rectangulaire (angles asymétriques, encoche en bas
+         découpée autour de quatre bulles logées dans les coins et les bords), le texte à l'intérieur
+         (public/js/landing/forme-hero.js) -->
+    <div class="hero-scene" id="hero-scene">
       <div class="hero-fond">
       <img src="/img/photos/hero-poster-1600.webp"
            srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
@@ -136,17 +110,45 @@
         <video class="hero-video" muted playsinline preload="metadata" aria-hidden="true" hidden></video>
       </div>
     </div>
-    <div class="hero-bas">
-      <p class="hero-metier" aria-hidden="true" hidden></p>
-      <button class="hero-pause" type="button" hidden>
-        <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
-        <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
-        <span class="visuellement-cache"></span>
-      </button>
-    </div>
-      <div class="hero-bulle bulle-hg sombre"><strong class="affiche" data-t="hero.bulles.delai.chiffre"></strong><span data-t="hero.bulles.delai.texte"></span></div>
-      <div class="hero-bulle bulle-hd"><span class="bulle-titre"><span data-t="hero.bulles.code.titre"></span><em data-t="hero.bulles.code.fictif"></em></span><span class="bulle-code" data-t="hero.bulles.code.code"></span><strong class="affiche bulle-valeur" data-t="hero.bulles.code.valeur"></strong></div>
-      <div class="hero-bulle bulle-bd"><ul class="bulle-docs"><li data-t="hero.bulles.docs.0"></li><li data-t="hero.bulles.docs.1"></li><li data-t="hero.bulles.docs.2"></li><li data-t="hero.bulles.docs.3"></li></ul></div>
+      <div class="hero-bas">
+        <p class="hero-metier" aria-hidden="true" hidden></p>
+        <button class="hero-pause" type="button" hidden>
+          <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
+          <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
+          <span class="visuellement-cache"></span>
+        </button>
+      </div>
+      <div class="conteneur hero-contenu">
+        <p class="surtitre" data-t="hero.surtitre"></p>
+        <h1 id="titre-hero" class="affiche" data-t="hero.titre"></h1>
+        <p class="chapo" data-t="hero.sous_titre"></p>
+        <form class="recherche" action="/connexion" method="get" role="search" data-champ-siren="accueil" data-t-attr="aria-label=champ.zone">
+          <div class="recherche-champ">
+            <label for="q" data-t="champ.libelle"></label>
+            <input id="q" name="q" type="search" autocomplete="off" required minlength="3" aria-describedby="note-recherche"
+                   data-t-attr="placeholder=champ.libelle"
+                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions">
+            <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
+          </div>
+          <ul class="suggestions" id="suggestions" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+          <p class="recherche-message" id="recherche-message" role="status" data-message hidden></p>
+          <div class="recherche-note" id="note-recherche">
+            <ul class="hero-coches">
+              <li data-t="hero.coches.0"></li><li data-t="hero.coches.1"></li><li data-t="hero.coches.2"></li>
+            </ul>
+            <p data-t="hero.note_comptes"></p>
+          </div>
+        </form>
+        <ul class="hero-preuves">
+          <li data-si="nb_dirigeants" data-t="hero.preuves.dirigeants"></li>
+          <li data-si="note_avis nb_avis"><span class="etoiles" aria-hidden="true"><svg viewBox="0 0 90 16" width="90" height="16"><g fill="currentColor"><path id="etoile" d="M8 1l2.1 4.6 5 .5-3.8 3.3 1.1 4.9L8 11.8 3.6 14.3l1.1-4.9L.9 6.1l5-.5z"/><use href="#etoile" x="18"/><use href="#etoile" x="36"/><use href="#etoile" x="54"/><use href="#etoile" x="72"/></g></svg></span> <span data-t="hero.preuves.avis"></span></li>
+          <li data-t="hero.preuves.registres"></li>
+        </ul>
+      </div>
+      <div class="hero-bulle bulle-hg sombre" data-cote="hg"><strong class="affiche" data-t="hero.bulles.delai.chiffre"></strong><span data-t="hero.bulles.delai.texte"></span></div>
+      <div class="hero-bulle bulle-d1" data-cote="d"><span class="bulle-titre"><span data-t="hero.bulles.code.titre"></span><em data-t="hero.bulles.code.fictif"></em></span><span class="bulle-code" data-t="hero.bulles.code.code"></span><strong class="affiche bulle-valeur" data-t="hero.bulles.code.valeur"></strong></div>
+      <div class="hero-bulle bulle-g" data-cote="g"><strong class="affiche" data-t="hero.bulles.methodes.chiffre"></strong><span data-t="hero.bulles.methodes.texte"></span></div>
+      <div class="hero-bulle bulle-bd" data-cote="bd"><ul class="bulle-docs"><li data-t="hero.bulles.docs.0"></li><li data-t="hero.bulles.docs.1"></li><li data-t="hero.bulles.docs.2"></li><li data-t="hero.bulles.docs.3"></li></ul></div>
     </div>
   </section>
 
@@ -425,6 +427,7 @@
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/landing/intro.js"></script>
 <script type="module" src="/js/landing/landing.js"></script>
+<script type="module" src="/js/landing/forme-hero.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>
