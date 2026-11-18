@@ -9,7 +9,8 @@
 //   GET    /api/dossiers/:id/valuation                  dernier calcul
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
-import { LIASSE } from "../config.js";
+import { LIASSE, CLAUDE_QUOTAS } from "../config.js";
+import { quotaClaude } from "../lib/ratelimit.js";
 import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants } from "../../public/js/champs-financiers.js";
 import { ETAPES } from "../../public/js/questionnaire.js";
 import { claudeDisponible, lireLiasse, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
@@ -107,6 +108,8 @@ async function deposerLiasse(request, env, row) {
   if (fichier.size > LIASSE.tailleMax) return json({ erreur: "trop_lourd", message: "Le fichier dépasse 10 Mo." }, 413);
   const octets = new Uint8Array(await fichier.arrayBuffer());
   if (!estPdf(octets)) return json({ erreur: "pas_un_pdf", message: "Ce fichier n'est pas un PDF." }, 415);
+  const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
+  if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
 
   const id = crypto.randomUUID();
   const cle = `dossiers/${row.id}/liasses/${id}.pdf`;
