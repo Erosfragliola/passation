@@ -2,6 +2,7 @@
 // Lecture de liasse : le PDF est envoyé tel quel (bloc « document » base64) ; la réponse est un JSON contraint par
 // un schéma. Claude ne calcule rien : il recopie des chiffres, que le dirigeant valide ligne par ligne.
 import Anthropic from "@anthropic-ai/sdk";
+import { contenuConcis } from "../documents/concision.js";
 import { MODELS } from "../config.js";
 import { CHAMPS } from "../../public/js/champs-financiers.js";
 
@@ -156,11 +157,15 @@ export async function extraireSite(env, pages) {
 // pour la liste des points forts de la synthèse. Longueurs contrôlées par le code (src/documents/memo.js, titreValide) :
 // les sorties structurées n'acceptent pas maxLength.
 const SCHEMA_SECTION = {
-  type: "object", additionalProperties: false, required: ["titre", "accroche", "contenu", "a_completer"],
+  type: "object", additionalProperties: false, required: ["titre", "accroche", "introduction", "points", "a_completer"],
   properties: {
     titre: { type: "string", description: "Titre affirmatif du chapitre : la conclusion qu'un repreneur doit retenir, appuyée si possible sur un chiffre fourni. Une ligne, 90 caractères au plus, sans point final." },
     accroche: { type: "string", description: "Une phrase de 160 caractères au plus qui résume le chapitre pour la synthèse." },
-    contenu: { type: "string", description: "Corps du chapitre : un court paragraphe d'introduction, puis des puces commençant par « - » ; **gras** pour le fait clé de chaque puce ; paragraphes séparés par une ligne vide" },
+    introduction: { type: "string", description: "Le constat du chapitre en deux phrases au plus (40 mots au plus), sans liste ni énumération." },
+    points: { type: "array", description: "4 à 6 points, du plus important au moins important", items: { type: "object", additionalProperties: false, required: ["titre", "texte"], properties: {
+      titre: { type: "string", description: "Le fait clé en 2 à 6 mots, sans verbe conjugué si possible (ex. « Production intégrée »)." },
+      texte: { type: "string", description: "Une ou deux phrases (35 mots au plus) : le fait avec son chiffre, puis ce qu'il signifie pour un repreneur." },
+    } } },
     a_completer: { type: "array", items: { type: "string" }, description: "Informations manquantes que le dirigeant devrait apporter, formulées comme des demandes précises" },
   },
 };
@@ -169,8 +174,8 @@ const CONSIGNE_MEMO = `Tu es associé d'une banque d'affaires française spécia
 Style
 - Français, troisième personne, présent. Ton d'un professionnel de la cession : précis, factuel, affirmatif quand les faits le permettent. Aucune formule publicitaire, aucun superlatif non démontré (« leader », « unique », « incontournable », « exceptionnel » sont interdits, sauf s'ils figurent tels quels dans un fait fourni).
 - Titre : la conclusion du chapitre, pas son sujet. Exemple de forme : « Une clientèle fidèle : les cinq premiers clients pèsent 38 % du chiffre d'affaires ». Pas d'exemple de chiffre inventé : n'utilise que ceux fournis.
-- Corps : 280 à 450 mots, aussi dense qu'une page de mémorandum de banque d'affaires. Un paragraphe d'introduction de deux ou trois phrases qui pose le constat, puis 5 à 8 puces. Chaque puce commence par le fait clé en **gras** (3 à 8 mots), suivi de « : », puis l'explique en deux ou trois phrases : le fait et son chiffre, ce qui l'explique, et ce qu'il signifie pour un repreneur (risque, levier, continuité). Pas de phrase creuse : chaque phrase apporte un fait, un chiffre ou une conséquence.
-- Les éléments à compléter restent dans la puce concernée (« **Certifications** : À compléter. »), sans délayer.
+- Une page de mémorandum se lit en trente secondes : introduction de deux phrases au plus, puis 4 à 6 points. Chaque point : un titre de 2 à 6 mots et une ou deux phrases courtes (35 mots au plus). Pas d'énumération à rallonge, pas de liste dans une phrase, pas de copie du site : choisis et synthétise les 2 ou 3 éléments qui comptent pour un repreneur.
+- Les informations manquantes ne figurent pas dans le texte : elles vont dans a_completer (le document les signale à part).
 - Chiffres : recopie exactement les montants et pourcentages fournis, dans leur forme (« 1,2 M€ », « 8,4 % », « +4,1 % par an »). Ne calcule aucun nouveau chiffre, ratio, moyenne ou évolution : utilise ceux qui sont fournis dans « indicateurs_calcules » et les tableaux.
 - Les estimations du dirigeant sont présentées comme telles (« le dirigeant anticipe… »). Les faits issus du site internet sont présentés comme des affirmations de l'entreprise.
 
@@ -178,7 +183,7 @@ Règles absolues
 - Utilise uniquement les données fournies : réponses du dirigeant, faits de son site qu'il a validés, données publiques, chiffres validés et indicateurs calculés. N'invente rien : ni chiffre, ni client, ni nom, ni projet, ni certification, ni concurrent, ni tendance de marché.
 - Ne mentionne aucun prix, aucune valeur d'entreprise, aucune fourchette de valorisation.
 - Quand une information attendue manque, écris « À compléter » à l'endroit voulu et ajoute une demande précise dans a_completer (par exemple « Préciser la part du chiffre d'affaires réalisée sous contrat pluriannuel »).
-- La densité vient des faits fournis, jamais de l'invention : s'ils manquent, le chapitre est plus court et a_completer dit ce qu'il faut apporter.`;
+- Mieux vaut quatre points nets que six points délayés : si les faits manquent, le chapitre est plus court et a_completer dit ce qu'il faut apporter.`;
 
 export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   const reponse = await client(env).beta.messages.create({
@@ -190,7 +195,8 @@ export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   });
   if (reponse.stop_reason === "refusal") throw new Error("redaction_refusee");
   if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
-  return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
+  const r = JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
+  return { titre: r.titre, accroche: r.accroche, contenu: contenuConcis(r), a_completer: r.a_completer || [] };
 }
 
 // ---------------------------------------------------------------- Mémorandum : étude de marché (recherche web)

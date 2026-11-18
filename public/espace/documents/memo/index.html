@@ -9,6 +9,7 @@
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/memo-im.css">
+  <link rel="stylesheet" href="/css/espace-bento.css">
 </head>
 <body class="page-document">
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
@@ -18,17 +19,40 @@
     <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a></div>
   </nav>
 </header>
-<main id="contenu" class="document-zone" aria-busy="true">
-  <div class="conteneur conteneur-moyen">
-    <div class="document-outils pas-imprime">
+<main id="contenu" class="document-zone memo-studio" aria-busy="true">
+  <div class="conteneur studio-conteneur">
+    <div class="studio-tete pas-imprime">
       <div>
         <p class="etiquette">Vos documents</p>
         <h1>Mémorandum <em>d'information</em></h1>
-        <p class="chapo-petit">Le document remis aux repreneurs sérieux, après engagement de confidentialité. Chaque section est rédigée à la demande, à partir de vos réponses, de vos chiffres validés et des faits de votre site que vous aurez validés. Ce qui manque est marqué « À compléter ».</p>
       </div>
-      <div id="verrou"></div>
+      <div class="document-actions">
+        <button class="btn btn-contour" type="button" id="btn-tout">Rédiger les chapitres manquants</button>
+        <button class="btn btn-noir" type="button" id="btn-imprimer">Télécharger en PDF</button>
+      </div>
+    </div>
+    <div id="verrou" class="pas-imprime"></div>
+    <p class="message-carte pas-imprime" id="message" role="status" aria-live="polite" hidden></p>
+
+    <!-- Présentation : une page à la fois, panneau de recommandations et d'actions à droite (memo.js, presentation()) -->
+    <div class="studio" id="studio">
+      <div class="studio-scene">
+        <nav class="studio-nav pas-imprime" aria-label="Pages du mémorandum">
+          <button class="btn btn-contour btn-mini" type="button" id="page-prec" aria-label="Page précédente">←</button>
+          <span class="studio-compteur" id="page-compteur" aria-live="polite"></span>
+          <button class="btn btn-contour btn-mini" type="button" id="page-suiv" aria-label="Page suivante">→</button>
+          <button class="lien-simple" type="button" id="tout-afficher" aria-pressed="false">Voir toutes les pages</button>
+        </nav>
+        <article class="feuille-document memo" id="memo" aria-label="Mémorandum"></article>
+        <ol class="studio-vignettes pas-imprime" id="vignettes" aria-label="Aller à la page"></ol>
+      </div>
+      <aside class="studio-panneau pas-imprime" id="panneau" aria-live="polite"></aside>
+    </div>
+
+    <details class="studio-donnees pas-imprime" id="donnees">
+      <summary>Les sources du mémorandum : site, logo, photos et marché</summary>
       <section class="carte site-panneau" aria-labelledby="titre-site">
-        <h2 id="titre-site" class="h-petit">1. Votre site, votre logo et vos photos</h2>
+        <h2 id="titre-site" class="h-petit">Votre site, votre logo et vos photos</h2>
         <form id="form-site" class="ligne-form" novalidate>
           <label for="url-site">Adresse du site</label>
           <input id="url-site" type="text" inputmode="url" placeholder="www.mon-entreprise.fr" autocomplete="url">
@@ -40,17 +64,11 @@
         <div id="photos"></div>
       </section>
       <section class="carte site-panneau" aria-labelledby="titre-marche">
-        <h2 id="titre-marche" class="h-petit">2. Le marché de votre entreprise</h2>
+        <h2 id="titre-marche" class="h-petit">Le marché de votre entreprise</h2>
         <p class="petit">Passation compte les entreprises de votre secteur dans les registres publics, puis cherche sur le web des chiffres de marché récents, chacun avec sa source. Gardez seulement ce qui vous paraît juste.</p>
         <div id="marche"></div>
       </section>
-      <div class="document-actions">
-        <button class="btn btn-noir" type="button" id="btn-tout">Rédiger les sections manquantes</button>
-        <button class="btn btn-contour" type="button" id="btn-imprimer">Imprimer ou enregistrer en PDF</button>
-      </div>
-      <p class="message-carte" id="message" role="status" aria-live="polite" hidden></p>
-    </div>
-    <article class="feuille-document memo" id="memo" aria-label="Mémorandum"></article>
+    </details>
   </div>
 </main>
 <script src="/js/site.js" defer></script>
