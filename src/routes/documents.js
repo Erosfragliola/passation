@@ -12,6 +12,7 @@ import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { calculer, lireReponses, lireChiffres } from "./valorisation.js";
 import { construireDatapack } from "../documents/datapack.js";
+import { propositions } from "../documents/propositions.js";
 import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, rechercherMarche, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
 import { compterSecteur, structureSecteur } from "../sources/secteur.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
@@ -135,6 +136,15 @@ const MIME = { png: "image/png", jpg: "image/jpeg", webp: "image/webp" };
 async function enregistrerSite(env, row, site) {
   await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'site', ?, ?)
     ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(row.id, JSON.stringify(site), maintenant()).run();
+}
+
+/** Réponses proposées au dirigeant (registres, comptes, site validé, choix fréquents), à valider dans le parcours. */
+async function propositionsDossier(env, row) {
+  const reponses = await lireReponses(env, row.id);
+  const entreprise = JSON.parse(row.company_json || "{}");
+  let tcam = null;
+  try { const { resultat, entree } = await calculer(env, row); tcam = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) }).cr.tcam?.ca ?? null; } catch { /* sans comptes : pas de croissance proposée */ }
+  return propositions({ entreprise, tcam, reponses });
 }
 
 async function lireMemo(env, row) {
@@ -372,6 +382,7 @@ export async function routeDocuments(request, env, row, type, sous, cle) {
     if (!sous && m === "GET") return json(await lireMemo(env, row));
     if (sous === "site" && !cle && m === "POST") return lireSiteRoute(request, env, row);
     if (sous === "marche" && !cle && m === "POST") return etudeMarche(env, row);
+    if (sous === "propositions" && !cle && m === "GET") return json({ propositions: await propositionsDossier(env, row) });
     if (sous === "logo" && !cle && m === "POST") return deposerLogo(request, env, row);
     if (sous === "logo" && !cle && m === "GET") return servirLogo(env, row);
     if (sous === "photos" && !cle && m === "POST") return ajouterPhoto(request, env, row);

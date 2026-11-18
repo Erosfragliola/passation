@@ -27,7 +27,7 @@ export const SECTIONS_MEMO = [
     donnees: ["entreprise", "activite", "atouts", "operation", "perimetre", "indicateurs", "clients", "marche_resume"] },
   { cle: "histoire", titre: "Histoire et identité", court: "Histoire", partie: 2, point_fort: null,
     consigne: "Retrace le développement de l'entreprise dans l'ordre chronologique : création, implantations, changements de forme ou de dirigeant, agrandissements, étapes marquantes. Une puce par étape, commençant par l'année en gras. Termine par ce que cette histoire dit de l'entreprise aujourd'hui (ancrage, continuité, réputation), sans extrapoler.",
-    donnees: ["entreprise", "frise", "faits:histoire,implantation"] },
+    donnees: ["entreprise", "frise", "activite", "faits:histoire,implantation"] },
   { cle: "activite", titre: "Activité et savoir-faire", court: "Savoir-faire", partie: 2, point_fort: 1,
     consigne: "Décris le métier, l'offre de produits ou de services, la façon de produire ou de servir le client, et ce qui différencie l'entreprise (savoir-faire, qualité, équipements, certifications fournies). Le repreneur doit comprendre en une page comment l'entreprise gagne de l'argent. 4 à 6 puces, chacune un aspect distinct.",
     donnees: ["activite", "faits:activite,produits,qualite"] },
@@ -248,7 +248,7 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
       d.faits_de_marche_sources = cle === "marche" ? faits : faits.slice(0, 3);
     }
     else if (cle === "clients") d.clients = { ...(reponses.clients || {}), principaux: ch.clients.lignes.map((x) => ({ client: `Client ${x.rang}`, part_du_ca: pourcent(x.part, { decimales: 0 }), client_depuis: x.anciennete == null ? null : `${x.anciennete} ans`, activite: x.secteur })) };
-    else if (cle === "dirigeant_role") d.role_actuel_du_dirigeant = reponses.dirigeant?.role_dirigeant ?? null;
+    else if (cle === "dirigeant_role") { const dg = reponses.dirigeant || {}; d.organisation_declaree = { role_actuel_du_dirigeant: dg.role_dirigeant ?? null, encadrement_en_place: dg.encadrement ?? null, anciennete_moyenne_des_salaries: dg.anciennete_equipe ?? null }; }
     else if (cle === "indicateurs") d.indicateurs_calcules = ch.indicateurs;
     else if (cle === "compte_resultat") d.compte_de_resultat = { annees: ch.cr.annees, exercices_consecutifs: ch.cr.consecutifs, lignes: ch.cr.lignes.map((l) => ({ libelle: l.libelle, valeurs: l.valeurs.map((v) => (v == null ? null : l.type === "ratio" ? pourcent(v, { signe: l.cle === "croissance" }) : montant(v))) })) };
     else if (cle === "ebe_retraite") d.passage_ebe_comptable_ebe_retraite = { annees: ch.ebeR.annees, ebe_comptable: ch.ebeR.ebe_comptable.map(montant), retraitements: ch.ebeR.retraitements.map((r) => ({ nature: r.libelle, montants: r.valeurs.map((v) => (v == null ? null : montant(v))) })), ebe_retraite: ch.ebeR.ebe_retraite.map(montant), justifications: (reponses.retraitements?.exceptionnels || []).map((e) => ({ annee: e.annee, libelle: e.libelle, justification: e.justification })) };

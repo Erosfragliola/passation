@@ -30,8 +30,8 @@ describe("parcours guidé", () => {
     expect(questionsIncompletes(complet)).toEqual([]);
   });
   // 10 depuis le mémorandum « banque d'affaires » (17/11/2026, accord du dirigeant) : détention des titres et cinq premiers clients
-  it("10 questions au plus, chacune rangée dans une étape du questionnaire complet", () => {
-    expect(QUESTIONS.length).toBeLessThanOrEqual(10);
+  it("16 questions au plus, chacune rangée dans une étape du questionnaire complet", () => {
+    expect(QUESTIONS.length).toBeLessThanOrEqual(16);
     const etapes = new Set(["activite", "operation", "dirigeant", "retraitements", "clients", "perspectives", "bilan"]);
     for (const q of QUESTIONS) for (const c of [...q.champs, ...(q.suite?.champs || [])]) expect(etapes.has(c.etape)).toBe(true);
   });

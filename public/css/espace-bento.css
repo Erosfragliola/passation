@@ -1,0 +1,56 @@
+/* Espace dirigeant et parcours guidé, direction « bento » (18/11/2026) : crème, vert, cuivre, tuiles arrondies,
+   titres en capitales étroites. Chargée après styles.css sur les pages de l'espace. */
+@font-face { font-family: "Big Shoulders"; font-weight: 700; font-display: swap; src: url("/fonts/big-shoulders-bold.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/instrument-serif-italic.woff2") format("woff2"); }
+:root { --b-affiche: "Big Shoulders", "Arial Narrow", sans-serif; --b-serif: "Instrument Serif", Georgia, serif; --b-cuivre-pale: #F5E7D6; --b-vif: #2E8A62; }
+.affiche { font-family: var(--b-affiche); font-weight: 700; text-transform: uppercase; letter-spacing: .005em; line-height: .95; }
+
+/* ---------- Parcours guidé ---------- */
+.page-guidee { background: var(--creme); }
+.page-guidee .guide { padding: 104px 0 72px; }
+.page-guidee .conteneur-etroit { max-width: 1120px; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 20px; align-items: start; }
+.page-guidee #guide-entreprise { grid-column: 1 / -1; font-family: var(--b-serif); font-style: italic; font-size: clamp(28px, 3.4vw, 40px); text-transform: none; letter-spacing: 0; color: var(--cuivre); font-weight: 400; margin: 0; }
+.page-guidee .guide-etapes { grid-column: 1; grid-row: 2 / span 3; position: sticky; top: 96px; flex-direction: column; flex-wrap: nowrap; gap: 4px; margin: 0; padding: 14px; border-radius: 24px; background: #FFFDF8; border: 1px solid var(--trait); font-size: 15px; }
+.page-guidee .guide-etapes li { padding: 9px 10px; border-radius: 12px; gap: 10px; }
+.page-guidee .guide-etapes li span { width: 26px; height: 26px; font-size: 12px; }
+.page-guidee .guide-etapes li.fait span { background: var(--b-vif); border-color: var(--b-vif); }
+.page-guidee .guide-etapes li.actif { background: var(--vert); color: #fff; }
+.page-guidee .guide-etapes li.actif span { border-color: #E9C9A4; color: #E9C9A4; }
+.page-guidee .guide-barre { display: none; }
+.page-guidee .guide-ecran { grid-column: 2; background: #FFFDF8; border: 1px solid var(--trait); border-radius: 28px; padding: clamp(20px, 3vw, 36px); box-shadow: 0 30px 70px -45px rgba(35, 30, 24, .35); display: grid; gap: 16px; }
+.page-guidee .message-carte { grid-column: 2; }
+.page-guidee .guide-titre { font-size: clamp(26px, 3vw, 36px); letter-spacing: -.02em; color: var(--vert); }
+.q-tete { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.q-tete .etiquette { margin: 0; }
+.q-jauge { flex: 1; max-width: 240px; height: 6px; border-radius: 3px; background: var(--sable); overflow: hidden; }
+.q-jauge span { display: block; height: 100%; background: var(--cuivre); border-radius: 3px; }
+.proposition-bandeau { margin: 0; padding: 12px 16px; border-radius: 16px; background: var(--b-cuivre-pale); font-size: 15px; color: var(--espresso); }
+.proposition-bandeau strong { color: var(--cuivre); }
+.puces-choix { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.puce { min-height: 56px; border-radius: 16px; padding: 10px 16px; text-align: left; font-weight: 500; border: 1.5px solid var(--trait-fort); background: var(--creme); }
+.puce.choisie { background: var(--vert); color: var(--creme); border-color: var(--vert); position: relative; padding-right: 36px; }
+.puce.choisie::after { content: "✓"; position: absolute; top: 50%; transform: translateY(-50%); right: 10px; width: 20px; height: 20px; border-radius: 50%; background: #E9C9A4; color: var(--vert); display: grid; place-items: center; font-size: 11px; }
+.tuiles-choix { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.tuile-choix { position: relative; display: grid; gap: 6px; align-content: start; text-align: left; padding: 16px; border-radius: 18px; border: 1.5px solid var(--trait-fort); background: var(--creme); font: inherit; color: var(--espresso); cursor: pointer; min-height: 96px; }
+.tuile-choix strong { font-size: 15.5px; }
+.tuile-choix span { font-size: 13px; color: var(--pierre-texte); }
+.tuile-choix:hover { border-color: var(--espresso); }
+.tuile-choix[aria-pressed="true"] { border-color: var(--vert); background: color-mix(in srgb, var(--vert) 9%, var(--creme)); }
+.tuile-choix[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 10px; right: 12px; width: 22px; height: 22px; border-radius: 50%; background: var(--vert); color: #fff; display: grid; place-items: center; font-size: 12px; }
+.picto { width: 26px; height: 26px; fill: none; stroke: var(--vert); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.guide-champ input[data-type="ligne"] { width: 100%; min-height: 48px; border-radius: 14px; border: 1px solid var(--trait-fort); background: var(--creme); padding: 0 14px; font: inherit; }
+.page-guidee textarea { border-radius: 16px; }
+.q-usage { display: grid; gap: 4px; padding: 14px 16px; border-radius: 18px; background: var(--sable); }
+.q-usage .etiquette { margin: 0; color: var(--cuivre); }
+.q-usage strong { font-size: 16px; color: var(--vert); }
+.q-usage .petit { margin: 0; }
+.page-guidee .q-nav { display: flex; justify-content: space-between; align-items: center; }
+.page-guidee .btn-vert { background: var(--vert); color: var(--creme); }
+.page-guidee .guide-taches li { border-radius: 14px; }
+@media (max-width: 900px) {
+  .page-guidee .conteneur-etroit { grid-template-columns: 1fr; }
+  .page-guidee .guide-etapes { grid-column: 1; grid-row: auto; position: static; flex-direction: row; flex-wrap: wrap; font-size: 13px; padding: 10px; }
+  .page-guidee .guide-etapes li:not(.actif) { padding: 4px; }
+  .page-guidee .guide-etapes li:not(.actif) { font-size: 0; gap: 0; }
+  .page-guidee .guide-ecran, .page-guidee .message-carte { grid-column: 1; }
+}

@@ -37,7 +37,16 @@ async function api(chemin, options = {}) {
 }
 
 const ETAPES = [["comptes", "Vos comptes"], ["chiffres", "Vos chiffres"], ["questions", "Questions"], ["site", "Votre site"], ["redaction", "Rédaction"], ["pret", "Prêt"]];
-const S = { email: "", dossier: null, chiffres: null, reponses: {}, memo: null, etape: "comptes", q: 0, vues: [], lectureSite: null, saisie: null };
+const S = { propositions: {}, email: "", dossier: null, chiffres: null, reponses: {}, memo: null, etape: "comptes", q: 0, vues: [], lectureSite: null, saisie: null };
+const PICTOS = {
+  qualite: "M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.9 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z", outil: "M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2zM5 21l2-2",
+  horloge: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-13v5l3 2", usine: "M3 21V10l6 4V10l6 4V6l6 3v12zM3 21h18", bouclier: "M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z",
+  poignee: "M3 12l4-4 5 3 4-3 5 4-5 5-4-3-4 3z", graphe: "M4 20V10M10 20V4M16 20v-7M22 20H2", euro: "M17 6.5A7 7 0 1 0 17 17.5M4 10h9M4 14h9",
+  equipe: "M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm8 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM2 20c0-3 3-5 6-5s6 2 6 5m2-5c3 0 6 2 6 5", metier: "M4 7h16v12H4zM9 7V4h6v3",
+  balance: "M12 4v16M6 20h12M5 8h14M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0z", lieu: "M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
+  globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18", croissance: "M3 17l6-6 4 4 8-8M15 7h6v6", valide: "M5 12l4 4 10-10",
+};
+const picto = (nom) => { const NS = "http://www.w3.org/2000/svg", g = document.createElementNS(NS, "svg"); g.setAttribute("viewBox", "0 0 24 24"); g.setAttribute("aria-hidden", "true"); g.setAttribute("class", "picto"); const pa = document.createElementNS(NS, "path"); pa.setAttribute("d", PICTOS[nom] || PICTOS.valide); g.append(pa); return g; };
 const fleche = () => el("span", { class: "fleche", "aria-hidden": "true", text: "→" });
 
 // ================================================================== Où en est-on ?
@@ -61,13 +70,17 @@ function dessinerEtapes() {
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
 }
-function aller(etape) { S.etape = etape; dessinerEtapes(); ({ comptes, saisie, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 }); }
+function aller(etape) { if (etape === "questions" && S.etape !== "questions") rafraichirPropositions().then(() => { if (S.etape === "questions" && S.q >= 0) questions(); }); S.etape = etape; dessinerEtapes(); ({ comptes, saisie, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 }); }
 const titre = (t, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: t }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
+/** Propositions recalculées quand de nouvelles données arrivent (comptes confirmés, site lu). */
+function rafraichirPropositions() {
+  return api(`${base}/documents/memo/propositions`).then((p) => { S.propositions = p.propositions || {}; }).catch(() => null);
+}
 // ================================================================== 1. Vos comptes
 function lancerLectureSite(url) {
   S.lectureSite = api(`${base}/documents/memo/site`, { method: "POST", body: JSON.stringify({ url }) })
-    .then((m) => { S.memo = m; S.reponses.site = m.site; return m; })
+    .then((m) => { S.memo = m; S.reponses.site = m.site; rafraichirPropositions(); return m; })
     .catch((e) => { S.erreurSite = e.message; return null; });
 }
 /** Ce que Passation sait déjà : le dirigeant ne part pas de zéro. */
@@ -238,14 +251,29 @@ function brouillonActivite() {
   const f = (S.reponses.site?.faits || []).filter((x) => ["activite", "produits", "clients", "qualite"].includes(x.categorie)).slice(0, 5).map((x) => x.fait);
   return f.length ? f.join(" ") : "";
 }
+/** Proposition de Passation pour ce champ, tant que le dirigeant n'a rien enregistré. */
+const proposition = (q, c) => (S.reponses[c.etape]?.[c.cle] == null ? S.propositions[q.id]?.valeurs?.[`${c.etape}.${c.cle}`] : undefined);
 function champ(c, q) {
-  const v = S.reponses[c.etape]?.[c.cle];
+  const v = S.reponses[c.etape]?.[c.cle] ?? proposition(q, c);
   const lib = c.libelle ? el("p", { class: "guide-lib", text: c.libelle }) : null;
   if (c.type === "texte") {
     const ta = el("textarea", { rows: "6", "aria-label": q.titre, "data-etape": c.etape, "data-cle": c.cle });
     ta.value = v || (c.cle === "description" ? brouillonActivite() : "");
-    if (!v && ta.value) ta.dataset.brouillon = "1";
-    return el("div", { class: "guide-champ" }, lib, ta, ta.dataset.brouillon ? el("p", { class: "petit", text: "Brouillon tiré de votre site : relisez-le et corrigez-le." }) : null);
+    return el("div", { class: "guide-champ" }, lib, ta);
+  }
+  if (c.type === "ligne") {
+    const i = el("input", { type: "text", value: v || "", placeholder: c.exemple || "", "aria-label": c.libelle, "data-etape": c.etape, "data-cle": c.cle, "data-type": "ligne", maxlength: "300" });
+    return el("div", { class: "guide-champ" }, lib, i);
+  }
+  if (c.type === "multi") {
+    // Plusieurs réponses : tuiles à pictogramme, enregistrées à la validation de l'écran
+    const choisies = new Set(Array.isArray(v) ? v : []);
+    const zone = el("div", { class: "tuiles-choix", role: "group", "aria-label": c.libelle || q.titre, "data-etape": c.etape, "data-cle": c.cle, "data-type": "multi" },
+      ...c.options.map(([t, ic, d]) => el("button", { type: "button", class: "tuile-choix", "aria-pressed": String(choisies.has(t)), "data-valeur": t, onclick: (ev) => {
+        const b = ev.currentTarget, on = b.getAttribute("aria-pressed") !== "true";
+        b.setAttribute("aria-pressed", String(on));
+      } }, picto(ic), el("strong", { text: t }), d ? el("span", { text: d }) : null)));
+    return el("div", { class: "guide-champ" }, lib, zone);
   }
   if (c.type === "euros" || c.type === "curseur") {
     if (c.type === "curseur") {
@@ -260,13 +288,13 @@ function champ(c, q) {
   if (c.type === "choix" || c.type === "valeurs") {
     const opts = c.type === "choix" ? c.options.map((o) => [o, o]) : c.options;
     return el("div", { class: "guide-champ" }, lib, el("div", { class: "puces-choix", role: "group", "aria-label": c.libelle || q.titre },
-      ...opts.map(([t, val]) => el("button", { type: "button", class: `puce${v === val ? " choisie" : ""}`, "aria-pressed": String(v === val), onclick: async (ev) => {
+      ...opts.map(([t, val]) => el("button", { type: "button", class: `puce${v === val ? " choisie" : ""}`, "aria-pressed": String(v === val), "data-propose": proposition(q, c) === val ? "1" : null, onclick: async (ev) => {
         const bouton = ev.currentTarget; // ev.currentTarget est vidé après le premier « await »
         try {
           await enregistrer(c.etape, c.cle, val);
           bouton.parentElement.querySelectorAll(".puce").forEach((b) => { b.classList.toggle("choisie", b === bouton); b.setAttribute("aria-pressed", String(b === bouton)); });
           // Écran à un seul choix : on avance tout de suite ; sinon on affiche la suite éventuelle
-          if (q.champs.length === 1 && !q.suite?.si(S.reponses)) suivante(q);
+          if (q.champs.length === 1 && !q.suite?.si(S.reponses) && !S.propositions[q.id]) suivante(q);
           else if (q.suite) questions();
         } catch (e) { message(e.message, true); }
       } }, t))));
@@ -307,10 +335,19 @@ function champ(c, q) {
   }
   return null;
 }
+/** Valide l'écran : les choix proposés que le dirigeant a gardés tels quels sont enregistrés. */
+async function validerPropositions(q) {
+  for (const c of [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])]) {
+    if (!["choix", "valeurs", "regions"].includes(c.type)) continue;
+    const pv = proposition(q, c);
+    if (pv !== undefined) await enregistrer(c.etape, c.cle, pv);
+  }
+}
 async function enregistrerEcran() {
   for (const n of $("#ecran").querySelectorAll("[data-cle]")) {
     const { etape, cle, type } = n.dataset;
-    if (n.tagName === "TEXTAREA") { if (n.value.trim()) await enregistrer(etape, cle, n.value.trim()); }
+    if (n.tagName === "TEXTAREA" || type === "ligne") { if (n.value.trim()) await enregistrer(etape, cle, n.value.trim()); }
+    else if (type === "multi") await enregistrer(etape, cle, [...n.querySelectorAll('[aria-pressed="true"]')].map((b) => b.dataset.valeur));
     else if (type === "euros") { const x = lireNombre(n.value); if (Number.isNaN(x)) throw new Error("Un montant est illisible."); await enregistrer(etape, cle, x); }
     else if (type === "curseur") await enregistrer(etape, cle, Number(n.value) / 100);
     else if (type === "exceptionnels") await enregistrer(etape, cle, n._liste.filter((x) => Number.isFinite(x.montant) && x.montant !== 0));
@@ -367,25 +404,31 @@ function questions() {
   if (S.q < 0) return questionSite();
   const q = QUESTIONS[S.q];
   const champs = [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])];
-  const seulChoix = q.champs.length === 1 && ["choix", "valeurs"].includes(q.champs[0].type) && !q.suite?.si(S.reponses);
+  const prop = S.propositions[q.id];
+  const aValider = prop && Object.keys(prop.valeurs).some((k) => { const [e, c] = k.split("."); return S.reponses[e]?.[c] == null; });
+  const seulChoix = !aValider && q.champs.length === 1 && ["choix", "valeurs"].includes(q.champs[0].type) && !q.suite?.si(S.reponses);
   remplir(
-    el("p", { class: "etiquette", text: `Question ${S.q + 2} sur ${QUESTIONS.length + 1}` }),
+    el("div", { class: "q-tete" }, el("p", { class: "etiquette", text: `Question ${S.q + 2} sur ${QUESTIONS.length + 1}` }),
+      el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round(((S.q + 2) / (QUESTIONS.length + 1)) * 100)}%` }))),
+    aValider ? el("p", { class: "proposition-bandeau" }, el("strong", { text: "Réponse préparée par Passation" }), ` · ${prop.source}. Vérifiez, corrigez si besoin, puis validez.`) : null,
     ...titre(q.titre, q.aide),
     q.champs.some((c) => c.requis) ? el("p", { class: "petit requis-note", text: `Indispensable pour rédiger le mémorandum : ${q.champs.filter((c) => c.requis).map((c) => c.requis).join(", ")}.` }) : null,
     ...champs.map((c) => champ(c, q)),
     el("div", { class: "q-nav" },
       el("button", { type: "button", class: "lien-simple", onclick: () => { S.q--; questions(); } }, "Retour"),
       seulChoix ? el("button", { type: "button", class: "lien-simple", onclick: () => suivante(q) }, "Passer")
-        : el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
+        : el("button", { type: "button", class: `btn ${aValider ? "btn-vert" : "btn-noir"}`, onclick: async (ev) => {
           const bouton = ev.currentTarget;
           bouton.disabled = true;
           try {
+            if (aValider) await validerPropositions(q);
             await enregistrerEcran();
             const manque = requisManquants(q, S.reponses);
             if (manque.length) { message(`Il manque ${manque.join(" et ")} : c'est indispensable pour rédiger le mémorandum.`, true); bouton.disabled = false; $("#ecran").querySelector("textarea, .puces-choix .puce")?.focus(); return; }
             message(""); suivante(q);
           } catch (e) { message(e.message, true); bouton.disabled = false; }
-        } }, "Continuer ", fleche())));
+        } }, aValider ? "C'est exact, continuer " : "Continuer ", fleche())),
+    q.chapitre ? el("aside", { class: "q-usage" }, el("p", { class: "etiquette", text: "Où va votre réponse" }), el("strong", { text: q.chapitre }), q.pourquoi ? el("p", { class: "petit", text: q.pourquoi }) : null) : null);
 }
 
 // ================================================================== 4. Votre site
@@ -534,7 +577,8 @@ async function pret() {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
   $("#lien-dossier").href = `/espace/?dossier=${id}`;
   try {
-    const [moi, dossier, ch, rep] = await Promise.all([api("/api/me"), api(base), api(`${base}/financials`), api(`${base}/answers`)]);
+    const [moi, dossier, ch, rep, props] = await Promise.all([api("/api/me"), api(base), api(`${base}/financials`), api(`${base}/answers`), api(`${base}/documents/memo/propositions`).catch(() => ({}))]);
+    S.propositions = props.propositions || {};
     S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {};
     $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
     document.title = `${dossier.entreprise.nom} · Passation`;
