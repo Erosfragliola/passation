@@ -107,3 +107,30 @@
 @media (prefers-reduced-motion: reduce) { .confid-avant::after { animation: none; transform: scaleX(1); } }
 .landing #questions h2.affiche { font-size: clamp(2.6rem, 4.6vw, 4rem); color: var(--vert); }
 @media (max-width: 600px) { .landing .hero .recherche-champ { border-radius: 28px; } }
+
+/* Résultat de l'estimation (18/11/2026) : analyse en étapes, puis tuiles */
+.analyse-etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; width: min(460px, 100%); }
+.analyse-etapes li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 16px; border-radius: 16px; background: rgba(255, 255, 255, .06); color: #F6F1E6; font-size: 17px; opacity: .35; transition: opacity .3s, background .3s; }
+.analyse-etapes li.en-cours { opacity: 1; background: rgba(233, 201, 164, .16); }
+.analyse-etapes li.fait { opacity: 1; }
+.analyse-etapes i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(246, 241, 230, .5); display: grid; place-items: center; font-style: normal; font-size: 12px; }
+.analyse-etapes li.en-cours i { border-color: #E9C9A4; border-top-color: transparent; animation: tourne-analyse .8s linear infinite; }
+.analyse-etapes li.fait i { background: #3FAE7E; border-color: #3FAE7E; color: #fff; }
+.analyse-etapes li.fait i::after { content: "✓"; }
+@keyframes tourne-analyse { to { transform: rotate(360deg); } }
+.landing .resultat .resultat-code { font-family: var(--mot-cle); font-style: italic; font-weight: 400; color: var(--ocre-nuit); }
+.landing .resultat .estimation-valeur { font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; font-size: clamp(3rem, 6vw, 5rem); letter-spacing: 0; line-height: 1; }
+.landing .resultat-dossier { max-width: none; display: grid; gap: 14px; align-self: stretch; align-content: center; }
+.resultat-tuile { border-radius: 26px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(246, 241, 230, .14); padding: 22px; }
+.resultat-tuile.claire { background: #FFFDF8; border-color: transparent; color: var(--espresso); }
+.resultat-tuile-titre { margin: 0 0 12px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ocre-nuit); }
+.resultat-tuile.claire .resultat-tuile-titre { color: var(--ocre-texte); }
+.resultat-lu { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.resultat-lu li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 15.5px; color: #F6F1E6; }
+.resultat-lu i { width: 20px; height: 20px; border-radius: 50%; background: #3FAE7E; display: grid; place-items: center; }
+.resultat-lu i::after { content: "✓"; color: #fff; font-size: 11px; font-style: normal; }
+.resultat-lu b { font-family: var(--mono); font-weight: 500; font-size: 13px; color: var(--ocre-nuit); text-align: right; }
+.resultat-pilules { display: flex; flex-wrap: wrap; gap: 8px; }
+.resultat-pilules span { border-radius: 999px; padding: 7px 14px; background: var(--sable); font-size: 15px; font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { .analyse-etapes li.en-cours i { animation: none; } }
+@media (max-width: 600px) { .resultat-lu li { grid-template-columns: 22px minmax(0, 1fr); } .resultat-lu b { grid-column: 2; text-align: left; } }

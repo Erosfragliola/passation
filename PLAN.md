@@ -560,3 +560,18 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   `parcours-performant` (parcours après le SIREN) fusionnées dans `main`. Parcours vérifié en local de bout en bout
   (accueil → code → saisie → 11 questions → rédaction → « Votre dossier est prêt ») : valorisation, datapack, teaser,
   étude de marché et 9 chapitres sur 9. Tests : 314.
+- **18/11/2026, après le SIREN en direction « bento »** (branche `apres-siren`, non publiée ; maquette validée par
+  le dirigeant, avec la demande « réponses déjà préparées, le cédant n'a plus qu'à valider ») :
+  - Estimation : le trousseau de clés est remplacé par l'analyse en quatre étapes qui s'allument (registres,
+    comptes publics, multiples, nom de code) ; résultat en tuiles (« Ce que nous avons lu » avec les vraies
+    données, « Avec votre dossier »).
+  - Parcours guidé : 15 questions (5 nouvelles : distinctions, équipe, dates clés, clientèle et axes, transmission),
+    réponses préparées par `src/documents/propositions.js` (registres, comptes, faits du site validés, choix
+    fréquents marqués « à confirmer »), route `GET …/documents/memo/propositions`, rien n'est enregistré avant
+    « C'est exact, continuer » ; tuiles à pictogramme ; panneau « Où va votre réponse » ; rail d'étapes.
+    Les nouvelles réponses alimentent les chapitres (histoire, organisation, clients, perspectives, opération).
+  - Espace dirigeant : nom de code, anneau d'avancement, valeur, prochaine étape, documents en tuiles.
+  - Pièces : dépôt type Drive (migration `0003_pieces.sql`, `src/routes/pieces.js`, R2 `dossiers/<id>/pieces/`),
+    20 Mo par fichier, 80 par dossier, types bureautiques et images ; la pièce est cochée au dépôt et décochée à
+    la suppression du dernier fichier ; tout est effacé avec le dossier. Tests : 323.
+  - En production, appliquer la migration : `npx wrangler d1 migrations apply passation --remote`.

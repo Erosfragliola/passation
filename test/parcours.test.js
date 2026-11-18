@@ -400,3 +400,39 @@ describe("clé de l'API Claude refusée", () => {
     expect((await r.json()).erreur).toBe("cle_refusee");
   });
 });
+
+describe("pièces du dossier (dépôt)", () => {
+  const fichier = (nom, contenu = "contenu", item = "statuts") => { const f = new FormData(); f.append("fichier", new File([contenu], nom)); f.append("item", item); return f; };
+  it("dépôt, liste, téléchargement, suppression ; l'élément de la liste est coché puis décoché", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    const r = await appel(`/api/dossiers/${id}/pieces`, { methode: "POST", cookie, brut: fichier("Statuts 2021.pdf", "%PDF statuts") });
+    expect(r.status).toBe(201);
+    const { pieces } = await r.json();
+    expect(pieces).toHaveLength(1);
+    expect(pieces[0]).toMatchObject({ item: "statuts", filename: "Statuts 2021.pdf", mime: "application/pdf", size: 12 });
+    expect((await (await appel(`/api/dossiers/${id}`, { cookie })).json()).checklist).toContain("statuts");
+    const dl = await appel(`/api/dossiers/${id}/pieces/${pieces[0].id}`, { cookie });
+    expect(dl.headers.get("content-disposition")).toContain("Statuts%202021.pdf");
+    expect([...env.FILES.objets.keys()].every((k) => k.startsWith(`dossiers/${id}/pieces/`))).toBe(true);
+    const apres = await (await appel(`/api/dossiers/${id}/pieces/${pieces[0].id}`, { methode: "DELETE", cookie })).json();
+    expect(apres.pieces).toEqual([]);
+    expect(env.FILES.objets.size).toBe(0);
+    expect((await (await appel(`/api/dossiers/${id}`, { cookie })).json()).checklist).not.toContain("statuts");
+  });
+  it("refuse un type inconnu, une pièce hors liste et l'accès au dossier d'un autre", async () => {
+    const a = await seConnecter("a@exemple.fr");
+    const b = await seConnecter("b@exemple.fr");
+    expect((await appel(`/api/dossiers/${a.id}/pieces`, { methode: "POST", cookie: a.cookie, brut: fichier("virus.exe") })).status).toBe(415);
+    expect((await appel(`/api/dossiers/${a.id}/pieces`, { methode: "POST", cookie: a.cookie, brut: fichier("x.pdf", "a", "inconnu") })).status).toBe(400);
+    const { pieces } = await (await appel(`/api/dossiers/${a.id}/pieces`, { methode: "POST", cookie: a.cookie, brut: fichier("kbis.pdf", "k", "kbis") })).json();
+    expect((await appel(`/api/dossiers/${a.id}/pieces/${pieces[0].id}`, { cookie: b.cookie })).status).toBe(404);
+    expect((await appel(`/api/dossiers/${a.id}/pieces`)).status).toBe(401);
+  });
+  it("la suppression du dossier efface aussi les pièces (base et fichiers)", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    await appel(`/api/dossiers/${id}/pieces`, { methode: "POST", cookie, brut: fichier("kbis.pdf", "k", "kbis") });
+    await appel(`/api/dossiers/${id}`, { methode: "DELETE", cookie });
+    expect(env.FILES.objets.size).toBe(0);
+    expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM pieces").get().n).toBe(0);
+  });
+});

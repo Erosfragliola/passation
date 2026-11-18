@@ -614,12 +614,26 @@
       "inviter_texte": "Un e-mail prérempli, sans aucune donnée de votre dossier : vous choisissez ce que vous partagez.",
       "inviter_sujet": "La transmission de mon entreprise",
       "inviter_corps": "Bonjour,\n\nJe commence à préparer la transmission de mon entreprise avec Passation ({adresse}). J'aimerais en parler avec vous.\n\nBien cordialement,",
-      "autre": "Rechercher une autre entreprise"
+      "autre": "Rechercher une autre entreprise",
+      "analyse_titre": "Ce que nous avons lu",
+      "obtenir_titre": "Avec votre dossier, gratuitement",
+      "obtenir": [
+        "Valeur en 3 méthodes",
+        "Teaser anonyme",
+        "Mémorandum",
+        "Datapack Excel"
+      ]
     },
     "video": {
       "pause": "Mettre la vidéo en pause",
       "lecture": "Lire la vidéo"
-    }
+    },
+    "analyse": [
+      "Entreprise identifiée dans les registres",
+      "Comptes publics récupérés",
+      "Multiples du secteur appliqués",
+      "Nom de code attribué"
+    ]
   },
   "sources": {
     "libelle": "Données issues de",

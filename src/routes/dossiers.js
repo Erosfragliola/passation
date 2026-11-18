@@ -16,6 +16,8 @@ import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
 import { manquants, EXERCICES_MAX } from "../../public/js/champs-financiers.js";
 import { avancementQuestionnaire } from "../../public/js/questionnaire.js";
 import { routeValorisation, lireChiffres, lireReponses } from "./valorisation.js";
+import { routePieces } from "./pieces.js";
+import { projet } from "../documents/nom-de-code.js";
 import { routeDocuments } from "./documents.js";
 import { routeTermine } from "./suivi.js";
 
@@ -66,6 +68,7 @@ async function detail(env, row) {
   const docs = await env.DB.prepare("SELECT kind, MAX(version) AS version, MAX(created_at) AS le FROM documents WHERE dossier_id = ? GROUP BY kind").bind(row.id).all();
   return {
     id: row.id, siren: row.siren, cree_le: row.created_at, statut: row.status,
+    nom_de_code: row.code_name || (entreprise.naf ? projet(entreprise.naf) : null),
     entreprise: {
       nom: entreprise.nom, ville: entreprise.ville, naf: entreprise.naf, section_naf: entreprise.section_naf,
       date_creation: entreprise.date_creation, tranche_effectif: entreprise.tranche_effectif,
@@ -97,6 +100,7 @@ export async function supprimerDossier(env, id) {
     t("DELETE FROM document_sections WHERE document_id IN (SELECT id FROM documents WHERE dossier_id = ?)"),
     t("DELETE FROM documents WHERE dossier_id = ?"),
     t("DELETE FROM uploads WHERE dossier_id = ?"),
+    t("DELETE FROM pieces WHERE dossier_id = ?"),
     t("DELETE FROM valuations WHERE dossier_id = ?"),
     t("DELETE FROM adjustments WHERE dossier_id = ?"),
     t("DELETE FROM financials WHERE dossier_id = ?"),
@@ -136,6 +140,7 @@ export async function routeDossiers(request, env, segments) {
   if (["financials", "uploads", "answers", "valuation"].includes(sous)) return routeValorisation(request, env, row, sous, reste.length ? [item, ...reste].join("/") : item);
   if (sous === "documents") return routeDocuments(request, env, row, item, reste[0], reste[1]);
   if (sous === "termine" && m === "POST") return routeTermine(request, env, row, u);
+  if (sous === "pieces" && reste.length === 0) return routePieces(request, env, row, item);
   if (sous === "checklist" && item && m === "PUT") {
     if (!CLES_CHECKLIST.has(item)) return json({ erreur: "element_inconnu" }, 400);
     let corps; try { corps = await request.json(); } catch { corps = {}; }
