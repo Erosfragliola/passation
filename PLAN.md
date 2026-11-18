@@ -578,6 +578,27 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
 - **18/11/2026, mise en ligne de `apres-siren`** (accord du dirigeant ; multiples floutés dans le résultat de
   l'estimation à sa demande, visuellement seulement : ils restent dans la réponse de l'API). Migration
   `0003_pieces.sql` appliquée en production avant le déploiement.
+- **18/11/2026, accueil v4** (branche `accueil-v4`, partie de `main`, non publiée) : polices réduites ; hero en deux
+  temps (texte et champ en haut, vidéo plus petite dessous) avec quatre bulles logées dans des encoches
+  (`encoche.js`, `cheminEncoches`) : 30 s, 3 méthodes, nom de code et estimation d'exemple marquée fictive,
+  documents ; résultat de l'estimation compact avec une seule suite (« Voir mon dossier », tuile qui liste ce que
+  contient le dossier) ; étapes et garanties en tuiles ; appel final en carte claire et pied de page vert arrondi
+  avec le nom en très grand (à la manière de skarlett.fr, rien repris) ; trousseau de clés retiré. Tests : 323.
+  - Retouches validées par le dirigeant : trois bulles posées à cheval sur les bords de la vidéo (plus d'encoches,
+    `encoche.js` supprimé) ; **police unique sur tout le site** : titres en capitales étroites (Big Shoulders), tout le
+    reste en Geist (plus de serif italique, de chasse fixe ni d'écriture manuscrite dans l'interface ; le mémorandum
+    garde sa propre typographie). Mise en ligne le 18/11/2026.
+- **18/11/2026, accueil v5** (branche `hero-forme`) : le hero redevient grand, la vidéo dans une forme non
+  rectangulaire (angles asymétriques 40/120 px, encoche en bas au centre où se loge le champ SIREN,
+  `public/js/landing/forme-hero.js`, chemin recalculé à chaque taille) ; titre et texte à l'intérieur ; trois bulles
+  à cheval sur les bords (masquées sous 900 px) ; sur téléphone, angles asymétriques et champ dans la forme.
+  - Puis, sur modèle fourni par le dirigeant : la vidéo est découpée autour de quatre bulles logées dans un coin ou
+    sur un bord (« pièces de puzzle »), tous les angles arrondis y compris rentrants : `polygone` + `cheminArrondi`
+    (testés, `test/forme-hero.test.js`) ; texte et champ à l'intérieur ; bulles masquées sous 900 px.
+- **18/11/2026, accueil v5 en ligne** : Pull Request #2 (`hero-forme`) fusionnée, déploiement (version Cloudflare
+  df47ead9). Vérifié en ligne : quatre bulles et forme découpée, aucune ressource en erreur (un 404 mis en cache
+  juste après le déploiement sur `forme-hero.js` s'est résorbé en moins d'une minute), estimation 434436622 ok,
+  routes privées 401. Tests : 359.
 - **18/11/2026, branche `memo-presentation`** (inclut `marche-rapide`), non publiée, retours du dirigeant après son
   premier test réel :
   - Étude de marché bornée à deux minutes, jamais lancée deux fois (409 si en cours), chapitres sans attente.
@@ -590,3 +611,11 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
     actions (rédiger à nouveau, modifier le texte) ; sources (site, photos, marché) repliées en bas.
   - Parcours : récapitulatif des réponses préparées sur un écran (validation d'un clic), puis seulement les
     questions sans réponse ; une amorce tirée des registres n'est jamais validée d'un clic. Tests : 328.
+  - Intégration avec `main` (branche `integration-memo-presentation`, non publiée) : quatre conflits résolus (quota
+    Claude de `main` conservé, répondu après le 409 pour qu'une demande en double ne consomme rien) ; scénario de
+    démonstration mis à jour (multiples seuls par défaut, 60/40 en option ; `docs/DEMO.md`) ; le parcours ne relance
+    plus une seconde étude de marché après un échec (vérifié avec un Claude simulé en panne : 1 appel au lieu de 2) ;
+    petits textes cuivrés en #8E5530 (contraste AA) ; texte du DCF exact quand la prime de taille manque. Nouveaux
+    tests : verrou 409, quota, budget de 110 s. Tests : 373. axe-core : 0 violation sur le récapitulatif et le
+    mémorandum (1440 et 390 px). `/espace/` garde 6 violations déjà présentes sur `main` (onglets ARIA, contrastes),
+    à traiter avec la refonte de la page dossier.

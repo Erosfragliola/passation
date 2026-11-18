@@ -7,10 +7,10 @@ import { requeteJson } from "../lib/requete.js";
 export const URL_INPI = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/ratios_inpi_bce/records";
 const CHAMPS = "siren,date_cloture_exercice,chiffre_d_affaires,ebe,ebit,resultat_net,confidentiality,type_bilan";
 
-export async function exercicesBruts(siren, { fetch: f = fetch } = {}) {
+export async function exercicesBruts(siren, { fetch: f = fetch, ...options } = {}) {
   const where = encodeURIComponent(`siren="${siren}"`);
   const url = `${URL_INPI}?select=${CHAMPS}&where=${where}&order_by=date_cloture_exercice%20desc&limit=30`;
-  return requeteJson(url, "ratios INPI", { fetch: f });
+  return requeteJson(url, "ratios INPI", { ...options, fetch: f });
 }
 
 const PUBLIC = new Set(["Public", "Publication simplifiee"]);

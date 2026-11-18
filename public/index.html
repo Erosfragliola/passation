@@ -93,8 +93,12 @@
 <main id="contenu">
 
   <!-- 1. Hero : agir -->
-  <section id="accueil" class="hero" aria-labelledby="titre-hero">
-    <div class="hero-fond">
+  <section id="accueil" class="hero hero-v5" aria-labelledby="titre-hero">
+    <!-- Accueil v5 (18/11/2026) : la vidéo dans une grande forme non rectangulaire (angles asymétriques, encoche en bas
+         découpée autour de quatre bulles logées dans les coins et les bords), le texte à l'intérieur
+         (public/js/landing/forme-hero.js) -->
+    <div class="hero-scene" id="hero-scene">
+      <div class="hero-fond">
       <img src="/img/photos/hero-poster-1600.webp"
            srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
            sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
@@ -106,51 +110,46 @@
         <video class="hero-video" muted playsinline preload="metadata" aria-hidden="true" hidden></video>
       </div>
     </div>
-    <div class="conteneur hero-contenu">
-      <p class="surtitre" data-t="hero.surtitre"></p>
-      <h1 id="titre-hero" class="affiche" data-t="hero.titre"></h1>
-      <p class="chapo" data-t="hero.sous_titre"></p>
-      <form class="recherche" action="/connexion" method="get" role="search" data-champ-siren="accueil" data-t-attr="aria-label=champ.zone">
-        <div class="recherche-champ">
-          <label for="q" data-t="champ.libelle"></label>
-          <input id="q" name="q" type="search" autocomplete="off" required minlength="3" aria-describedby="note-recherche"
-                 data-t-attr="placeholder=champ.libelle"
-                 role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions">
-          <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
-        </div>
-        <ul class="suggestions" id="suggestions" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
-        <p class="recherche-message" id="recherche-message" role="status" data-message hidden></p>
-        <div class="recherche-note" id="note-recherche">
-          <ul class="hero-coches">
-            <li data-t="hero.coches.0"></li><li data-t="hero.coches.1"></li><li data-t="hero.coches.2"></li>
-          </ul>
-          <p data-t="hero.note_comptes"></p>
-        </div>
-      </form>
-      <ul class="hero-preuves">
-        <li data-si="nb_dirigeants" data-t="hero.preuves.dirigeants"></li>
-        <li data-si="note_avis nb_avis"><span class="etoiles" aria-hidden="true"><svg viewBox="0 0 90 16" width="90" height="16"><g fill="currentColor"><path id="etoile" d="M8 1l2.1 4.6 5 .5-3.8 3.3 1.1 4.9L8 11.8 3.6 14.3l1.1-4.9L.9 6.1l5-.5z"/><use href="#etoile" x="18"/><use href="#etoile" x="36"/><use href="#etoile" x="54"/><use href="#etoile" x="72"/></g></svg></span> <span data-t="hero.preuves.avis"></span></li>
-        <li data-t="hero.preuves.registres"></li>
-      </ul>
-    </div>
-    <!-- Bento du 18/11/2026 : la vidéo est découpée d'une encoche (bas à droite) où se loge un exemple d'estimation
-         (public/js/landing/encoche.js) ; sur téléphone, la carte se pose sur le bas de la vidéo -->
-    <div class="hero-bas">
-      <p class="hero-metier" aria-hidden="true" hidden></p>
-      <button class="hero-pause" type="button" hidden>
-        <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
-        <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
-        <span class="visuellement-cache"></span>
-      </button>
-    </div>
-    <aside class="hero-encoche" id="hero-encoche" data-t-attr="aria-label=hero.carte.titre">
-      <div class="carte-estimation">
-        <p class="carte-estimation-tete"><span data-t="hero.carte.titre"></span><em data-t="hero.carte.fictif"></em></p>
-        <p class="carte-estimation-code" data-t="hero.carte.code"></p>
-        <p class="carte-estimation-valeur chiffre" data-t="hero.carte.valeur"></p>
-        <p class="carte-estimation-pied" data-t="hero.carte.pied"></p>
+      <div class="hero-bas">
+        <p class="hero-metier" aria-hidden="true" hidden></p>
+        <button class="hero-pause" type="button" hidden>
+          <svg class="icone-pause" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3h3v12H5zM10 3h3v12h-3z" fill="currentColor"/></svg>
+          <svg class="icone-lecture" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3l10 6-10 6z" fill="currentColor"/></svg>
+          <span class="visuellement-cache"></span>
+        </button>
       </div>
-    </aside>
+      <div class="conteneur hero-contenu">
+        <p class="surtitre" data-t="hero.surtitre"></p>
+        <h1 id="titre-hero" class="affiche" data-t="hero.titre"></h1>
+        <p class="chapo" data-t="hero.sous_titre"></p>
+        <form class="recherche" action="/connexion" method="get" role="search" data-champ-siren="accueil" data-t-attr="aria-label=champ.zone">
+          <div class="recherche-champ">
+            <label for="q" data-t="champ.libelle"></label>
+            <input id="q" name="q" type="search" autocomplete="off" required minlength="3" aria-describedby="note-recherche"
+                   data-t-attr="placeholder=champ.libelle"
+                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions">
+            <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
+          </div>
+          <ul class="suggestions" id="suggestions" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
+          <p class="recherche-message" id="recherche-message" role="status" data-message hidden></p>
+          <div class="recherche-note" id="note-recherche">
+            <ul class="hero-coches">
+              <li data-t="hero.coches.0"></li><li data-t="hero.coches.1"></li><li data-t="hero.coches.2"></li>
+            </ul>
+            <p data-t="hero.note_comptes"></p>
+          </div>
+        </form>
+        <ul class="hero-preuves">
+          <li data-si="nb_dirigeants" data-t="hero.preuves.dirigeants"></li>
+          <li data-si="note_avis nb_avis"><span class="etoiles" aria-hidden="true"><svg viewBox="0 0 90 16" width="90" height="16"><g fill="currentColor"><path id="etoile" d="M8 1l2.1 4.6 5 .5-3.8 3.3 1.1 4.9L8 11.8 3.6 14.3l1.1-4.9L.9 6.1l5-.5z"/><use href="#etoile" x="18"/><use href="#etoile" x="36"/><use href="#etoile" x="54"/><use href="#etoile" x="72"/></g></svg></span> <span data-t="hero.preuves.avis"></span></li>
+          <li data-t="hero.preuves.registres"></li>
+        </ul>
+      </div>
+      <div class="hero-bulle bulle-hg sombre" data-cote="hg"><strong class="affiche" data-t="hero.bulles.delai.chiffre"></strong><span data-t="hero.bulles.delai.texte"></span></div>
+      <div class="hero-bulle bulle-d1" data-cote="d"><span class="bulle-titre"><span data-t="hero.bulles.code.titre"></span><em data-t="hero.bulles.code.fictif"></em></span><span class="bulle-code" data-t="hero.bulles.code.code"></span><strong class="affiche bulle-valeur" data-t="hero.bulles.code.valeur"></strong></div>
+      <div class="hero-bulle bulle-g" data-cote="g"><strong class="affiche" data-t="hero.bulles.methodes.chiffre"></strong><span data-t="hero.bulles.methodes.texte"></span></div>
+      <div class="hero-bulle bulle-bd" data-cote="bd"><ul class="bulle-docs"><li data-t="hero.bulles.docs.0"></li><li data-t="hero.bulles.docs.1"></li><li data-t="hero.bulles.docs.2"></li><li data-t="hero.bulles.docs.3"></li></ul></div>
+    </div>
   </section>
 
   <div class="sources-bande" data-t-attr="aria-label=pourquoi.sources">
@@ -189,14 +188,9 @@
             <p class="petit" data-t="js.resultat.saisie_note"></p>
           </form>
           <p class="resultat-message" id="resultat-message" role="status" hidden></p>
-          <ul class="resultat-suites">
-            <li><a class="suite" href="/connexion" data-connexion data-suite="ouvrir"><strong data-t="js.resultat.ouvrir_titre"></strong><span data-t="js.resultat.ouvrir_texte"></span></a></li>
-            <li><a class="suite" href="mailto:" data-suite="inviter"><strong data-t="js.resultat.inviter_titre"></strong><span data-t="js.resultat.inviter_texte"></span></a></li>
-          </ul>
-          <p class="resultat-autre"><button class="lien" type="button" id="btn-autre" data-t="js.resultat.autre"></button></p>
         </div>
       </div>
-      <div class="resultat-dossier" aria-hidden="true"></div>
+      <div class="resultat-dossier"></div>
     </div>
   </section>
 
@@ -406,20 +400,6 @@
 
 <footer class="pied">
   <div class="pied-interieur">
-    <!-- Le trousseau : les neuf clés de l'histoire, suspendues à leur anneau (décoratif) -->
-    <div class="pied-trousseau" aria-hidden="true">
-      <img src="/img/landing/cles/k3.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -44deg; --z: 1">
-      <img src="/img/landing/cles/k1.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -33deg; --z: 3">
-      <img src="/img/landing/cles/k6.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -22deg; --z: 2">
-      <img src="/img/landing/cles/k0.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: -11deg; --z: 5">
-      <img src="/img/landing/cles/k4.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 0deg; --z: 4">
-      <img src="/img/landing/cles/k8.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 11deg; --z: 6">
-      <img src="/img/landing/cles/k2.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 22deg; --z: 3">
-      <img src="/img/landing/cles/k7.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 33deg; --z: 2">
-      <img src="/img/landing/cles/k5.webp" alt="" width="208" height="528" loading="lazy" decoding="async" style="--a: 44deg; --z: 1">
-      <span class="pied-anneau"></span>
-    </div>
-    <p class="pied-logo" aria-hidden="true">Passation</p>
     <div class="pied-colonnes">
       <div class="pied-legal">
         <p data-t="pied.identite"></p>
@@ -438,6 +418,7 @@
     </div>
     <p class="pied-copyright">© <span data-annee>2026</span> Passation</p>
   </div>
+  <p class="pied-marque" aria-hidden="true" data-t="pied.marque"></p>
 </footer>
 
 <script type="application/json" id="textes" data-t-json="js"></script>
@@ -446,7 +427,7 @@
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/landing/intro.js"></script>
 <script type="module" src="/js/landing/landing.js"></script>
-<script type="module" src="/js/landing/encoche.js"></script>
+<script type="module" src="/js/landing/forme-hero.js"></script>
 <script type="module" src="/js/connexion-code.js"></script>
 </body>
 </html>

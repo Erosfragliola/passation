@@ -32,7 +32,16 @@ describe("EBE et retraitements", () => {
   });
   it("sans détail des charges (comptes INPI) : l'EBE publié est pris tel quel", () => {
     expect(ebe({ chiffre_affaires: 1_000_000, ebe: 120_000 })).toBe(120_000);
-    expect(ebe({ chiffre_affaires: 1_000_000, ebe: 120_000, charges_personnel: 300_000 })).toBe(700_000);
+    // Détail partiel (achats et charges externes absents) : on ne les compte pas à zéro, l'EBE publié est retenu.
+    // (Avant le correctif FIN-01, ce cas donnait 1 000 000 − 300 000 = 700 000.)
+    expect(ebe({ chiffre_affaires: 1_000_000, ebe: 120_000, charges_personnel: 300_000 })).toBe(120_000);
+  });
+  it("EBE non déterminable : CA seul, ou détail partiel sans EBE publié → null (jamais CA − charges absentes)", () => {
+    expect(ebe({ chiffre_affaires: 1_000_000 })).toBeNull();
+    expect(ebe({ chiffre_affaires: 1_000_000, charges_personnel: 300_000 })).toBeNull();
+  });
+  it("un zéro saisi est un vrai zéro : 1 000 000 − 0 − 200 000 − 0 − 300 000 = 500 000", () => {
+    expect(ebe({ chiffre_affaires: 1_000_000, achats_consommes: 0, charges_externes: 200_000, charges_personnel: 300_000 })).toBe(500_000);
   });
   it("pont EBE comptable → retraité : dirigeant +50 000, loyer +12 000, exceptionnel 2024 +20 000", () => {
     const p = pontEbe(exercices, retraitements);

@@ -5,17 +5,19 @@
 //   POST   /api/dossiers/:id/uploads   (PDF)            liasse → R2 → lecture par Claude → lignes « à valider »
 //   GET    /api/dossiers/:id/answers                    réponses au questionnaire et réglages
 //   PUT    /api/dossiers/:id/answers/:etape { data }    sauvegarde automatique d'une étape
-//   POST   /api/dossiers/:id/valuation                  calcul des 3 méthodes (code testé), enregistré
+//   POST   /api/dossiers/:id/valuation                  calcul (multiples, DCF si la prime de taille est réglée, ANCC), enregistré
 //   GET    /api/dossiers/:id/valuation                  dernier calcul
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
-import { LIASSE } from "../config.js";
+import { LIASSE, CLAUDE_QUOTAS } from "../config.js";
+import { quotaClaude } from "../lib/ratelimit.js";
 import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants } from "../../public/js/champs-financiers.js";
 import { ETAPES } from "../../public/js/questionnaire.js";
 import { claudeDisponible, lireLiasse, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
 import { assemblerEntree } from "../valuation/entree.js";
 import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
+import { erreursEtape } from "../valuation/validation.js";
 import HYPOTHESES from "../data/hypotheses.json";
 
 const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche"]);
@@ -106,6 +108,8 @@ async function deposerLiasse(request, env, row) {
   if (fichier.size > LIASSE.tailleMax) return json({ erreur: "trop_lourd", message: "Le fichier dépasse 10 Mo." }, 413);
   const octets = new Uint8Array(await fichier.arrayBuffer());
   if (!estPdf(octets)) return json({ erreur: "pas_un_pdf", message: "Ce fichier n'est pas un PDF." }, 415);
+  const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
+  if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
 
   const id = crypto.randomUUID();
   const cle = `dossiers/${row.id}/liasses/${id}.pdf`;
@@ -190,6 +194,8 @@ export async function routeValorisation(request, env, row, sous, item) {
       const c = await corpsJson(request);
       const donnees = c?.data;
       if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 60_000) return json({ erreur: "requete_invalide", message: "Réponses invalides." }, 400);
+      const erreurs = erreursEtape(item, donnees, HYPOTHESES);
+      if (erreurs.length) return json({ erreur: "hypothese_invalide", message: erreurs.map((x) => x.message).join(" "), erreurs }, 400);
       await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, ?, ?, ?)
         ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)
         .bind(row.id, item, JSON.stringify(donnees), maintenant()).run();

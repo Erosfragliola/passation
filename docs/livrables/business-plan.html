@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passation · Business plan (brouillon)</title>
+<style>
+  @page { size: A4; margin: 18mm 18mm 20mm; }
+  :root { --encre: #231E18; --vert: #1E3A2E; --sable: #EADFCB; --gris: #696155; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: var(--encre); margin: 0; }
+  h1 { font-size: 26pt; margin: 0 0 4mm; color: var(--vert); }
+  h2 { font-size: 15pt; color: var(--vert); border-bottom: 1.5px solid var(--vert); padding-bottom: 1.5mm; margin: 9mm 0 3mm; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 5mm 0 2mm; break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.5pt; break-inside: avoid; }
+  th, td { border: 1px solid #b9ad97; padding: 1.6mm 2mm; text-align: left; vertical-align: top; }
+  th { background: var(--sable); }
+  .couverture { height: 245mm; display: flex; flex-direction: column; justify-content: center; break-after: page; }
+  .sous { font-size: 13pt; color: var(--gris); margin: 0 0 12mm; }
+  .bandeau { background: #fff4d6; border: 1.5px solid #c9a227; padding: 3mm 4mm; margin: 4mm 0; font-size: 9.5pt; }
+  .a-completer { background: #fdeaea; border-left: 3px solid #b00; padding: 1.5mm 3mm; margin: 2mm 0; font-size: 9.5pt; }
+  .saut { break-before: page; }
+  .petit { font-size: 9pt; color: var(--gris); }
+</style>
+</head>
+<body>
+
+<section class="couverture">
+  <h1>Passation</h1>
+  <p class="sous">Préparer la cession de sa PME, de la première estimation au dossier remis aux repreneurs</p>
+  <p><strong>Business plan, brouillon de travail du 18/11/2026</strong></p>
+  <p>Cours « Programming and AI for Corporate Finance », EDHEC Business School. Remise le 1<sup>er</sup> décembre 2026.</p>
+  <p>Équipe : <span class="a-completer">À compléter : noms, rôles</span></p>
+  <div class="bandeau"><strong>Brouillon préparé avec Claude Code, à réécrire par l'équipe.</strong> Les faits sur le produit sont
+  vérifiables dans le dépôt. Aucune donnée de marché, aucun tarif, aucun témoignage n'a été inventé : chaque passage
+  « À compléter » demande une source citée et datée, ou une décision de l'équipe. L'usage de l'IA pour ce document doit
+  figurer dans AI-USAGE.md.</div>
+  <p class="petit">Produit en ligne : https://passation.eros-fragliola-freedom.workers.dev · Code : https://github.com/Erosfragliola/passation</p>
+</section>
+
+<h2>1. Résumé</h2>
+<p>Passation est une application web qui aide le dirigeant d'une PME française à préparer la cession de son entreprise.
+À partir du seul SIREN, elle donne une première fourchette de valeur tirée des données publiques. Elle guide ensuite le
+dirigeant jusqu'aux documents qu'attend un repreneur : une valorisation par plusieurs méthodes, un datapack Excel aux
+formules vérifiables, un teaser anonymisé et un mémorandum d'information.</p>
+<p>Le parti pris : <strong>le code calcule, l'IA rédige, le dirigeant valide</strong>. Les valorisations sont du code
+déterministe et testé, à partir d'hypothèses sourcées et datées. Claude lit les documents (liasse fiscale, site internet)
+et rédige, mais chaque montant lu et chaque fait relevé doit être validé par le dirigeant.</p>
+<div class="a-completer">À compléter : objectif de l'équipe à 12 mois (pilote, cibles, indicateurs) et demande éventuelle (financement, partenaires).</div>
+
+<h2>2. Problème (critère A1)</h2>
+<h3>2.1 Ce que vit le dirigeant qui veut céder</h3>
+<ul>
+  <li>Il ne sait pas ce que vaut son entreprise avant d'avoir payé un conseil, et il ne veut pas qu'on sache qu'il
+  envisage de vendre.</li>
+  <li>Les documents attendus par un repreneur (comptes retraités, valorisation argumentée, teaser, mémorandum,
+  pièces de l'audit d'acquisition) demandent du temps et des compétences financières qu'il n'a pas toujours.</li>
+  <li>Les chiffres de base sont déjà publics (registres, comptes déposés), mais dispersés et peu exploitables tels quels.</li>
+</ul>
+<div class="a-completer">À compléter avec des sources citées : nombre de dirigeants de PME en âge de transmettre, nombre
+de cessions par an, part des transmissions qui échouent ou n'aboutissent pas, coût et durée habituels d'un mandat de
+cession. Rechercher des études publiques datées (statistiques publiques, observatoires de la transmission, études de
+banques ou de réseaux d'accompagnement) ; ne rien chiffrer sans référence.</div>
+<h3>2.2 Preuves du problème</h3>
+<div class="a-completer">À compléter : entretiens réellement menés (nombre, profils, date, ce qui en ressort), avec
+l'accord des personnes. Aucun témoignage ne doit être inventé ou reformulé au-delà de ce qui a été dit.</div>
+
+<h2>3. Solution et preuves de fonctionnement (A1, B1)</h2>
+<table>
+  <tr><th>Étape</th><th>Ce que fait Passation</th><th>Garde-fou</th></tr>
+  <tr><td>Estimation express</td><td>SIREN ou nom → identité (annuaire des entreprises), comptes publiés (ratios INPI/BCE), événements (BODACC) → fourchette de valeur par multiples d'EBE du secteur</td><td>Pas de chiffre affiché sans multiple sourcé ni EBE positif ; panne d'API signalée comme telle</td></tr>
+  <tr><td>Comptes</td><td>Lecture d'une liasse PDF par Claude, ou saisie d'une dizaine de montants ; contrôles automatiques (bilan équilibré, CA publié, unité, variation)</td><td>Montants proposés, jamais validés d'office ; exercice incomplet écarté</td></tr>
+  <tr><td>Valorisation</td><td>Multiples d'EBE, DCF sur 5 ans (CMPC, Gordon-Shapiro), ANCC en plancher, retraitements (dirigeant, loyer, exceptionnels), décotes, passage VE → titres, sensibilités</td><td>Code déterministe ; hypothèses sourcées et modifiables ; réglages hors bornes refusés</td></tr>
+  <tr><td>Datapack</td><td>Classeur Excel de 9 onglets à formules vivantes</td><td>Formules recalculées en test et comparées au moteur</td></tr>
+  <tr><td>Teaser</td><td>Présentation anonyme rédigée par Claude à partir de faits anonymisés par le code</td><td>Contrôle d'anonymat : nom, ville, SIREN, montants exacts, marques refusés</td></tr>
+  <tr><td>Mémorandum</td><td>9 chapitres rédigés à partir des seules réponses validées, faits du site validés, étude de marché sourcée</td><td>« À compléter » quand une information manque ; un fait de marché n'est gardé que si sa source a réellement été consultée</td></tr>
+</table>
+<p><strong>Preuves vérifiables</strong> : application en ligne ; 356 tests automatiques relancés à chaque envoi (GitHub
+Actions) ; deux cas de valorisation dont les valeurs attendues ont été calculées à part, en Python (docs/valorisation-calculs.md,
+docs/DEMO.md) ; scénario de démonstration reproductible avec une liasse entièrement fictive.</p>
+
+<h2 class="saut">4. Utilisateurs, marché et modèle économique (A2)</h2>
+<h3>4.1 Utilisateurs</h3>
+<ul>
+  <li><strong>Utilisateur principal</strong> : dirigeant-propriétaire d'une PME française qui envisage une cession dans
+  les années à venir.</li>
+  <li><strong>Prescripteurs possibles</strong> : expert-comptable (le datapack lui permet de vérifier chaque formule),
+  conseil en cession, réseaux d'accompagnement.</li>
+  <li><strong>Lecteurs des documents</strong> : repreneurs (dirigeants, fonds, industriels), banques.</li>
+</ul>
+<div class="a-completer">À compléter : segment prioritaire (taille, secteur, région) justifié par les entretiens.</div>
+<h3>4.2 Marché</h3>
+<div class="a-completer">À compléter avec des sources citées : taille du marché adressable (nombre de cessions de PME
+par an, nombre de PME par tranche de CA), dépenses actuelles en conseil de cession, solutions existantes (cabinets,
+plateformes de mise en relation, outils d'évaluation en ligne) et leur positionnement. Aucun chiffre sans référence datée.</div>
+<h3>4.3 Concurrence et différenciation</h3>
+<p>Différences propres au produit, vérifiables : valorisation par du code testé et non par un modèle de langage ;
+hypothèses sourcées affichées au dirigeant ; datapack Excel à formules vivantes ; teaser contrôlé automatiquement ;
+première estimation sans compte.</p>
+<div class="a-completer">À compléter : tableau comparatif de concurrents réels, sources à l'appui.</div>
+<h3>4.4 Modèle économique</h3>
+<p>Structure de coûts connue à ce jour :</p>
+<table>
+  <tr><th>Poste</th><th>Nature</th><th>Fait vérifiable</th></tr>
+  <tr><td>Hébergement (Cloudflare Workers, D1, R2)</td><td>Offre gratuite au stade actuel</td><td>wrangler.toml, PLAN.md § 8</td></tr>
+  <tr><td>API Claude (Anthropic)</td><td>Payante à l'usage</td><td>Quotas : 60 traitements par jour et par utilisateur, 10 dossiers par compte (src/config.js)</td></tr>
+  <tr><td>E-mails (Brevo)</td><td>Offre gratuite, volume quotidien limité</td><td>PLAN.md § 8</td></tr>
+</table>
+<div class="a-completer">À décider par l'équipe : modèle de revenus (gratuit pour l'estimation, payant pour le dossier
+complet ? abonnement des prescripteurs ? commission ?), prix, et calcul du coût de revient d'un dossier (nombre réel
+d'appels à Claude par parcours, tarif en vigueur de l'API, avec la date). Les tarifs affichés sur le site sont
+aujourd'hui masqués (« À remplir »).</div>
+
+<h2 class="saut">5. Transformation organisationnelle (A3, LO5)</h2>
+<h3>5.1 Chez le cédant et ses conseils</h3>
+<ul>
+  <li><strong>Du dossier « papier » au dossier vivant</strong> : les chiffres validés alimentent à la fois la
+  valorisation, le datapack, le teaser et le mémorandum ; une correction se répercute partout.</li>
+  <li><strong>Nouvelle répartition des rôles</strong> : Passation prépare (lecture, calcul, premier jet) ; le dirigeant
+  valide ligne par ligne ; l'expert-comptable ou le conseil vérifie les formules et règle les hypothèses
+  (prime de taille, décotes) avec leur justification écrite.</li>
+  <li><strong>Traçabilité</strong> : chaque hypothèse a sa source et sa date ; chaque montant, son origine (comptes
+  publics, liasse, saisie) ; chaque réglage modifié est tracé.</li>
+  <li><strong>Confidentialité</strong> : première estimation sans compte ; teaser anonymisé avant tout contact.</li>
+</ul>
+<div class="a-completer">À compléter : conditions d'adoption (formation, confiance, responsabilité du conseil),
+résistances attendues et comment les lever, indicateurs de réussite d'un pilote.</div>
+<h3>5.2 Dans l'équipe projet : travailler avec un assistant de code</h3>
+<ul>
+  <li>Règles écrites pour l'assistant (CLAUDE.md), plan par étapes avec démonstration et accord (PLAN.md).</li>
+  <li>Le code calcule, l'IA rédige ; tests de non-régression et calculs de référence séparés.</li>
+  <li>Audit puis correction par Pull Request relue par un autre membre de l'équipe.</li>
+</ul>
+<div class="a-completer">À compléter par l'équipe : répartition réelle du travail, ce que l'IA a changé dans votre
+manière de travailler, les erreurs que vous avez détectées vous-mêmes (voir AI-USAGE.md).</div>
+
+<h2>6. Vision systémique, risques et ODD 9 (A4, LO6)</h2>
+<h3>6.1 Parties prenantes</h3>
+<table>
+  <tr><th>Partie prenante</th><th>Enjeu</th><th>Ce que fait Passation</th></tr>
+  <tr><td>Dirigeant cédant</td><td>Valeur, confidentialité, temps</td><td>Estimation sans compte, documents prêts, suppression du dossier en un clic</td></tr>
+  <tr><td>Repreneurs</td><td>Information fiable et comparable</td><td>Chiffres validés, hypothèses sourcées, datapack vérifiable</td></tr>
+  <tr><td>Salariés, clients, territoire</td><td>Continuité de l'entreprise</td><td>À compléter : effet attendu d'une transmission mieux préparée (source requise)</td></tr>
+  <tr><td>Experts-comptables, conseils</td><td>Responsabilité, rôle</td><td>Outil de préparation, pas de substitution au conseil (avertissements sur chaque document)</td></tr>
+  <tr><td>Fournisseurs techniques</td><td>Disponibilité, coût</td><td>Cache, nouvelles tentatives, quotas, fonctionnement sans IA pour le calcul</td></tr>
+</table>
+<h3>6.2 Risques et contrôles</h3>
+<table>
+  <tr><th>Risque</th><th>Contrôle en place</th><th>Limite restante</th></tr>
+  <tr><td>Valeur fausse (erreur de méthode ou de saisie)</td><td>Code testé, deux cas de référence, contrôles des comptes, exercices incomplets écartés, réglages bornés</td><td>Conventions à arbitrer (décotes, crédit-bail) : docs/decisions-methode.md</td></tr>
+  <tr><td>Hallucination de l'IA</td><td>L'IA ne calcule pas ; montants et faits à valider ; sources de marché vérifiées ; « À compléter »</td><td>Une relecture humaine reste nécessaire</td></tr>
+  <tr><td>Fuite de données, anonymat</td><td>Codes hachés, droits d'accès testés, contrôle d'anonymat, suppression du dossier</td><td>Suppression du compte non disponible ; pages légales en brouillon</td></tr>
+  <tr><td>Coût de l'API</td><td>Quotas par utilisateur, plafond de dossiers</td><td>Plafond de dépense à régler chez Anthropic</td></tr>
+  <tr><td>Dépendance aux API publiques</td><td>Cache 24 h, nouvelles tentatives, panne signalée</td><td>Indisponibilité possible pendant une démonstration</td></tr>
+  <tr><td>Responsabilité (conseil financier)</td><td>Avertissement « indicatif, non contractuel » sur chaque document</td><td>Cadre juridique à valider par un professionnel</td></tr>
+</table>
+<h3>6.3 Contribution à l'ODD 9</h3>
+<p>La cible 9.3 des Objectifs de développement durable des Nations unies vise à accroître, en particulier dans les pays
+en développement, l'accès des entreprises, notamment des petites entreprises industrielles, aux services financiers et
+leur intégration dans les chaînes de valeur et sur les marchés. Le rattachement de Passation est <strong>indirect</strong>,
+et il faut le présenter comme tel. L'outil donne à une PME française l'accès à une préparation de cession que seules
+celles qui peuvent payer un conseil obtiennent aujourd'hui : première valorisation gratuite, documents au format attendu
+par les repreneurs et les banques. Il contribue ainsi à la continuité d'entreprises, y compris industrielles.</p>
+<div class="a-completer">À compléter : indicateurs mesurables (dossiers préparés, cessions menées à terme, emplois
+maintenus), méthode de mesure, et lien avec la cible 9.3 vérifié dans le texte officiel des Nations unies (citer la
+source et la date de consultation).</div>
+
+<h2 class="saut">7. Produit et données (B1, B2)</h2>
+<ul>
+  <li><strong>Données gratuites</strong> : API Recherche d'entreprises, jeu ratios_inpi_bce (data.economie.gouv.fr),
+  BODACC ; hypothèses BCE, Banque de France, Damodaran, service-public.fr ; multiples par croisement de quatre
+  publications gratuites (src/data/multiples-sources.json).</li>
+  <li><strong>Traitement</strong> : normalisation fondée sur des réponses réelles enregistrées (test/fixtures) ;
+  exercices confidentiels, doublons d'exercice et pannes traités explicitement.</li>
+  <li><strong>Point à valider avec le professeur</strong> : l'API Claude est payante ; le calcul de valeur et le
+  datapack fonctionnent sans elle.</li>
+</ul>
+
+<h2>8. Tests et vérification des calculs (B3)</h2>
+<ul>
+  <li>356 tests automatiques : trois méthodes, passage VE → titres, cas limites (EBE négatif, comptes absents, exercice
+  incomplet, trésorerie nette, CMPC ≤ g, réglages hors bornes), datapack, droits d'accès, pannes d'API, quotas.</li>
+  <li>Deux cas de référence calculés à part en Python. Limite : ils suivent les mêmes conventions que le moteur.</li>
+  <li>Les nouveaux tests ont été vérifiés contre l'ancien code : ils échouaient avant correction.</li>
+</ul>
+<div class="a-completer">À compléter : vérifications faites à la main ou dans Excel par l'équipe (à décrire honnêtement).</div>
+
+<h2>9. Feuille de route et limites</h2>
+<table>
+  <tr><th>Horizon</th><th>Élément</th></tr>
+  <tr><td>Avant la remise</td><td>Arbitrer les conventions de décote et de crédit-bail ; compléter les pages légales ; relire les sources</td></tr>
+  <tr><td>Ensuite</td><td>Suppression du compte, export Word du mémorandum, en-têtes de sécurité, bibliothèque de ressources et chat (non développés)</td></tr>
+</table>
+<div class="a-completer">À compléter : jalons, ressources, indicateurs du pilote.</div>
+
+<h2>10. Annexes</h2>
+<ul>
+  <li>README.md (installation, architecture), docs/DEMO.md (scénario), docs/decisions-methode.md, AI-USAGE.md.</li>
+  <li class="a-completer">À compléter : sources citées (liste numérotée, avec dates de consultation).</li>
+</ul>
+</body>
+</html>

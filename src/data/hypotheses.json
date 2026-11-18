@@ -73,6 +73,26 @@
       { "cle": "taille", "libelle": "Taille et liquidité des titres", "min": -0.3, "max": 0 }
     ]
   },
+  "bornes_saisie": {
+    "note": "Garde-fous de saisie, pas des hypothèses : une valeur hors de ces bornes est refusée avec un message (jamais corrigée en silence). Elles écartent les erreurs manifestes d'unité ou de signe (5 au lieu de 0,05, décote de −150 %). Les décotes et primes suivent les bornes de decotes_primes.facteurs. À valider par l'équipe (18/11/2026).",
+    "pourcentages": {
+      "reglages.taux_sans_risque": [-0.01, 0.10],
+      "reglages.prime_risque_marche": [0, 0.15],
+      "reglages.cout_dette_avant_impot": [0, 0.20],
+      "reglages.croissance_terminale": [-0.02, 0.05],
+      "reglages.prime_taille": [0, 0.20],
+      "reglages.poids_multiples": [0, 1],
+      "perspectives.croissance": [-0.5, 1],
+      "perspectives.marge_ebe": [-1, 1],
+      "perspectives.investissements_pct": [0, 1]
+    },
+    "montants_positifs": [
+      "dirigeant.remuneration_dirigeant_reelle", "dirigeant.remuneration_normative", "retraitements.loyer_paye", "retraitements.loyer_marche",
+      "bilan.comptes_courants_remboursables", "bilan.credit_bail_restant", "bilan.dividendes_a_verser", "bilan.frais_etablissement",
+      "bilan.creances_douteuses", "bilan.actifs_hors_exploitation"
+    ],
+    "montants": ["bilan.plus_values_latentes"]
+  },
   "ponderation": {
     "multiples": 1,
     "dcf": 0,

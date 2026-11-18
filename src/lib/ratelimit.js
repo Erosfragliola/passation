@@ -1,34 +1,49 @@
-// Limite de débit par empreinte d'IP et par heure (table rate_limits). L'IP n'est jamais stockée en clair.
+// Limites de débit et quotas (table rate_limits). La clé (IP, e-mail, utilisateur) n'est jamais stockée en clair :
+// seule une empreinte salée (secret serveur) l'est. Le compteur est incrémenté avant l'action, de façon atomique.
+import { empreinte } from "./auth.js";
 
-async function empreinte(texte) {
-  const octets = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(texte));
-  return [...new Uint8Array(octets)].slice(0, 16).map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-/** Limite par adresse IP (empreinte). Retourne { autorise, restant }. */
+/** Limite par adresse IP (empreinte), par heure. Retourne { autorise, restant }. */
 export async function verifierDebit(db, request, env, nom, maxParHeure) {
   return verifierDebitCle(db, env, nom, request.headers.get("cf-connecting-ip") || "local", maxParHeure);
 }
 
-/** Limite par clé quelconque (IP, e-mail…), jamais stockée en clair. Incrémente la fenêtre horaire courante. */
-export async function verifierDebitCle(db, env, nom, cle, maxParHeure) {
-  const heure = Math.floor(Date.now() / 3_600_000);
+const JOUR = 86_400;
+
+/**
+ * Limite par clé quelconque. Fenêtre horaire par défaut ; { parJour: true } pour un quota quotidien.
+ * { siIndisponible: "refuser" } : si la base ne répond pas, l'action est refusée (quotas de coût) au lieu d'être
+ * autorisée (limites anti-abus des routes publiques, qui ont d'autres garde-fous).
+ */
+export async function verifierDebitCle(db, env, nom, cle, max, { parJour = false, siIndisponible = "autoriser" } = {}) {
+  const duree = parJour ? JOUR : 3600;
+  const fenetre = Math.floor(Date.now() / 1000 / duree);
   const sel = env.SESSION_SECRET || "sel-de-developpement-local";
-  const bucket = `${nom}:${await empreinte(sel + cle)}:${heure}`;
+  const prefixe = parJour ? "jour-" : "";
+  const bucket = `${prefixe}${nom}:${(await empreinte(sel + cle)).slice(0, 32)}:${fenetre}`;
   let ligne;
   try {
     ligne = await db.prepare(
-    "INSERT INTO rate_limits (bucket, count, window_start) VALUES (?, 1, ?) " +
-    "ON CONFLICT(bucket) DO UPDATE SET count = count + 1 RETURNING count",
-  ).bind(bucket, heure * 3600).first();
+      "INSERT INTO rate_limits (bucket, count, window_start) VALUES (?, 1, ?) " +
+      "ON CONFLICT(bucket) DO UPDATE SET count = count + 1 RETURNING count",
+    ).bind(bucket, fenetre * duree).first();
   } catch (e) {
-    // Base indisponible : on laisse passer (le cache et la limite côté sources restent des garde-fous).
     console.warn("limite de débit indisponible", e.message);
-    return { autorise: true, restant: null };
+    return { autorise: siIndisponible !== "refuser", restant: null };
   }
-  // Ménage occasionnel des fenêtres expirées
+  // Ménage occasionnel des fenêtres expirées (horaires : après 2 h ; quotidiennes : après 2 jours)
   if (Math.random() < 0.05) {
-    await db.prepare("DELETE FROM rate_limits WHERE window_start < ?").bind((heure - 2) * 3600).run().catch(() => {});
+    const t = Math.floor(Date.now() / 1000);
+    await db.prepare("DELETE FROM rate_limits WHERE (bucket NOT LIKE 'jour-%' AND window_start < ?) OR (bucket LIKE 'jour-%' AND window_start < ?)")
+      .bind(t - 2 * 3600, t - 2 * JOUR).run().catch(() => {});
   }
-  return { autorise: ligne.count <= maxParHeure, restant: Math.max(0, maxParHeure - ligne.count) };
+  return { autorise: ligne.count <= max, restant: Math.max(0, max - ligne.count) };
+}
+
+/**
+ * Quota quotidien des traitements par Claude (lecture de liasse ou de site, rédactions, étude de marché), par
+ * utilisateur, tous dossiers confondus. Refusé si la base ne répond pas. Retourne null si autorisé, sinon { message }.
+ */
+export async function quotaClaude(env, userId, max) {
+  const q = await verifierDebitCle(env.DB, env, "claude", userId, max, { parJour: true, siIndisponible: "refuser" });
+  return q.autorise ? null : { message: `Vous avez atteint la limite de ${max} traitements automatiques par jour. Réessayez demain.` };
 }

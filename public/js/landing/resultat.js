@@ -61,32 +61,19 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     // Toutes les entrées « Espace dirigeant » (barre, menu mobile) mènent aussi à ce dossier : sinon, après le code,
     // le dirigeant revenait sur l'accueil sans dossier (constaté le 17/11/2026)
     document.querySelectorAll("a[data-connexion]").forEach((a) => { a.href = `/connexion?siren=${d.siren}`; a.dataset.siren = d.siren; });
-    const corps = remplir(R.inviter_corps, { adresse: location.origin });
-    $('a[data-suite="inviter"]').href = `mailto:?subject=${encodeURIComponent(R.inviter_sujet || "")}&body=${encodeURIComponent(corps)}`;
     afficherEstimation(d.estimation);
 
     const dep = departement(d.code_postal);
-    // À droite : ce que Passation a lu (données réelles de l'entreprise), puis ce que le dossier apportera
-    const est = d.estimation || {}, t2 = d.teaser || {};
-    const lignes = [
-      [textes.analyse?.[0], [t2.secteur, d.ville ? `${d.ville}${dep ? ` (${dep})` : ""}` : null].filter(Boolean).join(" · ")],
-      [textes.analyse?.[1], est.exercice ? `exercice ${est.exercice}` : "non publiés"],
-      [textes.analyse?.[2], est.statut === "ok" && est.multiples ? `${multiple(est.multiples.bas)} à ${multiple(est.multiples.haut)} l'EBE` : "avec vos chiffres"],
-      [textes.analyse?.[3], code || "attribué"],
-    ];
+    // À droite, une seule suite : la tuile du dossier, qui donne envie de l'ouvrir (connexion par code, puis le parcours)
     const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
-    const tuile = el("div", "resultat-tuile"), liste = el("ul", "resultat-lu");
-    tuile.append(el("p", "resultat-tuile-titre", R.analyse_titre || ""), liste);
-    lignes.forEach(([lib, val], k) => {
-      const li = el("li"), b = el("b", null, val || "");
-      if (k === 2 && est.statut === "ok") { b.className = "floute"; b.setAttribute("aria-hidden", "true"); li.setAttribute("aria-label", `${lib} : multiples réservés à votre dossier`); }
-      li.append(el("i"), el("span", null, lib || ""), b); liste.append(li);
-    });
-    const obtenir = el("div", "resultat-tuile claire");
-    const pil = el("div", "resultat-pilules");
-    for (const x of R.obtenir || []) pil.append(el("span", null, x));
-    obtenir.append(el("p", "resultat-tuile-titre", R.obtenir_titre || ""), pil);
-    zoneDossier.replaceChildren(tuile, obtenir);
+    const lien = el("a", "dossier-cta");
+    lien.href = `/connexion?siren=${d.siren}`; lien.dataset.connexion = ""; lien.dataset.siren = d.siren;
+    const liste = el("ul", "dossier-cta-liste");
+    for (const x of R.dossier_liste || []) liste.append(el("li", null, x));
+    const bouton = el("span", "dossier-cta-bouton", R.dossier_bouton || "");
+    bouton.append(el("span", "fleche", " →"));
+    lien.append(el("span", "dossier-cta-eti", R.dossier_titre || ""), el("strong", "dossier-cta-code", code || ""), liste, bouton, el("span", "dossier-cta-note", R.dossier_note || ""));
+    zoneDossier.replaceChildren(lien);
   }
 
   function afficherEstimation(est, { saisie = false } = {}) {

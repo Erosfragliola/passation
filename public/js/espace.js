@@ -64,7 +64,7 @@ function afficher({ checklist = true } = {}) {
   const chiffresOk = (parcours?.exercices_complets || 0) > 0;
   const version = (d) => (d?.version > 1 ? ` · version ${d.version}` : "");
   const docsEtat = [
-    ["valorisation", `/espace/valorisation/?dossier=${id}#valorisation`, parcours?.valorisation?.central != null, "Prête : trois méthodes, hypothèses et sources", "Après vos chiffres et quelques questions"],
+    ["valorisation", `/espace/valorisation/?dossier=${id}#valorisation`, parcours?.valorisation?.central != null, parcours?.valorisation?.ponderation?.dcf > 0 ? "Prête : multiples, DCF et actif net, avec leurs sources" : "Prête : multiples et actif net ; DCF après réglage de la prime de taille", "Après vos chiffres et quelques questions"],
     ["datapack", `/api/dossiers/${id}/documents/datapack`, chiffresOk, `Prêt : Excel, 9 onglets${version(docs.datapack)}`, "Dès qu'un exercice est confirmé"],
     ["teaser", `/espace/documents/teaser/?dossier=${id}`, Boolean(docs.teaser), `Prêt${version(docs.teaser)}`, "Rédigé avec votre dossier"],
     ["memo", `/espace/documents/memo/?dossier=${id}`, Boolean(docs.memo), `Prêt${version(docs.memo)}`, "Rédigé avec votre dossier"],

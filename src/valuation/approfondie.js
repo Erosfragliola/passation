@@ -7,12 +7,19 @@ const n = (x) => (Number.isFinite(Number(x)) ? Number(x) : 0);
 const moyenne = (l) => (l.length ? l.reduce((a, b) => a + b, 0) / l.length : null);
 
 // ---------------------------------------------------------------- EBE et retraitements
-/** EBE = CA + autres produits d'exploitation − achats consommés − charges externes − impôts et taxes − personnel. */
-const DETAIL_EBE = ["achats_consommes", "charges_externes", "impots_taxes", "charges_personnel"];
+/**
+ * EBE = CA + autres produits d'exploitation − achats consommés − charges externes − impôts et taxes − personnel.
+ * Calculé seulement si le CA et les trois charges obligatoires sont renseignés (un 0 saisi est un vrai zéro) ;
+ * « autres produits » et « impôts et taxes » sont des postes facultatifs de la saisie : absents, ils valent 0.
+ * Sinon, l'EBE publié (comptes INPI) est pris tel quel ; à défaut, l'EBE n'est pas déterminable (null).
+ */
+const CHARGES_OBLIGATOIRES = ["achats_consommes", "charges_externes", "charges_personnel"];
+const renseigne = (x) => x !== null && x !== undefined && x !== "" && Number.isFinite(Number(x));
 export function ebe(ex) {
-  // Comptes publics (INPI) sans le détail des charges : EBE publié pris tel quel
-  if (!DETAIL_EBE.some((k) => Number.isFinite(Number(ex[k])) && ex[k] !== null && ex[k] !== "") && Number.isFinite(ex.ebe)) return ex.ebe;
-  return n(ex.chiffre_affaires) + n(ex.autres_produits) - n(ex.achats_consommes) - n(ex.charges_externes) - n(ex.impots_taxes) - n(ex.charges_personnel);
+  if (renseigne(ex.chiffre_affaires) && CHARGES_OBLIGATOIRES.every((k) => renseigne(ex[k]))) {
+    return n(ex.chiffre_affaires) + n(ex.autres_produits) - n(ex.achats_consommes) - n(ex.charges_externes) - n(ex.impots_taxes) - n(ex.charges_personnel);
+  }
+  return renseigne(ex.ebe) ? Number(ex.ebe) : null;
 }
 
 /**
@@ -160,11 +167,17 @@ function croissanceHistorique(exs) {
  * @param H hypothèses (hypotheses.json, éventuellement modifiées par le dirigeant)
  */
 export function valorisationApprofondie(e, H, table = MULTIPLES) {
+  if (e.erreurs?.length) return { statut: "hypotheses_invalides", annees: [], erreurs: e.erreurs, alertes: e.erreurs.map((x) => x.message) };
   const alertes = [];
-  const exs = [...(e.exercices || [])].sort((a, b) => a.annee - b.annee).slice(-3);
+  for (const x of e.exercices_exclus || []) {
+    alertes.push(`Exercice ${x.annee} écarté du calcul : ${x.manquants.length} ligne${x.manquants.length > 1 ? "s" : ""} obligatoire${x.manquants.length > 1 ? "s" : ""} à compléter ou à valider.`);
+  }
+  const tous = [...(e.exercices || [])].sort((a, b) => a.annee - b.annee);
+  for (const x of tous) if (ebe(x) === null) alertes.push(`Exercice ${x.annee} écarté du calcul : EBE non déterminable (charges ou EBE publié manquants).`);
+  const exs = tous.filter((x) => ebe(x) !== null).slice(-3);
   const annees = exs.map((x) => x.annee);
   if (annees.some((a, i) => i > 0 && a - annees[i - 1] !== 1)) alertes.push("Exercices non consécutifs : les moyennes portent sur les exercices disponibles.");
-  if (!exs.length) return { statut: "chiffres_absents", annees, alertes: ["Aucun exercice validé."] };
+  if (!exs.length) return { statut: "chiffres_absents", annees, alertes: [...alertes, "Aucun exercice complet et validé."] };
   const dernier = exs.at(-1);
 
   const pont = pontEbe(exs, e.retraitements || {});

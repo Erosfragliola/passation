@@ -6,8 +6,12 @@ export const MODELS = {
   fast: "claude-haiku-5-5", // commentaire express, extraction de chiffres
 };
 
-/** Limites d'usage du chat, par utilisateur et par jour. */
-export const CHAT_LIMITS = { messagesParJour: 30, tokensParJour: 150_000 };
+/**
+ * Traitements par Claude (lecture de liasse ou de site, teaser, sections du mémorandum, étude de marché) : quota
+ * quotidien par utilisateur, tous dossiers confondus (un parcours complet en compte environ 13), et nombre de
+ * dossiers par utilisateur (chaque dossier a ses propres plafonds de lecture). Le chat n'est pas encore développé.
+ */
+export const CLAUDE_QUOTAS = { traitementsParJourParUtilisateur: 60, dossiersParUtilisateur: 10 };
 
 /** Limites de débit des routes publiques (requêtes non servies par le cache, par heure et par IP). */
 export const EXPRESS_RATE_LIMIT = { requetesParHeureParIP: 10 };
@@ -21,7 +25,6 @@ export const CODE_ESSAIS_MAX = 5;
 export const DURATIONS = {
   codeConnexion: 10 * 60,
   session: 30 * 24 * 3600,
-  signedUrl: 10 * 60,
   apiCache: 24 * 3600,
 };
 

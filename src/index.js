@@ -12,42 +12,61 @@ import { routeLanding } from "./routes/landing.js";
  * Point d'entrée du Worker.
  * Seules les URL /api/* et la page d'accueil arrivent ici (run_worker_first) ; le reste est servi depuis public/.
  */
+const LOCAL = new Set(["localhost", "127.0.0.1", "[::1]"]);
+
 export default {
   async fetch(request, env) {
-    const url = new URL(request.url);
-    const p = url.pathname;
-    const m = request.method;
-
-    if (p === "/" && (m === "GET" || m === "HEAD")) return routeLanding(request, env);
-    if (p === "/api/health") return json({ ok: true, app: env.APP_NAME ?? "Passation" });
-
-    // Toute requête qui modifie des données doit venir du site lui-même (protection CSRF).
-    if (p.startsWith("/api/") && !origineAutorisee(request)) {
-      return json({ erreur: "origine_refusee", message: "Requête refusée." }, 403);
+    try {
+      return await router(request, env);
+    } catch (e) {
+      // Aucune information interne dans la réponse ; le détail reste dans les journaux du Worker.
+      console.error("erreur non gérée :", e?.stack || e);
+      return json({ erreur: "erreur_interne", message: "Une erreur est survenue. Réessayez dans un instant." }, 500);
     }
-
-    if (m === "GET") {
-      const r = p.match(/^\/api\/maquette\/([^/]+)$/);
-      if (r) return routeMaquette(request, env, decodeURIComponent(r[1]));
-      if (p === "/api/company/search") return routeRecherche(request, env);
-      if (p === "/api/me") return routeMoi(request, env);
-    }
-    if (m === "POST") {
-      if (p === "/api/estimation") return routeEstimation(request, env);
-      if (p === "/api/auth/request") return routeDemandeCode(request, env);
-      if (p === "/api/auth/code") return routeVerificationCode(request, env);
-      if (p === "/api/auth/logout") return routeDeconnexion(request, env);
-    }
-    if (p === "/api/dossiers" || p.startsWith("/api/dossiers/")) {
-      const segments = p.slice("/api/dossiers".length).split("/").filter(Boolean).map(decodeURIComponent);
-      return routeDossiers(request, env, segments);
-    }
-
-    if (p.startsWith("/api/")) return json({ erreur: "route_inconnue" }, 404);
-    return env.ASSETS.fetch(request);
   },
   /** Tâche planifiée quotidienne : rappel unique des dossiers interrompus depuis 3 jours. */
   async scheduled(event, env, ctx) {
     ctx.waitUntil(relancer(env).then((n) => console.log(`Rappels envoyés : ${n}`)));
   },
 };
+
+async function router(request, env) {
+  const url = new URL(request.url);
+  const p = url.pathname;
+  const m = request.method;
+
+  if (p === "/" && (m === "GET" || m === "HEAD")) return routeLanding(request, env);
+  if (p === "/api/health") return json({ ok: true, app: env.APP_NAME ?? "Passation" });
+
+  // Sans secret serveur, codes de connexion et empreintes d'IP seraient hachés sans sel secret : hors développement
+  // local, l'API refuse de fonctionner plutôt que de dégrader la sécurité en silence.
+  if (p.startsWith("/api/") && !env.SESSION_SECRET && !LOCAL.has(url.hostname)) {
+    console.error("SESSION_SECRET absent : API désactivée (npx wrangler secret put SESSION_SECRET)");
+    return json({ erreur: "configuration_incomplete", message: "Le service est momentanément indisponible." }, 503);
+  }
+
+  // Toute requête qui modifie des données doit venir du site lui-même (protection CSRF).
+  if (p.startsWith("/api/") && !origineAutorisee(request)) {
+    return json({ erreur: "origine_refusee", message: "Requête refusée." }, 403);
+  }
+
+  if (m === "GET") {
+    const r = p.match(/^\/api\/maquette\/([^/]+)$/);
+    if (r) return routeMaquette(request, env, decodeURIComponent(r[1]));
+    if (p === "/api/company/search") return routeRecherche(request, env);
+    if (p === "/api/me") return routeMoi(request, env);
+  }
+  if (m === "POST") {
+    if (p === "/api/estimation") return routeEstimation(request, env);
+    if (p === "/api/auth/request") return routeDemandeCode(request, env);
+    if (p === "/api/auth/code") return routeVerificationCode(request, env);
+    if (p === "/api/auth/logout") return routeDeconnexion(request, env);
+  }
+  if (p === "/api/dossiers" || p.startsWith("/api/dossiers/")) {
+    const segments = p.slice("/api/dossiers".length).split("/").filter(Boolean).map(decodeURIComponent);
+    return routeDossiers(request, env, segments);
+  }
+
+  if (p.startsWith("/api/")) return json({ erreur: "route_inconnue" }, 404);
+  return env.ASSETS.fetch(request);
+}

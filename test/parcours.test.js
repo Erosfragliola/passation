@@ -18,7 +18,7 @@ import { d1Memoire, r2Memoire } from "./aide/environnement.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
-import { assembler } from "../src/maquette/donnees.js";
+import { assembler, CLE_MAQUETTE } from "../src/maquette/donnees.js";
 
 const BASE = "http://127.0.0.1:8787";
 const SIREN = "319252813"; // industrie (section C)
@@ -51,7 +51,7 @@ beforeEach(async () => {
   const f = JSON.parse(readFileSync(new URL(`./fixtures/${SIREN}.json`, import.meta.url)));
   const e = normaliserEntreprise(f.entreprise, SIREN);
   const d = assembler(e, normaliserExercices(f.inpi), normaliserAnnonces(f.bodacc, SIREN, e.date_creation));
-  await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(`maquette:v1:${SIREN}`, JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
+  await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(CLE_MAQUETTE(SIREN), JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
 });
 
 describe("droits d'accès du parcours", () => {
@@ -129,6 +129,17 @@ describe("questionnaire et calcul", () => {
     await appel(`/api/dossiers/${id}/answers/clients`, { methode: "PUT", cookie, corps: { data: { part_premier_client: 0.2 } } });
     const r = await (await appel(`/api/dossiers/${id}/answers`, { cookie })).json();
     expect(r.reponses.clients.part_premier_client).toBe(0.2);
+  });
+
+  it("réglages hors bornes refusés à l'enregistrement (400, message explicite), rien n'est enregistré (FIN-04)", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    const r = await appel(`/api/dossiers/${id}/answers/reglages`, { methode: "PUT", cookie, corps: { data: { decotes: [{ cle: "taille", pct: -1.5 }], poids_multiples: 3 } } });
+    expect(r.status).toBe(400);
+    const d = await r.json();
+    expect(d.erreur).toBe("hypothese_invalide");
+    expect(d.erreurs.map((x) => x.champ).sort()).toEqual(["reglages.decotes.taille", "reglages.poids_multiples"]);
+    expect((await (await appel(`/api/dossiers/${id}/answers`, { cookie })).json()).reponses.reglages).toBeUndefined();
+    expect((await appel(`/api/dossiers/${id}/answers/reglages`, { methode: "PUT", cookie, corps: { data: { poids_multiples: 0.5 } } })).status).toBe(200);
   });
 
   it("calcul complet par l'API : multiples identiques à la référence (2 001 585,45), DCF calculé, avancement à jour", async () => {
@@ -434,5 +445,56 @@ describe("pièces du dossier (dépôt)", () => {
     await appel(`/api/dossiers/${id}`, { methode: "DELETE", cookie });
     expect(env.FILES.objets.size).toBe(0);
     expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM pieces").get().n).toBe(0);
+  });
+});
+
+describe("quotas des traitements par Claude (SEC-01)", () => {
+  const preparer = async (cookie, id) => {
+    await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
+    await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+  };
+  it("quota quotidien par utilisateur : au-delà, 429 sans appel à Claude ; un autre utilisateur n'est pas touché", async () => {
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    redigerSectionMemo.mockResolvedValue({ contenu: "Texte.", a_completer: [] });
+    const { CLAUDE_QUOTAS } = await import("../src/config.js");
+    const max = CLAUDE_QUOTAS.traitementsParJourParUtilisateur;
+    const a = await seConnecter("a@exemple.fr");
+    await preparer(a.cookie, a.id);
+    for (let i = 0; i < max; i++) expect((await appel(`/api/dossiers/${a.id}/documents/memo/sections/histoire`, { methode: "POST", cookie: a.cookie })).status).toBe(200);
+    const refus = await appel(`/api/dossiers/${a.id}/documents/memo/sections/histoire`, { methode: "POST", cookie: a.cookie });
+    expect(refus.status).toBe(429);
+    expect((await refus.json()).erreur).toBe("quota_atteint");
+    expect(redigerSectionMemo).toHaveBeenCalledTimes(max);
+    // le quota suit l'utilisateur, pas le dossier : le teaser du même compte est refusé aussi
+    expect((await appel(`/api/dossiers/${a.id}/documents/teaser`, { methode: "POST", cookie: a.cookie })).status).toBe(429);
+    const b = await seConnecter("b@exemple.fr");
+    await preparer(b.cookie, b.id);
+    expect((await appel(`/api/dossiers/${b.id}/documents/memo/sections/histoire`, { methode: "POST", cookie: b.cookie })).status).toBe(200);
+  });
+  it("une requête invalide (questionnaire incomplet) ne consomme pas le quota", async () => {
+    env.ANTHROPIC_API_KEY = "cle-de-test";
+    const a = await seConnecter("a@exemple.fr");
+    for (let i = 0; i < 3; i++) expect((await appel(`/api/dossiers/${a.id}/documents/memo/sections/histoire`, { methode: "POST", cookie: a.cookie })).status).toBe(409);
+    expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE bucket LIKE 'jour-claude:%'").get().n).toBe(0);
+  });
+  it("base indisponible pour le compteur : traitement refusé (le coût n'est jamais laissé sans limite)", async () => {
+    const { quotaClaude } = await import("../src/lib/ratelimit.js");
+    const panne = { DB: { prepare: () => ({ bind: () => ({ first: async () => { throw new Error("D1"); } }) }) } };
+    vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(await quotaClaude(panne, "u1", 60)).toMatchObject({ message: expect.stringMatching(/limite/) });
+    vi.restoreAllMocks();
+  });
+  it("nombre de dossiers par compte plafonné (chaque dossier ouvre ses propres lectures de liasse)", async () => {
+    const { CLAUDE_QUOTAS } = await import("../src/config.js");
+    const a = await seConnecter("a@exemple.fr"); // 1 dossier
+    const u = env.DB.sqlite.prepare("SELECT user_id FROM dossiers WHERE id = ?").get(a.id).user_id;
+    for (let i = 1; i < CLAUDE_QUOTAS.dossiersParUtilisateur; i++) {
+      env.DB.sqlite.prepare("INSERT INTO dossiers (id, user_id, siren, company_json, status, created_at, updated_at) VALUES (?, ?, ?, '{}', 'en_cours', 0, 0)").run(crypto.randomUUID(), u, String(100000000 + i));
+    }
+    const r = await appel("/api/dossiers", { methode: "POST", cookie: a.cookie, corps: { siren: "552100554" } });
+    expect(r.status).toBe(429);
+    expect((await r.json()).erreur).toBe("limite_dossiers");
+    // le dossier déjà ouvert pour ce SIREN reste accessible
+    expect((await appel("/api/dossiers", { methode: "POST", cookie: a.cookie, corps: { siren: SIREN } })).status).toBe(201);
   });
 });

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passation · Présentation (brouillon)</title>
+<style>
+  @page { size: 338.67mm 190.5mm; margin: 0; }
+  :root { --encre: #231E18; --vert: #1E3A2E; --creme: #FBF6EC; --cuivre: #A8653A; --gris: #696155; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--encre); background: #ccc; }
+  .d { width: 338.67mm; height: 190.5mm; padding: 16mm 20mm; background: var(--creme); position: relative; break-after: page; overflow: hidden; margin: 0 auto 6mm; }
+  .d.sombre { background: var(--vert); color: var(--creme); }
+  h1 { font-size: 40pt; margin: 0 0 6mm; }
+  h2 { font-size: 26pt; margin: 0 0 8mm; color: var(--vert); }
+  .sombre h2 { color: var(--creme); }
+  p, li { font-size: 16pt; line-height: 1.4; }
+  li { margin-bottom: 3mm; }
+  .temps { position: absolute; top: 8mm; right: 12mm; font-size: 10pt; color: var(--gris); }
+  .sombre .temps { color: #c9d6cf; }
+  .notes { position: absolute; bottom: 8mm; left: 20mm; right: 20mm; font-size: 10pt; color: var(--gris); border-top: 1px solid #d6cbb6; padding-top: 2mm; }
+  .sombre .notes { color: #c9d6cf; border-color: #4a6658; }
+  .ac { background: #fdeaea; color: #8a1010; padding: 1mm 2mm; border-radius: 1mm; }
+  .colonnes { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; }
+  table { border-collapse: collapse; font-size: 13pt; width: 100%; }
+  td, th { border-bottom: 1px solid #d6cbb6; padding: 2mm 3mm; text-align: left; }
+  th { color: var(--vert); }
+  .chiffre { font-size: 30pt; font-weight: 700; color: var(--cuivre); }
+  @media print { body { background: none; } .d { margin: 0; } }
+</style>
+</head>
+<body>
+
+<section class="d sombre">
+  <span class="temps">0:00 · 20 s</span>
+  <h1>Passation</h1>
+  <p>Préparer la cession de sa PME : de la première estimation au dossier remis aux repreneurs.</p>
+  <p>Équipe : <span class="ac">À compléter</span> · EDHEC · Programming and AI for Corporate Finance · 2 décembre 2026</p>
+  <p class="notes">Brouillon préparé avec Claude Code, à réécrire par l'équipe. Aucune donnée de marché ni aucun témoignage inventés.</p>
+</section>
+
+<section class="d">
+  <span class="temps">0:20 · 50 s</span>
+  <h2>Le problème</h2>
+  <ul>
+    <li>Le dirigeant ne sait pas ce que vaut son entreprise sans payer un conseil, ni sans révéler son projet.</li>
+    <li>Le dossier attendu par un repreneur (comptes retraités, valorisation, teaser, mémorandum) est long à produire.</li>
+    <li>Les données de base sont publiques, mais dispersées.</li>
+  </ul>
+  <p><span class="ac">À compléter : un chiffre de marché sourcé et daté, et un enseignement réel des entretiens</span></p>
+  <p class="notes">Ne citer que des chiffres dont la source est sur la diapositive.</p>
+</section>
+
+<section class="d">
+  <span class="temps">1:10 · 50 s</span>
+  <h2>La solution : le code calcule, l'IA rédige, le dirigeant valide</h2>
+  <div class="colonnes">
+    <ul>
+      <li>SIREN → données publiques → première fourchette</li>
+      <li>Liasse lue par Claude → montants <strong>proposés</strong></li>
+      <li>Multiples, DCF, ANCC : <strong>code testé</strong></li>
+    </ul>
+    <ul>
+      <li>Datapack Excel, 9 onglets, formules vivantes</li>
+      <li>Teaser anonymisé, contrôle automatique</li>
+      <li>Mémorandum : faits validés, sources consultées</li>
+    </ul>
+  </div>
+</section>
+
+<section class="d sombre">
+  <span class="temps">2:00 · 3 min</span>
+  <h2>Démonstration</h2>
+  <ol>
+    <li>Estimation express à partir d'un SIREN (données publiques gratuites)</li>
+    <li>Connexion par code, dépôt de la liasse fictive « Atelier Exemple »</li>
+    <li>Validation des exercices ; DCF « à compléter » sans prime de taille, puis calculé à 3 %</li>
+    <li>Datapack : modifier une cellule jaune, tout se recalcule</li>
+  </ol>
+  <p class="notes">Scénario et résultats attendus : docs/DEMO.md (synthèse 1 941 818 € pour l'industrie, multiples seuls par défaut ; 2 293 064 € avec le DCF en option à 40 %). Dossier de secours et captures prêts.</p>
+</section>
+
+<section class="d">
+  <span class="temps">5:00 · 40 s</span>
+  <h2>Des calculs vérifiables</h2>
+  <div class="colonnes">
+    <div><p class="chiffre">356</p><p>tests automatiques, relancés à chaque envoi (GitHub Actions)</p></div>
+    <div><p class="chiffre">2</p><p>cas de référence calculés à part, en Python, avec écart inférieur à 0,05 €</p></div>
+  </div>
+  <ul>
+    <li>Exercice incomplet écarté (jamais de charge comptée à zéro) ; réglage aberrant refusé</li>
+    <li>Limite assumée : les cas de référence suivent les mêmes conventions ; deux conventions restent à arbitrer</li>
+  </ul>
+</section>
+
+<section class="d">
+  <span class="temps">5:40 · 30 s</span>
+  <h2>Données et modèle économique</h2>
+  <table>
+    <tr><th>Données gratuites</th><td>Annuaire des entreprises, ratios INPI/BCE, BODACC, BCE, Banque de France, Damodaran</td></tr>
+    <tr><th>Coûts</th><td>Cloudflare et Brevo en offre gratuite ; API Claude payante à l'usage, bornée par des quotas</td></tr>
+    <tr><th>Revenus</th><td><span class="ac">À décider par l'équipe</span></td></tr>
+  </table>
+</section>
+
+<section class="d">
+  <span class="temps">6:10 · 40 s</span>
+  <h2>Transformation organisationnelle (LO5)</h2>
+  <ul>
+    <li>Un dossier vivant : une correction se répercute dans la valorisation, Excel, le teaser et le mémorandum</li>
+    <li>Nouvelle répartition des rôles : Passation prépare, le dirigeant valide, le conseil vérifie et justifie</li>
+    <li>Dans l'équipe : règles écrites pour l'assistant, Pull Requests relues, erreurs d'IA documentées</li>
+  </ul>
+  <p><span class="ac">À compléter : ce que l'équipe a réellement changé dans sa façon de travailler</span></p>
+</section>
+
+<section class="d">
+  <span class="temps">6:50 · 40 s</span>
+  <h2>Vision systémique, risques, ODD 9 (LO6)</h2>
+  <div class="colonnes">
+    <ul>
+      <li>Valeur fausse → code testé, contrôles, bornes</li>
+      <li>Hallucination → l'IA ne calcule pas, tout est validé</li>
+      <li>Données → codes hachés, droits testés, anonymat contrôlé</li>
+      <li>Coût → quotas par utilisateur</li>
+    </ul>
+    <ul>
+      <li>ODD 9, cible 9.3 : accès des petites entreprises aux services financiers (rattachement indirect, à présenter comme tel)</li>
+      <li><span class="ac">À compléter : indicateur d'impact mesurable</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="d">
+  <span class="temps">7:30 · 20 s</span>
+  <h2>Usage de l'IA</h2>
+  <ul>
+    <li>Claude Code pour le code, les tests et la documentation (77 commits sur 78 co-écrits)</li>
+    <li>Erreur détectée : un exercice avec le seul CA donnait 5,6 M€ de valeur ; corrigée et testée</li>
+    <li>Gardé sous contrôle humain : méthode, sources, prime de taille, contenus juridiques</li>
+  </ul>
+  <p class="notes">Détail : AI-USAGE.md. Ajouter une erreur détectée par un membre de l'équipe.</p>
+</section>
+
+<section class="d sombre">
+  <span class="temps">7:50 · 10 s</span>
+  <h2>Merci</h2>
+  <p>Questions ?</p>
+  <p>https://passation.eros-fragliola-freedom.workers.dev · github.com/Erosfragliola/passation</p>
+</section>
+</body>
+</html>

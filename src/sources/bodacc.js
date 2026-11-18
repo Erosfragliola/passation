@@ -9,10 +9,10 @@ import { requeteJson } from "../lib/requete.js";
 export const URL_BODACC = "https://bodacc-datadila.opendatasoft.com/api/explore/v2.1/catalog/datasets/annonces-commerciales/records";
 const CHAMPS = "dateparution,familleavis_lib,commercant,ville,modificationsgenerales,acte,listepersonnes,listeetablissements";
 
-export async function annoncesBrutes(siren, { fetch: f = fetch } = {}) {
+export async function annoncesBrutes(siren, { fetch: f = fetch, ...options } = {}) {
   const where = encodeURIComponent(`registre like "${siren}"`);
   const url = `${URL_BODACC}?select=${CHAMPS}&where=${where}&order_by=dateparution%20asc&limit=100`;
-  return requeteJson(url, "BODACC", { fetch: f });
+  return requeteJson(url, "BODACC", { ...options, fetch: f });
 }
 
 const json = (s) => { try { return typeof s === "string" ? JSON.parse(s) : s || {}; } catch { return {}; } };

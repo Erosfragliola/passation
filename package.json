@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Boîte à outils du dirigeant de PME qui prépare la cession de son entreprise",
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
     "dev": "wrangler dev",
     "test": "vitest run",

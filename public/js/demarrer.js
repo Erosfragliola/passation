@@ -513,7 +513,9 @@ function lancerEtudeMarche() {
   if (S.marche) return S.marche;
   const cle = `passation-marche-${id}`;
   try { const t = Number(localStorage.getItem(cle)); if (t && Date.now() - t < 10 * 60 * 1000) return null; localStorage.setItem(cle, String(Date.now())); } catch { /* stockage indisponible */ }
-  S.marche = api(`${base}/documents/memo`).then((m) => (m.marche?.date ? m : api(`${base}/documents/memo/marche`, { method: "POST" }))).catch(() => null);
+  // En cas d'échec, l'erreur est gardée : la rédaction ne relance pas une deuxième recherche (deux minutes de plus et
+  // un essai consommé), sauf si l'étude était déjà en cours (409), auquel cas elle attend son résultat
+  S.marche = api(`${base}/documents/memo`).then((m) => (m.marche?.date ? m : api(`${base}/documents/memo/marche`, { method: "POST" }))).catch((e) => ({ echec: e }));
   return S.marche;
 }
 
@@ -526,10 +528,11 @@ async function enParallele(taches, n, f) {
 async function redaction() {
   const SECTIONS = [["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]];
   const taches = [
-    ["valorisation", "Valorisation (3 méthodes)", () => api(`${base}/valuation`, { method: "POST" })],
+    ["valorisation", "Valorisation (multiples et actif net ; DCF en option)", () => api(`${base}/valuation`, { method: "POST" })],
     ["etude-marche", "Étude de marché sur le web (deux minutes au plus)", async () => {
       const m = await (S.marche || null);
       if (m?.marche?.date) return;
+      if (m?.echec && m.echec.statut !== 409) throw m.echec; // déjà tentée pendant les questions : pas de seconde recherche
       try { await api(`${base}/documents/memo/marche`, { method: "POST" }); }
       catch (e) {
         if (e.statut !== 409) throw e;
