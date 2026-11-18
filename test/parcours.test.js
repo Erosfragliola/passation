@@ -131,6 +131,17 @@ describe("questionnaire et calcul", () => {
     expect(r.reponses.clients.part_premier_client).toBe(0.2);
   });
 
+  it("réglages hors bornes refusés à l'enregistrement (400, message explicite), rien n'est enregistré (FIN-04)", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    const r = await appel(`/api/dossiers/${id}/answers/reglages`, { methode: "PUT", cookie, corps: { data: { decotes: [{ cle: "taille", pct: -1.5 }], poids_multiples: 3 } } });
+    expect(r.status).toBe(400);
+    const d = await r.json();
+    expect(d.erreur).toBe("hypothese_invalide");
+    expect(d.erreurs.map((x) => x.champ).sort()).toEqual(["reglages.decotes.taille", "reglages.poids_multiples"]);
+    expect((await (await appel(`/api/dossiers/${id}/answers`, { cookie })).json()).reponses.reglages).toBeUndefined();
+    expect((await appel(`/api/dossiers/${id}/answers/reglages`, { methode: "PUT", cookie, corps: { data: { poids_multiples: 0.5 } } })).status).toBe(200);
+  });
+
   it("calcul complet par l'API : multiples identiques à la référence (2 001 585,45), DCF calculé, avancement à jour", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/financials`, { cookie });

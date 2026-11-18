@@ -28,6 +28,9 @@ const NOMS_DE_CODE = ["Cèdre", "Atlas", "Orme", "Saule", "Granit", "Boréal", "
 
 async function datapack(env, row, { stocker = false } = {}) {
   const { resultat, entree, hypotheses } = await calculer(env, row);
+  if (resultat.statut === "hypotheses_invalides") {
+    return json({ erreur: "hypotheses_invalides", message: `Corrigez d'abord vos réglages : ${resultat.alertes.join(" ")}` }, 409);
+  }
   if (resultat.statut !== "ok") {
     return json({ erreur: "chiffres_absents", message: "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack." }, 409);
   }

@@ -16,6 +16,7 @@ import { claudeDisponible, lireLiasse, cleRefusee, MESSAGE_CLE_REFUSEE } from ".
 import { assemblerEntree } from "../valuation/entree.js";
 import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
+import { erreursEtape } from "../valuation/validation.js";
 import HYPOTHESES from "../data/hypotheses.json";
 
 const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche"]);
@@ -190,6 +191,8 @@ export async function routeValorisation(request, env, row, sous, item) {
       const c = await corpsJson(request);
       const donnees = c?.data;
       if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 60_000) return json({ erreur: "requete_invalide", message: "Réponses invalides." }, 400);
+      const erreurs = erreursEtape(item, donnees, HYPOTHESES);
+      if (erreurs.length) return json({ erreur: "hypothese_invalide", message: erreurs.map((x) => x.message).join(" "), erreurs }, 400);
       await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, ?, ?, ?)
         ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)
         .bind(row.id, item, JSON.stringify(donnees), maintenant()).run();

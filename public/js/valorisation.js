@@ -328,8 +328,21 @@ function sourceH(h) {
 function dessinerResultat() {
   const { resultat: r, hypotheses: H, entree } = dernier;
   const zone = $("#resultat");
-  if (!r || r.statut === "chiffres_absents") {
-    zone.replaceChildren(el("div", { class: "carte vide" }, el("p", { text: "Validez au moins le chiffre d'affaires et les charges d'un exercice pour obtenir une valorisation." }), el("a", { class: "btn btn-noir", href: "#chiffres" }, "Compléter mes chiffres")));
+  if (r?.statut === "hypotheses_invalides") {
+    zone.replaceChildren(el("div", { class: "carte vide" }, el("p", { text: "Certains réglages sont hors des bornes admises :" }),
+      el("ul", {}, ...r.alertes.map((t) => el("li", { text: t }))),
+      (r.erreurs || []).some((x) => x.champ.startsWith("reglages")) ? el("button", { type: "button", class: "btn btn-noir", onclick: async () => {
+        if (!confirm("Rétablir les réglages par défaut (prime de taille, décotes, pondération, hypothèses) ?")) return;
+        try { reponses.reglages = {}; await api(`${base}/answers/reglages`, { method: "PUT", body: JSON.stringify({ data: {} }) }); await calculer(); }
+        catch (e) { message(e.message, true); }
+      } }, "Rétablir les réglages par défaut") : null,
+      el("a", { class: "btn btn-contour", href: "#entreprise" }, "Corriger mes réponses")));
+    $("#etat-valorisation").textContent = "";
+    return;
+  }
+  if (!r || r.statut !== "ok") {
+    zone.replaceChildren(el("div", { class: "carte vide" }, el("p", { text: "Validez un exercice complet (chiffre d'affaires, charges et bilan) pour obtenir une valorisation." }),
+      ...(r?.alertes || []).map((t) => el("p", { class: "petit", text: t })), el("a", { class: "btn btn-noir", href: "#chiffres" }, "Compléter mes chiffres")));
     $("#etat-valorisation").textContent = "";
     return;
   }
