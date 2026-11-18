@@ -32,14 +32,25 @@ export function assembler(entreprise, exercices, annonces) {
   };
 }
 
-/** Interroge les trois sources en parallèle. Retourne null si le SIREN est introuvable. */
+/** Clé de cache unique des données publiques d'une entreprise (v2 : code postal, pour la région du teaser). */
+export const CLE_MAQUETTE = (siren) => `maquette:v2:${siren}`;
+
+/**
+ * Interroge les trois sources en parallèle. Retourne null si le SIREN est introuvable.
+ * Une panne de l'annuaire ou des comptes (INPI) est une erreur, jamais une absence de comptes : elle est propagée
+ * (sinon l'entreprise passerait pour avoir des comptes confidentiels, et ce faux constat serait mis en cache).
+ * Une panne du BODACC (événements de la frise seulement) donne une réponse marquée sources_partielles, à ne pas
+ * mettre en cache.
+ */
 export async function chargerMaquette(siren, options = {}) {
   const [brutE, brutI, brutB] = await Promise.all([
     rechercherBrut(siren, options),
-    exercicesBruts(siren, options).catch(() => ({ results: [] })),
-    annoncesBrutes(siren, options).catch(() => ({ results: [] })),
+    exercicesBruts(siren, options),
+    annoncesBrutes(siren, options).catch((e) => { console.warn("BODACC indisponible :", e.message); return null; }),
   ]);
   const entreprise = normaliserEntreprise(brutE, siren);
   if (!entreprise) return null;
-  return assembler(entreprise, normaliserExercices(brutI), normaliserAnnonces(brutB, siren, entreprise.date_creation));
+  const donnees = assembler(entreprise, normaliserExercices(brutI), normaliserAnnonces(brutB ?? { results: [] }, siren, entreprise.date_creation));
+  if (!brutB) donnees.sources_partielles = ["bodacc"];
+  return donnees;
 }

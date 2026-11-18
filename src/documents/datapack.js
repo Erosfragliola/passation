@@ -64,8 +64,10 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
   cp.ecrire(rBfr, 0, "BFR d'exploitation (stocks + clients − fournisseurs − dettes fiscales et sociales)");
   cp.ecrire(rJours, 0, "BFR en jours de chiffre d'affaires");
   annees.forEach((_, i) => {
-    const det = ["achats_consommes", "charges_externes", "impots_taxes", "charges_personnel"].map((k) => L(k, i)).join(",");
-    cp.ecrire(rEbe, colA(i), { f: `IF(COUNT(${det})=0,IF(ISNUMBER(${L("ebe", i)}),${L("ebe", i)},${L("chiffre_affaires", i)}+${L("autres_produits", i)}),${L("chiffre_affaires", i)}+${L("autres_produits", i)}-${L("achats_consommes", i)}-${L("charges_externes", i)}-${L("impots_taxes", i)}-${L("charges_personnel", i)})`, s: S.eurosGras });
+    // Même règle que le moteur (approfondie.js, ebe) : détail complet des trois charges obligatoires, sinon EBE publié,
+    // sinon « Non déterminable » (jamais de charge manquante comptée à zéro).
+    const det = ["achats_consommes", "charges_externes", "charges_personnel"].map((k) => L(k, i)).join(",");
+    cp.ecrire(rEbe, colA(i), { f: `IF(AND(ISNUMBER(${L("chiffre_affaires", i)}),COUNT(${det})=3),${L("chiffre_affaires", i)}+${L("autres_produits", i)}-${L("achats_consommes", i)}-${L("charges_externes", i)}-${L("impots_taxes", i)}-${L("charges_personnel", i)},IF(ISNUMBER(${L("ebe", i)}),${L("ebe", i)},"Non déterminable"))`, s: S.eurosGras });
     cp.ecrire(rBfr, colA(i), { f: `${L("stocks", i)}+${L("creances_clients", i)}-${L("dettes_fournisseurs", i)}-${L("dettes_fiscales_sociales", i)}`, s: S.euros });
     cp.ecrire(rJours, colA(i), { f: `IF(${L("chiffre_affaires", i)}>0,${cp.ref(rBfr, colA(i))}/${L("chiffre_affaires", i)}*365,"")`, s: S.nombre });
   });

@@ -5,7 +5,7 @@ import { d1Memoire, r2Memoire } from "./aide/environnement.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
-import { assembler } from "../src/maquette/donnees.js";
+import { assembler, CLE_MAQUETTE } from "../src/maquette/donnees.js";
 import { avancement, CLES_CHECKLIST } from "../public/js/dossier-regles.js";
 
 const BASE = "http://127.0.0.1:8787";
@@ -45,7 +45,7 @@ beforeEach(async () => {
   const f = JSON.parse(readFileSync(new URL(`./fixtures/${SIREN}.json`, import.meta.url)));
   const e = normaliserEntreprise(f.entreprise, SIREN);
   const d = assembler(e, normaliserExercices(f.inpi), normaliserAnnonces(f.bodacc, SIREN, e.date_creation));
-  await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(`maquette:v1:${SIREN}`, JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
+  await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(CLE_MAQUETTE(SIREN), JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
 });
 
 describe("connexion par code", () => {
@@ -125,10 +125,34 @@ describe("connexion par code", () => {
   });
   it("en production sans service d'e-mail configuré, aucun code n'est affiché ni envoyé", async () => {
     const espion = vi.spyOn(console, "log").mockImplementation(() => {});
+    env.SESSION_SECRET = "secret-de-test"; // production correctement configurée, sauf l'envoi d'e-mails
     const r = await worker.fetch(new Request("https://passation.example/api/auth/request", { method: "POST",
       headers: { origin: "https://passation.example", "content-type": "application/json" }, body: JSON.stringify({ email: "z@exemple.fr" }) }), env);
     expect(r.status).toBe(503);
+    expect((await r.json()).erreur).toBe("envoi_impossible");
     expect(espion.mock.calls.flat().join(" ")).not.toMatch(/\d{6}/);
+    espion.mockRestore();
+  });
+  it("hors développement local sans SESSION_SECRET : API refusée (503), aucun code créé (SEC-07)", async () => {
+    const espion = vi.spyOn(console, "error").mockImplementation(() => {});
+    const r = await worker.fetch(new Request("https://passation.example/api/auth/request", { method: "POST",
+      headers: { origin: "https://passation.example", "content-type": "application/json" }, body: JSON.stringify({ email: "z@exemple.fr" }) }), env);
+    expect(r.status).toBe(503);
+    const d = await r.json();
+    expect(d.erreur).toBe("configuration_incomplete");
+    expect(JSON.stringify(d)).not.toMatch(/SESSION_SECRET/); // pas de détail de configuration dans la réponse
+    expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM login_codes").get().n).toBe(0);
+    expect((await worker.fetch(new Request("https://passation.example/api/health"), env)).status).toBe(200);
+    espion.mockRestore();
+  });
+  it("erreur interne (base indisponible) : JSON 500 générique, sans détail technique (SEC-08)", async () => {
+    const espion = vi.spyOn(console, "error").mockImplementation(() => {});
+    env.DB = { prepare: () => { throw new Error("D1_ERROR: table secrète introuvable"); }, batch: async () => { throw new Error("D1"); } };
+    const r = await appel("/api/me", { cookie: `passation_session=${"x".repeat(40)}` });
+    expect(r.status).toBe(500);
+    const texte = await r.text();
+    expect(JSON.parse(texte).erreur).toBe("erreur_interne");
+    expect(texte).not.toMatch(/D1|secrète/);
     espion.mockRestore();
   });
 });

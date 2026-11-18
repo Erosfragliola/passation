@@ -1,7 +1,8 @@
 // Assemble l'entrée du moteur de valorisation à partir du dossier : chiffres validés, réponses du questionnaire,
 // réglages du dirigeant (prime de taille, décotes, pondération, hypothèses modifiées). Pur et testé.
-import { exerciceValide } from "../../public/js/champs-financiers.js";
+import { exerciceValide, manquants } from "../../public/js/champs-financiers.js";
 import { secteurPour } from "./express.js";
+import { erreursReponses } from "./validation.js";
 
 const num = (x) => (x === "" || x == null || !Number.isFinite(Number(x)) ? null : Number(x));
 const deep = (o) => JSON.parse(JSON.stringify(o));
@@ -16,10 +17,18 @@ const deep = (o) => JSON.parse(JSON.stringify(o));
 export function assemblerEntree(entreprise, lignes, reponses, H) {
   const r = reponses || {};
   const reg = r.reglages || {};
-  const exercices = Object.entries(lignes || {})
-    .map(([annee, l]) => ({ annee: Number(annee), ...exerciceValide(l) }))
-    .filter((e) => Number.isFinite(e.chiffre_affaires))
-    .sort((a, b) => a.annee - b.annee);
+  // Seuls les exercices complets entrent dans le calcul : un poste obligatoire manquant ou non validé n'est jamais
+  // compté à zéro (un zéro saisi et validé, lui, est un vrai zéro). Les exercices écartés sont signalés.
+  const exercices = [], exercices_exclus = [];
+  for (const [annee, l] of Object.entries(lignes || {})) {
+    const ex = { annee: Number(annee), ...exerciceValide(l) };
+    if (!Number.isFinite(ex.chiffre_affaires)) continue; // rien d'exploitable validé pour cet exercice
+    const manque = manquants(l);
+    if (manque.length) exercices_exclus.push({ annee: ex.annee, manquants: manque });
+    else exercices.push(ex);
+  }
+  exercices.sort((a, b) => a.annee - b.annee);
+  exercices_exclus.sort((a, b) => a.annee - b.annee);
 
   const d = r.dirigeant || {}, rt = r.retraitements || {}, p = r.perspectives || {}, b = r.bilan || {};
   const retraitements = {
@@ -51,12 +60,14 @@ export function assemblerEntree(entreprise, lignes, reponses, H) {
   const poids = num(reg.poids_multiples);
   const entree = {
     secteur: secteurPour(entreprise?.section_naf)?.cle ?? null,
-    exercices, retraitements, complements, previsions,
+    exercices, exercices_exclus, retraitements, complements, previsions,
     decotes: (reg.decotes || []).map((f) => ({ cle: f.cle, pct: num(f.pct) ?? 0, justification: f.justification || "" })),
     primeTaille: num(reg.prime_taille),
     tauxReduit,
     modeEbe: reg.mode_ebe === "dernier" ? "dernier" : "moyenne",
     ponderation: poids != null ? { multiples: poids, dcf: 1 - poids } : undefined,
+    // Réglages hors bornes déjà enregistrés : signalés, le calcul est refusé (jamais corrigés en silence)
+    erreurs: erreursReponses(r, H),
   };
   return { entree, H: h };
 }

@@ -480,7 +480,7 @@ async function enParallele(taches, n, f) {
 async function redaction() {
   const SECTIONS = [["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]];
   const taches = [
-    ["valorisation", "Valorisation (3 méthodes)", () => api(`${base}/valuation`, { method: "POST" })],
+    ["valorisation", "Valorisation (multiples et actif net ; DCF dès que la prime de taille est réglée)", () => api(`${base}/valuation`, { method: "POST" })],
     ["etude-marche", "Étude de marché (registres et sources publiques)", async () => { const m = await (S.marche || null); if (!m?.marche?.date) await api(`${base}/documents/memo/marche`, { method: "POST" }); }],
     ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
     ["teaser", "Teaser anonymisé", () => api(`${base}/documents/teaser`, { method: "POST" })],

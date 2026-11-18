@@ -16,7 +16,8 @@ import { propositions } from "../documents/propositions.js";
 import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, rechercherMarche, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
 import { compterSecteur, structureSecteur } from "../sources/secteur.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
-import { MARCHE } from "../config.js";
+import { MARCHE, CLAUDE_QUOTAS } from "../config.js";
+import { quotaClaude } from "../lib/ratelimit.js";
 import { lireSite, adressePublique } from "../documents/site.js";
 import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat, regionDe, SECTEURS_NAF } from "../documents/anonymat.js";
@@ -28,6 +29,9 @@ const NOMS_DE_CODE = ["Cèdre", "Atlas", "Orme", "Saule", "Granit", "Boréal", "
 
 async function datapack(env, row, { stocker = false } = {}) {
   const { resultat, entree, hypotheses } = await calculer(env, row);
+  if (resultat.statut === "hypotheses_invalides") {
+    return json({ erreur: "hypotheses_invalides", message: `Corrigez d'abord vos réglages : ${resultat.alertes.join(" ")}` }, 409);
+  }
   if (resultat.statut !== "ok") {
     return json({ erreur: "chiffres_absents", message: "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack." }, 409);
   }
@@ -79,6 +83,8 @@ async function genererTeaser(env, row) {
   if (!ctx.reponses.activite?.description?.trim()) {
     return json({ erreur: "questionnaire_incomplet", message: "Décrivez d'abord votre activité (questionnaire, écran « Votre activité »)." }, 409);
   }
+  const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
+  if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
   const faits = faitsTeaser(ctx);
   let sections, problemes = [];
   try {
@@ -200,6 +206,8 @@ async function etudeMarche(env, row) {
   const reponses = await lireReponses(env, row.id);
   const avant = reponses.marche || {};
   if ((avant.essais || 0) >= MARCHE.etudesMaxParDossier) return json({ erreur: "limite", message: `L'étude de marché a déjà été lancée ${MARCHE.etudesMaxParDossier} fois pour ce dossier.` }, 429);
+  const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
+  if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
   const entreprise = JSON.parse(row.company_json || "{}");
   const secteur = await secteurDe(env, entreprise);
   const contexte = { secteur: SECTEURS_NAF[entreprise.section_naf] ?? null, code_naf: entreprise.naf ?? null, region: regionDe(entreprise.code_postal),
@@ -217,6 +225,8 @@ async function lireSiteRoute(request, env, row) {
   if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: "La lecture du site n'est pas encore activée." }, 503);
   let corps; try { corps = await request.json(); } catch { corps = null; }
   if (!adressePublique(corps?.url || "")) return json({ erreur: "adresse_invalide", message: "Adresse de site invalide (exemple : www.mon-entreprise.fr)." }, 400);
+  const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
+  if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
   let lecture, faits;
   try {
     lecture = await lireSite(corps.url);
@@ -347,6 +357,8 @@ async function genererSection(env, row, cle) {
   const reponses = await lireReponses(env, row.id);
   const verrou = memoDeverrouille(reponses);
   if (!verrou.ok) return json({ erreur: "questionnaire_incomplet", message: `Avant le mémorandum : ${verrou.manque.join(" ; ")}.` }, 409);
+  const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
+  if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
   const { resultat, entree } = await calculer(env, row);
   let r;
   try { r = await redigerSectionMemo(env, section, donneesSection(section, { entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) })); }

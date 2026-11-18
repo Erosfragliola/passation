@@ -9,8 +9,9 @@
 import { json } from "../http.js";
 import { exigerUtilisateur, maintenant } from "../lib/auth.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
+import { CLAUDE_QUOTAS } from "../config.js";
 import { sirenValide, nettoyerSiren } from "../lib/siren.js";
-import { chargerMaquette } from "../maquette/donnees.js";
+import { chargerMaquette, CLE_MAQUETTE } from "../maquette/donnees.js";
 import { estimationExpress } from "../valuation/express.js";
 import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
 import { manquants, EXERCICES_MAX } from "../../public/js/champs-financiers.js";
@@ -35,12 +36,14 @@ export async function listerDossiers(env, userId) {
 export async function creerDossierPourSiren(env, userId, siren) {
   const existant = await env.DB.prepare("SELECT id, siren, company_json, created_at FROM dossiers WHERE user_id = ? AND siren = ?").bind(userId, siren).first();
   if (existant) return resume(existant);
-  const cle = `maquette:v1:${siren}`;
+  const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM dossiers WHERE user_id = ?").bind(userId).first();
+  if ((n?.n ?? 0) >= CLAUDE_QUOTAS.dossiersParUtilisateur) throw new Error("limite_dossiers");
+  const cle = CLE_MAQUETTE(siren);
   let donnees = await lireCache(env.DB, cle);
   if (!donnees) {
-    donnees = await chargerMaquette(siren);
+    donnees = await chargerMaquette(siren); // panne d'une source : erreur propagée (voir routeDossiers)
     if (!donnees) throw new Error("introuvable");
-    await ecrireCache(env.DB, cle, donnees);
+    if (!donnees.sources_partielles) await ecrireCache(env.DB, cle, donnees);
   }
   const entreprise = { ...donnees, estimation: estimationExpress(donnees) };
   const id = crypto.randomUUID();
@@ -124,7 +127,12 @@ export async function routeDossiers(request, env, segments) {
       const siren = nettoyerSiren(corps.siren);
       if (!sirenValide(siren)) return json({ erreur: "siren_invalide", message: "Ce numéro SIREN n'est pas valide." }, 400);
       try { return json({ dossier: await creerDossierPourSiren(env, u.id, siren) }, 201); }
-      catch { return json({ erreur: "introuvable", message: "Nous ne trouvons pas cette entreprise." }, 404); }
+      catch (e) {
+        if (e.message === "introuvable") return json({ erreur: "introuvable", message: "Nous ne trouvons pas cette entreprise." }, 404);
+        if (e.message === "limite_dossiers") return json({ erreur: "limite_dossiers", message: `${CLAUDE_QUOTAS.dossiersParUtilisateur} dossiers au plus par compte : supprimez-en un pour en ouvrir un autre.` }, 429);
+        console.warn("source indisponible :", e.message);
+        return json({ erreur: "source_indisponible", message: "Les registres publics ne répondent pas pour le moment. Réessayez dans quelques minutes." }, 502);
+      }
     }
     return json({ erreur: "methode" }, 405);
   }

@@ -16,7 +16,7 @@ async function ecrireSuivi(env, dossierId, suivi) {
     ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(dossierId, JSON.stringify(suivi), maintenant()).run();
 }
 
-/** Le dossier est complet : valorisation, datapack, teaser et les 8 sections du mémorandum. */
+/** Le dossier est complet : valorisation, datapack, teaser et toutes les sections du mémorandum (SECTIONS_MEMO). */
 export async function dossierComplet(env, dossierId) {
   const docs = await env.DB.prepare("SELECT kind, id FROM documents WHERE dossier_id = ?").bind(dossierId).all();
   const kinds = new Set(docs.results.map((d) => d.kind));
@@ -49,7 +49,7 @@ export async function dossiersARelancer(env, t = maintenant()) {
 }
 
 /** Tâche planifiée : un seul rappel par dossier. */
-export async function relancer(env, base = "https://passation.eros-fragliola-freedom.workers.dev") {
+export async function relancer(env, base = env.APP_URL || "https://passation.eros-fragliola-freedom.workers.dev") {
   let n = 0;
   for (const d of await dossiersARelancer(env)) {
     const nom = JSON.parse(d.company_json || "{}").nom || "votre entreprise";
