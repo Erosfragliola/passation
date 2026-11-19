@@ -1,6 +1,14 @@
 // Anonymisation du teaser : faits généraux calculés par le code (secteur, région, fourchettes) et contrôle
 // automatique de tout texte publié. Interdits : nom (et ses mots distinctifs), ville, code postal, SIREN, montants
 // exacts (CA, EBE, résultat, valeur), termes issus du site de l'entreprise. Module pur, testé.
+import divisions from "../data/naf-divisions.json";
+
+/** Libellé du secteur affiché partout (accueil, teaser, visuels, mémorandum) : la division NAF officielle (deux
+ *  premiers chiffres du code), sans la clause « à l'exception de… ». « 47.71Z » → « Commerce de détail ». */
+export function secteurDe(naf) {
+  const l = divisions.divisions[String(naf || "").slice(0, 2)];
+  return l ? l.split(", à l'exception")[0] : null;
+}
 
 /** Régions administratives depuis 2016 (INSEE, code officiel géographique) : département → région. */
 const REGIONS = {
@@ -28,7 +36,8 @@ export function regionDe(codePostal) {
   return Object.entries(REGIONS).find(([, deps]) => deps.includes(dep))?.[0] ?? null;
 }
 
-/** Sections de la nomenclature NAF rév. 2 (INSEE). */
+/** Sections de la nomenclature NAF rév. 2 (INSEE). Pas pour l'affichage (trop large, parfois trompeur : « G » pour un
+ *  magasin de vêtements) : seulement comme contexte de l'étude de marché, avec le code NAF exact. */
 export const SECTEURS_NAF = {
   A: "Agriculture, sylviculture et pêche", B: "Industries extractives", C: "Industrie manufacturière",
   D: "Production et distribution d'énergie", E: "Eau, assainissement, gestion des déchets et dépollution", F: "Construction",
@@ -70,11 +79,14 @@ const normal = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/
 const FORMES = new Set(["sas", "sasu", "sarl", "eurl", "sa", "sci", "snc", "selarl", "scop", "et", "fils", "freres", "groupe", "societe", "france", "les", "des", "de", "la", "le", "du", "and", "co", "cie", "holding", "entreprise", "ets", "etablissements"]);
 
 /** Termes à ne jamais publier dans le teaser. */
-export function termesInterdits({ nom, ville, code_postal, siren }, montants = [], termesSite = []) {
+export function termesInterdits({ nom, ville, code_postal, siren, naf }, montants = [], termesSite = []) {
   const mots = [];
   const n = normal(nom).replace(/[^a-z0-9]+/g, " ").trim();
   if (n) mots.push(n);
-  for (const m of n.split(" ")) if (m.length >= 4 && !FORMES.has(m)) mots.push(m);
+  // Un mot du nom qui figure aussi dans le libellé du secteur (« Travaux » pour « Travaux Dupont ») n'identifie pas
+  // l'entreprise : il reste permis, sinon le teaser ne pourrait plus nommer son propre secteur
+  const motsSecteur = new Set(normal(secteurDe(naf)).replace(/[^a-z0-9]+/g, " ").split(" "));
+  for (const m of n.split(" ")) if (m.length >= 4 && !FORMES.has(m) && !motsSecteur.has(m)) mots.push(m);
   if (ville) mots.push(normal(ville));
   for (const t of termesSite) if (normal(t).trim().length >= 3) mots.push(normal(t).trim());
   return {

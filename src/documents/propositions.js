@@ -1,7 +1,7 @@
 // Réponses proposées au dirigeant pour le parcours guidé (« Passation prépare, le dirigeant valide »).
 // Chaque proposition dit d'où elle vient : registres publics, comptes, site validé, ou « choix le plus fréquent »
 // (alors à confirmer). Rien n'est enregistré tant que le dirigeant n'a pas validé l'écran. Module pur, testé.
-import { regionDe, SECTEURS_NAF } from "./anonymat.js";
+import { regionDe, secteurDe } from "./anonymat.js";
 import { libelleEffectif } from "../../public/js/regles.js";
 
 export const SOURCES_PROPOSITION = {
@@ -63,7 +63,7 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   };
   const faits = (reponses.site?.faits || []).filter((f) => f.valide !== false);
   const texteSite = faits.map((f) => f.fait).join(" ");
-  const secteur = SECTEURS_NAF[entreprise.section_naf] ?? null;
+  const secteur = secteurDe(entreprise.naf);
   const effectif = libelleEffectif(entreprise.tranche_effectif?.code);
   const codeEff = String(entreprise.tranche_effectif?.code || "NN");
 

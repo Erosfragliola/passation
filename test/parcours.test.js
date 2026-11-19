@@ -218,7 +218,7 @@ describe("teaser anonymisé", () => {
     expect(d.teaser.sections.map((x) => x.cle)).toEqual(["accroche", "activite", "chiffres", "atouts", "operation"]);
     const faits = JSON.stringify(redigerTeaser.mock.calls[0][1]);
     expect(faits).not.toMatch(/FRAISERAIE|319252813/i);
-    expect(faits).toContain("Industrie manufacturière");
+    expect(faits).toContain("Industries alimentaires"); // division NAF 10, libellé unique du secteur (audit, point 9)
     expect((await (await appel(`/api/dossiers/${id}/documents/teaser`, { cookie })).json()).teaser.version).toBe(1);
   });
   it("première version identifiante → seconde tentative avec consigne ; si encore identifiante → 422, rien d'enregistré", async () => {
