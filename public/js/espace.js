@@ -7,7 +7,7 @@ import { fourchette } from "/js/landing/estimation.js"; // même arrondi que l'�
 
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
-let dossier = null, memo = null, etat = null, piecesOuvert = null;
+let dossier = null, memo = null, teaser = null, etat = null, piecesOuvert = null;
 
 function message(texte, erreur = false) {
   const m = $("#espace-message");
@@ -42,7 +42,7 @@ const ICONES = {
   memo: '<path d="M4 5h16v12H4zM8 21h8M12 17v4"/>',
 };
 const icone = (k) => el("span", { class: "ico", "aria-hidden": "true", html: `<svg viewBox="0 0 24 24">${ICONES[k] || ""}</svg>` });
-const LIBELLE_ETAT = { pret: "Prêt", "a-relire": "À relire", "a-venir": "À venir" };
+const LIBELLE_ETAT = { pret: "Prêt", "a-relire": "À relire", incomplet: "Incomplet", "a-venir": "À venir" };
 
 async function charger() {
   const moi = await api("/api/me");
@@ -52,13 +52,16 @@ async function charger() {
   if (!id && moi.dossiers.length) id = moi.dossiers[0].id;
   if (!id) { location.replace("/#titre-hero"); return; }
   dossier = await api(`/api/dossiers/${id}`);
-  if (dossier.documents?.memo) memo = await api(`/api/dossiers/${id}/documents/memo`).catch(() => null);
+  [memo, teaser] = await Promise.all([
+    dossier.documents?.memo ? api(`/api/dossiers/${id}/documents/memo`).catch(() => null) : null,
+    dossier.documents?.teaser ? api(`/api/dossiers/${id}/documents/teaser`).catch(() => null) : null,
+  ]);
   afficher();
   $("main").removeAttribute("aria-busy");
 }
 
 function afficher({ checklist = true } = {}) {
-  etat = etatParcours(dossier, memo);
+  etat = etatParcours(dossier, memo, teaser);
   const e = dossier.entreprise, id = dossier.id;
   document.title = `${e.nom || "Votre dossier"} · Passation`;
   $("#lien-dossier").href = `/espace/?dossier=${id}`;

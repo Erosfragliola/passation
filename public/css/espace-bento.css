@@ -136,7 +136,7 @@
 .doc .petit { margin: 0; }
 .etat { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
 .etat-pret { background: var(--d-vert-pale); color: var(--vert); }
-.etat-a-relire { background: #F5E7D6; color: var(--d-cuivre-texte); }
+.etat-a-relire, .etat-incomplet { background: #F5E7D6; color: var(--d-cuivre-texte); }
 .etat-a-venir { background: var(--d-sable); color: var(--pierre-texte); }
 .doc-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 

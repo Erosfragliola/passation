@@ -11,6 +11,7 @@ import { CHAMPS } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail } from "/js/parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { pointsACompleter, libellePoints } from "/js/dossier-parcours.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -630,7 +631,8 @@ async function redaction() {
 async function pret() {
   const [val, memo] = await Promise.all([api(`${base}/valuation`), api(`${base}/documents/memo`)]);
   const s = val.resultat?.synthese;
-  const aCompleter = [...(memo.sections || []).flatMap((x) => (x.a_completer || []).map((t) => `${x.titre} : ${t}`)), ...(s?.alertes || []).filter((a) => !/en option/.test(a))];
+  // Même décompte que la page du dossier (pointsACompleter) ; les remarques de la valorisation sont listées à part
+  const aCompleter = pointsACompleter(memo), remarques = (s?.alertes || []).filter((a) => !/en option/.test(a));
   remplir(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
     s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${fourchette(s.bas, s.haut)}` })) : null,
     el("div", { class: "guide-docs" },
@@ -639,7 +641,8 @@ async function pret() {
         ["Teaser anonymisé", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
         ["Mémorandum d'information", "La présentation complète, en diapositives", `/espace/documents/memo/?dossier=${id}`]]
         .map(([t, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: t }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
-    aCompleter.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: `Points à compléter (${aCompleter.length})` }), el("ul", {}, ...aCompleter.slice(0, 12).map((t) => el("li", { text: t })))) : null,
+    aCompleter.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: libellePoints(aCompleter.length) }), el("ul", {}, ...aCompleter.slice(0, 12).map((t) => el("li", { text: t })))) : null,
+    remarques.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: "À vérifier dans la valorisation" }), el("ul", {}, ...remarques.map((t) => el("li", { text: t })))) : null,
     el("p", { class: "petit" }, "Pour affiner (prime de taille, décotes, pondération) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), "."));
 }
 
