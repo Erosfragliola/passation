@@ -7,9 +7,8 @@ import { fileURLToPath } from "node:url";
 
 const kit = (f) => fileURLToPath(new URL(`../_refonte/assets/${f}`, import.meta.url));
 const site = (f) => fileURLToPath(new URL(`../public/img/landing/${f}`, import.meta.url));
-for (const d of ["cles", "etiquettes"]) mkdirSync(site(d), { recursive: true });
+mkdirSync(site("etiquettes"), { recursive: true });
 
-for (let i = 0; i < 9; i++) copyFileSync(kit(`keys/k${i}.webp`), site(`cles/k${i}.webp`));
 for (const f of ["kraft-recto.webp", "papier-verso.webp", "vert-verso.webp"]) copyFileSync(kit(`tags/${f}`), site(`etiquettes/${f}`));
 copyFileSync(kit("textures/paper.webp"), site("papier.webp"));
 await sharp(kit("textures/grunge.png")).webp({ quality: 70, alphaQuality: 70 }).toFile(site("grunge.webp"));
