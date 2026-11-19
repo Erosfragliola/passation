@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { etatParcours, lectureMemo, dateCourte, NB_PIECES, ETAPES_PARCOURS, pointsACompleter, libellePoints, partiesTeaserVides } from "../public/js/dossier-parcours.js";
+import {
+  etatParcours, ecranFinal, explicationEcart, alertesDirigeant, resumeValorisation, lectureMemo, listeAnnees, dateCourte,
+  NB_PIECES, ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, ETIQUETTE_TITRES, pointsACompleter, libellePoints, partiesTeaserVides,
+} from "../public/js/dossier-parcours.js";
+import { NB_QUESTIONS } from "../public/js/parcours.js";
+import LANDING from "../src/contenu/landing.json";
 
 // Dossiers entièrement fictifs. Les valeurs attendues sont comptées à la main à partir de ces données, pas tirées du code.
 const ID = "00000000-0000-4000-8000-000000000001";
@@ -165,7 +170,10 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     expect(e.pret).toBe(true);
     expect(e.avancement).toBe(100);
   });
-  it("action principale : relire le mémorandum (2 éléments à compléter)", () => expect(e.action).toEqual({ texte: "Continuer : relire le mémorandum", href: `/espace/documents/memo/?dossier=${ID}` }));
+  it("action principale : la première tâche, qui mène au mémorandum (règle de #15)", () => {
+    expect(e.action).toMatchObject({ texte: e.taches[0].titre, href: e.taches[0].href });
+    expect(e.action.href).toContain(`/espace/documents/memo/?dossier=${ID}`);
+  });
   it("À faire : photo (0 photo), 2 éléments du chapitre Équipe, 21 − 17 = 4 pièces", () => {
     expect(e.taches.map((t) => t.titre)).toEqual(["Ajouter une photo de l'atelier ou des produits", "Compléter 2 points du mémorandum", "Déposer 4 pièces manquantes"]);
     expect(e.taches[1].detail).toBe("Indiqués « À compléter » : « Équipe »");
@@ -327,7 +335,7 @@ describe("lecture du mémorandum", () => {
 // Audit, points 15 et 16 : un document vide n'est pas « prêt » ; un seul décompte des points à compléter.
 describe("teaser et mémorandum vides ou incomplets", () => {
   const d = dossier({ documents: tousDocs, checklist: CHECKLIST_COMPLETE,
-    parcours: { exercices_complets: 3, questionnaire: { faits: 15, total: 15, pct: 100 }, valorisation: valo } });
+    parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), exercices_complets: 3, questions: { faits: 14, total: 14, pct: 100 }, valorisation: valo } }); // format de #15
   const memoComplet = { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("organisation", "Équipe")] };
   const teaser = (...contenus) => ({ teaser: { sections: ["accroche", "activite", "chiffres", "atouts", "operation"].map((cle, i) => ({ cle, titre: cle, contenu: contenus[i] ?? "" })) } });
   const plein = teaser("Texte", "Texte", "Texte", "Texte", "Texte");
@@ -344,7 +352,8 @@ describe("teaser et mémorandum vides ou incomplets", () => {
   it("teaser incomplet : une tâche « Rédiger 2 parties du teaser » et « Continuer » mène au teaser, pas « Tout est fait »", () => {
     const e = etatParcours(d, memoComplet, teaser("Texte", "Texte", "Texte", "", ""));
     expect(e.taches).toEqual([{ cle: "teaser", titre: "Rédiger 2 parties du teaser", detail: "Parties vides : atouts, operation", action: "Rédiger", href: `/espace/documents/teaser/?dossier=${ID}` }]);
-    expect(e.action).toEqual({ texte: "Continuer : compléter le teaser", href: `/espace/documents/teaser/?dossier=${ID}` });
+    // Règle de #15 : l'action principale reprend exactement la première tâche (même libellé, même lien) ; elle mène au teaser
+    expect(e.action).toMatchObject({ texte: "Rédiger 2 parties du teaser", href: `/espace/documents/teaser/?dossier=${ID}` });
   });
   it("mémorandum créé mais 2 chapitres sur 3 non rédigés → incomplet, pas « à relire »", () => {
     const e = etatParcours(d, { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("marche", "Marché", { redigee: false }), section("clients", "Clients", { redigee: false })] }, plein);
