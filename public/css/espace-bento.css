@@ -1,15 +1,14 @@
 /* Espace dirigeant et parcours guidé, direction « bento » (18/11/2026) : crème, vert, cuivre, tuiles arrondies,
    titres en capitales étroites. Chargée après styles.css sur les pages de l'espace. */
 @font-face { font-family: "Big Shoulders"; font-weight: 700; font-display: swap; src: url("/fonts/big-shoulders-bold.woff2") format("woff2"); }
-@font-face { font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/instrument-serif-italic.woff2") format("woff2"); }
-:root { --b-affiche: "Big Shoulders", "Arial Narrow", sans-serif; --b-serif: "Instrument Serif", Georgia, serif; --b-cuivre-pale: #F5E7D6; --b-vif: #2E8A62; }
+:root { --b-affiche: "Big Shoulders", "Arial Narrow", sans-serif; --b-serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; --b-cuivre-pale: #F5E7D6; --b-vif: #2E8A62; }
 .affiche { font-family: var(--b-affiche); font-weight: 700; text-transform: uppercase; letter-spacing: .005em; line-height: .95; }
 
 /* ---------- Parcours guidé ---------- */
 .page-guidee { background: var(--creme); }
 .page-guidee .guide { padding: 104px 0 72px; }
 .page-guidee .conteneur-etroit { max-width: 1120px; display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 20px; align-items: start; }
-.page-guidee #guide-entreprise { grid-column: 1 / -1; font-family: var(--b-serif); font-style: italic; font-size: clamp(28px, 3.4vw, 40px); text-transform: none; letter-spacing: 0; color: var(--cuivre); font-weight: 400; margin: 0; }
+.page-guidee #guide-entreprise { grid-column: 1 / -1; font-family: var(--b-serif); font-style: normal; font-size: clamp(28px, 3.4vw, 40px); text-transform: none; letter-spacing: 0; color: var(--cuivre); font-weight: 400; margin: 0; }
 .page-guidee .guide-etapes { grid-column: 1; grid-row: 2 / span 3; position: sticky; top: 96px; flex-direction: column; flex-wrap: nowrap; gap: 4px; margin: 0; padding: 14px; border-radius: 24px; background: #FFFDF8; border: 1px solid var(--trait); font-size: 15px; }
 .page-guidee .guide-etapes li { padding: 9px 10px; border-radius: 12px; gap: 10px; }
 .page-guidee .guide-etapes li span { width: 26px; height: 26px; font-size: 12px; }
@@ -92,7 +91,7 @@
 .dossier-parcours .tuile-dossier { grid-column: span 7; background: var(--vert); border-color: transparent; color: #F6F1E6; display: grid; gap: 22px; align-content: space-between; }
 .dossier-haut { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .dossier-haut > div:first-child { min-width: 0; }
-.dossier-parcours .nom-code { margin: 0; font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: 0; font-size: clamp(26px, 2.6vw, 32px); line-height: 1.1; color: #E9C9A4; }
+.dossier-parcours .nom-code { margin: 0; font-family: "Geist", system-ui, sans-serif; font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: clamp(26px, 2.6vw, 32px); line-height: 1.1; color: #E9C9A4; }
 .dossier-parcours .tuile-dossier h1 { font-size: clamp(40px, 4.6vw, 64px); color: #F6F1E6; margin-top: 6px; overflow-wrap: anywhere; }
 .dossier-meta { margin: 8px 0 0; font-size: 14px; color: #C9D6CD; }
 .anneau { position: relative; flex: none; width: 96px; height: 96px; }
@@ -285,6 +284,278 @@
 /* Nom de code au-dessus du nom réel (audit, point 8) : même ordre et même hiérarchie que la page du dossier */
 .page-guidee .guide-tete { grid-column: 1 / -1; display: grid; gap: 2px; }
 .page-guidee .guide-nom-code { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
-.page-guidee .guide-code { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-size: clamp(22px, 2.2vw, 26px); line-height: 1.1; color: #8E5530; }
+.page-guidee .guide-code { font-family: "Geist", system-ui, sans-serif; font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: clamp(22px, 2.2vw, 26px); line-height: 1.1; color: #8E5530; } /* nom de code : Geist demi-gras (option A) */
 .page-guidee .guide-code-aide { font-size: 13.5px; color: var(--pierre-texte); }
 .studio-tete h1 em { font-style: normal; }
+
+/* ---------- Une seule direction dans tout l'espace (19/11/2026, PR « Espace : une seule direction artistique ») ----------
+   Chargée par toutes les pages de public/espace/ et par public/connexion.html (test/espace-styles.test.js).
+   Petits titres : phrases en minuscules, petit gras ; capitales réservées aux pastilles d'état (option B). */
+.page-espace .etiquette, .page-espace .checklist-groupe legend, .page-espace .tableau-chiffres tr.groupe th,
+.page-espace .saisie-groupe legend, .page-espace .valeur-etiquette, .page-espace .panneau-bloc h3 {
+  font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.page-espace .valeur-etiquette { color: #E9C9A4; font-size: 15px; }
+.page-espace .panneau-bloc h3 { color: #8E5530; }
+.page-espace .etat, .page-espace .pastille-etat, .page-espace .piece-etat:not(.bouton) { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+.page-espace :where(h1.affiche, h2.affiche) { color: var(--vert); letter-spacing: .005em; }
+.page-espace .pied { padding: 18px 0; }
+
+/* Connexion (page et fenêtre de l'accueil) */
+.page-connexion .page-texte { padding-top: 120px; }
+.page-connexion h1.affiche { font-size: clamp(44px, 6vw, 68px); margin: 0 0 12px; }
+
+/* En-tête clair des pages du dossier (valorisation) : titre d'affiche et onglets, sous la barre du site */
+.espace-tete { padding: 92px 0 0; background: var(--creme); }
+.espace-tete .ariane { margin-bottom: 4px; }
+.espace-tete h1.affiche { font-size: clamp(34px, 4vw, 50px); margin: 0; overflow-wrap: anywhere; }
+nav.etapes.onglets { display: flex; flex-wrap: nowrap; gap: 4px; margin: 14px 0 0; border-bottom: 1px solid var(--trait); overflow-x: auto; }
+nav.etapes.onglets a { border: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 10px 14px; color: var(--pierre-texte); font-weight: 500; white-space: nowrap; background: none; }
+nav.etapes.onglets a[aria-current] { color: var(--espresso); border-bottom-color: var(--cuivre); background: none; }
+nav.etapes.onglets .etape-num { display: none; }
+nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
+.page-espace .espace.parcours .panneau { padding: 16px 0 24px; }
+.page-espace .espace.parcours .panneau > .conteneur > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Documents (teaser, mémorandum) : titre d'affiche */
+.page-document .document-outils h1.affiche { font-size: clamp(38px, 4.6vw, 56px); margin: 0 0 8px; }
+.studio-tete h1.affiche { font-size: clamp(32px, 3.6vw, 46px); }
+
+/* Valorisation, « Vos chiffres » : un exercice à la fois, obligatoires sur deux colonnes, facultatives repliées */
+.chiffres-barre { display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.choix-annee, .chiffres-outils { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.choix-annee .annee { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--trait-fort); background: #FFFDF8; font: inherit; font-weight: 600; cursor: pointer; }
+.choix-annee .annee small { font-weight: 500; color: var(--pierre-texte); }
+.choix-annee .annee[aria-pressed="true"] { background: var(--vert); border-color: var(--vert); color: #F6F1E6; }
+.choix-annee .annee[aria-pressed="true"] small { color: #DCE6DF; }
+.chiffres-outils input { width: 96px; min-height: 40px; border-radius: 12px; border: 1px solid var(--trait-fort); padding: 0 10px; font: inherit; background: #FFFDF8; }
+.depot.depot-compact { display: inline-flex; padding: 0; border: 0; background: none; margin: 0; }
+.chiffres-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.chiffres-bloc { background: #FFFDF8; border: 1px solid var(--trait); border-radius: 22px; padding: 14px 18px; display: grid; gap: 2px; align-content: start; }
+.chiffres-bloc h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+.chiffre-ligne { display: grid; grid-template-columns: minmax(0, 1fr) auto 72px; align-items: center; gap: 10px; padding: 5px 0; border-top: 1px solid var(--trait); }
+.chiffres-bloc h3 + .chiffre-ligne { border-top: 0; }
+.chiffre-ligne label { font-size: 14.5px; font-weight: 500; display: grid; }
+.chiffre-ligne label small { font-size: 12px; font-weight: 400; color: var(--pierre-texte); }
+.champ-montant { display: inline-flex; align-items: center; gap: 6px; }
+.chiffre-ligne input { width: 132px; min-height: 38px; border-radius: 10px; border: 1px solid var(--trait-fort); padding: 0 10px; text-align: right; font: inherit; font-variant-numeric: tabular-nums; background: var(--creme); }
+.chiffre-ligne .valide-marque { justify-self: center; color: var(--vert); font-weight: 700; }
+.chiffre-ligne .btn-mini { justify-self: end; }
+.chiffres-facultatifs { margin-top: 10px; }
+.chiffres-facultatifs summary { cursor: pointer; font-weight: 600; font-size: 14.5px; padding: 6px 0; }
+.chiffres-facultatifs .chiffres-grille { margin-top: 6px; background: #FFFDF8; border: 1px solid var(--trait); border-radius: 22px; padding: 10px 18px; column-gap: 28px; gap: 0 28px; }
+.chiffres-facultatifs .chiffre-ligne:nth-child(-n+2) { border-top: 0; }
+.chiffres-pied { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.chiffres-pied .petit { margin: 0; }
+.page-espace .espace.parcours .suite { margin-top: 12px; }
+
+/* Aide « ? » (EBE) : au survol, au clavier et au toucher (le bouton prend le focus) */
+.aide-bulle { position: relative; display: inline-flex; vertical-align: middle; }
+.aide-rond { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--trait-fort); background: #FFFDF8; font: 600 12px/1 var(--sans); color: var(--espresso); cursor: help; padding: 0; }
+.aide-bulle [role="tooltip"] { position: absolute; z-index: 30; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); width: min(280px, 80vw); padding: 10px 12px; border-radius: 12px;
+  background: var(--espresso); color: var(--creme); font-size: 13.5px; font-weight: 400; line-height: 1.4; text-align: left; display: none; }
+.aide-bulle:hover [role="tooltip"], .aide-bulle:focus-within [role="tooltip"] { display: block; }
+@media (max-width: 760px) {
+  .chiffres-grille { grid-template-columns: 1fr; }
+  .chiffre-ligne { grid-template-columns: minmax(0, 1fr) auto; }
+  .chiffre-ligne input { width: 118px; }
+  .chiffre-ligne > .btn-mini, .chiffre-ligne > .valide-marque { grid-column: 2; justify-self: end; }
+  .chiffres-outils input { width: 84px; }
+  .aide-bulle [role="tooltip"] { left: auto; right: -8px; transform: none; }
+}
+
+/* Page du dossier sur un écran (option A : plan de la PR #10 resserré, sans pictogrammes) */
+.page-dossier .espace-bento.dossier-parcours { padding: 78px 0 12px; }
+.page-dossier .bande-parcours { margin-bottom: 10px; padding: 6px 0; }
+.page-dossier .bento-espace { gap: 10px; }
+.page-dossier .dossier-parcours .tuile { padding: 18px 20px; border-radius: 22px; }
+.page-dossier .dossier-parcours .tuile-dossier { gap: 12px; }
+.page-dossier .dossier-parcours .nom-code { font-size: clamp(20px, 2vw, 26px); }
+.page-dossier .dossier-parcours .tuile-dossier h1 { font-size: clamp(34px, 3.6vw, 52px); margin-top: 2px; }
+.page-dossier .dossier-valeur { padding-top: 12px; gap: 4px; }
+.page-dossier .valeur-montant { font-size: clamp(38px, 4vw, 58px); }
+.page-dossier .anneau { width: 80px; height: 80px; }
+.page-dossier .dossier-parcours .ico, .page-dossier .doc-haut .ico { display: none; }
+.page-dossier .tuile-afaire { gap: 10px; }
+.page-dossier .tuile-afaire h2, .page-dossier .section-titre h2, .page-dossier .pieces-resume h2 { font-size: 26px; }
+.page-dossier .taches { gap: 8px; }
+.page-dossier .tache { padding: 10px 12px 10px 14px; }
+.page-dossier .section-titre { margin-top: 8px; }
+.page-dossier .dossier-parcours .doc { padding: 14px 16px; gap: 6px 10px; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto 1fr; align-items: center; }
+.page-dossier .doc-haut { grid-column: 2; grid-row: 1; }
+.page-dossier .doc h3 { grid-column: 1; grid-row: 1; font-size: 22px; overflow-wrap: anywhere; }
+.page-dossier .doc > .petit, .page-dossier .doc-actions { grid-column: 1 / -1; }
+.page-dossier .dossier-parcours .pieces-zone { margin-top: 8px; padding: 10px 20px; }
+.page-dossier .pieces-compte { gap: 4px; }
+.page-dossier .dossier-parcours .gerer-dossier { margin-top: 10px; padding-top: 8px; }
+@media (max-width: 760px) {
+  .page-dossier .dossier-parcours .doc { grid-column: span 6; padding: 12px 14px; }
+  .page-dossier .dossier-parcours .doc { grid-template-columns: 1fr; }
+  .page-dossier .doc-haut { grid-column: 1; grid-row: 2; }
+  .page-dossier .doc h3 { font-size: 18px; }
+  .page-dossier .doc .petit { display: none; }
+  .page-dossier .pieces-resume { gap: 8px; }
+  .page-dossier .pieces-resume h2 { font-size: 22px; }
+  .page-dossier .valeur-base { font-size: 14px; }
+}
+
+/* Valorisation, « Votre valorisation » : résumé sur un écran, détail et réglages repliés */
+.page-espace .resultat-tete { gap: 12px; }
+.page-espace .synthese-valeur { padding: 20px 22px; }
+.page-espace .synthese-valeur .valeur-centrale { font: 700 clamp(44px, 4.6vw, 64px)/1 var(--b-affiche); margin: 6px 0; }
+.page-espace .resultat-tete .carte h3 { font-size: 16px; margin: 0 0 4px; }
+.resultat-deplis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; align-items: start; }
+.resultat-deplis > details { margin: 0; padding: 14px 18px; }
+.resultat-deplis > details[open] { grid-column: 1 / -1; }
+.resultat-deplis summary { cursor: pointer; font-size: 15.5px; }
+.alertes-repli { margin-top: 12px; padding: 12px 18px; }
+.alertes-repli summary { cursor: pointer; font-weight: 600; font-size: 14.5px; }
+.page-espace .reglages { margin-top: 0; }
+@media (max-width: 760px) { .resultat-deplis { grid-template-columns: 1fr; } }
+
+/* Parcours guidé : chaque écran tient sans défiler (« L'essentiel de vos comptes » en deux écrans, deux colonnes) */
+.page-guidee .guide { padding: 84px 0 16px; }
+.page-guidee .guide-ecran { gap: 12px; padding: clamp(18px, 2.4vw, 28px); }
+.page-guidee .saisie-deux { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; padding: 14px 18px 16px; }
+.page-guidee .saisie-deux legend { padding: 0 6px; }
+.page-guidee .saisie-deux .lien-simple { justify-self: start; align-self: center; }
+.page-guidee .saisie-annee { display: flex; align-items: center; gap: 12px; }
+.page-guidee .saisie-annee .guide-lib { margin: 0; }
+.page-guidee .saisie-champ .champ-unite input { min-height: 44px; }
+@media (max-width: 760px) {
+  .page-guidee .guide { padding-bottom: 96px; }
+  .page-guidee .saisie-deux { grid-template-columns: 1fr; }
+  .page-guidee .q-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--creme); border-top: 1px solid var(--trait); }
+}
+
+/* Valorisation : pied de l'onglet « Vos chiffres », questionnaire « Votre entreprise » sur un écran (thèmes à gauche) */
+.chiffres-actions-pied { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.page-espace #entreprise .conteneur-moyen { max-width: var(--largeur); display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 4px 16px; align-items: start; }
+.page-espace #entreprise .chapo-petit { grid-column: 1 / -1; margin: 0 0 6px; }
+.page-espace #entreprise .sous-etapes { grid-column: 1; flex-direction: column; flex-wrap: nowrap; gap: 2px; margin: 0; padding: 10px; border-radius: 20px; background: #FFFDF8; border: 1px solid var(--trait); }
+.page-espace #entreprise .sous-etapes .lien-simple { display: block; width: 100%; text-align: left; padding: 7px 10px; border-radius: 12px; text-decoration: none; font-size: 14px; }
+.page-espace #entreprise .sous-etapes [aria-current] { background: var(--vert); color: #F6F1E6; }
+.page-espace #entreprise .questionnaire { grid-column: 2; margin: 0; padding: 18px 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; align-items: start; }
+.page-espace #entreprise .questionnaire > h3, .page-espace #entreprise .questionnaire > p, .page-espace #entreprise .questionnaire > .q-nav { grid-column: 1 / -1; margin: 0; }
+.page-espace #entreprise .questionnaire h3 { font-size: 18px; }
+.page-espace #entreprise .questionnaire .q { margin: 0; }
+.page-espace #entreprise .questionnaire textarea { width: 100%; min-height: 64px; height: 64px; }
+.page-espace #entreprise .questionnaire .choix { margin-right: 12px; }
+.page-espace #entreprise .enregistre { grid-column: 2; margin: 4px 0 0; }
+@media (max-width: 860px) {
+  .page-espace #entreprise .conteneur-moyen { grid-template-columns: 1fr; }
+  .page-espace #entreprise .sous-etapes { grid-column: 1; flex-direction: row; overflow-x: auto; }
+  .page-espace #entreprise .sous-etapes .lien-simple { white-space: nowrap; }
+  .page-espace #entreprise .questionnaire, .page-espace #entreprise .enregistre { grid-column: 1; grid-template-columns: 1fr; }
+}
+
+/* Resserrage pour 1280 × 800 (mesures du 19/11/2026) */
+.page-espace .pied { padding: 10px 0; }
+.page-espace .pied .pied-bas { font-size: 13px; }
+.espace-tete { padding-top: 80px; }
+.espace-tete h1.affiche { font-size: clamp(30px, 3.2vw, 44px); }
+nav.etapes.onglets { margin-top: 6px; }
+nav.etapes.onglets a { padding: 8px 14px; }
+.page-espace .espace.parcours .panneau { padding: 10px 0 14px; }
+.page-espace #message-liasse.message-carte { padding: 8px 14px; font-size: 14px; margin: 0 0 8px; }
+.chiffres-barre { margin-bottom: 8px; }
+.choix-annee .annee, .chiffres-outils input { min-height: 36px; }
+.chiffre-ligne { padding: 3px 0; }
+.chiffre-ligne input { min-height: 34px; }
+.chiffres-facultatifs { margin-top: 6px; }
+.chiffres-pied { margin-top: 4px; }
+@media (min-width: 761px) and (max-height: 820px) {
+  .page-dossier .valeur-montant { font-size: 44px; }
+  .page-dossier .dossier-parcours .tuile-dossier h1 { font-size: 40px; }
+  .page-dossier .dossier-parcours .doc > .petit { font-size: 13px; }
+  .page-dossier .tache { padding: 8px 12px; }
+  .page-guidee .guide-ecran { gap: 8px; padding: 16px 22px; }
+  .page-guidee .saisie-champ .petit { display: none; }
+  .page-espace .synthese-valeur .valeur-centrale { font-size: 48px; }
+}
+.page-espace #entreprise .questionnaire textarea { max-width: none; }
+.page-espace #entreprise .questionnaire .q:has(.choix) { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
+.page-espace #entreprise .questionnaire .q:has(.choix) > :not(.choix) { flex-basis: 100%; }
+.page-espace #entreprise .questionnaire .choix { margin: 0; min-height: 32px; }
+.page-espace #entreprise .questionnaire > p.petit { font-size: 13.5px; }
+@media (min-width: 861px) and (max-height: 820px) {
+  .page-espace #entreprise .chapo-petit, .page-espace #entreprise .questionnaire > p.petit { display: none; }
+  .page-espace #entreprise .questionnaire { padding: 14px 20px; gap: 8px 18px; }
+  .page-espace #entreprise .questionnaire textarea { min-height: 54px; height: 54px; }
+  .page-espace #entreprise .sous-etapes .lien-simple { padding: 5px 10px; }
+}
+/* Téléphone : l'action principale reste visible sans défiler (pied collé en bas de l'écran) */
+@media (max-width: 760px) {
+  .page-espace .chiffres-pied, .page-espace #entreprise .questionnaire > .q-nav { position: sticky; bottom: 0; z-index: 20; margin: 8px -16px 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--creme); border-top: 1px solid var(--trait); }
+  .page-espace #entreprise .questionnaire > .q-nav { margin: 8px -22px -18px; border-radius: 0 0 22px 22px; }
+}
+@media (max-width: 760px) {
+  .page-dossier .tache-txt { flex: 1 1 100%; }
+  .page-dossier .tache .btn { margin-left: 0; }
+}
+
+/* Après intégration de parcours-coherence (19/11/2026) : récapitulatif des réponses préparées sur un écran,
+   explication d'écart de la fourchette sur la page du dossier */
+@media (min-width: 761px) {
+  .page-guidee .recap-liste { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .page-guidee .recap-carte { padding: 10px 12px; gap: 10px; }
+  .page-guidee .recap-texte strong { font-size: 14px; }
+  .page-guidee .recap-valeurs span { font-size: 13px; padding: 2px 8px; }
+}
+.page-dossier .valeur-base { font-size: 14px; line-height: 1.4; }
+.page-dossier .valeur-montant { font-size: clamp(36px, 3.6vw, 52px); }
+.page-dossier .dossier-parcours .tuile-dossier { gap: 10px; }
+.page-dossier .dossier-valeur { gap: 3px; padding-top: 10px; }
+@media (min-width: 761px) and (max-height: 820px) {
+  .page-espace #chiffres .chapo-petit { display: none; }
+  .page-dossier .dossier-parcours .doc > .petit { display: none; }
+  .page-dossier .anneau { width: 68px; height: 68px; }
+  .page-dossier .valeur-montant { font-size: 40px; }
+}
+@media (min-width: 1100px) {
+  .page-guidee .conteneur-etroit { max-width: 1240px; grid-template-columns: 200px minmax(0, 1fr); }
+  .page-guidee .recap-liste { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.page-guidee .recap-texte { gap: 3px; line-height: 1.3; }
+.page-guidee .guide-titre { font-size: clamp(24px, 2.6vw, 32px); }
+.page-guidee #guide-entreprise { font-size: clamp(22px, 2.2vw, 28px); }
+@media (min-width: 761px) and (max-height: 820px) {
+  .page-guidee .guide-ecran > .petit:first-of-type { margin: 0; }
+  .page-guidee .recap-carte { padding: 8px 10px; }
+  .page-dossier .tuile-afaire h2, .page-dossier .section-titre h2, .page-dossier .pieces-resume h2 { font-size: 22px; }
+  .page-dossier .dossier-parcours .pieces-zone { padding: 6px 18px; }
+}
+.page-guidee .guide { padding: 78px 0 8px; }
+.page-guidee .conteneur-etroit { row-gap: 10px; }
+.page-guidee .guide-ecran { gap: 10px; }
+@media (min-width: 761px) and (max-height: 820px) {
+  .page-guidee .guide { padding-top: 74px; }
+  .page-guidee .guide-ecran { padding: 14px 20px; }
+  .page-guidee .guide-ecran .chapo-petit, .page-guidee .guide-ecran > p.petit { font-size: 14px; }
+  .page-guidee .recap-liste { gap: 6px; }
+  .page-dossier .bande-parcours { margin-bottom: 6px; }
+}
+@media (min-width: 761px) and (max-height: 820px) {
+  .page-guidee .guide { padding-bottom: 0; }
+  .page-guidee .guide-titre { font-size: 24px; }
+  .page-guidee #guide-entreprise { font-size: 20px; }
+}
+@media (max-width: 760px) {
+  .page-espace #chiffres .chapo-petit { display: none; }
+  .chiffre-ligne { grid-template-columns: minmax(0, 1fr) auto 58px; gap: 6px; }
+  .chiffre-ligne input { width: 104px; }
+  .chiffre-ligne > .btn-mini, .chiffre-ligne > .valide-marque { grid-column: auto; }
+  .chiffre-ligne .btn-mini { padding: 0 8px; }
+  .chiffre-ligne .champ-montant { gap: 3px; }
+  .chiffres-bloc { padding: 10px 12px; }
+}
+/* Après #14 : « Télécharger l'Excel » plus long ; boutons des documents compacts, sur une ligne quand c'est possible */
+.page-dossier .doc-actions { gap: 6px; }
+.page-dossier .doc-actions .btn { min-height: 36px; padding: 0 12px; font-size: 14px; }
+@media (min-width: 761px) and (max-height: 820px) {
+  .page-dossier .valeur-base { font-size: 13px; line-height: 1.35; }
+  .page-dossier .dossier-parcours .tuile { padding: 14px 18px; }
+  .page-dossier .tache { padding: 7px 12px; }
+  .page-dossier .tache-txt .petit { font-size: 13px; }
+  .page-guidee .recap-carte { padding: 6px 10px; }
+  .page-guidee .guide-ecran { gap: 8px; }
+}

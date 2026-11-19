@@ -3,7 +3,7 @@
 // indispensable), Pour aller plus loin (questions facultatives, absentes du parcours guidé), Votre valorisation
 // (calcul du serveur, réglages). Fourchette seule, jamais de valeur centrale ; multiples du secteur seulement,
 // l'actif net corrigé sert de contrôle. Aucun calcul de valeur ici : tout vient de l'API (code testé).
-import { CHAMPS, exercicesAttendus } from "/js/champs-financiers.js";
+import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, AIDE_EBE } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
 import { POUR_ALLER_PLUS_LOIN as ETAPES } from "/js/parcours.js";
 import { ETIQUETTE_TITRES, resumeValorisation, explicationEcart, alertesDirigeant } from "/js/dossier-parcours.js";
@@ -63,49 +63,72 @@ function montrer() {
   document.querySelectorAll(".etapes a").forEach((a) => { if (a.dataset.etape === cle) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
   if (cle === "valorisation") calculer();
   if (cle === "entreprise") dessinerQuestionnaire();
+  window.scrollTo({ top: 0 }); // l'ancre ne fait plus glisser l'en-tête sous la barre du site
 }
 window.addEventListener("hashchange", () => { montrer(); $(`#titre-${location.hash.slice(1)}`)?.focus?.(); });
+// Onglets : pas de saut à l'ancre (l'en-tête resterait sous la barre du site), même sur l'onglet déjà ouvert
+document.querySelectorAll(".etapes a[href^='#']").forEach((a) => a.addEventListener("click", (ev) => {
+  ev.preventDefault();
+  if (location.hash !== a.getAttribute("href")) history.pushState(null, "", a.getAttribute("href"));
+  montrer();
+  $(`#titre-${a.dataset.etape}`)?.focus?.({ preventScroll: true });
+}));
+window.addEventListener("popstate", montrer);
 
-// ================================================================== 1. Vos chiffres
+// ================================================================== 1. Vos chiffres (un exercice à la fois)
+// Les lignes obligatoires sur deux colonnes (ce que l'entreprise gagne ; ce qu'elle possède et doit), les lignes
+// facultatives repliées : l'onglet tient sur un écran. Rôle de chaque exercice : le dernier est indispensable, les deux
+// précédents facultatifs, les plus anciens pour information. Rien n'entre dans le calcul sans validation.
 let chiffres = null;
-function etatLigne(cle, annees) {
-  const cases = annees.map((a) => chiffres.exercices[a]?.[cle]).filter((c) => c && c.valeur != null);
-  if (!cases.length) return "vide";
-  return cases.every((c) => c.valide) ? "validee" : "a_valider";
+let anneeCourante = null;
+const SOURCE = { inpi: "montant des comptes publics (registre national des entreprises)", liasse: "montant lu dans votre PDF" }; // formulation de la légende de main
+const DETAIL = new Set(["achats_consommes", "charges_externes", "charges_personnel"]);
+const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-chiffres", "aria-label": "Qu'est-ce que l'EBE ?" }, "?"),
+  el("span", { role: "tooltip", id: "aide-ebe-chiffres", text: AIDE_EBE }));
+function ligneChiffre(c, a) {
+  const v = chiffres.exercices[a]?.[c.cle];
+  const input = el("input", { type: "text", inputmode: "decimal", class: "montant", id: `m-${c.cle}`, value: v?.valeur != null ? fmt.format(v.valeur) : "" });
+  input.addEventListener("change", () => enregistrerCase(c.cle, a, input));
+  const etat = v?.valide ? el("span", { class: "valide-marque", title: "Ligne validée" }, "✓", el("span", { class: "visuellement-cache", text: "validée" }))
+    : el("button", { type: "button", class: "btn btn-mini", disabled: v?.valeur == null, onclick: () => validerLigne(c.cle, a) }, "Valider");
+  return el("div", { class: `chiffre-ligne${v?.valide ? " validee" : ""}`, "data-cle": c.cle },
+    el("label", { for: `m-${c.cle}` }, libelleEcran(c),
+      v?.valeur != null && SOURCE[v.source] ? el("small", { text: SOURCE[v.source] }) : !c.obligatoire && v?.valeur == null ? el("small", { text: aideEcran(c) }) : null),
+    el("span", { class: "champ-montant" }, input, el("span", { "aria-hidden": "true", text: "€" })), etat);
 }
 function dessinerChiffres() {
   const annees = Object.keys(chiffres.exercices).map(Number).sort((a, b) => a - b);
   const att = exercicesAttendus(chiffres.exercices);
-  // Rôle de chaque exercice : le dernier est indispensable, les deux précédents facultatifs, les plus anciens pour information
   const role = (a) => (a === att.dernier ? "indispensable" : att.recommandes.includes(a) ? "facultatif" : "information");
-  const table = $("#tableau-chiffres");
-  const tete = el("tr", {}, el("th", { scope: "col", text: "Poste" }), ...annees.map((a) => el("th", { scope: "col", class: "num" }, `${a} `, el("button", { type: "button", class: "lien-simple retirer", "aria-label": `Retirer l'exercice ${a}`, title: `Retirer ${a}`, onclick: () => retirerExercice(a) }, "×"), el("br"), el("span", { class: "petit", text: role(a) }))), el("th", { scope: "col", class: "col-ligne", text: "Ligne" }));
-  remplacer(table.tHead, tete);
-  const corps = [];
-  for (const [groupe, titre] of [["resultat", "Compte de résultat"], ["bilan", "Bilan"]]) {
-    corps.push(el("tr", { class: "groupe" }, el("th", { scope: "colgroup", colspan: String(annees.length + 2), text: titre })));
-    for (const c of CHAMPS.filter((x) => x.groupe === groupe)) {
-      const etat = etatLigne(c.cle, annees);
-      const tr = el("tr", { class: `ligne-${etat}`, "data-cle": c.cle });
-      tr.append(el("th", { scope: "row" }, el("span", { class: "poste", text: c.libelle }), c.obligatoire && att.dernier != null ? el("abbr", { class: "obligatoire", title: `Nécessaire pour l'exercice ${att.dernier}`, text: "*" }) : null, el("span", { class: "aide", text: c.aide })));
-      for (const a of annees) {
-        const v = chiffres.exercices[a]?.[c.cle];
-        const input = el("input", { type: "text", inputmode: "decimal", class: "montant", "aria-label": `${c.libelle}, ${a}`, value: v?.valeur != null ? fmt.format(v.valeur) : "", "data-annee": String(a) });
-        input.addEventListener("change", () => enregistrerCase(c.cle, a, input));
-        const src = v?.valeur != null ? el("span", { class: `source source-${v.source}`, text: { inpi: "INPI", liasse: "Liasse", dirigeant: "Vous" }[v.source] }) : null;
-        tr.append(el("td", { class: "num" }, input, src, v?.valide ? el("span", { class: "valide-marque", "aria-label": "validée", text: "✓" }) : null));
-      }
-      tr.append(el("td", { class: "col-ligne" }, etat === "validee"
-        ? el("span", { class: "petit valide-texte", text: "Validée" })
-        : el("button", { type: "button", class: "btn btn-mini", disabled: etat === "vide", onclick: () => validerLigne(c.cle, annees) }, "Valider")));
-      corps.push(tr);
-    }
+  if (!annees.includes(anneeCourante)) anneeCourante = att.dernier ?? annees.at(-1) ?? null;
+  const manq = (a) => chiffres.manquants?.[a] || [];
+  remplacer($("#choix-annee"), el("span", { class: "petit", text: "Exercice :" }), ...annees.map((a) => el("button", { type: "button", class: "annee", "aria-pressed": String(a === anneeCourante),
+    onclick: () => { anneeCourante = a; dessinerChiffres(); } }, `${a}`, el("small", { text: ` · ${role(a)}${manq(a).length ? "" : " ✓"}` }))));
+  const zone = $("#chiffres-annee");
+  if (anneeCourante == null) {
+    remplacer(zone, el("p", { class: "carte vide", text: "Aucun exercice pour l'instant : ajoutez l'année de votre dernier exercice clos, ou déposez votre liasse." }));
+  } else {
+    const a = anneeCourante, l = chiffres.exercices[a] || {};
+    const detail = [...DETAIL].some((k) => l[k]?.valeur != null);
+    const principal = (c) => c.obligatoire || (c.cle === "ebe" && !detail && l.ebe?.valeur != null);
+    const bloc = (groupe, titre) => el("section", { class: "chiffres-bloc", "aria-label": titre }, el("h3", { text: titre }),
+      ...CHAMPS.filter((c) => c.groupe === groupe && principal(c) && !(DETAIL.has(c.cle) && !detail && l.ebe?.valeur != null)).map((c) => ligneChiffre(c, a)));
+    const facultatifs = CHAMPS.filter((c) => !principal(c));
+    const remplis = facultatifs.filter((c) => l[c.cle]?.valeur != null).length;
+    remplacer(zone, 
+      el("div", { class: "chiffres-grille" }, bloc("resultat", `Ce que l'entreprise gagne (${a})`), bloc("bilan", `Ce qu'elle possède et doit (fin ${a})`)),
+      el("details", { class: "chiffres-facultatifs" }, el("summary", {}, `Lignes facultatives (${facultatifs.length}${remplis ? `, dont ${remplis} remplie${remplis > 1 ? "s" : ""}` : ""})`),
+        el("div", { class: "chiffres-grille" }, ...facultatifs.map((c) => ligneChiffre(c, a)))),
+      el("div", { class: "chiffres-pied" },
+        el("span", { class: "petit" }, aideEbe(), " ", el("button", { type: "button", class: "lien-simple", onclick: () => retirerExercice(a) }, `Retirer ${a}`)),
+        el("span", { class: "chiffres-actions-pied" },
+          manq(a).length ? el("button", { type: "button", class: "btn btn-contour btn-petit", onclick: () => validerExercice(a) }, `Valider les lignes remplies de ${a}`) : null,
+          el("a", { class: "btn btn-vert btn-petit", href: "#entreprise" }, "Continuer : votre entreprise ", el("span", { class: "fleche", "aria-hidden": "true", text: "→" })))));
   }
-  remplacer(table.tBodies[0], ...corps);
 
   // Seul le dernier exercice est réclamé ; les deux précédents sont proposés, jamais exigés ; les plus anciens, ignorés
   $("#etat-chiffres").textContent = att.dernier == null ? "" : att.dernier_complet ? `✓ ${att.dernier}` : `${att.dernier} à confirmer`;
-  const libelles = (l) => l.map((k) => CHAMPS.find((c) => c.cle === k)?.libelle).join(", ");
+  const libelles = (l) => l.map((k) => libelleEcran(CHAMPS.find((c) => c.cle === k))).join(", ");
   const manqueDernier = att.dernier != null ? chiffres.manquants[att.dernier] || [] : [];
   const resume = [];
   if (manqueDernier.length) resume.push(`${att.dernier} : ${manqueDernier.length} ligne${manqueDernier.length > 1 ? "s" : ""} à compléter ou valider (${libelles(manqueDernier)})`);
@@ -121,22 +144,24 @@ async function enregistrerCase(cle, annee, input) {
   try {
     chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs: { [cle]: v }, valider: false }) });
     dessinerChiffres();
-    $(`tr[data-cle="${cle}"] input[data-annee="${annee}"]`)?.focus();
+    $(`#m-${cle}`)?.focus();
   } catch (e) { message(e.message, true, "#message-liasse"); }
 }
-async function validerLigne(cle, annees) {
-  const ligne = $(`tr[data-cle="${cle}"]`);
+async function validerLigne(cle, annee) {
   try {
-    for (const a of annees) {
-      const v = lireNombre(ligne.querySelector(`input[data-annee="${a}"]`).value);
-      if (v === null) continue;
-      if (Number.isNaN(v)) throw new Error("Un montant de cette ligne est illisible.");
-      chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee: a, valeurs: { [cle]: v }, valider: true }) });
-    }
+    const v = lireNombre($(`#m-${cle}`).value);
+    if (v === null) return;
+    if (Number.isNaN(v)) throw new Error("Ce montant est illisible.");
+    chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs: { [cle]: v }, valider: true }) });
     dessinerChiffres();
-    const suivant = $(`tr[data-cle="${cle}"]`)?.nextElementSibling?.querySelector("button.btn-mini:not([disabled]), input");
-    (suivant || $(`tr[data-cle="${cle}"] .valide-texte`))?.focus?.();
+    const lignes = [...document.querySelectorAll("#chiffres-annee .chiffre-ligne")];
+    const i = lignes.findIndex((x) => x.dataset.cle === cle);
+    (lignes.slice(i + 1).find((x) => !x.classList.contains("validee"))?.querySelector("input") || $(`#m-${cle}`))?.focus();
   } catch (e) { message(e.message, true, "#message-liasse"); }
+}
+async function validerExercice(a) {
+  try { chiffres = await api(`${base}/financials/${a}/valider`, { method: "POST" }); dessinerChiffres(); }
+  catch (e) { message(e.message, true, "#message-liasse"); }
 }
 async function retirerExercice(a) {
   if (!confirm(`Retirer l'exercice ${a} et ses chiffres ?`)) return;
@@ -145,7 +170,7 @@ async function retirerExercice(a) {
 $("#btn-exercice").addEventListener("click", async () => {
   const a = Number($("#nouvel-exercice").value);
   if (!Number.isInteger(a) || a < 1990 || a > 2100) return message("Indiquez une année sur 4 chiffres.", true, "#message-liasse");
-  try { chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee: a, valeurs: {}, valider: false }) }); chiffres.exercices[a] ??= {}; dessinerChiffres(); $("#nouvel-exercice").value = ""; }
+  try { chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee: a, valeurs: {}, valider: false }) }); chiffres.exercices[a] ??= {}; anneeCourante = a; dessinerChiffres(); $("#nouvel-exercice").value = ""; }
   catch (e) { message(e.message, true, "#message-liasse"); }
 });
 $("#btn-liasse").addEventListener("click", () => $("#fichier-liasse").click());
@@ -435,14 +460,17 @@ function dessinerResultat() {
   const sens = r.sensibilites;
   const lignesSens = sens.multiple ? [{ cellules: ["Multiple d'EBE retenu, un point de moins / de plus", court(sens.multiple.moins), court(sens.multiple.plus)] }] : [];
 
-  remplacer(zone,
+  remplacer(zone, 
     el("div", { class: "resultat-tete" }, tete, el("div", { class: "carte" }, el("h3", { text: "Votre fourchette et son contrôle" }), el("p", { class: "petit", text: "Valeur des titres. Barre : fourchette des multiples du secteur ; point : actif net corrigé, qui sert de contrôle et de plancher." }), ff)),
-    ...(alertes ? [alertes] : []), reglages,
+    ...(alertes ? [el("details", { class: "carte alertes-repli" }, el("summary", {}, `Points d'attention (${alertes.childElementCount})`), alertes)] : []),
+    el("div", { class: "resultat-deplis" },
+    el("details", { class: "carte calcul-detail" }, el("summary", {}, el("strong", { text: "Comment la fourchette est calculée" })),
     el("div", { class: "resultat-detail" },
       el("section", { class: "carte" }, el("h3", { text: "De l'EBE comptable à l'EBE normatif" }), tableau(["Pont EBE", "Montant"], pontLignes)),
       el("section", { class: "carte" }, el("h3", { text: "Multiples et passage à la valeur des titres" }), pontTitres),
       el("section", { class: "carte" }, el("h3", { text: "Contrôle : actif net comptable corrigé" }), tableau(["Poste", "Montant"], [...r.ancc.lignes.filter((l) => l.montant).map((l) => ({ cellules: [l.libelle, euros(l.montant)] })), { classe: "total fort", cellules: ["Actif net corrigé", euros(r.ancc.valeur)] }])),
-      lignesSens.length ? el("section", { class: "carte" }, el("h3", { text: "Sensibilité (valeur des titres)" }), tableau(["Variation", "Un point de moins", "Un point de plus"], lignesSens)) : null),
+      lignesSens.length ? el("section", { class: "carte" }, el("h3", { text: "Sensibilité (valeur des titres)" }), tableau(["Variation", "Un point de moins", "Un point de plus"], lignesSens)) : null)),
+    reglages),
     el("p", { class: "petit", text: `Hypothèses Passation du ${H.version}. Le calcul est fait par du code vérifié ; aucune intelligence artificielle n'intervient dans les montants.` }),
   );
 }
