@@ -16,6 +16,8 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
+/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const fmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const euros = (v) => (v == null || !Number.isFinite(v) ? "–" : `${fmt.format(Math.round(v))} €`);
 const court = (v) => {
@@ -70,7 +72,7 @@ function dessinerChiffres() {
   const annees = Object.keys(chiffres.exercices).map(Number).sort((a, b) => a - b);
   const table = $("#tableau-chiffres");
   const tete = el("tr", {}, el("th", { scope: "col", text: "Poste" }), ...annees.map((a) => el("th", { scope: "col", class: "num" }, `${a} `, el("button", { type: "button", class: "lien-simple retirer", "aria-label": `Retirer l'exercice ${a}`, title: `Retirer ${a}`, onclick: () => retirerExercice(a) }, "×"))), el("th", { scope: "col", class: "col-ligne", text: "Ligne" }));
-  table.tHead.replaceChildren(tete);
+  remplacer(table.tHead, tete);
   const corps = [];
   for (const [groupe, titre] of [["resultat", "Compte de résultat"], ["bilan", "Bilan"]]) {
     corps.push(el("tr", { class: "groupe" }, el("th", { scope: "colgroup", colspan: String(annees.length + 2), text: titre })));
@@ -91,7 +93,7 @@ function dessinerChiffres() {
       corps.push(tr);
     }
   }
-  table.tBodies[0].replaceChildren(...corps);
+  remplacer(table.tBodies[0], ...corps);
 
   const manque = Object.entries(chiffres.manquants).filter(([, l]) => l.length);
   const complets = annees.length - manque.length;
@@ -162,7 +164,7 @@ $("#fichier-liasse").addEventListener("change", async (ev) => {
 // ================================================================== 2. Votre entreprise
 let reponses = {}, etapeQ = 0, minuterie = null;
 function dessinerSousEtapes() {
-  $("#sous-etapes").replaceChildren(...ETAPES.map((e, i) => el("li", {}, el("button", { type: "button", class: "lien-simple", "aria-current": i === etapeQ ? "step" : null, onclick: () => { etapeQ = i; dessinerQuestionnaire(); } }, `${i + 1}. ${e.titre}`))));
+  remplacer($("#sous-etapes"), ...ETAPES.map((e, i) => el("li", {}, el("button", { type: "button", class: "lien-simple", "aria-current": i === etapeQ ? "step" : null, onclick: () => { etapeQ = i; dessinerQuestionnaire(); } }, `${i + 1}. ${e.titre}`))));
 }
 function champQuestion(e, q) {
   const v = reponses[e.cle]?.[q.cle];
@@ -227,7 +229,7 @@ function dessinerQuestionnaire() {
   const e = ETAPES[etapeQ];
   dessinerSousEtapes();
   const form = $("#questionnaire");
-  form.replaceChildren(
+  remplacer(form, 
     el("h3", { text: `${etapeQ + 1}. ${e.titre}` }), el("p", { class: "petit", text: e.intro }),
     ...e.questions.map((q) => champQuestion(e, q)),
     el("div", { class: "q-nav" },
@@ -262,7 +264,7 @@ async function calculer() {
   try {
     dernier = await api(`${base}/valuation`, { method: "POST" });
     dessinerResultat();
-  } catch (e) { zone.replaceChildren(el("p", { class: "message-carte erreur", text: e.message })); }
+  } catch (e) { remplacer(zone, el("p", { class: "message-carte erreur", text: e.message })); }
   finally { zone.removeAttribute("aria-busy"); }
 }
 
@@ -329,7 +331,7 @@ function dessinerResultat() {
   const { resultat: r, hypotheses: H, entree } = dernier;
   const zone = $("#resultat");
   if (r?.statut === "hypotheses_invalides") {
-    zone.replaceChildren(el("div", { class: "carte vide" }, el("p", { text: "Certains réglages sont hors des bornes admises :" }),
+    remplacer(zone, el("div", { class: "carte vide" }, el("p", { text: "Certains réglages sont hors des bornes admises :" }),
       el("ul", {}, ...r.alertes.map((t) => el("li", { text: t }))),
       (r.erreurs || []).some((x) => x.champ.startsWith("reglages")) ? el("button", { type: "button", class: "btn btn-noir", onclick: async () => {
         if (!confirm("Rétablir les réglages par défaut (prime de taille, décotes, pondération, hypothèses) ?")) return;
@@ -341,7 +343,7 @@ function dessinerResultat() {
     return;
   }
   if (!r || r.statut !== "ok") {
-    zone.replaceChildren(el("div", { class: "carte vide" }, el("p", { text: "Validez un exercice complet (chiffre d'affaires, charges et bilan) pour obtenir une valorisation." }),
+    remplacer(zone, el("div", { class: "carte vide" }, el("p", { text: "Validez un exercice complet (chiffre d'affaires, charges et bilan) pour obtenir une valorisation." }),
       ...(r?.alertes || []).map((t) => el("p", { class: "petit", text: t })), el("a", { class: "btn btn-noir", href: "#chiffres" }, "Compléter mes chiffres")));
     $("#etat-valorisation").textContent = "";
     return;
@@ -473,7 +475,7 @@ function dessinerResultat() {
   if (sens.cmpc) lignesSens.push({ cellules: ["CMPC + 1 pt / − 1 pt (DCF)", court(sens.cmpc.plus_1pt), court(sens.cmpc.central), court(sens.cmpc.moins_1pt)] });
   if (sens.croissance_terminale) lignesSens.push({ cellules: ["Croissance à l'infini − 0,5 pt / + 0,5 pt (DCF)", court(sens.croissance_terminale.moins_05pt), court(sens.croissance_terminale.central), court(sens.croissance_terminale.plus_05pt)] });
 
-  zone.replaceChildren(
+  remplacer(zone, 
     el("div", { class: "resultat-tete" }, tete, el("div", { class: "carte" }, el("h3", { text: "Fourchettes par méthode" }), el("p", { class: "petit", text: "Valeur des titres. Barre : fourchette ; trait : valeur centrale ; point : actif net corrigé." }), ff)),
     ...(alertes ? [alertes] : []), reglages,
     el("div", { class: "resultat-detail" },

@@ -21,11 +21,13 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
+/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const fmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const court = (v) => (v == null || !Number.isFinite(v) ? "–" : Math.abs(v) >= 1e6 ? `${(v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} M€` : `${Math.round(v / 1e3).toLocaleString("fr-FR")} k€`);
 const lireNombre = (s) => { const t = String(s ?? "").replace(/[\s  €%]/g, "").replace(",", "."); if (t === "" || t === "-") return null; const n = Number(t); return Number.isFinite(n) ? n : NaN; };
 /** Remplit l'écran en ignorant les emplacements vides (jamais de « null » affiché). */
-const remplir = (...enfants) => $("#ecran").replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
+const remplir = (...enfants) => remplacer($("#ecran"), ...enfants);
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
@@ -74,7 +76,7 @@ function etapeDemandee() {
 const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
 function dessinerEtapes() {
   const i = ETAPES.findIndex(([k]) => k === (S.etape === "saisie" ? "comptes" : S.etape));
-  $("#guide-etapes").replaceChildren(...ETAPES.map(([k, t], j) => el("li", { class: j < i ? "fait" : j === i ? "actif" : null, "aria-current": j === i ? "step" : null }, el("span", { text: String(j + 1) }), t)));
+  remplacer($("#guide-etapes"), ...ETAPES.map(([k, t], j) => el("li", { class: j < i ? "fait" : j === i ? "actif" : null, "aria-current": j === i ? "step" : null }, el("span", { text: String(j + 1) }), t)));
   const pct = Math.round(((i + 1) / ETAPES.length) * 100); // l'étape en cours compte : on ne part jamais de zéro
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
@@ -331,7 +333,7 @@ function champ(c, q) {
   if (c.type === "exceptionnels") {
     const liste = Array.isArray(v) && v.length ? v : [{ annee: Number(Object.keys(S.chiffres?.exercices || {}).sort().at(-1)) || null, libelle: "", montant: null, justification: "" }];
     const zone = el("div", { class: "guide-champ exceptionnels" });
-    const dessiner = () => zone.replaceChildren(...liste.map((x, k) => el("div", { class: "exc" },
+    const dessiner = () => remplacer(zone, ...liste.map((x, k) => el("div", { class: "exc" },
       el("input", { type: "text", value: x.annee ?? "", "aria-label": "Exercice", inputmode: "numeric", onchange: (e) => { x.annee = Number(e.target.value); } }),
       el("input", { type: "text", value: x.libelle, placeholder: "Libellé", "aria-label": "Libellé", onchange: (e) => { x.libelle = e.target.value; } }),
       el("input", { type: "text", inputmode: "decimal", value: x.montant != null ? fmt.format(x.montant) : "", placeholder: "Montant (€)", "aria-label": "Montant", onchange: (e) => { x.montant = lireNombre(e.target.value); } }),
@@ -598,7 +600,7 @@ async function redaction() {
     manquantes = questionsIncompletes(S.reponses);
   }
   if (manquantes.length) {
-    suite.replaceChildren(el("div", { class: "carte guide-todo" },
+    remplacer(suite, el("div", { class: "carte guide-todo" },
       el("h2", { text: "Une réponse manque pour rédiger le mémorandum" }),
       el("p", { class: "petit", text: "La valorisation, le datapack et le teaser sont prêts. Répondez ci-dessous : la rédaction du mémorandum reprendra aussitôt." }),
       ...manquantes.map((q) => el("button", { type: "button", class: "btn btn-noir", onclick: () => { S.retour = "redaction"; S.q = QUESTIONS.indexOf(q); aller("questions"); } }, `Répondre : ${q.titre} `, fleche()))));
@@ -611,7 +613,7 @@ async function redaction() {
   if (bloquantes.length) {
     const causes = new Map();
     for (const e of bloquantes) causes.set(e.message, [...(causes.get(e.message) || []), libelle[e.k]]);
-    suite.replaceChildren(el("div", { class: "carte guide-todo" },
+    remplacer(suite, el("div", { class: "carte guide-todo" },
       el("h2", { text: `${bloquantes.length} rédaction${bloquantes.length > 1 ? "s n'ont" : " n'a"} pas abouti` }),
       el("ul", {}, ...[...causes].map(([m, l]) => el("li", {}, el("strong", { text: `${l.join(", ")} : ` }), m))),
       el("p", { class: "petit", text: "Ce qui est terminé est conservé : seules ces rédactions seront relancées." }),

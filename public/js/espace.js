@@ -26,6 +26,8 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
+/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const ICONES = {
   chiffres: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   questions: '<path d="M4 5h16v11H9l-5 4z"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.4"/>',
@@ -62,7 +64,7 @@ function afficher({ checklist = true } = {}) {
   $("#lien-dossier").href = `/espace/?dossier=${id}`;
 
   // Fil du parcours : étapes faites cliquables, l'actuelle mise en avant
-  $("#fil").replaceChildren(...etat.etapes.map((x, i) => {
+  remplacer($("#fil"), ...etat.etapes.map((x, i) => {
     const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(i + 1) }), el("span", { class: "lib", text: x.libelle })];
     if (x.etat === "fait") return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": `${x.libelle} : étape terminée, revoir` }, contenu));
     if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: " : étape en cours" })));
@@ -85,7 +87,7 @@ function afficher({ checklist = true } = {}) {
   $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
 
   // À faire maintenant
-  $("#afaire").replaceChildren(etat.taches.length
+  remplacer($("#afaire"), etat.taches.length
     ? el("ul", { class: "taches" }, ...etat.taches.map((t) => el("li", { class: "tache" },
       icone(t.cle),
       el("span", { class: "tache-txt" }, el("strong", { text: t.titre }), el("span", { class: "petit", text: t.detail })),
@@ -97,7 +99,7 @@ function afficher({ checklist = true } = {}) {
   // Documents
   const prets = etat.documents.filter((x) => x.etat !== "a-venir").length;
   $("#docs-resume").textContent = `${prets} sur ${etat.documents.length} disponibles`;
-  $("#docs").replaceChildren(...etat.documents.map((x) => el("article", { class: `tuile doc doc-${x.etat}`, "aria-labelledby": `doc-titre-${x.cle}` },
+  remplacer($("#docs"), ...etat.documents.map((x) => el("article", { class: `tuile doc doc-${x.etat}`, "aria-labelledby": `doc-titre-${x.cle}` },
     el("div", { class: "doc-haut" }, icone(x.cle), el("span", { class: `etat etat-${x.etat}`, text: LIBELLE_ETAT[x.etat] })),
     el("h3", { id: `doc-titre-${x.cle}`, text: x.titre }),
     el("p", { class: "petit", text: x.detail }),
@@ -171,7 +173,7 @@ function choisirTheme(k, focus = false) {
 function dessinerChecklist() {
   const coches = new Set(dossier.checklist);
   const parItem = (k) => pieces.filter((x) => x.item === k);
-  $("#drive-dossiers").replaceChildren(...CHECKLIST.map((g, k) => {
+  remplacer($("#drive-dossiers"), ...CHECKLIST.map((g, k) => {
     const n = g.items.filter(([c]) => coches.has(c)).length;
     return el("button", {
       type: "button", role: "tab", id: `theme-${k}`, "aria-selected": String(k === theme), "aria-controls": "checklist-groupes", tabindex: k === theme ? "0" : "-1",
@@ -183,7 +185,7 @@ function dessinerChecklist() {
   $("#checklist-groupes").setAttribute("aria-labelledby", `theme-${theme}`);
   const g = CHECKLIST[theme];
   const prochaine = g.items.find(([c]) => !coches.has(c)) || g.items[0];
-  $("#checklist-groupes").replaceChildren(
+  remplacer($("#checklist-groupes"), 
     zoneDepot(prochaine[0], [
       el("span", { class: "depot-ico", "aria-hidden": "true", text: "↑" }), el("strong", { text: `Glissez vos fichiers « ${g.groupe} » ici` }),
       el("span", { class: "petit", text: `Rangés sous « ${prochaine[1]} » ; ou déposez-les sur la bonne ligne ci-dessous. PDF, images, Word, Excel · 20 Mo par fichier.` })], "depot-zone", `« ${g.groupe} »`),
