@@ -8,7 +8,7 @@
 //   Rédaction : valorisation, datapack, teaser et mémorandum générés d'un coup
 //   Relecture et envoi : « prêt » seulement si tout l'indispensable est fait, sinon ce qui reste (même décompte que
 //      la page du dossier)
-import { CHAMPS, exercicesAttendus } from "/js/champs-financiers.js";
+import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, AIDE_EBE } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
@@ -99,6 +99,12 @@ const documentsLus = (d) => Promise.all([
   d.documents?.teaser ? api(`${base}/documents/teaser`).catch(() => null) : null,
 ]);
 /** État du dossier relu au serveur (même calcul que la page du dossier), puis fil redessiné. */
+/** Mémorandum et teaser lus comme sur la page du dossier : même état, mêmes tâches (un teaser vide n'est pas « prêt »). */
+const documentsPourEtat = (d) => Promise.all([
+  d.documents?.memo ? api(`${base}/documents/memo`).catch(() => null) : null,
+  d.documents?.teaser ? api(`${base}/documents/teaser`).catch(() => null) : null,
+]);
+
 async function rafraichirEtat() {
   try {
     const d = await api(base);
@@ -177,46 +183,72 @@ function anneesSaisie() {
   const defaut = x.dernier == null ? y - 1 : !x.dernier_complet ? x.dernier : x.recommandes_manquants[0] ?? x.dernier;
   return { toutes, defaut };
 }
+/** « L'essentiel de vos comptes » en deux écrans (19/11/2026) : ce que l'entreprise gagne, puis ce qu'elle possède et
+ *  doit. Les montants tapés sont gardés d'un écran à l'autre ; l'exercice est enregistré en une fois, au second écran. */
 function saisie() {
   const { toutes, defaut } = anneesSaisie();
-  if (!S.saisie) S.saisie = { annee: defaut, valeurs: {} };
-  const { annee } = S.saisie;
+  if (!S.saisie) S.saisie = { annee: defaut, valeurs: {}, ecran: 1 };
+  S.saisie.ecran ??= 1;
+  const { annee, ecran } = S.saisie;
   const l = S.chiffres?.exercices?.[annee] || {};
   const ebePublie = l.ebe?.valeur != null;
   const detail = S.saisie.detail ?? !ebePublie;
+  const cles1 = ["chiffre_affaires", ...(detail ? DETAIL_CHARGES : ["ebe"]), "resultat_net"];
+  const brut = (cle) => S.saisie.valeurs[cle] ?? (l[cle]?.valeur != null ? fmt.format(l[cle].valeur) : "");
+  const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-saisie", "aria-label": "Qu'est-ce que l'EBE ?" }, "?"),
+    el("span", { role: "tooltip", id: "aide-ebe-saisie", text: AIDE_EBE }));
   const champ = (cle) => {
     const c = CHAMPS.find((x) => x.cle === cle), cell = l[cle];
-    const valeur = S.saisie.valeurs[cle] ?? (cell?.valeur != null ? fmt.format(cell.valeur) : "");
-    const input = el("input", { type: "text", inputmode: "decimal", id: `s-${cle}`, "data-cle": cle, "data-libelle": c.libelle, value: valeur, autocomplete: "off" });
-    if (FACULTATIFS.has(cle)) input.dataset.facultatif = "1";
+    const input = el("input", { type: "text", inputmode: "decimal", id: `s-${cle}`, "data-cle": cle, value: brut(cle), autocomplete: "off" });
     input.addEventListener("input", () => { S.saisie.valeurs[cle] = input.value; });
-    const aide = cell?.source === "inpi" ? "Repris des comptes publics : vérifiez-le avec vos comptes." : c.aide;
+    const aide = cell?.source === "inpi" ? "Repris des comptes publics (registre national des entreprises) : vérifiez-le avec vos comptes." : aideEcran(c);
     return el("div", { class: "guide-champ saisie-champ" },
-      el("label", { class: "guide-lib", for: `s-${cle}` }, cle === "ebe" ? "EBE (excédent brut d'exploitation)" : c.libelle, FACULTATIFS.has(cle) ? el("span", { class: "facultatif", text: " · facultatif" }) : null),
+      el("label", { class: "guide-lib", for: `s-${cle}` }, cle === "ebe" ? ["EBE ", aideEbe()] : libelleEcran(c), FACULTATIFS.has(cle) ? el("span", { class: "facultatif", text: " · facultatif" }) : null),
       el("p", { class: "petit", text: aide }),
       el("div", { class: "champ-unite" }, input, el("span", { class: "unite", text: "€" })));
   };
+  /** Lit les montants des clés données : { valeurs } ou un message d'erreur (champ illisible ou obligatoire vide). */
+  const lire = (cles) => {
+    const valeurs = {}, manque = [];
+    for (const cle of cles) {
+      const v = lireNombre(brut(cle));
+      const lib = cle === "ebe" ? "EBE" : libelleEcran(CHAMPS.find((x) => x.cle === cle));
+      if (Number.isNaN(v)) return { erreur: `Montant illisible : ${lib}.`, cle };
+      if (v === null) { if (!FACULTATIFS.has(cle)) manque.push(lib); continue; }
+      valeurs[cle] = v;
+    }
+    return manque.length ? { erreur: `Il manque : ${manque.join(", ")}. Indiquez 0 si le poste n'existe pas.`, cle: null } : { valeurs };
+  };
   const choixAnnee = el("select", { id: "s-annee" }, ...toutes.map((a) => el("option", { value: String(a), selected: a === annee }, String(a))));
-  choixAnnee.addEventListener("change", () => { S.saisie = { annee: Number(choixAnnee.value), valeurs: {} }; saisie(); });
+  choixAnnee.addEventListener("change", () => { S.saisie = { annee: Number(choixAnnee.value), valeurs: {}, ecran: 1 }; saisie(); });
   const basculer = ebePublie ? el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie.detail = !detail; saisie(); } },
     detail ? "Reprendre l'EBE des comptes publics" : "Je préfère détailler mes charges") : null;
-  remplir(...titre("L'essentiel de vos comptes", "Une dizaine de montants, à recopier de votre liasse fiscale ou de vos comptes annuels. Indiquez 0 si un poste n'existe pas. Les autres lignes sont facultatives : vous pourrez les ajouter plus tard."),
-    el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: "s-annee", text: "Exercice clos en" }), choixAnnee),
-    el("fieldset", { class: "saisie-groupe" }, el("legend", { text: "Compte de résultat" }),
-      champ("chiffre_affaires"), ...(detail ? DETAIL_CHARGES.map(champ) : [champ("ebe")]), basculer, champ("resultat_net")),
-    el("fieldset", { class: "saisie-groupe" }, el("legend", { text: "Bilan" }), ...BILAN_ESSENTIEL.map(champ)),
+  const erreur = (r) => { message(r.erreur, true); if (r.cle && ecran === 1) $(`#s-${r.cle}`)?.focus(); return false; };
+
+  if (ecran === 1) {
+    remplir(...titre("L'essentiel de vos comptes", "Écran 1 sur 2 : ce que l'entreprise gagne. À recopier de vos comptes annuels ; indiquez 0 si un poste n'existe pas."),
+      el("div", { class: "guide-champ saisie-annee" }, el("label", { class: "guide-lib", for: "s-annee", text: "Exercice clos en" }), choixAnnee),
+      el("fieldset", { class: "saisie-groupe saisie-deux" }, el("legend", { text: "Ce que l'entreprise gagne" }), ...cles1.map(champ), basculer),
+      el("div", { class: "q-nav" },
+        el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; message(""); aller(exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes"); } }, "Retour"),
+        el("button", { type: "button", class: "btn btn-noir", onclick: () => {
+          const r = lire(cles1);
+          if (r.erreur) return erreur(r);
+          message(""); S.saisie.ecran = 2; saisie();
+        } }, "Suivant : ce qu'elle possède et doit ", fleche())));
+    return;
+  }
+  remplir(...titre("L'essentiel de vos comptes", `Écran 2 sur 2 : ce que l'entreprise possède et doit, à la clôture ${annee}. Indiquez 0 si un poste n'existe pas.`),
+    el("fieldset", { class: "saisie-groupe saisie-deux" }, el("legend", { text: "Ce qu'elle possède et doit" }), ...BILAN_ESSENTIEL.map(champ)),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; message(""); aller(exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes"); } }, "Retour"),
+      el("button", { type: "button", class: "lien-simple", onclick: () => { message(""); S.saisie.ecran = 1; saisie(); } }, "← Ce que l'entreprise gagne"),
       el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
         const bouton = ev.currentTarget;
-        const valeurs = {}, manque = [];
-        for (const i of $("#ecran").querySelectorAll("input[data-cle]")) {
-          const v = lireNombre(i.value);
-          if (Number.isNaN(v)) { message(`Montant illisible : ${i.dataset.libelle}.`, true); i.focus(); return; }
-          if (v === null) { if (!i.dataset.facultatif) manque.push(i.dataset.libelle); continue; }
-          valeurs[i.dataset.cle] = v;
-        }
-        if (manque.length) { message(`Il manque : ${manque.join(", ")}. Indiquez 0 si le poste n'existe pas.`, true); return; }
+        const r1 = lire(cles1);
+        if (r1.erreur) { S.saisie.ecran = 1; saisie(); return erreur(r1); }
+        const r2 = lire(BILAN_ESSENTIEL);
+        if (r2.erreur) { message(r2.erreur, true); if (r2.cle) $(`#s-${r2.cle}`)?.focus(); return; }
+        const valeurs = { ...r1.valeurs, ...r2.valeurs };
         bouton.disabled = true;
         try {
           S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs, valider: false }) });
@@ -274,8 +306,8 @@ function chiffres() {
 }
 function ligneAVerifier(annee, cle, cellule) {
   const c = CHAMPS.find((x) => x.cle === cle);
-  const input = el("input", { type: "text", inputmode: "decimal", value: cellule?.valeur != null ? fmt.format(cellule.valeur) : "", "aria-label": `${c?.libelle}, ${annee}` });
-  return el("div", { class: "guide-ligne" }, el("label", { text: c?.libelle ?? cle }), input,
+  const input = el("input", { type: "text", inputmode: "decimal", value: cellule?.valeur != null ? fmt.format(cellule.valeur) : "", "aria-label": `${libelleEcran(c)}, ${annee}` });
+  return el("div", { class: "guide-ligne" }, el("label", { text: libelleEcran(c) || cle }), input,
     el("button", { type: "button", class: "btn btn-mini", onclick: async () => {
       const v = lireNombre(input.value);
       if (v === null || Number.isNaN(v)) { message("Indiquez un montant lisible.", true); input.focus(); return; }

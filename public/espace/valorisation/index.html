@@ -8,8 +8,9 @@
   <meta name="robots" content="noindex">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/espace-bento.css">
 </head>
-<body>
+<body class="page-espace">
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 <header class="nav-zone">
   <nav class="nav" aria-label="Navigation principale">
@@ -17,14 +18,13 @@
     <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button></div>
   </nav>
 </header>
-<main id="contenu" class="espace parcours" aria-busy="true">
-  <section class="nuit dossier-tete parcours-tete">
+<main id="contenu" class="espace espace-bento parcours" aria-busy="true">
+  <section class="espace-tete">
     <div class="conteneur">
-      <nav class="ariane ariane-nuit pas-imprime" aria-label="Fil d'Ariane"><a id="ariane-dossier" href="/espace/"><span aria-hidden="true">← </span>Mon dossier</a><span class="ariane-sep" aria-hidden="true">›</span><span aria-current="page">Valorisation</span></nav>
-      <p class="etiquette">Valorisation approfondie</p>
-      <h1 id="dossier-nom">Chargement…</h1>
+      <nav class="ariane pas-imprime" aria-label="Fil d'Ariane"><a id="ariane-dossier" href="/espace/"><span aria-hidden="true">← </span>Mon dossier</a><span class="ariane-sep" aria-hidden="true">›</span><span aria-current="page">Valorisation</span></nav>
+      <h1 class="affiche" id="dossier-nom">Chargement…</h1>
       <!-- Onglets de la page (non numérotés) : le fil du parcours est celui de la page du dossier -->
-      <nav class="etapes" aria-label="Sections de la page">
+      <nav class="etapes onglets" aria-label="Sections de la page">
         <a href="#chiffres" data-etape="chiffres">Vos chiffres <span class="etape-etat" id="etat-chiffres"></span></a>
         <a href="#entreprise" data-etape="entreprise">Pour aller plus loin <span class="etape-etat" id="etat-entreprise"></span></a>
         <a href="#valorisation" data-etape="valorisation">Votre valorisation <span class="etape-etat" id="etat-valorisation"></span></a>
@@ -35,39 +35,26 @@
   <!-- 1. Vos chiffres -->
   <section class="panneau" id="chiffres" aria-labelledby="titre-chiffres" hidden>
     <div class="conteneur">
-      <h2 id="titre-chiffres">Vos <em>chiffres</em></h2>
+      <h2 id="titre-chiffres" tabindex="-1">Vos chiffres</h2>
       <p class="chapo-petit">Le détail de vos comptes, ligne par ligne : pour corriger un montant ou ajouter les lignes facultatives. Seul le dernier exercice est indispensable ; les deux précédents fiabilisent la fourchette. Rien n'entre dans le calcul sans votre validation. Pour aller plus vite, <a class="lien-guide" href="/espace/demarrer/">le parcours guidé</a> ne demande que l'essentiel.</p>
-
-      <div class="depot" id="depot">
-        <input type="file" id="fichier-liasse" accept="application/pdf" hidden>
-        <div class="depot-texte">
-          <strong>Déposer une liasse fiscale (PDF)</strong>
-          <span class="petit">Formulaires 2033 ou 2050 à 2059, 10 Mo au plus. Une liasse contient en général deux exercices.</span>
+      <div class="chiffres-barre">
+        <div class="choix-annee" id="choix-annee" role="group" aria-label="Exercice affiché"></div>
+        <div class="chiffres-outils">
+          <label class="visuellement-cache" for="nouvel-exercice">Année d'un exercice à ajouter</label>
+          <input id="nouvel-exercice" type="number" min="1990" max="2100" step="1" placeholder="2025" inputmode="numeric">
+          <button class="btn btn-contour btn-petit" type="button" id="btn-exercice">Ajouter un exercice</button>
+          <span class="depot depot-compact" id="depot"><input type="file" id="fichier-liasse" accept="application/pdf" hidden><button class="btn btn-noir btn-petit" type="button" id="btn-liasse" title="Formulaires 2033 ou 2050 à 2059, 10 Mo au plus">Lire une liasse (PDF)</button></span>
         </div>
-        <button class="btn btn-noir" type="button" id="btn-liasse">Choisir un PDF</button>
       </div>
       <p class="message-carte" id="message-liasse" role="status" aria-live="polite" hidden></p>
-
-      <div class="tableau-defile" tabindex="0" aria-label="Tableau des chiffres par exercice">
-        <table class="tableau-chiffres" id="tableau-chiffres">
-          <thead><tr><th scope="col">Poste</th><th scope="col" class="col-ligne">Ligne</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="chiffres-actions">
-        <label class="petit" for="nouvel-exercice">Ajouter un exercice</label>
-        <input id="nouvel-exercice" type="number" min="1990" max="2100" step="1" placeholder="2025" inputmode="numeric">
-        <button class="btn btn-contour" type="button" id="btn-exercice">Ajouter</button>
-      </div>
-      <p class="petit legende-sources"><span class="source source-inpi">INPI</span> : montant des comptes publics (registre national des entreprises) · <span class="source source-liasse">Liasse</span> : montant lu dans votre PDF · <span class="source source-dirigeant">Vous</span> : montant saisi par vous · <span class="valide-marque">✓</span> : ligne validée</p>
-      <div class="suite"><a class="btn btn-vert" href="#entreprise">Continuer : votre entreprise <span class="fleche" aria-hidden="true">→</span></a></div>
+      <div id="chiffres-annee" aria-live="polite"></div>
     </div>
   </section>
 
   <!-- 2. Votre entreprise -->
   <section class="panneau" id="entreprise" aria-labelledby="titre-entreprise" hidden>
     <div class="conteneur conteneur-moyen">
-      <h2 id="titre-entreprise">Pour aller <em>plus loin</em></h2>
+      <h2 id="titre-entreprise">Pour aller plus loin</h2>
       <p class="chapo-petit">Questions facultatives : elles ne comptent ni dans l'avancement de votre dossier, ni dans « À faire maintenant ». Les questions indispensables sont celles du <a class="lien-guide" href="/espace/demarrer/">parcours guidé</a>. Vos réponses sont enregistrées au fil de la saisie.</p>
       <ol class="sous-etapes" id="sous-etapes"></ol>
       <form class="form-carte questionnaire" id="questionnaire" novalidate></form>

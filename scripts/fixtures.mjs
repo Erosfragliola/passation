@@ -5,7 +5,7 @@ import { rechercherBrut } from "../src/sources/entreprise.js";
 import { exercicesBruts } from "../src/sources/inpi.js";
 import { annoncesBrutes } from "../src/sources/bodacc.js";
 
-const SIRENS = ["434436622", "319252813", "794576231", "323234153", "512803552", "631880408", "814672010"];
+const SIRENS = ["434436622", "319252813", "794576231", "512803552", "631880408", "814672010"];
 
 const nettoyerEntreprise = (b) => ({
   results: b.results.map((r) => ({

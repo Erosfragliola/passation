@@ -25,7 +25,7 @@
 .carte-estimation p { margin: 0; }
 .carte-estimation-tete { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14px; color: var(--pierre-texte); }
 .carte-estimation-tete em { font-style: normal; font-family: var(--mono); font-size: 11px; border: 1px solid var(--trait-fort); border-radius: 99px; padding: 1px 8px; white-space: nowrap; }
-.carte-estimation-code { font-family: var(--mot-cle); font-style: italic; font-size: 30px; color: var(--ocre); line-height: 1.15; margin-top: 6px !important; }
+.carte-estimation-code { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: 30px; color: var(--ocre); line-height: 1.15; margin-top: 6px !important; }
 .carte-estimation-valeur { font: 700 44px/1 "Big Shoulders", "Arial Narrow", sans-serif; color: var(--vert); margin-top: 2px !important; }
 .carte-estimation-pied { display: flex; align-items: center; gap: 8px; margin-top: 10px !important; font-size: 14px; color: var(--pierre-texte); }
 .carte-estimation-pied::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: #3FAE7E; box-shadow: 0 0 0 3px rgba(63, 174, 126, .2); }
@@ -76,7 +76,7 @@
 .confid-avant { font-size: clamp(22px, 2.6vw, 30px); font-weight: 600; position: relative; color: #C9D6CD; }
 .confid-avant::after { content: ""; position: absolute; left: -4px; right: -4px; top: 14%; bottom: 10%; background: #120F0B; border-radius: 4px; transform-origin: left; animation: masquer-nom 4.5s ease-in-out infinite; }
 @keyframes masquer-nom { 0%, 15% { transform: scaleX(0); } 35%, 100% { transform: scaleX(1); } }
-.confid-apres { font-family: var(--mot-cle); font-style: italic; font-size: clamp(56px, 7vw, 96px); line-height: 1; color: var(--ocre-nuit); }
+.confid-apres { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: clamp(56px, 7vw, 96px); line-height: 1; color: var(--ocre-nuit); }
 .confid-fictif { margin: 0; font-size: 14px; color: #C9D6CD; }
 .confid-garanties { grid-column: 1 / -1; list-style: none; margin: 0; padding: 26px 0 0; border-top: 1px solid rgba(246, 241, 230, .18); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 .confid-garanties li { display: grid; gap: 6px; align-content: start; font-size: 15.5px; color: #C9D6CD; }
@@ -118,7 +118,7 @@
 .analyse-etapes li.fait i { background: #3FAE7E; border-color: #3FAE7E; color: #fff; }
 .analyse-etapes li.fait i::after { content: "✓"; }
 @keyframes tourne-analyse { to { transform: rotate(360deg); } }
-.landing .resultat .resultat-code { font-family: var(--mot-cle); font-style: italic; font-weight: 400; color: var(--ocre-nuit); }
+.landing .resultat .resultat-code { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; color: var(--ocre-nuit); }
 .landing .resultat .estimation-valeur { font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; font-size: clamp(3rem, 6vw, 5rem); letter-spacing: 0; line-height: 1; }
 .landing .resultat-dossier { max-width: none; display: grid; gap: 14px; align-self: stretch; align-content: center; }
 .resultat-tuile { border-radius: 26px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(246, 241, 230, .14); padding: 22px; }
@@ -171,7 +171,7 @@
 .bulle-hg { top: 0; left: 0; } .bulle-hd { top: 0; right: 0; } .bulle-bg { bottom: 0; left: 0; } .bulle-bd { bottom: 0; right: 0; width: 262px; }
 .bulle-titre { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--pierre-texte); }
 .bulle-titre em { font-style: normal; font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--trait-fort); border-radius: 99px; padding: 0 7px; white-space: nowrap; }
-.bulle-code { font-family: var(--mot-cle); font-style: italic; font-size: 26px; line-height: 1.1; color: var(--ocre); }
+.bulle-code { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: 26px; line-height: 1.1; color: var(--ocre); }
 .bulle-valeur { font-size: 28px !important; }
 .bulle-docs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .bulle-docs li { border-radius: 12px; padding: 8px 10px; background: var(--sable); font-size: 13.5px; font-weight: 600; color: var(--vert); text-align: center; }
@@ -194,7 +194,7 @@
 .dossier-cta { display: grid; gap: 12px; padding: 24px; border-radius: 24px; background: #FFFDF8; color: var(--espresso); text-decoration: none; box-shadow: 0 24px 50px -28px rgba(0, 0, 0, .55); transition: transform .18s ease, box-shadow .18s ease; }
 .dossier-cta:hover { transform: translateY(-3px); box-shadow: 0 30px 60px -28px rgba(0, 0, 0, .6); }
 .dossier-cta-eti { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ocre-texte); }
-.dossier-cta-code { font-family: var(--mot-cle); font-style: italic; font-weight: 400; font-size: 32px; line-height: 1.05; color: var(--ocre); }
+.dossier-cta-code { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: 32px; line-height: 1.05; color: var(--ocre); }
 .dossier-cta-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
 .dossier-cta-liste li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: center; font-size: 15px; }
 .dossier-cta-liste li::before { content: ""; width: 22px; height: 22px; border-radius: 7px; background: var(--sable) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231E3A2E' stroke-width='2' stroke-linecap='round'%3E%3Crect x='6' y='11' width='12' height='9' rx='2'/%3E%3Cpath d='M9 11V8a3 3 0 0 1 6 0v3'/%3E%3C/svg%3E") center / 15px no-repeat; }
@@ -244,7 +244,7 @@
 .bulle-code { font-size: 28px; }
 .landing .resultat-methodes li:nth-child(2) { display: none; }
 .landing .pied-marque { margin: 18px 0 0; padding-bottom: 2vw; line-height: .78; }
-.hero-bulle > .bulle-code { font-family: var(--mot-cle); font-style: italic; font-size: 28px; line-height: 1.1; color: var(--ocre); }
+.hero-bulle > .bulle-code { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: 28px; line-height: 1.1; color: var(--ocre); }
 .hero-bulle > .bulle-titre { font-size: 12.5px; }
 @media (max-width: 520px) {
   .hero-visuel { grid-template-columns: 1fr 1fr; }

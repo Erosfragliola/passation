@@ -446,7 +446,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   - Phases 3 à 8 (12-13/11/2026) : champ SIREN partagé, intro, histoire des clés, sections, démo du nom de code,
     écran de résultat (nom de code tiré du code NAF, teaser express côté serveur, divisions NAF de l'INSEE), recette.
     Tests : 261. axe-core : 0 violation. Lighthouse mobile 99 / 100 / 100 / 100 (LCP 1,3 s, CLS 0). Rapport,
-    mesures, captures et liste « À me fournir » : `docs/REFONTE-LANDING.md`.
+    mesures, captures et liste « À me fournir » : `docs/REFONTE-LANDING.md` (retiré le 19/11/2026, accueil refait depuis ; voir l'historique git).
   - **13/11/2026, mise en ligne** (accord du dirigeant) : fusion dans `main` (`2431141`), push, `wrangler deploy`
     (version Cloudflare 95d46642). Vérifié en ligne : nouvelle page, estimation réelle (319252813), aucune erreur.
 - **13/11/2026, début de la landing en clair** (brief « début clair », accord du dirigeant) : en-tête plat (champ
@@ -462,7 +462,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   pourquoi, confidentialité, équipe, preuves, guides, questions, appel final, pied de page). Histoire en quatre
   temps (« Et la vôtre ? » fusionné, gestes du nom de code au seuil, champ SIREN), 400vh ; étapes en onglets ARIA ;
   cartes verte, sable et ocre ; plus d'établi en bois ni de vidéo après le hero ; sections et éléments retirés tant
-  que leur clé est vide (liste « À me fournir » dans `docs/REFONTE-LANDING.md`). Lighthouse : accessibilité 100
+  que leur clé est vide (liste « À me fournir » dans `docs/REFONTE-LANDING.md`, retiré le 19/11/2026). Lighthouse : accessibilité 100
   (ordinateur et téléphone), performance 99 et 98, décalage de mise en page 0. Tests : 289.
 - **17/11/2026, simplification de la prise en main** (branche `simplification-ux`, partie de `refonte-landing`, non
   publiée) : revue UX de l'MVP (accueil, résultat, espace dirigeant, parcours guidé) puis corrections, à la demande

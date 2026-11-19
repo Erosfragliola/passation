@@ -137,7 +137,7 @@ export async function ouvrirConnexion({ siren = "" } = {}) {
   d.innerHTML = `
     <button class="dialog-fermer" type="button" aria-label="Fermer">×</button>
     <p class="etiquette">Mon dossier</p>
-    <h2 id="titre-dialog-connexion">Ouvrir mon <em>dossier</em></h2>
+    <h2 class="affiche" id="titre-dialog-connexion">Ouvrir mon dossier</h2>
     <div class="cx-zone"></div>`;
   document.body.append(d);
   const f = monterConnexion(d.querySelector(".cx-zone"), { siren });
