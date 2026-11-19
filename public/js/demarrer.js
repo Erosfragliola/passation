@@ -93,11 +93,6 @@ function dessinerEtapes() {
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
 }
-/** Mémorandum et teaser rédigés, lus comme sur la page du dossier (un teaser vide n'est pas « prêt »). */
-const documentsLus = (d) => Promise.all([
-  d.documents?.memo ? api(`${base}/documents/memo`).catch(() => null) : null,
-  d.documents?.teaser ? api(`${base}/documents/teaser`).catch(() => null) : null,
-]);
 /** État du dossier relu au serveur (même calcul que la page du dossier), puis fil redessiné. */
 /** Mémorandum et teaser lus comme sur la page du dossier : même état, mêmes tâches (un teaser vide n'est pas « prêt »). */
 const documentsPourEtat = (d) => Promise.all([
@@ -108,7 +103,7 @@ const documentsPourEtat = (d) => Promise.all([
 async function rafraichirEtat() {
   try {
     const d = await api(base);
-    S.dossier = d; S.etat = etatParcours(d, ...(await documentsLus(d))); dessinerEtapes();
+    S.dossier = d; S.etat = etatParcours(d, ...(await documentsPourEtat(d))); dessinerEtapes();
     return S.etat;
   } catch { return S.etat; }
 }
@@ -748,7 +743,7 @@ async function pret() {
     const [moi, dossier, ch, rep, props] = await Promise.all([api("/api/me"), api(base), api(`${base}/financials`), api(`${base}/answers`), api(`${base}/documents/memo/propositions`).catch(() => ({}))]);
     S.propositions = props.propositions || {};
     S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {}; S.vues = vuesDe(S.reponses);
-    S.etat = etatParcours(dossier, ...(await documentsLus(dossier)));
+    S.etat = etatParcours(dossier, ...(await documentsPourEtat(dossier)));
     $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
     // Nom de code au-dessus du nom réel, comme sur la page du dossier : c'est sous ce nom que le dossier circulera
     if (dossier.nom_de_code) { $("#guide-code").textContent = dossier.nom_de_code; $("#guide-nom-code").hidden = false; }
