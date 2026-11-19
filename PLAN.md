@@ -636,4 +636,4 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   Mono : `--mono` pointe sur Geist depuis le 18/11), 891 sélecteurs CSS morts (aucun élément dans 80 captures et une
   classe ou un id absent de toutes les sources servies), 116 clés de `landing.json` jamais lues, exports inutilisés.
   Preuve : tests verts et captures pixel à pixel (19 pages, 1440 et 390 px, animations normales et réduites), aucune
-  différence hors bruit. Tests : 465.
+  différence hors bruit. Tests : 466 (dont « aucune clé orpheline » dans landing.json).
