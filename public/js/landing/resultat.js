@@ -1,9 +1,10 @@
 // Écran de résultat, branché sur l'estimation express existante (GET /api/maquette/:siren, POST /api/estimation).
 // Chargement : l'analyse en quatre étapes (au moins 2,4 s, jamais plus que la réponse). Puis une fiche de synthèse
-// (lot 1, 18/11/2026) : nom de code, fourchette en grand avec la barre bas / central / haut, la méthode (multiples
-// floutés), une ligne de sources datées et une seule action, « Voir mon dossier » (connexion par code, puis le
-// parcours guidé). Comptes confidentiels : deux chiffres sur la même fiche.
-import { estimationManuelle, fourchette, montant, positionRepere, moisSource, multiple, remplir } from "/js/landing/estimation.js";
+// « repreneur » (19/11/2026) : à gauche le profil anonyme tel qu'il circulera (nom de code, tampon, secteur, région,
+// ancienneté, effectif) ; à droite la fourchette, visible du seul dirigeant, avec la méthode (multiples floutés) ; en
+// bas une ligne de sources datées et une seule action, « Voir mon dossier » (connexion par code, puis le parcours
+// guidé). Comptes confidentiels : deux chiffres sur la même fiche.
+import { estimationManuelle, fourchette, montant, moisSource, multiple, remplir } from "/js/landing/estimation.js";
 import { formaterSiren } from "/js/siren.js";
 
 const DUREE_MIN = 2400; // le temps de voir les quatre étapes de l'analyse
@@ -53,10 +54,14 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     $(".resultat-grille").classList.remove("carte-verte", "nuit"); // la fiche, sur papier clair
     const code = d.nom_de_code ? `Projet ${d.nom_de_code}` : "";
     $(".resultat-code").textContent = code;
-    $(".resultat-code-intro").hidden = !code;
+    $(".fiche-profil-eti").hidden = !code;
+    // Profil anonyme : une ligne masquée si l'information manque
     const t = d.teaser || {};
-    const ou = (v) => v || R.non_renseigne;
-    $("#resultat-teaser").textContent = remplir(R.teaser, { nom: d.nom, secteur: ou(t.secteur), region: ou(t.region), anciennete: ou(t.anciennete), effectif: ou(t.effectif) });
+    for (const cle of ["secteur", "region", "anciennete", "effectif"]) {
+      const ligne = $(`#profil-${cle}`);
+      ligne.querySelector("dd").textContent = t[cle] || "";
+      ligne.hidden = !t[cle];
+    }
     // Une seule suite : la connexion par code pour ce SIREN. Toutes les entrées « Espace dirigeant » (barre, menu
     // mobile) mènent aussi à ce dossier : sinon, après le code, le dirigeant revenait sur l'accueil sans dossier
     // (constaté le 17/11/2026)
@@ -69,26 +74,23 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
     const sansComptes = !est || est.statut === "comptes_absents";
     comptes.hidden = !sansComptes;
     bloc.hidden = sansComptes;
-    const barre = $("#estimation-barre"), sources = $("#resultat-sources");
-    barre.hidden = true; sources.hidden = true;
+    const sources = $("#resultat-sources");
+    sources.hidden = true;
     if (sansComptes) return;
     const valeur = $("#estimation-valeur"), note = $("#estimation-note"), methodes = $("#estimation-methodes");
     methodes.replaceChildren();
     const li = (texte) => { const e = document.createElement("li"); e.textContent = texte; methodes.append(e); };
     if (est.statut === "ok") {
+      // La fourchette seule, en grand : pas de valeur centrale sur la fiche (choix du 19/11/2026)
       valeur.textContent = fourchette(est.bas, est.haut);
-      // Barre bas / central / haut, dans l'unité de la fourchette
-      $("#borne-bas").textContent = montant(est.bas, est.haut);
-      $("#borne-central").textContent = montant(est.central, est.haut);
-      $("#borne-haut").textContent = montant(est.haut, est.haut);
-      barre.style.setProperty("--repere", `${positionRepere(est.bas, est.central, est.haut).toFixed(1)}%`);
-      barre.hidden = false;
       // Sources datées : l'exercice des comptes publics (ou la saisie) et le mois de la référence des multiples
       const mois = moisSource(est.source);
       if (mois && (saisie || est.exercice)) { sources.textContent = remplir(saisie ? R.sources_saisie : R.sources, { exercice: est.exercice, mois }); sources.hidden = false; }
       // Les multiples restent floutés (dévoilés dans le dossier) : la ligne garde sa forme, les chiffres sont illisibles
-      const e = document.createElement("li"), valeurs = { bas: multiple(est.multiples.bas), haut: multiple(est.multiples.haut), central: multiple(est.multiples.central) };
-      for (const [k, morceau] of String(R.methode || "").split(/\{(bas|haut|central)\}/).entries()) {
+      const e = document.createElement("li"), valeurs = { bas: multiple(est.multiples.bas), haut: multiple(est.multiples.haut) };
+      const phrase = remplir(saisie || !est.exercice ? R.methode_saisie : R.methode, {
+        annee: est.exercice, ebe: Number.isFinite(est.agregat) ? montant(est.agregat, est.agregat) : "", bas: "{bas}", haut: "{haut}" });
+      for (const [k, morceau] of String(phrase || "").split(/\{(bas|haut)\}/).entries()) {
         if (k % 2) { const f = document.createElement("span"); f.className = "floute"; f.setAttribute("aria-hidden", "true"); f.textContent = valeurs[morceau]; e.append(f); }
         else e.append(document.createTextNode(morceau));
       }

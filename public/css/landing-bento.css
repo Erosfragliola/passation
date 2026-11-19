@@ -507,36 +507,45 @@
 @keyframes confid-choc { 0% { transform: none; } 15% { transform: translateY(5px); } 35% { transform: translateY(-2.5px); } 55% { transform: translateY(1.2px); } 75% { transform: translateY(-.5px); } 100% { transform: none; } }
 @media (max-width: 520px) { .confid-fiche { padding: 20px 18px 24px; } .confid-tampon { right: 12px; font-size: 32px; } }
 
-/* Résultat : fiche de synthèse (l'analyse en quatre étapes reste sur la carte verte) */
-.landing .resultat-pret .resultat-grille { display: block; max-width: 860px; background: #FFFDF8; color: var(--espresso); border: 1px solid var(--trait); border-radius: 24px;
-  padding: clamp(24px, 4vw, 44px); box-shadow: 0 30px 70px -44px rgba(35, 30, 24, .45); }
-.fiche { display: grid; gap: 22px; }
-.fiche-tete { display: grid; gap: 6px; padding-bottom: 20px; border-bottom: 1px solid var(--trait); }
-.landing .fiche-titre { margin: 0; font-size: 15px; font-weight: 500; color: var(--pierre-texte); }
-.landing .fiche #titre-resultat { margin: 0; display: grid; gap: 4px; color: var(--espresso); }
-.landing .fiche .resultat-code-intro { margin: 0; font-size: 16px; font-weight: 400; color: var(--pierre-texte); }
-.landing .fiche .resultat-code { font-family: "Geist", system-ui, sans-serif; font-style: normal; font-weight: 600; font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.05; letter-spacing: -.03em; color: var(--vert); }
-.landing .fiche .resultat-valeur { display: grid; gap: 6px; }
+/* Résultat : fiche « repreneur » (19/11/2026). L'analyse en quatre étapes reste sur la carte verte ; la fiche montre
+   à gauche le profil anonyme (bloc vert, nom de code, tampon), à droite la fourchette réservée au dirigeant. */
+.landing .resultat-pret .resultat-grille { display: block; max-width: 980px; padding: 0; overflow: hidden; background: #FFFDF8; color: var(--espresso);
+  border: 1px solid var(--trait); border-radius: 26px; box-shadow: 0 30px 70px -44px rgba(35, 30, 24, .45); }
+.fiche-repreneur { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); }
+.fiche-profil { position: relative; display: grid; gap: 16px; align-content: start; padding: clamp(24px, 3.2vw, 36px); background: var(--vert); color: #F3EEE4; }
+.landing .fiche-profil-eti { margin: 0; padding-right: 130px; font-size: 14px; color: rgba(243, 238, 228, .78); }
+.landing .fiche #titre-resultat { margin: 0; }
+.landing .fiche .resultat-code { font-family: "Geist", system-ui, sans-serif; font-style: normal; font-weight: 600; font-size: clamp(2.2rem, 4.4vw, 3.1rem); line-height: 1.02; letter-spacing: -.03em; color: #FFFDF8; }
+.fiche-tampon { position: absolute; top: clamp(22px, 3vw, 30px); right: clamp(18px, 2.6vw, 28px); padding: 3px 10px; border: 3px double #F2A493; border-radius: 3px; color: #F2A493;
+  font: 700 15px/1.2 "Big Shoulders", "Arial Narrow", sans-serif; letter-spacing: .08em; text-transform: uppercase; transform: rotate(-8deg); }
+.fiche-profil-liste { margin: 4px 0 0; display: grid; }
+.fiche-profil-liste div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid rgba(243, 238, 228, .16); font-size: 15px; }
+.fiche-profil-liste dt { color: rgba(243, 238, 228, .74); }
+.fiche-profil-liste dd { margin: 0; font-weight: 500; }
+.landing .fiche-profil-note { margin: 0; font-size: 13.5px; color: rgba(243, 238, 228, .78); }
+.fiche-valeur { display: grid; gap: 14px; align-content: start; padding: clamp(24px, 3.2vw, 36px); min-width: 0; }
+.landing .fiche-prive { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--pierre-texte); }
+.fiche-prive svg { width: 15px; height: 15px; flex: none; }
+.landing .fiche .resultat-valeur { display: grid; gap: 8px; }
 .landing .fiche .resultat-libelle { margin: 0; font-size: 15px; font-weight: 500; color: var(--pierre-texte); }
-.landing .fiche .estimation-valeur { margin: 0; font: 700 clamp(3.4rem, 8vw, 5.6rem)/.95 "Big Shoulders", "Arial Narrow", sans-serif; color: var(--vert); }
-.fiche-barre { margin-top: 14px; display: grid; gap: 10px; }
-.fiche-piste { position: relative; height: 8px; border-radius: 4px; background: var(--vert); }
-.fiche-repere { position: absolute; top: 50%; left: var(--repere, 50%); width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: var(--ocre); border: 3px solid #FFFDF8; box-shadow: 0 0 0 1px var(--ocre); }
-.fiche-bornes { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.fiche-bornes div { display: grid; gap: 2px; }
-.fiche-bornes .central { text-align: center; }
-.fiche-bornes div:last-child { text-align: right; }
-.fiche-bornes dt { font-size: 13.5px; color: var(--pierre-texte); }
-.fiche-bornes dd { margin: 0; font-size: 18px; font-weight: 600; color: var(--espresso); font-variant-numeric: tabular-nums; }
-.fiche-bornes .central dd { color: var(--vert); }
-.landing .fiche .resultat-methodes { margin: 10px 0 0; padding: 0; list-style: none; font-size: 15px; color: var(--pierre-texte); }
+.landing .fiche .estimation-valeur { margin: 0; font: 700 clamp(3.2rem, 6.4vw, 5.2rem)/.92 "Big Shoulders", "Arial Narrow", sans-serif; color: var(--vert); white-space: nowrap; }
+.landing .fiche .resultat-methodes { margin: 8px 0 0; padding: 0; list-style: none; font-size: 15px; color: var(--pierre-texte); }
 .landing .fiche .resultat-methodes li::before { content: none; }
 .landing .fiche .resultat-note { margin: 0; font-size: 14px; color: var(--pierre-texte); }
-.landing .fiche-sources { margin: 0; padding-top: 16px; border-top: 1px solid var(--trait); font-size: 13.5px; color: var(--pierre-texte); }
+.landing .fiche .form-comptes { color: var(--espresso); }
+.fiche-pied { grid-column: 1 / -1; display: grid; gap: 16px; padding: 20px clamp(24px, 3.2vw, 36px) 24px; border-top: 1px solid var(--trait); background: #FAF6EE; }
+.landing .fiche-sources { margin: 0; font-size: 13.5px; color: var(--pierre-texte); }
 .fiche-action { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
 .landing .fiche-action p { margin: 0; font-size: 14px; color: var(--pierre-texte); }
-.landing .fiche .form-comptes { color: var(--espresso); }
-@media (max-width: 520px) { .fiche-action .btn { width: 100%; justify-content: center; } .fiche-bornes dd { font-size: 16px; } }
+/* Le tampon s'abat quand la fiche apparaît */
+.resultat-pret .fiche-tampon { animation: fiche-tampon .38s cubic-bezier(.55, 0, .9, .45) .25s both; }
+@keyframes fiche-tampon { 0% { opacity: 0; transform: rotate(-8deg) scale(2.2); } 70% { opacity: 1; } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .resultat-pret .fiche-tampon { animation: none; } }
+@media (max-width: 860px) {
+  .fiche-repreneur { grid-template-columns: 1fr; }
+  .landing .fiche .estimation-valeur { white-space: normal; }
+}
+@media (max-width: 520px) { .fiche-action .btn { width: 100%; justify-content: center; } .landing .fiche-profil-eti { padding-right: 112px; } }
 
 /* Fin de page : deux options (classe .fin-a ou .fin-b sur <html>), pied de page commun */
 .relance-principal { min-width: 0; }

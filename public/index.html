@@ -172,37 +172,43 @@
           </ol>
           <p class="resultat-chargement-texte" data-t="js.chargement"></p>
         </div>
-        <div class="resultat-contenu fiche" hidden>
-          <div class="fiche-tete">
-            <p class="fiche-titre" data-t="js.resultat.titre"></p>
-            <h2 id="titre-resultat"><span class="resultat-code-intro" data-t="js.resultat.code_intro"></span> <em class="resultat-code"></em></h2>
+        <div class="resultat-contenu fiche fiche-repreneur" hidden>
+          <!-- Fiche « repreneur » (19/11/2026) : à gauche le profil anonyme tel qu'il circulera, sous nom de code et tampon ;
+               à droite la fourchette, visible du seul dirigeant ; en bas les sources et une seule action. -->
+          <div class="fiche-profil">
+            <span class="fiche-tampon" aria-hidden="true" data-t="js.resultat.tampon"></span>
+            <p class="fiche-profil-eti" data-t="js.resultat.code_intro"></p>
+            <h2 id="titre-resultat"><em class="resultat-code"></em></h2>
+            <dl class="fiche-profil-liste">
+              <div id="profil-secteur"><dt data-t="js.resultat.profil.secteur"></dt><dd></dd></div>
+              <div id="profil-region"><dt data-t="js.resultat.profil.region"></dt><dd></dd></div>
+              <div id="profil-anciennete"><dt data-t="js.resultat.profil.anciennete"></dt><dd></dd></div>
+              <div id="profil-effectif"><dt data-t="js.resultat.profil.effectif"></dt><dd></dd></div>
+            </dl>
+            <p class="fiche-profil-note" data-t="js.resultat.profil_note"></p>
           </div>
-          <p class="visuellement-cache" id="resultat-teaser"></p>
-          <div class="resultat-valeur" id="resultat-estimation">
-            <p class="resultat-libelle" data-t="js.resultat.fourchette_titre"></p>
-            <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
-            <div class="fiche-barre" id="estimation-barre" hidden>
-              <div class="fiche-piste" aria-hidden="true"><span class="fiche-repere"></span></div>
-              <dl class="fiche-bornes">
-                <div><dt data-t="js.resultat.bas"></dt><dd id="borne-bas"></dd></div>
-                <div class="central"><dt data-t="js.resultat.central"></dt><dd id="borne-central"></dd></div>
-                <div><dt data-t="js.resultat.haut"></dt><dd id="borne-haut"></dd></div>
-              </dl>
+          <div class="fiche-valeur">
+            <p class="fiche-prive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span data-t="js.resultat.prive"></span></p>
+            <div class="resultat-valeur" id="resultat-estimation">
+              <p class="resultat-libelle" data-t="js.resultat.fourchette_titre"></p>
+              <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
+              <ul class="resultat-methodes" id="estimation-methodes"></ul>
+              <p class="resultat-note" id="estimation-note"></p>
             </div>
-            <ul class="resultat-methodes" id="estimation-methodes"></ul>
-            <p class="resultat-note" id="estimation-note"></p>
+            <form id="form-comptes" class="form-comptes" hidden>
+              <p data-t="js.resultat.confidentiels"></p>
+              <label><span data-t="js.resultat.ca"></span><input id="saisie-ca" type="number" inputmode="numeric" min="1" step="1" required></label>
+              <label><span data-t="js.resultat.ebe"></span><input id="saisie-ebe" type="number" inputmode="numeric" step="1" required></label>
+              <button class="btn btn-vert" type="submit" data-t="js.resultat.voir"></button>
+              <p class="petit" data-t="js.resultat.saisie_note"></p>
+            </form>
           </div>
-          <form id="form-comptes" class="form-comptes" hidden>
-            <p data-t="js.resultat.confidentiels"></p>
-            <label><span data-t="js.resultat.ca"></span><input id="saisie-ca" type="number" inputmode="numeric" min="1" step="1" required></label>
-            <label><span data-t="js.resultat.ebe"></span><input id="saisie-ebe" type="number" inputmode="numeric" step="1" required></label>
-            <button class="btn btn-vert" type="submit" data-t="js.resultat.voir"></button>
-            <p class="petit" data-t="js.resultat.saisie_note"></p>
-          </form>
-          <p class="fiche-sources" id="resultat-sources" hidden></p>
-          <div class="fiche-action">
-            <a class="btn btn-vert" id="resultat-ouvrir" href="/connexion" data-connexion><span data-t="js.resultat.dossier_bouton"></span> <span class="fleche" aria-hidden="true">→</span></a>
-            <p data-t="js.resultat.dossier_note"></p>
+          <div class="fiche-pied">
+            <p class="fiche-sources" id="resultat-sources" hidden></p>
+            <div class="fiche-action">
+              <a class="btn btn-vert" id="resultat-ouvrir" href="/connexion" data-connexion><span data-t="js.resultat.dossier_bouton"></span> <span class="fleche" aria-hidden="true">→</span></a>
+              <p data-t="js.resultat.dossier_note"></p>
+            </div>
           </div>
           <p class="resultat-message" id="resultat-message" role="status" hidden></p>
         </div>
