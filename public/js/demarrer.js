@@ -655,6 +655,8 @@ async function pret() {
     S.propositions = props.propositions || {};
     S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {};
     $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
+    // Nom de code au-dessus du nom réel, comme sur la page du dossier : c'est sous ce nom que le dossier circulera
+    if (dossier.nom_de_code) { $("#guide-code").textContent = dossier.nom_de_code; $("#guide-nom-code").hidden = false; }
     document.title = `${dossier.entreprise.nom} · Passation`;
     S.complet = Boolean(dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && dossier.parcours?.valorisation);
     // Documents déjà rédigés : on rouvre sur l'écran final (récapitulatif et points à compléter), pas sur une question
