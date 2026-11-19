@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette · Valorisation, onglet « Vos chiffres » (après)</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .entete { display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .entete h1 { font-size: 40px; color: var(--vert); }
+  .onglets { display: flex; gap: 6px; border-bottom: 1px solid var(--trait); margin-bottom: 14px; }
+  .onglets a { padding: 9px 14px; text-decoration: none; font-weight: 500; color: var(--pierre-texte); border-bottom: 3px solid transparent; }
+  .onglets a[aria-current] { color: var(--espresso); border-color: var(--cuivre); }
+  .annees { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .annees button { border: 1px solid var(--trait-fort); background: var(--papier); border-radius: 999px; padding: 7px 14px; font: 500 14.5px var(--sans); cursor: pointer; }
+  .annees button[aria-pressed="true"] { background: var(--vert); color: #F6F1E6; border-color: var(--vert); }
+  .deux { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .bloc { padding: 16px 18px; } table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-weight: 500; font-size: 14.5px; padding: 6px 0; } th span { display: block; font-size: 12px; font-weight: 400; color: var(--pierre-texte); }
+  td { padding: 4px 0; text-align: right; white-space: nowrap; } td input { width: 130px; padding: 7px 10px; border: 1px solid var(--trait-fort); border-radius: 10px; text-align: right; font: 15px var(--sans); background: #FBF7EF; }
+  td.ok { width: 26px; color: var(--vert); font-weight: 700; }
+  .pied { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 12px; flex-wrap: wrap; }
+  @media (max-width: 760px) { .entete h1 { font-size: 30px; } .onglets a { padding: 8px 10px; font-size: 14px; } .deux { grid-template-columns: 1fr; } td input { width: 112px; } .pied .btn { display: none; } }
+</style>
+</head>
+<body>
+<header class="barre">
+  <div class="barre-in"><a class="marque" href="#">Passation</a><span class="nom-code" style="font-size:17px;color:var(--cuivre-texte)">Projet Chêne</span><nav><a class="btn contour petit-btn" href="#">Mon dossier</a></nav></div>
+</header>
+<main>
+  <div class="entete"><div><p class="sous"><a href="#">Mon dossier</a> › Valorisation</p><h1 class="affiche">Valorisation détaillée</h1></div></div>
+  <nav class="onglets" aria-label="Rubriques de la valorisation">
+    <a href="apres-valorisation-chiffres.html" aria-current="page">Vos chiffres</a><a href="apres-valorisation-entreprise.html">Votre entreprise</a><a href="apres-valorisation-resultat.html">Votre valorisation</a>
+  </nav>
+  <div class="annees" role="group" aria-label="Exercice affiché"><span class="petit">Exercice :</span><button aria-pressed="false">2024 ✓</button><button aria-pressed="true">2025 ✓</button><button aria-pressed="false">2023 · à compléter</button><button class="lien" style="border:0;background:none">+ Ajouter un exercice</button></div>
+  <div class="deux"><section class="tuile bloc"><h2 class="titre-bloc">Ce que l'entreprise gagne (2025)</h2><table><tbody><tr><th scope="row">Chiffre d'affaires<span>comptes publics (registre INPI)</span></th><td><input value="2 400 000" aria-label="Chiffre d'affaires, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Achats consommés</th><td><input value="960 000" aria-label="Achats consommés, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Charges externes<span>loyers, sous-traitance, énergie…</span></th><td><input value="340 000" aria-label="Charges externes, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Salaires et charges sociales</th><td><input value="680 000" aria-label="Salaires et charges sociales, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Impôts et taxes</th><td><input value="40 000" aria-label="Impôts et taxes, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr></tbody></table></section><section class="tuile bloc"><h2 class="titre-bloc">Ce qu'elle possède et doit (31/12/2025)</h2><table><tbody><tr><th scope="row">Stocks</th><td><input value="200 000" aria-label="Stocks, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Créances clients</th><td><input value="400 000" aria-label="Créances clients, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Trésorerie</th><td><input value="250 000" aria-label="Trésorerie, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Capitaux propres</th><td><input value="700 000" aria-label="Capitaux propres, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Emprunts et dettes financières</th><td><input value="300 000" aria-label="Emprunts et dettes financières, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Dettes fournisseurs</th><td><input value="250 000" aria-label="Dettes fournisseurs, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr><tr><th scope="row">Dettes fiscales et sociales</th><td><input value="150 000" aria-label="Dettes fiscales et sociales, 2025" inputmode="decimal"> €</td><td class="ok" aria-label="validé">✓</td></tr></tbody></table></section></div>
+  <div class="pied"><details class="depli" style="border:0;margin:0;padding:0"><summary>Ajouter une ligne facultative (8)</summary><p class="petit">Autres produits, amortissements, résultat d'exploitation, résultat net, immobilisations, autres créances, placements, provisions, autres dettes.</p></details>
+  <span class="petit">EBE 2025 : 380 000 € <span class="aide"><button type="button" aria-describedby="a1">?</button><span role="tooltip" id="a1">Ce que l'activité dégage avant impôts, intérêts et amortissements.</span></span></span>
+  <a class="btn" href="apres-valorisation-entreprise.html">Continuer : votre entreprise →</a></div>
+</main>
+<div class="action-tel" hidden><span class="petit">2025 confirmé</span><a class="btn" href="#">Continuer →</a></div>
+<span class="ruban">Maquette · données fictives</span>
+<script>if (matchMedia("(max-width: 760px)").matches) document.querySelector(".action-tel")?.removeAttribute("hidden");</script>
+</body>
+</html>

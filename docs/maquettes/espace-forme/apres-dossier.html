@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette · Page du dossier (après)</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .grille { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 14px; }
+  .fiche { display: grid; gap: 16px; align-content: space-between; }
+  .fiche h1 { font-size: clamp(40px, 4.4vw, 60px); color: #F6F1E6; margin-top: 4px; }
+  .fiche .nom-code { font-size: 26px; color: #E9C9A4; }
+  .fiche .meta { margin: 6px 0 0; font-size: 14px; color: #C9D6CD; }
+  .valeur { border-top: 1px solid rgba(246, 241, 230, .18); padding-top: 14px; }
+  .valeur .lib { font-size: 14.5px; font-weight: 600; color: #DCE6DF; margin: 0; }
+  .valeur .montant { font-family: var(--affiche); font-weight: 700; font-size: clamp(44px, 4.6vw, 64px); line-height: 1; margin: 6px 0; }
+  .valeur p { margin: 0; font-size: 14px; color: #DCE6DF; }
+  .valeur a { color: #F6F1E6; }
+  .afaire h2 { font-size: 30px; margin-bottom: 12px; }
+  .afaire ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .afaire li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--trait); border-radius: 16px; background: #FBF7EF; }
+  .afaire li div { flex: 1; min-width: 0; } .afaire li strong { display: block; font-size: 15px; } .afaire li span { font-size: 13.5px; color: var(--pierre-texte); }
+  .docs { margin-top: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .doc { display: grid; gap: 6px; align-content: start; padding: 14px 16px; border-radius: 18px; background: var(--papier); border: 1px solid var(--trait); }
+  .doc.a-venir { border-style: dashed; background: transparent; }
+  .doc .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .doc h3 { margin: 0; font-size: 22px; }
+  .doc p { margin: 0; font-size: 13.5px; color: var(--pierre-texte); }
+  .gerer { margin-top: 10px; font-size: 14px; color: var(--pierre-texte); }
+  @media (max-width: 760px) {
+    .grille { grid-template-columns: 1fr; }
+    .fiche h1 { font-size: 38px; } .fiche .nom-code { font-size: 22px; }
+    .docs { grid-template-columns: 1fr 1fr; }
+    .doc { min-width: 0; padding: 12px 14px; }
+    .doc .haut { flex-wrap: wrap; gap: 4px; }
+    .doc h3 { font-size: 18px; overflow-wrap: anywhere; }
+  }
+</style>
+</head>
+<body>
+<header class="barre">
+  <div class="barre-in"><a class="marque" href="#">Passation</a><nav><a class="btn contour petit-btn" href="#">Se déconnecter</a></nav></div>
+  <nav class="fil" aria-label="Étapes du dossier">
+    <a class="fait" href="#"><span class="n" aria-hidden="true">✓</span><span class="t">Estimation</span></a>
+    <a class="fait" href="#"><span class="n" aria-hidden="true">✓</span><span class="t">Vos chiffres</span></a>
+    <a href="#" aria-current="step"><span class="n">3</span><span class="t">Vos réponses</span></a>
+    <a href="#"><span class="n">4</span><span class="t">Rédaction</span></a>
+    <a href="#"><span class="n">5</span><span class="t">Relecture et envoi</span></a>
+    <a class="btn cuivre cta" href="#">Continuer : 12 questions</a>
+  </nav>
+</header>
+<main>
+  <div class="grille">
+    <section class="tuile verte fiche" aria-labelledby="t-dossier">
+      <div>
+        <p class="nom-code">Projet Chêne</p>
+        <h1 class="affiche" id="t-dossier">Menuiserie Exemple</h1>
+        <p class="meta">Menuiserie · 20 à 49 salariés · depuis 1998 · exemple fictif</p>
+      </div>
+      <div class="valeur">
+        <p class="lib">Valeur de vos parts, selon vos chiffres</p>
+        <p class="montant">1,4 – 2,4 M€</p>
+        <p>Calculée à partir de ce que l'activité dégage chaque année, comparée aux ventes d'entreprises du même secteur. <a href="#">Comment la fourchette est calculée</a></p>
+      </div>
+    </section>
+    <section class="tuile afaire" aria-labelledby="t-afaire">
+      <h2 class="affiche" id="t-afaire">À faire maintenant</h2>
+      <ol>
+        <li><div><strong>Répondre aux 12 questions restantes</strong><span>20 sur 32 faites, environ 10 minutes</span></div><a class="btn cuivre petit-btn" href="#">Reprendre</a></li>
+        <li><div><strong>Confirmer l'exercice 2023</strong><span>2 exercices sur 3 confirmés</span></div><a class="btn contour petit-btn" href="#">Compléter</a></li>
+        <li><div><strong>Réunir les pièces du dossier</strong><span>4 pièces sur 21</span></div><a class="btn contour petit-btn" href="#">Déposer</a></li>
+      </ol>
+    </section>
+  </div>
+  <section aria-labelledby="t-docs">
+    <h2 class="titre-bloc" id="t-docs" style="margin-top:16px">Vos documents · 2 sur 4 prêts</h2>
+    <div class="docs">
+      <article class="doc"><div class="haut"><h3 class="affiche">Valorisation</h3><span class="statut">Prêt</span></div><p>Mise à jour le 19/11/2026</p><a class="lien" href="#">Ouvrir</a></article>
+      <article class="doc"><div class="haut"><h3 class="affiche">Excel</h3><span class="statut">Prêt</span></div><p>Tous les calculs, vérifiables</p><a class="lien" href="#">Télécharger</a></article>
+      <article class="doc a-venir"><div class="haut"><h3 class="affiche">Teaser</h3><span class="statut attente">À venir</span></div><p>Après vos réponses</p></article>
+      <article class="doc a-venir"><div class="haut"><h3 class="affiche">Mémorandum</h3><span class="statut attente">À venir</span></div><p>Après vos réponses</p></article>
+    </div>
+  </section>
+  <details class="gerer"><summary>Gérer mon dossier</summary><p>Supprimer le dossier et tous ses fichiers.</p></details>
+</main>
+<div class="action-tel" hidden><span class="petit">12 questions restantes</span><a class="btn cuivre" href="#">Continuer</a></div>
+<span class="ruban">Maquette · données fictives</span>
+<script>if (matchMedia("(max-width: 760px)").matches) document.querySelector(".action-tel").hidden = false;</script>
+</body>
+</html>

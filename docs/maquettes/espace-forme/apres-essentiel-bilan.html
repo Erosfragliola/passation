@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette · L'essentiel de vos comptes, écran 2 sur 2 (après)</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .cadre { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 18px; align-items: start; }
+  .etapes { list-style: none; margin: 0; padding: 10px; display: grid; gap: 2px; }
+  .etapes li { padding: 8px 12px; border-radius: 12px; font-size: 14.5px; color: var(--pierre-texte); }
+  .etapes li[aria-current] { background: var(--vert); color: #F6F1E6; font-weight: 600; }
+  .etapes li.fait { color: var(--espresso); }
+  h1.affiche { font-size: 44px; color: var(--vert); }
+  .progression { font-size: 14px; font-weight: 600; color: var(--cuivre-texte); margin: 0 0 6px; }
+  .ecran { display: grid; gap: 16px; }
+  .ligne-annee { display: flex; align-items: center; gap: 12px; }
+  .nav-bas { display: flex; justify-content: space-between; align-items: center; }
+  @media (max-width: 760px) {
+    .cadre { grid-template-columns: 1fr; gap: 10px; } .etapes { display: flex; overflow-x: auto; padding: 6px; border-radius: 16px; } .etapes li { white-space: nowrap; padding: 6px 10px; }
+    h1.affiche { font-size: 34px; }
+    .nav-bas { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="barre">
+  <div class="barre-in"><a class="marque" href="#">Passation</a><span class="nom-code" style="font-size:17px;color:var(--cuivre-texte)">Projet Chêne</span><nav><a class="btn contour petit-btn" href="#">Mon dossier</a></nav></div>
+</header>
+<main>
+  <div class="cadre">
+    <ol class="etapes tuile" aria-label="Étapes du parcours">
+      <li aria-current="step">Vos comptes</li><li>Vos chiffres</li><li>Questions</li><li>Votre site</li><li>Rédaction</li><li>Prêt</li>
+    </ol>
+    <form class="tuile ecran" aria-labelledby="t-ecran">
+      <div>
+        <p class="progression">Écran 2 sur 2 · ce que l'entreprise possède et doit</p>
+        <h1 class="affiche" id="t-ecran">L'essentiel de vos comptes</h1>
+        <p class="sous">Sept montants du bilan, à recopier de vos comptes annuels. Indiquez 0 si un poste n'existe pas.</p>
+      </div>
+      <div class="ligne-annee"><label for="annee" style="font-weight:500">Exercice clos en</label><select id="annee"><option>2025</option><option>2024</option></select></div>
+      <div class="champs">
+        <div class="champ"><label for="st">Stocks</label><p class="aide-l">Stocks et en-cours, valeur nette</p><div class="unite"><input id="st" value="210 000" inputmode="decimal"><span>€</span></div></div>
+        <div class="champ"><label for="cl">Créances clients</label><p class="aide-l">Ce que vos clients vous doivent</p><div class="unite"><input id="cl" value="400 000" inputmode="decimal"><span>€</span></div></div>
+        <div class="champ"><label for="tr">Trésorerie</label><p class="aide-l">Disponibilités à la banque et en caisse</p><div class="unite"><input id="tr" value="250 000" inputmode="decimal"><span>€</span></div></div>
+        <div class="champ"><label for="cp">Capitaux propres</label><p class="aide-l">Total des capitaux propres</p><div class="unite"><input id="cp" value="700 000" inputmode="decimal"><span>€</span></div></div>
+        <div class="champ"><label for="em">Emprunts et dettes financières</label><p class="aide-l">Emprunts, découverts, autres dettes financières</p><div class="unite"><input id="em" value="300 000" inputmode="decimal"><span>€</span></div></div>
+        <div class="champ"><label for="fo">Dettes fournisseurs</label><p class="aide-l">Ce que vous devez à vos fournisseurs</p><div class="unite"><input id="fo" value="250 000" inputmode="decimal"><span>€</span></div></div>
+        <div class="champ"><label for="fi">Dettes fiscales et sociales</label><p class="aide-l">Hors impôt sur les sociétés si possible</p><div class="unite"><input id="fi" value="150 000" inputmode="decimal"><span>€</span></div></div>
+      </div>
+      <div class="nav-bas"><a class="lien" href="#">← Ce que l'entreprise gagne</a><button class="btn" type="button">Enregistrer cet exercice →</button></div>
+    </form>
+  </div>
+</main>
+<div class="action-tel" hidden><a class="lien" href="#">← Retour</a><button class="btn" type="button">Enregistrer →</button></div>
+<span class="ruban">Maquette · données fictives</span>
+<script>if (matchMedia("(max-width: 760px)").matches) document.querySelector(".action-tel").hidden = false;</script>
+</body>
+</html>
