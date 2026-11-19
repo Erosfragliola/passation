@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Teaser · Passation</title>
+  <title>Teaser anonyme · Passation</title>
   <meta name="theme-color" content="#FBF6EC">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -23,12 +23,13 @@
     <div class="document-outils pas-imprime">
       <div>
         <p class="etiquette">Vos documents</p>
-        <h1>Teaser <em>anonymisé</em></h1>
+        <h1>Teaser <em>anonyme</em></h1>
         <p class="chapo-petit">Une page pour éveiller l'intérêt d'un repreneur sans révéler l'identité de l'entreprise. Chaque texte est contrôlé : nom, ville, SIREN, montants exacts et marques sont refusés.</p>
       </div>
       <div class="document-actions">
         <button class="btn btn-noir" type="button" id="btn-generer">Rédiger le teaser</button>
-        <button class="btn btn-contour" type="button" id="btn-imprimer" hidden>Imprimer ou enregistrer en PDF</button>
+        <button class="btn btn-contour" type="button" id="btn-imprimer" hidden aria-describedby="aide-pdf">Télécharger en PDF</button>
+        <p class="aide-pdf" id="aide-pdf">Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».</p>
       </div>
       <p class="message-carte" id="message" role="status" aria-live="polite" hidden></p>
     </div>

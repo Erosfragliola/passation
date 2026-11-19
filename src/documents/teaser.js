@@ -1,6 +1,6 @@
 // Teaser : faits anonymes donnés à Claude (calculés par le code, jamais les chiffres exacts) et liste des montants
 // à ne jamais publier. La rédaction est contrôlée par anonymat.js avant tout enregistrement.
-import { SECTEURS_NAF, regionDe, fourchetteCA, fourchetteMarge, anciennete } from "./anonymat.js";
+import { secteurDe, regionDe, fourchetteCA, fourchetteMarge, anciennete } from "./anonymat.js";
 import { libelleEffectif, dernier } from "../../public/js/regles.js";
 
 export const SECTIONS_TEASER = [
@@ -21,7 +21,7 @@ export function faitsTeaser({ entreprise, resultat, entree, reponses = {} }) {
   const a = reponses.activite || {}, f = reponses.atouts || {}, o = reponses.operation || {}, c = reponses.clients || {};
   const recurrent = Number.isFinite(c.part_recurrente) ? `environ ${Math.round(c.part_recurrente * 10) * 10} % du chiffre d'affaires récurrent` : "À compléter";
   return {
-    secteur: SECTEURS_NAF[entreprise.section_naf] ?? "À compléter",
+    secteur: secteurDe(entreprise.naf) ?? "À compléter",
     region: regionDe(entreprise.code_postal) ?? "France",
     anciennete: anciennete(entreprise.date_creation) ?? "À compléter",
     effectif: libelleEffectif(entreprise.tranche_effectif?.code) ?? "À compléter",
@@ -70,7 +70,7 @@ export function visuelsTeaser({ entreprise, resultat, entree, reponses = {} }) {
   const r = reponses.clients?.part_recurrente;
   return {
     tuiles: {
-      secteur: SECTEURS_NAF[entreprise.section_naf] ?? null,
+      secteur: secteurDe(entreprise.naf),
       region: regionDe(entreprise.code_postal) ?? "France",
       anciennete: anciennete(entreprise.date_creation),
       effectif: libelleEffectif(entreprise.tranche_effectif?.code),

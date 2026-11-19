@@ -1,7 +1,7 @@
 // Page du mémorandum : site et logo (faits validés un par un), sections rédigées à la demande, impression.
 const $ = (s) => document.querySelector(s);
 import { CARTE } from "/js/carte-france.js";
-import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee } from "/js/memo-format.js";
+import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices } from "/js/memo-format.js";
 const id = new URLSearchParams(location.search).get("dossier") || "";
 const base = `/api/dossiers/${id}/documents/memo`;
 const el = (tag, attrs = {}, ...enfants) => {
@@ -10,6 +10,8 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
+/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 let etat = null;
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
@@ -25,7 +27,7 @@ function dessinerSite() {
   const s = etat.site;
   if (s?.url) $("#url-site").value = s.url;
   const faits = s?.faits || [];
-  $("#faits").replaceChildren(faits.length ? el("fieldset", { class: "faits" },
+  remplacer($("#faits"), faits.length ? el("fieldset", { class: "faits" },
     el("legend", { text: `Faits relevés (${faits.filter((f) => f.valide).length}/${faits.length} validés) : cochez ceux qui sont exacts` }),
     ...faits.map((f) => {
       const cb = el("input", { type: "checkbox", id: `fait-${f.id}`, checked: f.valide });
@@ -43,7 +45,7 @@ function dessinerSite() {
     const fd = new FormData(); fd.append("fichier", f);
     try { etat = await api(`${base}/logo`, { method: "POST", body: fd }); etat.versionPhotos = Date.now(); tout(); message("Logo enregistré."); } catch (e) { message(e.message, true); }
   });
-  $("#logos").replaceChildren(el("div", { class: "logos" },
+  remplacer($("#logos"), el("div", { class: "logos" },
     el("p", { class: "petit", text: etat.logo ? "Logo retenu : voir la couverture ci-dessous. Vous pouvez en choisir un autre." : "Choisissez le logo de l'entreprise (ou déposez-le)." }),
     el("div", { class: "logos-liste" }, ...logos.map((l) => el("button", { type: "button", class: "logo-choix", title: l.origine, onclick: async () => {
       try { etat = await api(`${base}/logo`, { method: "POST", body: JSON.stringify({ url: l.url }) }); tout(); message("Logo enregistré."); } catch (e) { message(e.message, true); }
@@ -60,7 +62,7 @@ function dessinerPhotos() {
   };
   const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "fichier-photo", class: "visuellement-cache" });
   fichier.addEventListener("change", () => { const f = fichier.files[0]; if (!f) return; const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", atteste.checked ? "oui" : "non"); ajouter(fd); fichier.value = ""; });
-  $("#photos").replaceChildren(el("div", { class: "photos-panneau" },
+  remplacer($("#photos"), el("div", { class: "photos-panneau" },
     el("p", { class: "petit", text: `Photos du mémorandum (${(etat.photos || []).length}/6) : couverture, activité, équipe.` }),
     el("label", { class: "fait", for: "attestation-photo" }, atteste, el("span", { text: "J'atteste que les photos ajoutées appartiennent à l'entreprise ou que j'ai le droit de les utiliser." })),
     el("div", { class: "logos-liste" },
@@ -81,7 +83,7 @@ function dessinerMarche() {
     catch (e) { message(e.message, true); b.disabled = false; }
   } }, m.date ? "Relancer l'étude" : "Lancer l'étude de marché");
   const sct = m.secteur;
-  $("#marche").replaceChildren(
+  remplacer($("#marche"), 
     sct ? el("p", { class: "petit", text: `Registres : ${entier(sct.region_total)} entreprises actives du code NAF ${sct.naf} en ${sct.region}, dont ${pct0(sct.part_moins_10)} de moins de 10 salariés.` }) : null,
     faits.length ? el("fieldset", { class: "faits" }, el("legend", { text: `Faits de marché (${faits.filter((f) => f.valide).length}/${faits.length} retenus)` }),
       ...faits.map((f) => {
@@ -99,7 +101,7 @@ function dessinerMarche() {
 
 function dessinerVerrou() {
   const v = etat.deverrouille;
-  $("#verrou").replaceChildren(v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: "Avant de rédiger le mémorandum :" }),
+  remplacer($("#verrou"), v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: "Avant de rédiger le mémorandum :" }),
     el("ul", {}, ...v.manque.map((m) => el("li", { text: m }))),
     el("a", { class: "btn btn-noir btn-mini", href: `/espace/valorisation/?dossier=${id}#entreprise` }, "Ouvrir le questionnaire")));
   $("#btn-tout").disabled = !v.ok;
@@ -667,7 +669,7 @@ function pagesChapitre(s) {
         ok(serie("resultat_net_pct").at(-1)) ? [pourcent(serie("resultat_net_pct").at(-1)), "Marge nette", "valide"] : null,
         endet && ok(endet.total) ? [montant(Math.abs(endet.total)), endet.total <= 0 ? "Trésorerie nette" : "Dette nette", "balance"] : null].filter(Boolean);
       const pages = [chapitre(s, { titre: "Chiffres clés financiers", contenu: [
-        c.annees.length ? el("div", { class: "im-chevron-titre" }, `Performances historiques · exercices ${c.annees[0]} à ${c.annees.at(-1)}`) : aRediger("Les chiffres (aucun exercice validé)"),
+        c.annees.length ? el("div", { class: "im-chevron-titre" }, `Performances historiques · ${periodeExercices(c.annees)}`) : aRediger("Les chiffres (aucun exercice validé)"),
         el("div", { class: "im-grille im-g-finances" },
           el("div", { class: "im-pile" },
             ligneGraphique("Chiffre d'affaires (en k€)", histogramme({ annees: c.annees, valeurs: serie("chiffre_affaires"), libelle: "Chiffre d'affaires", croissance: true }), tcamTxt(t?.ca)),
@@ -676,7 +678,7 @@ function pagesChapitre(s) {
             charges ? encadre(`Où va un euro de chiffre d'affaires (${c.annees.at(-1)})`, charges) : null,
             ratios.length ? el("div", { class: "im-ratios" }, ...ratios.map(([v, l, ic]) => el("div", { class: "im-ratio" }, el("span", { class: "im-puce-picto" }, icone(ic, "im-picto")), el("strong", { text: v }), el("span", { text: `${l} ${c.annees.at(-1)}` })))) : null))],
         sources: src })];
-      pages.push(page({ s, ancre: false, titre: `Compte de résultat ${c.annees.length ? `${c.annees[0]}-${c.annees.at(-1)}` : ""}`.trim(),
+      pages.push(page({ s, ancre: false, titre: `Compte de résultat ${periode(c.annees)}`.trim(),
         message: ok(ca) ? `Un chiffre d'affaires de ${montant(ca)} en ${an}${t && ok(t.ca) && c.annees.length >= 2 ? `, ${t.ca >= 0 ? "en hausse" : "en baisse"} de ${pourcent(Math.abs(t.ca))} par an depuis ${t.de}` : ""}` : null,
         contenu: [el("div", { class: "im-grille im-g-tableau" }, tableauCompteResultat(), el("div", { class: "im-col-texte" }, intertitre("Commentaires"), corpsTexte(s)))],
         notes: c.consecutifs === false ? ["Exercices non consécutifs : croissance annualisée entre deux exercices présentés."] : [], sources: src }));
@@ -766,7 +768,7 @@ function dessinerMemo() {
     }
   });
   enfants.push(pageAvertissement());
-  $("#memo").replaceChildren(...enfants);
+  remplacer($("#memo"), ...enfants);
   decouper();
   remplirPages();
   // Numéros « partie.page » (une suite garde le numéro de sa page), pages, renvois du sommaire et des points forts
@@ -808,7 +810,7 @@ function presentation() {
   const l = diapos();
   if (!l.length) return;
   pres.idx = Math.min(pres.idx, l.length - 1);
-  $("#vignettes").replaceChildren(...l.map((d, k) => el("li", {}, el("button", { type: "button", class: d.classList.contains("im-ouverture") ? "partie" : null, onclick: () => allerPage(k, true) },
+  remplacer($("#vignettes"), ...l.map((d, k) => el("li", {}, el("button", { type: "button", class: d.classList.contains("im-ouverture") ? "partie" : null, onclick: () => allerPage(k, true) },
     el("b", { text: String(k + 1) }), el("span", { text: titrePage(d) })))));
   appliquerPresentation();
 }
@@ -844,7 +846,7 @@ function panneau(d) {
   }
   const etatChap = !s ? null : !s.redigee ? "À rédiger" : s.modifie ? "Modifié par vous" : "Rédigé par Passation";
   const zoneEdition = el("div", { class: "panneau-edition" });
-  $("#panneau").replaceChildren(
+  remplacer($("#panneau"), 
     el("p", { class: "etiquette", text: `Page ${pres.idx + 1}` }),
     el("h2", { class: "panneau-titre", text: titrePage(d) }),
     s ? el("p", { class: "panneau-etat" }, el("span", { class: `pastille-etat ${!s.redigee ? "a-faire" : "ok"}`, text: etatChap }), ` · chapitre ${s.court}`) : null,
@@ -922,7 +924,7 @@ function editer(outils, s) {
   ok.addEventListener("click", async () => {
     try { etat = await api(`${base}/sections/${s.cle}`, { method: "PUT", body: JSON.stringify({ titre: titre.value, contenu: ta.value }) }); tout(); message("Chapitre enregistré."); } catch (e) { message(e.message, true); }
   });
-  outils.replaceChildren(el("label", { class: "petit", text: "Titre (la conclusion du chapitre, une ligne)" }), titre,
+  remplacer(outils, el("label", { class: "petit", text: "Titre (la conclusion du chapitre, une ligne)" }), titre,
     el("label", { class: "petit", text: "Texte (« - » en début de ligne pour une puce, **gras** pour le fait clé)" }), ta,
     el("div", { class: "doc-edition" }, ok, el("button", { type: "button", class: "lien-simple", onclick: tout }, "Annuler")));
   titre.focus();

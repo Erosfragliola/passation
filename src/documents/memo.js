@@ -2,7 +2,7 @@
 // organisée autour de six points forts numérotés (un par chapitre), titres qui affirment, source sous chaque chiffre.
 // Le code calcule tout (compte de résultat, EBE retraité, endettement, ratios) ; Claude rédige à partir de ces
 // chiffres, sans en produire de nouveaux. Présentation 100 % Passation ; seul le logo de l'entreprise apparaît.
-import { SECTEURS_NAF, anciennete, regionDe } from "./anonymat.js";
+import { secteurDe, anciennete, regionDe } from "./anonymat.js";
 import { libelleEffectif } from "../../public/js/regles.js";
 import { DETENTION, MURS, MURS_CESSION } from "../../public/js/parcours.js";
 import { montant, pourcent, multiple } from "../../public/js/memo-format.js";
@@ -229,7 +229,7 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
   const ch = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres });
   const d = {};
   for (const cle of section.donnees) {
-    if (cle === "entreprise") d.entreprise = { nom: entreprise.nom, ville: entreprise.ville, date_creation: entreprise.date_creation, anciennete: anciennete(entreprise.date_creation), secteur: SECTEURS_NAF[entreprise.section_naf] ?? null, code_naf: entreprise.naf, effectif: libelleEffectif(entreprise.tranche_effectif?.code) };
+    if (cle === "entreprise") d.entreprise = { nom: entreprise.nom, ville: entreprise.ville, date_creation: entreprise.date_creation, anciennete: anciennete(entreprise.date_creation), secteur: secteurDe(entreprise.naf), code_naf: entreprise.naf, effectif: libelleEffectif(entreprise.tranche_effectif?.code) };
     else if (cle === "frise") d.frise_publique = (entreprise.evenements || []).map((e) => ({ date: e.date, type: e.type, detail: e.detail ?? (e.nouveau ? `${e.ancien ?? ""} → ${e.nouveau}` : null) }));
     else if (cle === "activite") d.activite = reponses.activite || {};
     else if (cle === "atouts") d.atouts = reponses.atouts || {};
@@ -271,7 +271,7 @@ export function profilMemo(entreprise = {}, reponses = {}, codeName = null) {
   const c = clientsPrincipaux(reponses), o = reponses.operation || {}, a = reponses.activite || {};
   return {
     nom_de_code: codeName || (entreprise.naf ? projet(entreprise.naf) : "Projet"),
-    secteur: SECTEURS_NAF[entreprise.section_naf] ?? null,
+    secteur: secteurDe(entreprise.naf),
     ville: entreprise.ville ?? null, region: regionDe(entreprise.code_postal),
     creation: entreprise.date_creation ? Number(String(entreprise.date_creation).slice(0, 4)) : null,
     effectif: libelleEffectif(entreprise.tranche_effectif?.code),

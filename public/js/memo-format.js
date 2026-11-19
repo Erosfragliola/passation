@@ -41,3 +41,14 @@ export const multiple = (x) => (ok(x) ? `${nombre(x, 1)}x` : "n.d.");
 
 /** Mois et année du document : « novembre 2026 ». */
 export const moisAnnee = (date = new Date()) => date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
+/** Période couverte par des exercices : [2024] → « 2024 » ; [2022, 2023, 2024] → « 2022-2024 » ; aucun → « ». */
+export function periode(annees = []) {
+  if (!annees.length) return "";
+  return annees.length === 1 || annees[0] === annees.at(-1) ? String(annees.at(-1)) : `${annees[0]}-${annees.at(-1)}`;
+}
+/** Même chose en toutes lettres : « exercice 2024 » ; « exercices 2022 à 2024 ». */
+export function periodeExercices(annees = []) {
+  if (!annees.length) return "";
+  return annees.length === 1 || annees[0] === annees.at(-1) ? `exercice ${annees.at(-1)}` : `exercices ${annees[0]} à ${annees.at(-1)}`;
+}

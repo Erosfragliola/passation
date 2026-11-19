@@ -13,6 +13,7 @@ import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { pointsACompleter, libellePoints } from "/js/dossier-parcours.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -23,11 +24,13 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
+/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const fmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const court = (v) => (v == null || !Number.isFinite(v) ? "–" : Math.abs(v) >= 1e6 ? `${(v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} M€` : `${Math.round(v / 1e3).toLocaleString("fr-FR")} k€`);
 const lireNombre = (s) => { const t = String(s ?? "").replace(/[\s  €%]/g, "").replace(",", "."); if (t === "" || t === "-") return null; const n = Number(t); return Number.isFinite(n) ? n : NaN; };
 /** Remplit l'écran en ignorant les emplacements vides (jamais de « null » affiché). */
-const remplir = (...enfants) => $("#ecran").replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
+const remplir = (...enfants) => remplacer($("#ecran"), ...enfants);
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
@@ -83,11 +86,9 @@ const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
 /** Fil des étapes : la liste et l'état fait / à venir sont ceux de la page du dossier (etatParcours) ; l'étape de
  *  l'écran affiché est mise en avant. Le pourcentage est le même que celui de la page du dossier. */
 function dessinerEtapes() {
-  const ici = ETAPE_DE_L_ECRAN[S.etape];
-  const etats = Object.fromEntries((S.etat?.etapes || []).map((x) => [x.cle, x.etat]));
-  $("#guide-etapes").replaceChildren(...ETAPES_PARCOURS.map(([k, t], j) => el("li", { class: k === ici ? "actif" : etats[k] === "fait" ? "fait" : null, "aria-current": k === ici ? "step" : null },
-    el("span", { text: etats[k] === "fait" && k !== ici ? "✓" : String(j + 1) }), t, el("span", { class: "visuellement-cache", text: etats[k] === "fait" ? " : faite" : "" }))));
-  const pct = S.etat?.avancement ?? 0;
+  const i = ETAPES.findIndex(([k]) => k === (S.etape === "saisie" ? "comptes" : S.etape));
+  remplacer($("#guide-etapes"), ...ETAPES.map(([k, t], j) => el("li", { class: j < i ? "fait" : j === i ? "actif" : null, "aria-current": j === i ? "step" : null }, el("span", { text: String(j + 1) }), t)));
+  const pct = Math.round(((i + 1) / ETAPES.length) * 100); // l'étape en cours compte : on ne part jamais de zéro
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
 }
@@ -358,7 +359,7 @@ function champ(c, q) {
   if (c.type === "exceptionnels") {
     const liste = Array.isArray(v) && v.length ? v : [{ annee: Number(Object.keys(S.chiffres?.exercices || {}).sort().at(-1)) || null, libelle: "", montant: null, justification: "" }];
     const zone = el("div", { class: "guide-champ exceptionnels" });
-    const dessiner = () => zone.replaceChildren(...liste.map((x, k) => el("div", { class: "exc" },
+    const dessiner = () => remplacer(zone, ...liste.map((x, k) => el("div", { class: "exc" },
       el("input", { type: "text", value: x.annee ?? "", "aria-label": "Exercice", inputmode: "numeric", onchange: (e) => { x.annee = Number(e.target.value); } }),
       el("input", { type: "text", value: x.libelle, placeholder: "Libellé", "aria-label": "Libellé", onchange: (e) => { x.libelle = e.target.value; } }),
       el("input", { type: "text", inputmode: "decimal", value: x.montant != null ? fmt.format(x.montant) : "", placeholder: "Montant (€)", "aria-label": "Montant", onchange: (e) => { x.montant = lireNombre(e.target.value); } }),
@@ -606,7 +607,7 @@ async function redaction() {
       }
     }],
     ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
-    ["teaser", "Teaser anonymisé", () => api(`${base}/documents/teaser`, { method: "POST" })],
+    ["teaser", "Teaser anonyme", () => api(`${base}/documents/teaser`, { method: "POST" })],
     ...SECTIONS.map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
   ];
   const libelle = Object.fromEntries(taches.map(([k, t]) => [k, t]));
@@ -654,7 +655,7 @@ async function redaction() {
     manquantes = questionsIncompletes(S.reponses);
   }
   if (manquantes.length) {
-    suite.replaceChildren(el("div", { class: "carte guide-todo" },
+    remplacer(suite, el("div", { class: "carte guide-todo" },
       el("h2", { text: "Une réponse manque pour rédiger le mémorandum" }),
       el("p", { class: "petit", text: "La valorisation, le datapack et le teaser sont prêts. Répondez ci-dessous : la rédaction du mémorandum reprendra aussitôt." }),
       ...manquantes.map((q) => el("button", { type: "button", class: "btn btn-noir", onclick: () => { S.retour = "redaction"; S.q = QUESTIONS.indexOf(q); aller("questions"); } }, `Répondre : ${q.titre} `, fleche()))));
@@ -667,7 +668,7 @@ async function redaction() {
   if (bloquantes.length) {
     const causes = new Map();
     for (const e of bloquantes) causes.set(e.message, [...(causes.get(e.message) || []), libelle[e.k]]);
-    suite.replaceChildren(el("div", { class: "carte guide-todo" },
+    remplacer(suite, el("div", { class: "carte guide-todo" },
       el("h2", { text: `${bloquantes.length} rédaction${bloquantes.length > 1 ? "s n'ont" : " n'a"} pas abouti` }),
       el("ul", {}, ...[...causes].map(([m, l]) => el("li", {}, el("strong", { text: `${l.join(", ")} : ` }), m))),
       el("p", { class: "petit", text: "Ce qui est terminé est conservé : seules ces rédactions seront relancées." }),
@@ -684,22 +685,21 @@ async function redaction() {
 /** Écran final : même état que la page du dossier (etatParcours), donc même statut, même pourcentage, même fourchette
  *  et mêmes tâches. « Prêt » seulement si tout l'indispensable est fait ; sinon « rédigé » et ce qui reste. */
 async function pret() {
-  const e = (await rafraichirEtat()) || etatParcours(S.dossier, null);
-  const f = ecranFinal(e), v = e.valeur;
-  remplir(...titre(f.titre, f.aide),
-    v.bas != null && v.haut != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: v.etiquette }),
-      el("p", { class: "valeur-centrale chiffre", text: fourchette(v.bas, v.haut) }), el("p", { class: "petit", text: v.base }), v.ecart ? el("p", { class: "petit", text: v.ecart }) : null) : null,
-    f.reste.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: f.resteTitre }),
-      el("ul", {}, ...f.reste.map((t) => el("li", {}, t.pieces
-        ? el("a", { href: `/espace/?dossier=${id}#checklist`, text: t.titre })
-        : el("a", { href: t.href.startsWith("#") ? `/espace/?dossier=${id}${t.href}` : t.href, text: t.titre }), el("span", { class: "petit", text: ` · ${t.detail}` }))))) : null,
+  const [val, memo] = await Promise.all([api(`${base}/valuation`), api(`${base}/documents/memo`)]);
+  const s = val.resultat?.synthese;
+  // Même décompte que la page du dossier (pointsACompleter) ; les remarques de la valorisation sont listées à part
+  const aCompleter = pointsACompleter(memo), remarques = (s?.alertes || []).filter((a) => !/en option/.test(a));
+  remplir(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
+    s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${fourchette(s.bas, s.haut)}` })) : null,
     el("div", { class: "guide-docs" },
       ...[["Valorisation détaillée", "Multiples du secteur, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
         ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],
-        ["Teaser anonymisé", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
+        ["Teaser anonyme", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
         ["Mémorandum d'information", "La présentation complète, en diapositives", `/espace/documents/memo/?dossier=${id}`]]
         .map(([t, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: t }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
-    el("p", { class: "petit" }, "Pour affiner (décotes et primes, EBE retenu) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), "."));
+    aCompleter.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: libellePoints(aCompleter.length) }), el("ul", {}, ...aCompleter.slice(0, 12).map((t) => el("li", { text: t })))) : null,
+    remarques.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: "À vérifier dans la valorisation" }), el("ul", {}, ...remarques.map((t) => el("li", { text: t })))) : null,
+    el("p", { class: "petit" }, "Pour affiner (prime de taille, décotes, pondération) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), ". Pour modifier une réponse : ", el("a", { href: `/espace/demarrer/?dossier=${id}&etape=questions`, text: "revoir vos réponses" }), "."));
 }
 
 // ================================================================== Chargement
@@ -712,9 +712,13 @@ async function pret() {
     S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {}; S.vues = vuesDe(S.reponses);
     S.etat = etatParcours(dossier, dossier.documents?.memo ? await api(`${base}/documents/memo`).catch(() => null) : null);
     $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
+    // Nom de code au-dessus du nom réel, comme sur la page du dossier : c'est sous ce nom que le dossier circulera
+    if (dossier.nom_de_code) { $("#guide-code").textContent = dossier.nom_de_code; $("#guide-nom-code").hidden = false; }
     document.title = `${dossier.entreprise.nom} · Passation`;
     S.complet = Boolean(dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && dossier.parcours?.valorisation);
-    aller(etapeDemandee() || etapeCourante());
+    // Documents déjà rédigés : on rouvre sur l'écran final (récapitulatif et points à compléter), pas sur une question
+    // facultative laissée vide ; ?etape=… permet toujours d'y revenir (audit, point 17)
+    aller(etapeDemandee() || (S.complet || S.reponses.suivi?.pret_envoye ? "pret" : etapeCourante()));
     if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // pendant les questions, pas à la fin
   } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
