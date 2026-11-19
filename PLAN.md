@@ -354,7 +354,7 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
 - **10/11/2026, étape 5 (datapack Excel)** :
   - `.xlsx` écrit par nos soins : `src/documents/xlsx.js`, zip par `fflate` 0.8.3 (MIT). Pas d'`exceljs`, trop lourd pour
     un Worker.
-  - 9 onglets : Couverture, Comptes, Retraitements, Hypothèses, Passage aux titres, Multiples, DCF, ANCC, Synthèse.
+  - 9 onglets : Présentation (logo, sommaire cliquable par section, lecture, avertissement), puis 1.1 Comptes, 1.2 Retraitements, 1.3 Hypothèses, 2.1 Passage aux titres, 2.2 Multiples, 2.3 DCF, 2.4 ANCC, 2.5 Synthèse (présentation inspirée des datapacks de banque d'affaires, charte Passation, sans onglet de graphiques).
   - Formules vivantes et valeurs en cache ; Excel recalcule tout à l'ouverture.
   - Cellules jaunes = hypothèses modifiables, avec leurs sources.
   - Contrôle : un évaluateur de formules (`src/documents/formules.js`) vérifie dans les tests que le classeur redonne au

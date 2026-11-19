@@ -65,10 +65,10 @@ describe("scénario de démonstration (liasse fictive Atelier Exemple)", () => {
       return construireDatapack({ entreprise: { nom: "Atelier Exemple", siren: "" }, entree, H, resultat: r, genereLe: new Date("2026-11-18") }).calculer();
     };
     const parDefaut = datapack({ prime_taille: 0.03 });
-    proche(parDefaut.valeur("Synthèse", "C11"), 1_941_818.18);
-    proche(parDefaut.valeur("DCF", "C31"), 2_819_933.02);
+    proche(parDefaut.valeur("2.5 Synthèse", "C11"), 1_941_818.18);
+    proche(parDefaut.valeur("2.3 DCF", "C31"), 2_819_933.02);
     const avecDcf = datapack({ prime_taille: 0.03, poids_multiples: 0.6 });
-    proche(avecDcf.valeur("Synthèse", "C11"), 2_293_064.12);
-    proche(avecDcf.valeur("DCF", "C31"), 2_819_933.02);
+    proche(avecDcf.valeur("2.5 Synthèse", "C11"), 2_293_064.12);
+    proche(avecDcf.valeur("2.3 DCF", "C31"), 2_819_933.02);
   });
 });
