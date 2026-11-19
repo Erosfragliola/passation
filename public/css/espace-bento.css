@@ -157,23 +157,34 @@
 .drive-dossiers button[aria-selected="true"] { background: var(--vert); color: #fff; }
 .drive-dossiers svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; }
 .drive-dossiers small { font-size: 12.5px; font-weight: 500; }
-.drive-contenu { display: grid; gap: 12px; min-width: 0; }
-.depot-zone { border: 2px dashed rgba(168, 101, 58, .55); border-radius: 20px; background: #F5E7D6; padding: 22px; display: grid; place-items: center; text-align: center; gap: 6px; cursor: pointer; }
+/* Partie droite du dépôt : la zone de dépôt en bandeau, puis la liste des pièces (une seule colonne de contenu).
+   Conteneur de requêtes : la mise en page suit la place réellement disponible, pas la largeur de l'écran. */
+.drive-contenu { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; margin: 0; container: depot / inline-size; }
+.depot-zone { border: 2px dashed rgba(168, 101, 58, .55); border-radius: 20px; background: #F5E7D6; padding: 14px 18px; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: "ico titre ajout" "ico aide ajout"; align-items: center; column-gap: 14px; row-gap: 2px; text-align: left; cursor: pointer; }
+.depot-zone .depot-ico { grid-area: ico; }
+.depot-zone > strong { grid-area: titre; }
+.depot-zone > .petit { grid-area: aide; }
+.depot-zone > .depot-choisir { grid-area: ajout; }
 .depot-zone.survol, .piece-zone.survol { background: #EDD3B7; }
 .depot-ico { width: 44px; height: 44px; border-radius: 50%; background: var(--d-cuivre-texte); color: #fff; display: grid; place-items: center; font-size: 22px; }
 .depot-zone strong { font-size: 17px; }
 .depot-zone .petit { margin: 0; }
-.depot-choisir { font-weight: 600; color: var(--vert); min-height: 32px; }
-.drive-pieces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.piece-zone { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; grid-template-areas: "ico texte etat" "ico ajout etat"; column-gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--trait); background: var(--creme); cursor: pointer; min-width: 0; height: 100%; }
+.depot-choisir { font-weight: 600; color: var(--vert); min-height: 32px; white-space: nowrap; }
+/* Liste des pièces : une colonne, deux dès que la place le permet ; chaque pièce est elle-même un conteneur */
+.drive-pieces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+@container depot (min-width: 640px) { .drive-pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.drive-pieces > .piece { min-width: 0; container: piece / inline-size; }
+.piece-zone { display: grid; grid-template-columns: 42px minmax(0, 1fr); grid-template-areas: "ico texte" "ico ajout" "ico etat"; row-gap: 4px; column-gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--trait); background: var(--creme); cursor: pointer; min-width: 0; height: 100%; }
+@container piece (min-width: 360px) { .piece-zone { grid-template-columns: 42px minmax(0, 1fr) auto; grid-template-areas: "ico texte etat" "ico ajout etat"; row-gap: 0; } }
 .piece-zone .piece-ico { grid-area: ico; }
 .piece-zone .piece-texte { grid-area: texte; }
 .piece-zone .depot-choisir { grid-area: ajout; justify-self: start; font-size: 13.5px; }
-.piece-zone .piece-etat { grid-area: etat; }
+.piece-zone .piece-etat { grid-area: etat; justify-self: start; }
+@container piece (min-width: 360px) { .piece-zone .piece-etat { justify-self: end; } }
 .piece-ico { width: 42px; height: 48px; border-radius: 9px; background: var(--d-sable); display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--pierre-texte); }
 .piece.fournie .piece-ico { background: var(--vert); color: #fff; }
 .piece-texte { display: grid; gap: 2px; min-width: 0; }
-.piece-texte strong { font-size: 14.5px; }
+.piece-texte strong { font-size: 14.5px; overflow-wrap: normal; word-break: normal; hyphens: manual; }
 .piece-texte .petit { margin: 0; }
 .piece-fichiers { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 13px; }
 .piece-fichiers a { color: var(--vert); overflow-wrap: anywhere; }
@@ -211,7 +222,6 @@
   .tache .btn { margin-left: 56px; }
   .drive { grid-template-columns: 1fr; padding: 10px; }
   .drive-dossiers { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; padding-bottom: 4px; }
-  .drive-pieces { grid-template-columns: 1fr; }
   .cta-tel { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--creme) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--trait); }
   .cta-tel .btn { width: 100%; min-height: 50px; font-weight: 600; }
 }
@@ -288,3 +298,8 @@
 .page-guidee .guide-code { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-size: clamp(22px, 2.2vw, 26px); line-height: 1.1; color: #8E5530; }
 .page-guidee .guide-code-aide { font-size: 13.5px; color: var(--pierre-texte); }
 .studio-tete h1 em { font-style: normal; }
+
+@container depot (max-width: 520px) {
+  .depot-zone { grid-template-columns: 44px minmax(0, 1fr); grid-template-areas: "ico titre" "ico aide" "ico ajout"; }
+  .depot-zone > .depot-choisir { justify-self: start; }
+}
