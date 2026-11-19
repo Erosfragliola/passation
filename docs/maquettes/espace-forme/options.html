@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace : options à choisir</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  main { max-width: 1240px; }
+  h1.affiche { font-size: 48px; color: var(--vert); margin: 8px 0 6px; }
+  h2.affiche { font-size: 30px; margin: 34px 0 6px; color: var(--vert); }
+  .theme-intro { margin: 0 0 12px; color: var(--pierre-texte); max-width: 860px; }
+  .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .option { display: grid; gap: 10px; align-content: start; }
+  .option.reco { outline: 3px solid var(--cuivre); }
+  .option h3 { margin: 0; font-size: 16px; }
+  .option p { margin: 0; font-size: 14px; }
+  .reco-mot { color: var(--cuivre-texte); font-weight: 700; }
+  .croquis { background: var(--creme); border: 1px solid var(--trait); border-radius: 14px; padding: 14px; min-height: 130px; display: grid; gap: 8px; align-content: start; font-size: 13px; }
+  .croquis .bloc { border: 1px dashed var(--trait-fort); border-radius: 10px; padding: 8px; }
+  .croquis .vert { background: var(--vert); color: #F6F1E6; border: 0; }
+  .croquis .ligne { display: flex; gap: 6px; }
+  .croquis .ligne > * { flex: 1; }
+  .cap { text-transform: uppercase; letter-spacing: .12em; font-size: 11px; color: var(--pierre-texte); }
+  table.jargon { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--papier); border-radius: 14px; overflow: hidden; }
+  table.jargon th, table.jargon td { border-bottom: 1px solid var(--trait); padding: 8px 10px; text-align: left; vertical-align: top; }
+  table.jargon th { background: var(--sable); }
+  .liens a { margin-right: 14px; }
+  @media (max-width: 900px) { .options { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="sous">Pull Request « Espace : une seule direction artistique, un écran par étape, sans jargon » · phase 1</p>
+  <h1 class="affiche">Options à choisir</h1>
+  <p class="theme-intro">Trois options par thème. Celle que je recommande est encadrée en cuivre. Les maquettes « après » montrent les options recommandées ; toutes les données sont fictives (Projet Chêne, menuiserie).</p>
+  <p class="liens petit">Maquettes : <a href="apres-connexion.html">connexion</a><a href="apres-essentiel.html">l'essentiel, écran 1</a><a href="apres-essentiel-bilan.html">écran 2</a><a href="apres-dossier.html">page du dossier</a><a href="apres-valorisation-chiffres.html">valorisation : chiffres</a><a href="apres-valorisation-entreprise.html">entreprise</a><a href="apres-valorisation-resultat.html">valorisation</a><a href="apres-teaser.html">teaser</a></p>
+
+  <h2 class="affiche">1. Nom de code</h2>
+  <p class="theme-intro">Aujourd'hui : italique à empattements (Instrument Serif) sur la page du dossier, le parcours guidé et cinq endroits de l'accueil ; Geist demi-gras sur la fiche de résultat validée (PR #11).</p>
+  <div class="options">
+    <article class="tuile option reco"><h3>A. Geist demi-gras partout</h3><div class="croquis"><div class="bloc vert"><span class="nom-code" style="font-size:24px;color:#E9C9A4">Projet Chêne</span><br><span class="affiche" style="font-size:30px">Menuiserie Exemple</span></div></div><p><span class="reco-mot">Recommandée.</span> C'est l'écriture de la fiche validée (PR #11) et la règle « une police, Geist, plus les titres d'affiche » du 18/11. On retire une police chargée (Instrument Serif) de tout le site.</p></article>
+    <article class="tuile option"><h3>B. Italique à empattements partout</h3><div class="croquis"><div class="bloc vert"><span style="font:italic 28px 'Instrument Serif',serif;color:#E9C9A4">Projet Chêne</span><br><span class="affiche" style="font-size:30px">Menuiserie Exemple</span></div></div><p>Garde une touche « dossier confidentiel », mais il faudrait changer la fiche validée et revenir sur la règle de la police unique.</p></article>
+    <article class="tuile option"><h3>C. Capitales d'affiche</h3><div class="croquis"><div class="bloc vert"><span class="affiche" style="font-size:22px;color:#E9C9A4">Projet Chêne</span><br><span class="affiche" style="font-size:30px">Menuiserie Exemple</span></div></div><p>Très lisible, mais le nom de code se confond avec le nom réel juste dessous : la distinction « anonyme / réel » se perd.</p></article>
+  </div>
+
+  <h2 class="affiche">2. Petits titres en capitales espacées</h2>
+  <p class="theme-intro">Aujourd'hui : « Espace dirigeant », « Valeur des titres », « Vos documents », « Valorisation approfondie », « Compte de résultat »… en petites capitales espacées au-dessus des blocs (21 règles dans styles.css, 4 dans espace-bento.css).</p>
+  <div class="options">
+    <article class="tuile option"><h3>A. Phrases en minuscules, petit gras</h3><div class="croquis"><strong>Valeur de vos parts</strong><span>1,4 – 2,4 M€</span><span style="font-weight:600">Vos documents</span><div class="ligne"><span class="bloc">Valorisation <span style="font-weight:600">Prêt</span></span></div></div><p>Le plus sobre. Les statuts (« Prêt », « À venir ») perdent un peu de lisibilité dans les listes de documents.</p></article>
+    <article class="tuile option reco"><h3>B. Minuscules partout, capitales pour les seuls statuts</h3><div class="croquis"><strong>Valeur de vos parts</strong><span>1,4 – 2,4 M€</span><span style="font-weight:600">Vos documents</span><div class="ligne"><span class="bloc">Valorisation <span class="statut">Prêt</span></span></div></div><p><span class="reco-mot">Recommandée.</span> Les titres deviennent des phrases ; seules les pastilles d'état gardent les capitales, car ce sont des étiquettes et non des titres.</p></article>
+    <article class="tuile option"><h3>C. Pas de petit titre : le titre d'affiche suffit</h3><div class="croquis"><span class="affiche" style="font-size:22px">Vos documents</span><div class="ligne"><span class="bloc">Valorisation · prêt</span></div></div><p>Retire tous les sur-titres et promeut les utiles en titres d'affiche. Plus fort visuellement, mais plus de titres en Big Shoulders sur un même écran.</p></article>
+  </div>
+
+  <h2 class="affiche">3. Valorisation sur un écran</h2>
+  <p class="theme-intro">Aujourd'hui : 2 742 px pour l'onglet « Vos chiffres » (tableau 21 lignes × 3 exercices), 2 118 px pour « Votre valorisation » ; la barre du site recouvre les onglets dans le bandeau noir.</p>
+  <div class="options">
+    <article class="tuile option reco"><h3>A. Trois onglets, un exercice à la fois</h3><div class="croquis"><div class="ligne"><span class="bloc">Chiffres</span><span class="bloc">Entreprise</span><span class="bloc">Valorisation</span></div><div class="ligne"><span>2024 · <b>2025</b> · +</span></div><div class="ligne"><span class="bloc">Ce qu'elle gagne (5)</span><span class="bloc">Ce qu'elle possède et doit (7)</span></div><span>+ Ajouter une ligne facultative (8)</span></div><p><span class="reco-mot">Recommandée.</span> 12 lignes obligatoires sur deux colonnes ; les 8 facultatives repliées. Le résultat tient en un résumé ; le détail du calcul passe dans « Comment la fourchette est calculée ». <a href="apres-valorisation-chiffres.html">Maquette</a></p></article>
+    <article class="tuile option"><h3>B. Assistant ligne par ligne</h3><div class="croquis"><span>Ligne 4 sur 12</span><div class="bloc">Salaires et charges sociales 2025<br>680 000 €</div><span>Précédent · Suivant</span></div><p>Impossible de déborder, mais 12 écrans par exercice et pas de vue d'ensemble pour comparer deux années.</p></article>
+    <article class="tuile option"><h3>C. Résumé + tableau complet dans un panneau</h3><div class="croquis"><div class="bloc">Résumé : CA, EBE, trésorerie, dettes par année</div><span>Ouvrir le tableau complet → (panneau latéral qui défile)</span></div><p>Garde le tableau actuel, mais caché ; le panneau, lui, défile toujours (2 000 px et plus).</p></article>
+  </div>
+
+  <h2 class="affiche">4. Page du dossier sur un écran</h2>
+  <p class="theme-intro">Aujourd'hui : 1 347 px (1440), 2 553 px (390). Documents en grandes cartes, pièces dans un bandeau séparé, « Gérer mon dossier » en bas.</p>
+  <div class="options">
+    <article class="tuile option reco"><h3>A. Même plan, resserré</h3><div class="croquis"><span>Fil des étapes · Continuer</span><div class="ligne"><span class="bloc vert">Projet Chêne · valeur</span><span class="bloc">À faire (3), pièces comprises</span></div><div class="ligne"><span class="bloc">Valo</span><span class="bloc">Excel</span><span class="bloc">Teaser</span><span class="bloc">Mémo</span></div></div><p><span class="reco-mot">Recommandée.</span> On garde le plan validé de la PR #10 ; les pièces rejoignent « À faire » ; les documents deviennent une rangée de 4 tuiles basses ; pictogrammes retirés. <a href="apres-dossier.html">Maquette</a></p></article>
+    <article class="tuile option"><h3>B. Une colonne « prochaine étape »</h3><div class="croquis"><div class="bloc vert">Prochaine étape : répondre aux 12 questions [Continuer]</div><div class="ligne"><span class="bloc">Documents</span><span class="bloc">Pièces</span></div></div><p>Encore plus simple, mais la valeur et le nom de code descendent sous la ligne de flottaison.</p></article>
+    <article class="tuile option"><h3>C. Onglets Aperçu / Documents / Pièces</h3><div class="croquis"><div class="ligne"><span class="bloc">Aperçu</span><span class="bloc">Documents</span><span class="bloc">Pièces</span></div><div class="bloc">contenu de l'onglet</div></div><p>Tient forcément sur un écran, mais cache une partie du dossier derrière des clics.</p></article>
+  </div>
+
+  <h2 class="affiche">5. « L'essentiel de vos comptes »</h2>
+  <p class="theme-intro">Aujourd'hui : 11 champs l'un sous l'autre, 2 104 px.</p>
+  <div class="options">
+    <article class="tuile option reco"><h3>A. Deux écrans : ce qu'elle gagne, puis ce qu'elle possède et doit</h3><div class="croquis"><span>Écran 1 sur 2</span><div class="ligne"><span class="bloc">CA</span><span class="bloc">EBE ?</span></div><div class="ligne"><span class="bloc">Résultat net</span><span>détailler</span></div><span>Suivant : votre bilan →</span></div><p><span class="reco-mot">Recommandée.</span> Un sujet par écran, 3 puis 7 champs, en deux colonnes sur ordinateur ; sur téléphone, le bouton reste fixé en bas. <a href="apres-essentiel.html">Écran 1</a> · <a href="apres-essentiel-bilan.html">écran 2</a></p></article>
+    <article class="tuile option"><h3>B. Un écran, deux colonnes</h3><div class="croquis"><div class="ligne"><span class="bloc">Compte de résultat (4)</span><span class="bloc">Bilan (7)</span></div><span>Enregistrer</span></div><p>Tient sur ordinateur, mais pas sur téléphone (deux hauteurs et demie).</p></article>
+    <article class="tuile option"><h3>C. Un écran, facultatifs repliés</h3><div class="croquis"><div class="bloc">11 champs plus serrés</div><span>+ Résultat net (facultatif)</span></div><p>Gagne peu (un champ) : le problème vient du nombre de champs obligatoires, pas des facultatifs.</p></article>
+  </div>
+
+  <h2 class="affiche">6. Jargon : remplacements proposés</h2>
+  <p class="theme-intro">Dans l'interface du dirigeant seulement (pas dans le mémorandum, le teaser ni l'Excel). EBE reste, avec une aide « ? » au survol, au clavier et au toucher, à la première occurrence de chaque écran.</p>
+  <table class="jargon">
+    <tr><th>Aujourd'hui</th><th>Proposé</th><th>Où (principalement)</th></tr>
+    <tr><td>EBE</td><td>EBE + aide : « ce que l'activité dégage avant impôts, intérêts et amortissements »</td><td>parcours, valorisation, page du dossier</td></tr>
+    <tr><td>EBE publié</td><td>EBE des comptes publics</td><td>champs-financiers.js</td></tr>
+    <tr><td>INPI, comptes publics INPI</td><td>comptes publics (registre INPI)</td><td>valorisation.js, champs-financiers.js</td></tr>
+    <tr><td>ANCC, actif net comptable corrigé</td><td>actif net corrigé (ce que l'entreprise possède, moins ce qu'elle doit)</td><td>valorisation</td></tr>
+    <tr><td>CMPC</td><td>taux d'actualisation (rendement attendu par un repreneur)</td><td>valorisation, « Affiner »</td></tr>
+    <tr><td>TCAM</td><td>croissance moyenne par an</td><td>parcours, page du dossier</td></tr>
+    <tr><td>BFR, écart de BFR</td><td>besoin de trésorerie de l'exploitation</td><td>valorisation</td></tr>
+    <tr><td>VE, valeur d'entreprise</td><td>valeur de l'entreprise (avant dettes et trésorerie)</td><td>valorisation</td></tr>
+    <tr><td>Valeur des titres (fonds propres)</td><td>valeur de vos parts</td><td>page du dossier, valorisation</td></tr>
+    <tr><td>DCF</td><td>calcul par les flux futurs de trésorerie</td><td>valorisation, page du dossier</td></tr>
+    <tr><td>Prime de taille, décotes, pondération</td><td>une phrase d'explication chacune, regroupées sous « Affiner avec votre conseil » ; détail du calcul sous « Comment la fourchette est calculée »</td><td>valorisation, parcours</td></tr>
+  </table>
+  <p class="petit">Deux propositions de mots sont de moi et non de l'audit : « taux d'actualisation » pour CMPC et « valeur de vos parts » pour « valeur des titres ». À valider ou à remplacer.</p>
+</main>
+</body>
+</html>

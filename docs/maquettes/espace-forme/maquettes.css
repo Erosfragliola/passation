@@ -1,0 +1,77 @@
+/* Maquettes statiques « Espace : une seule direction artistique » (19/11/2026). Non servies par le Worker
+   (wrangler.toml : [assets] directory = "./public"). Données entièrement fictives (Projet Chêne, menuiserie). */
+@font-face { font-family: "Geist"; src: url("../../../public/fonts/geist-var.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Big Shoulders"; font-weight: 700; font-display: swap; src: url("../../../public/fonts/big-shoulders-bold.woff2") format("woff2"); }
+@font-face { font-family: "Instrument Serif"; font-style: italic; font-weight: 400; src: url("../../../public/fonts/instrument-serif-italic.woff2") format("woff2"); }
+
+:root {
+  --espresso: #231E18; --creme: #FBF6EC; --sable: #EADFCB; --papier: #FFFDF8; --vert: #1E3A2E; --cuivre: #A8653A;
+  --cuivre-texte: #8E5530; --pierre-texte: #696155; --trait: rgba(35, 30, 24, .12); --trait-fort: rgba(35, 30, 24, .22);
+  --affiche: "Big Shoulders", "Arial Narrow", sans-serif; --sans: "Geist", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font: 400 15px/1.45 var(--sans); color: var(--espresso); background: var(--creme); }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--vert); outline-offset: 2px; }
+.affiche { font-family: var(--affiche); font-weight: 700; text-transform: uppercase; line-height: .95; margin: 0; letter-spacing: .005em; }
+.nom-code { font-family: var(--sans); font-weight: 600; letter-spacing: -.02em; margin: 0; }
+.sous { color: var(--pierre-texte); margin: 0; }
+.petit { font-size: 13.5px; color: var(--pierre-texte); }
+.titre-bloc { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+.statut { display: inline-block; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: 3px 8px; border-radius: 999px; background: #E3EDE6; color: var(--vert); }
+.statut.attente { background: var(--sable); color: var(--pierre-texte); }
+.btn { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 999px; padding: 11px 20px; font: 600 15px/1 var(--sans); background: var(--espresso); color: var(--creme); text-decoration: none; cursor: pointer; white-space: nowrap; }
+.btn.cuivre { background: var(--cuivre-texte); }
+.btn.contour { background: transparent; color: var(--espresso); border: 1px solid var(--trait-fort); }
+.btn.petit-btn { padding: 8px 14px; font-size: 14px; }
+.lien { background: none; border: 0; padding: 0; font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; color: inherit; }
+
+/* Barre du haut et fil des étapes */
+.barre { position: sticky; top: 0; z-index: 5; background: var(--creme); border-bottom: 1px solid var(--trait); }
+.barre-in { max-width: 1200px; margin: 0 auto; padding: 10px 24px; display: flex; align-items: center; gap: 16px; }
+.marque { font-weight: 600; font-size: 18px; text-decoration: none; }
+.barre-in nav { margin-left: auto; display: flex; gap: 8px; }
+.fil { max-width: 1200px; margin: 0 auto; padding: 0 24px 10px; display: flex; gap: 6px; align-items: center; overflow-x: auto; }
+.fil a { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 999px; font-size: 14px; text-decoration: none; white-space: nowrap; color: var(--pierre-texte); }
+.fil a .n { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--trait-fort); display: grid; place-items: center; font-size: 12px; }
+.fil a.fait { color: var(--espresso); } .fil a.fait .n { background: var(--vert); color: #fff; border-color: var(--vert); }
+.fil a[aria-current] { background: var(--vert); color: #F6F1E6; } .fil a[aria-current] .n { border-color: #F6F1E6; }
+.fil a.cta { margin-left: auto; color: #FFF8EE; font-weight: 600; }
+
+main { max-width: 1200px; margin: 0 auto; padding: 20px 24px 24px; }
+.tuile { background: var(--papier); border: 1px solid var(--trait); border-radius: 22px; padding: 22px; min-width: 0; }
+.tuile.verte { background: var(--vert); color: #F6F1E6; border-color: transparent; }
+.tuile.sable { background: var(--sable); border-color: transparent; }
+
+/* Aide « ? » pour EBE (au survol, au focus et au toucher) */
+.aide { position: relative; display: inline-flex; }
+.aide button { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--trait-fort); background: var(--papier); font: 600 12px/1 var(--sans); cursor: help; padding: 0; margin-left: 4px; color: var(--espresso); }
+.aide [role="tooltip"] { position: absolute; left: 0; top: 26px; width: 260px; padding: 10px 12px; border-radius: 12px; background: var(--espresso); color: var(--creme); font-size: 13px; font-weight: 400; display: none; z-index: 3; }
+.aide:hover [role="tooltip"], .aide:focus-within [role="tooltip"] { display: block; }
+
+/* Champs */
+.champs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px; }
+.champ label { display: flex; align-items: center; font-weight: 500; font-size: 14.5px; margin-bottom: 4px; }
+.champ .unite { display: flex; align-items: center; gap: 8px; }
+.champ input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--trait-fort); border-radius: 12px; background: #FBF7EF; font: 400 16px var(--sans); text-align: right; }
+select { text-align: left; width: auto; }
+.champ .aide-l { font-size: 12.5px; color: var(--pierre-texte); margin: 0 0 4px; }
+
+details.depli { border-top: 1px solid var(--trait); padding-top: 10px; margin-top: 10px; }
+details.depli summary { cursor: pointer; font-weight: 600; font-size: 14.5px; }
+
+/* Avant / après : bandeau d'identification de la maquette */
+.ruban { position: fixed; right: 12px; bottom: 12px; z-index: 9; background: #fff4d6; border: 1px solid #c9a227; color: var(--espresso); font-size: 12px; padding: 4px 10px; border-radius: 999px; }
+
+@media (max-width: 760px) {
+  body { font-size: 15px; }
+  .barre-in { padding: 8px 16px; } .barre-in nav .btn { padding: 8px 12px; font-size: 13px; }
+  .fil { padding: 0 16px 8px; } .fil a .t { display: none; } .fil a[aria-current] .t { display: inline; } .fil .cta { display: none; }
+  main { padding: 14px 16px 90px; }
+  .ruban { bottom: auto; top: 58px; }
+  .champs { grid-template-columns: 1fr; gap: 10px; }
+  .action-tel { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--creme); border-top: 1px solid var(--trait); display: flex; justify-content: space-between; align-items: center; gap: 12px; z-index: 6; }
+}
+@media (min-width: 761px) { .action-tel .lien { display: inline; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

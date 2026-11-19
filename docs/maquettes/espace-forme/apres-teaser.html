@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette · Teaser (après)</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .t-entete { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: end; margin-bottom: 14px; }
+  .t-entete h1 { font-size: clamp(40px, 5vw, 60px); color: var(--vert); }
+  .apercu { aspect-ratio: 210 / 297; max-width: 520px; margin: 0 auto; background: #fff; border: 1px solid var(--trait); border-radius: 6px; box-shadow: 0 20px 50px -30px rgba(35,30,24,.4); padding: 34px; display: grid; align-content: start; gap: 10px; }
+  .apercu .l { height: 9px; border-radius: 4px; background: #ECE5D8; } .apercu .t { height: 22px; width: 60%; background: #D9CDB6; border-radius: 4px; }
+  @media (max-width: 760px) { .t-entete { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><span class="nom-code" style="font-size:17px;color:var(--cuivre-texte)">Projet Chêne</span><nav><a class="btn contour petit-btn" href="#">Mon dossier</a></nav></div></header>
+<main>
+  <div class="t-entete">
+    <div><p class="sous"><a href="#">Mon dossier</a> › Teaser</p><h1 class="affiche">Teaser anonyme</h1>
+    <p class="sous">Une page pour éveiller l'intérêt d'un repreneur sans révéler l'entreprise : le nom, la ville, le numéro SIREN, les montants exacts et les marques sont refusés automatiquement.</p></div>
+    <div style="display:flex;gap:8px"><button class="btn contour" type="button">Modifier le texte</button><button class="btn" type="button">Télécharger en PDF</button></div>
+  </div>
+  <div class="apercu" aria-label="Aperçu du teaser (la page A4 garde son défilement)"><div class="t"></div><div class="l"></div><div class="l"></div><div class="l" style="width:80%"></div><div class="t" style="width:40%;margin-top:14px"></div><div class="l"></div><div class="l" style="width:70%"></div></div>
+</main>
+<span class="ruban">Maquette · données fictives</span>
+</body>
+</html>

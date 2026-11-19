@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette · Valorisation, onglet « Votre entreprise » (après)</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .entete { display: flex; align-items: end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .entete h1 { font-size: 40px; color: var(--vert); }
+  .onglets { display: flex; gap: 6px; border-bottom: 1px solid var(--trait); margin-bottom: 14px; }
+  .onglets a { padding: 9px 14px; text-decoration: none; font-weight: 500; color: var(--pierre-texte); border-bottom: 3px solid transparent; }
+  .onglets a[aria-current] { color: var(--espresso); border-color: var(--cuivre); }
+  .cadre { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 14px; align-items: start; }
+  .sousetapes { list-style: none; margin: 0; padding: 8px; display: grid; gap: 2px; }
+  .sousetapes li { padding: 8px 12px; border-radius: 12px; font-size: 14.5px; color: var(--pierre-texte); display: flex; justify-content: space-between; }
+  .sousetapes li[aria-current] { background: var(--vert); color: #F6F1E6; font-weight: 600; }
+  .q { display: grid; gap: 4px; margin-bottom: 12px; } .q label { font-weight: 500; } .q textarea { min-height: 70px; border: 1px solid var(--trait-fort); border-radius: 12px; padding: 10px; font: 15px var(--sans); background: #FBF7EF; }
+  .q .unite input { max-width: 220px; }
+  @media (max-width: 760px) { .entete h1 { font-size: 30px; } .onglets a { padding: 8px 10px; font-size: 14px; } .cadre { grid-template-columns: 1fr; } .sousetapes { display: flex; overflow-x: auto; padding: 6px; } .sousetapes li { white-space: nowrap; padding: 6px 10px; } }
+</style>
+</head>
+<body>
+<header class="barre">
+  <div class="barre-in"><a class="marque" href="#">Passation</a><span class="nom-code" style="font-size:17px;color:var(--cuivre-texte)">Projet Chêne</span><nav><a class="btn contour petit-btn" href="#">Mon dossier</a></nav></div>
+</header>
+<main>
+  <div class="entete"><div><p class="sous"><a href="#">Mon dossier</a> › Valorisation</p><h1 class="affiche">Valorisation détaillée</h1></div></div>
+  <nav class="onglets" aria-label="Rubriques de la valorisation">
+    <a href="apres-valorisation-chiffres.html">Vos chiffres</a><a href="apres-valorisation-entreprise.html" aria-current="page">Votre entreprise</a><a href="apres-valorisation-resultat.html">Votre valorisation</a>
+  </nav>
+  <div class="cadre">
+    <ol class="sousetapes tuile" aria-label="Questions par thème">
+      <li>Vous et votre rémunération <span>✓</span></li><li aria-current="step">Loyer et éléments exceptionnels</li><li>Vos clients</li><li>Vos perspectives</li><li>Dettes et actifs à préciser</li><li>L'opération envisagée</li>
+    </ol>
+    <form class="tuile">
+      <h2 class="titre-bloc" style="font-size:19px">Loyer et éléments exceptionnels</h2>
+      <p class="sous" style="margin-bottom:12px">Pour comparer votre entreprise à une autre, on corrige ce qui ne se reproduira pas chez un repreneur.</p>
+      <div class="q champ"><label for="l1">Loyer annuel payé pour vos locaux</label><div class="unite"><input id="l1" value="60 000"><span>€</span></div></div>
+      <div class="q champ"><label for="l2">Loyer du marché pour des locaux comparables</label><p class="aide-l">Si les locaux vous appartiennent ou appartiennent à un proche, le loyer peut différer du marché.</p><div class="unite"><input id="l2" value="48 000"><span>€</span></div></div>
+      <div class="q"><label for="l3">Dépenses ou recettes exceptionnelles des trois dernières années</label><textarea id="l3">Litige fournisseur réglé en 2024 (exemple fictif).</textarea></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span class="petit">Enregistré automatiquement</span><a class="btn" href="#">Thème suivant →</a></div>
+    </form>
+  </div>
+</main>
+
+<span class="ruban">Maquette · données fictives</span>
+<script>if (matchMedia("(max-width: 760px)").matches) document.querySelector(".action-tel")?.removeAttribute("hidden");</script>
+</body>
+</html>

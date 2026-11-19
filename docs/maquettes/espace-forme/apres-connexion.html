@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette · Connexion (après)</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .connexion { max-width: 560px; margin: 48px auto 0; }
+  .connexion h1 { font-size: clamp(44px, 6vw, 64px); color: var(--vert); }
+  .connexion .sous { margin: 12px 0 20px; font-size: 16px; }
+  .form { display: grid; gap: 10px; }
+  .form label { font-weight: 600; }
+  .form input { width: 100%; padding: 12px 14px; border: 1px solid var(--trait-fort); border-radius: 14px; font: 16px var(--sans); background: #FBF7EF; }
+  .fenetre { margin-top: 40px; }
+  .fenetre-demo { position: relative; max-width: 520px; margin: 0 auto; }
+  .fenetre-demo .fermer { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--trait-fort); background: var(--papier); font-size: 18px; }
+  .fenetre-demo h2 { font-size: 40px; color: var(--vert); margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><nav><a class="btn contour petit-btn" href="#">Retour à l'accueil</a></nav></div></header>
+<main>
+  <section class="connexion tuile">
+    <h1 class="affiche">Ouvrez votre dossier</h1>
+    <p class="sous">Un code à 6 chiffres vous est envoyé par e-mail, valable 10 minutes. Pas de mot de passe.</p>
+    <form class="form"><label for="m">Adresse e-mail professionnelle</label><input id="m" type="email" placeholder="prenom@entreprise.fr"><button class="btn" type="button" style="justify-self:start">Recevoir mon code →</button></form>
+  </section>
+  <section class="fenetre" aria-label="Même contenu dans la fenêtre de l'accueil">
+    <p class="petit" style="text-align:center">La fenêtre ouverte depuis l'accueil reprend exactement ce bloc, avec un bouton de fermeture.</p>
+    <div class="fenetre-demo tuile"><button class="fermer" type="button" aria-label="Fermer">×</button><h2 class="affiche">Ouvrez votre dossier</h2><p class="sous">Votre dossier sera créé pour Projet Chêne.</p></div>
+  </section>
+</main>
+<span class="ruban">Maquette · données fictives</span>
+</body>
+</html>
