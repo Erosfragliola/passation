@@ -1,0 +1,432 @@
+<title>Parcours du dossier</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Instrument+Serif:ital@1&display=swap">
+<style>
+/* Mise en page : une bande de parcours collante (fil + action principale), puis peu de tuiles, grandes : en-tête vert
+   et « À faire maintenant » côte à côte, quatre documents, dépôt des pièces replié. Un seul look, clair, celui du site. */
+:root {
+  --creme: #FAF5EB; --vert: #1E3A2E; --cuivre: #A8653A; --sable: #EFE5D3;
+  --papier: #FFFDF8; --encre: #231E18; --pierre: #696155; --cuivre-texte: #8E5530; --cuivre-clair: #E9C9A4;
+  --vif: #2E8A62; --vert-pale: #E3ECE6; --trait: rgba(35, 30, 24, .12); --trait-fort: rgba(35, 30, 24, .24);
+  --affiche: "Big Shoulders", "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --serif: "Instrument Serif", Georgia, serif;
+  --texte: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+body { background: var(--creme); color: var(--encre); font: 16px/1.5 var(--texte); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px; }
+* { box-sizing: border-box; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--cuivre); outline-offset: 3px; border-radius: 8px; }
+.affiche { font-family: var(--affiche); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; line-height: .95; margin: 0; text-wrap: balance; }
+.petit { font-size: 14px; color: var(--pierre); margin: 0; }
+
+/* ---------- Bandeau de la maquette (hors produit) ---------- */
+.revue { max-width: 1200px; margin: 0 auto; padding-block: 20px 16px; display: grid; gap: 14px; }
+.revue-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; justify-content: space-between; }
+.revue h1 { font-size: clamp(30px, 4vw, 44px); color: var(--vert); }
+.fictif { font-size: 13px; font-weight: 600; color: var(--cuivre-texte); border: 1.5px solid var(--cuivre); border-radius: 999px; padding: 3px 12px; white-space: nowrap; }
+.revue-ctrl { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; background: var(--sable); }
+.seg button { font: 500 14px/1 var(--texte); border: 0; background: transparent; color: var(--encre); padding: 9px 14px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--vert); color: var(--creme); }
+.seg-nom { font-size: 13px; color: var(--pierre); margin-right: 6px; }
+
+/* ---------- Le produit ---------- */
+.cadre { max-width: 1200px; margin: 0 auto; transition: max-width .25s ease; }
+.cadre.tel { max-width: 390px; }
+.ecran { container-type: inline-size; background: var(--creme); border: 1px solid var(--trait); border-radius: 28px; overflow: clip; }
+.cadre.tel .ecran { border-width: 8px; border-color: var(--encre); border-radius: 44px; }
+
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--trait); background: var(--creme); }
+.logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 18px; text-decoration: none; color: var(--vert); }
+.logo svg { width: 26px; height: 26px; }
+.nav-liens { display: flex; gap: 6px; align-items: center; }
+.nav-liens a, .nav-liens button { font: 500 14px/1 var(--texte); text-decoration: none; padding: 9px 14px; border-radius: 999px; border: 1.5px solid transparent; background: none; color: var(--encre); cursor: pointer; }
+.nav-liens a[aria-current] { background: var(--sable); }
+.nav-liens button { border-color: var(--trait-fort); }
+
+/* Bande de parcours : fil en 5 étapes + l'action principale, collante */
+.bande { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--creme) 94%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--trait); padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+.fil { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; flex: 1; min-width: 0; }
+.fil li { flex: 1; min-width: 0; }
+.fil a, .fil span.etape { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 14px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--pierre); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fil .num { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--trait-fort); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+.fil .fait a { color: var(--vert); }
+.fil .fait a:hover { background: var(--vert-pale); }
+.fil .fait .num { background: var(--vif); border-color: var(--vif); color: #fff; }
+.fil .actuelle span.etape { background: var(--vert); color: var(--creme); }
+.fil .actuelle .num { border-color: var(--cuivre-clair); color: var(--cuivre-clair); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 18px; border-radius: 999px; font: 600 15px/1.2 var(--texte); text-decoration: none; border: 1.5px solid transparent; cursor: pointer; }
+.btn-principal { background: var(--cuivre-texte); color: #fff; flex: none; }
+.btn-principal:hover { background: #7A4828; }
+.btn-contour { border-color: var(--trait-fort); background: var(--papier); color: var(--encre); }
+.btn-contour:hover { border-color: var(--encre); }
+.btn-mini { min-height: 36px; padding: 6px 14px; font-size: 14px; }
+.btn-clair { border-color: rgba(250, 245, 235, .4); color: var(--creme); background: transparent; }
+.btn-clair:hover { border-color: var(--creme); }
+
+.corps { padding: 24px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+.tuile { border-radius: 26px; padding: 26px; min-width: 0; }
+
+/* En-tête du dossier */
+.tete { grid-column: span 7; background: var(--vert); color: var(--creme); display: grid; gap: 22px; }
+.tete-haut { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+.nom-code { font: italic 400 30px/1.1 var(--serif); color: var(--cuivre-clair); margin: 0; }
+.tete h2 { font-size: clamp(40px, 5.4cqi, 64px); margin-top: 6px; }
+.tete .meta { font-size: 14px; color: #C9D6CD; margin: 8px 0 0; }
+.anneau { position: relative; width: 96px; height: 96px; flex: none; }
+.anneau svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.anneau circle { fill: none; stroke-width: 7; }
+.anneau .fond { stroke: rgba(250, 245, 235, .16); }
+.anneau .val { stroke: var(--cuivre-clair); stroke-linecap: round; transition: stroke-dasharray .4s ease; }
+.anneau div { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.anneau strong { font: 700 28px/1 var(--affiche); }
+.anneau small { font-size: 11px; color: #C9D6CD; line-height: 1.2; }
+.valeur { border-top: 1px solid rgba(250, 245, 235, .16); padding-top: 18px; display: grid; gap: 6px; }
+.valeur .etiq { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--cuivre-clair); margin: 0; }
+.valeur strong { font: 700 clamp(44px, 6cqi, 72px)/1 var(--affiche); }
+.valeur p.base { margin: 0; color: #DCE5DF; font-size: 15px; max-width: 52ch; }
+.valeur a { color: var(--creme); font-weight: 600; font-size: 15px; text-underline-offset: 3px; }
+
+/* À faire maintenant */
+.afaire { grid-column: span 5; background: var(--papier); border: 1px solid var(--trait); display: grid; gap: 14px; align-content: start; }
+.afaire h2 { font-size: 34px; color: var(--vert); }
+.taches { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.tache { display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 16px; border-radius: 18px; background: var(--creme); border: 1px solid var(--trait); }
+.tache-ico { flex: none; width: 40px; height: 40px; border-radius: 12px; background: var(--sable); display: grid; place-items: center; color: var(--vert); }
+.tache-ico svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tache-txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.tache-txt strong { font-size: 15.5px; line-height: 1.3; }
+.tache .btn { flex: none; }
+.bravo { display: grid; gap: 8px; padding: 22px; border-radius: 20px; background: var(--vert-pale); }
+.bravo strong { font: 700 30px/1 var(--affiche); text-transform: uppercase; color: var(--vert); }
+.bravo p { margin: 0; color: var(--encre); }
+
+/* Documents */
+.section-titre { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.section-titre h2 { font-size: 34px; color: var(--vert); }
+.doc { grid-column: span 3; background: var(--papier); border: 1px solid var(--trait); display: grid; gap: 12px; grid-template-rows: auto auto 1fr auto; padding: 22px; }
+.doc.a-venir { background: transparent; border-style: dashed; border-color: var(--trait-fort); }
+.doc-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.doc-ico { width: 42px; height: 42px; border-radius: 14px; background: var(--sable); display: grid; place-items: center; color: var(--vert); }
+.doc-ico svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.etat { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.etat.pret { background: var(--vert-pale); color: var(--vert); }
+.etat.relire { background: #F5E7D6; color: var(--cuivre-texte); }
+.etat.venir { background: var(--sable); color: var(--pierre); }
+.doc h3 { font: 700 26px/1 var(--affiche); text-transform: uppercase; margin: 0; color: var(--encre); }
+.doc .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Pièces */
+.pieces { grid-column: 1 / -1; background: var(--sable); display: grid; gap: 16px; }
+.pieces-resume { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.pieces-resume h2 { font-size: 34px; color: var(--vert); }
+.pieces-compte { flex: 1; min-width: 200px; display: grid; gap: 8px; }
+.pieces-compte strong { font-size: 17px; }
+.jauge { height: 8px; border-radius: 4px; background: rgba(35, 30, 24, .1); overflow: hidden; }
+.jauge span { display: block; height: 100%; background: var(--vert); border-radius: 4px; transition: width .4s ease; }
+.drive { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px; }
+.drive-themes { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; align-content: start; }
+.drive-themes button { width: 100%; display: flex; justify-content: space-between; gap: 8px; font: 500 15px/1.2 var(--texte); padding: 11px 14px; border-radius: 14px; border: 0; background: transparent; color: var(--encre); cursor: pointer; text-align: left; }
+.drive-themes button[aria-selected="true"] { background: var(--papier); }
+.drive-themes small { color: var(--pierre); font-size: 13px; }
+.drive-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.drive-liste li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--papier); border: 1.5px dashed var(--trait-fort); }
+.drive-liste li.fournie { border-style: solid; border-color: var(--trait); }
+.drive-liste .ext { flex: none; width: 38px; height: 38px; border-radius: 10px; background: var(--sable); display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--vert); }
+.drive-liste .txt { flex: 1; min-width: 0; display: grid; }
+.drive-liste .txt strong { font-size: 15px; }
+
+/* Pied : fil d'Ariane des documents, et gestion discrète */
+.pied { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 4px 0; }
+.gerer { font-size: 14px; color: var(--pierre); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 8px 0; font-family: inherit; }
+
+/* Action principale sur téléphone : barre fixée en bas */
+.cta-tel { display: none; }
+
+/* ---------- Téléphone (la maquette en 390 px, ou un vrai téléphone) ---------- */
+@container (max-width: 720px) {
+  .nav { padding: 12px 16px; }
+  .nav-liens a { display: none; }
+  .bande { padding: 10px 16px; }
+  .bande .btn-principal { display: none; }
+  .fil { gap: 6px; align-items: center; }
+  .fil li { flex: none; }
+  .fil li.actuelle { flex: 1; }
+  .fil a, .fil span.etape { padding: 6px; font-size: 13px; }
+  .fil li:not(.actuelle) .lib { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .corps { padding: 14px; gap: 12px; }
+  .tete, .afaire, .doc { grid-column: 1 / -1; }
+  .tuile { padding: 20px; border-radius: 24px; }
+  .anneau { width: 76px; height: 76px; }
+  .anneau strong { font-size: 22px; }
+  .anneau small { font-size: 10px; }
+  .nom-code { font-size: 24px; }
+  .tache { flex-wrap: wrap; }
+  .tache .btn { margin-left: 54px; }
+  .drive { grid-template-columns: 1fr; }
+  .drive-themes { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; padding-bottom: 4px; }
+  .cta-tel { display: block; position: sticky; bottom: 0; z-index: 5; padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px)); background: color-mix(in srgb, var(--creme) 94%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--trait); }
+  .cta-tel .btn { width: 100%; }
+}
+@container (min-width: 721px) and (max-width: 1000px) {
+  .tete, .afaire { grid-column: 1 / -1; }
+  .doc { grid-column: span 6; }
+  .fil .lib { font-size: 13px; }
+}
+@media (max-width: 440px) { .cadre.tel .ecran { border-width: 1px; border-color: var(--trait); border-radius: 28px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- Notes pour le dirigeant ---------- */
+.notes { max-width: 1200px; margin: 28px auto 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+.note { background: var(--papier); border: 1px solid var(--trait); border-radius: 24px; padding: 22px; display: grid; gap: 10px; align-content: start; }
+.note h2 { font-size: 26px; color: var(--vert); }
+.note ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 15px; }
+.ariane { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; padding: 12px 16px; border-radius: 16px; background: var(--creme); border: 1px solid var(--trait); }
+.ariane a { color: var(--vert); font-weight: 600; text-underline-offset: 3px; }
+</style>
+
+<div class="revue">
+  <div class="revue-tete">
+    <h1 class="affiche">Page d'un dossier · maquette</h1>
+    <span class="fictif">Exemple fictif : aucune donnée réelle</span>
+  </div>
+  <p class="petit" style="max-width:70ch">Voici la page qu'un dirigeant verra en ouvrant son dossier. Choisissez un moment du parcours et une largeur d'écran pour voir comment la page s'adapte. L'entreprise, les montants et les dates ci-dessous sont inventés pour l'exemple.</p>
+  <div class="revue-ctrl">
+    <div><span class="seg-nom" id="lbl-etat">Moment du parcours</span>
+      <div class="seg" role="group" aria-labelledby="lbl-etat" id="seg-etat">
+        <button type="button" data-etat="nouveau" aria-pressed="false">Tout juste créé</button>
+        <button type="button" data-etat="moitie" aria-pressed="true">À moitié rempli</button>
+        <button type="button" data-etat="redige" aria-pressed="false">Rédigé, à relire</button>
+        <button type="button" data-etat="pret" aria-pressed="false">Tout est prêt</button>
+      </div></div>
+    <div><span class="seg-nom" id="lbl-largeur">Écran</span>
+      <div class="seg" role="group" aria-labelledby="lbl-largeur" id="seg-largeur">
+        <button type="button" data-largeur="ordi" aria-pressed="true">Ordinateur</button>
+        <button type="button" data-largeur="tel" aria-pressed="false">Téléphone (390 px)</button>
+      </div></div>
+  </div>
+</div>
+
+<div class="cadre" id="cadre">
+  <div class="ecran">
+    <header class="nav">
+      <a class="logo" href="#" aria-label="Passation, accueil"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+      <nav class="nav-liens" aria-label="Espace">
+        <a href="#" aria-current="page">Mon dossier</a>
+        <a href="#">Ressources</a>
+        <button type="button">Se déconnecter</button>
+      </nav>
+    </header>
+
+    <div class="bande">
+      <ol class="fil" id="fil" aria-label="Votre parcours"></ol>
+      <a class="btn btn-principal" id="cta" href="#"></a>
+    </div>
+
+    <main class="corps">
+      <section class="tuile tete" aria-labelledby="raison">
+        <div class="tete-haut">
+          <div>
+            <p class="nom-code">Projet Chêne</p>
+            <h2 class="affiche" id="raison">Menuiserie Exemple</h2>
+            <p class="meta">Exemple fictif · Ille-et-Vilaine · depuis 1998</p>
+          </div>
+          <div class="anneau" role="img" id="anneau" aria-label="">
+            <svg viewBox="0 0 80 80" aria-hidden="true"><circle class="fond" cx="40" cy="40" r="32"/><circle class="val" id="anneau-val" cx="40" cy="40" r="32" stroke-dasharray="0 201"/></svg>
+            <div aria-hidden="true"><strong id="anneau-pct"></strong><small>du parcours</small></div>
+          </div>
+        </div>
+        <div class="valeur">
+          <p class="etiq" id="val-etiq"></p>
+          <strong id="val-montant"></strong>
+          <p class="base" id="val-base"></p>
+          <a href="#" id="val-lien"></a>
+        </div>
+      </section>
+
+      <section class="tuile afaire" aria-labelledby="titre-afaire">
+        <h2 class="affiche" id="titre-afaire">À faire maintenant</h2>
+        <div id="afaire"></div>
+      </section>
+
+      <div class="section-titre"><h2 class="affiche">Vos documents</h2><p class="petit" id="docs-resume"></p></div>
+      <div id="docs" style="display:contents"></div>
+
+      <section class="tuile pieces" aria-labelledby="titre-pieces">
+        <div class="pieces-resume">
+          <h2 class="affiche" id="titre-pieces">Pièces à réunir</h2>
+          <div class="pieces-compte"><strong id="pieces-compte"></strong><div class="jauge" aria-hidden="true"><span id="pieces-jauge"></span></div></div>
+          <button class="btn btn-contour" type="button" id="pieces-bouton" aria-expanded="false" aria-controls="drive"></button>
+        </div>
+        <div class="drive" id="drive" hidden>
+          <ul class="drive-themes" role="tablist" aria-label="Thèmes">
+            <li><button type="button" role="tab" aria-selected="true">Juridique <small>3/4</small></button></li>
+            <li><button type="button" role="tab" aria-selected="false">Financier <small>2/4</small></button></li>
+            <li><button type="button" role="tab" aria-selected="false">Social <small>1/4</small></button></li>
+            <li><button type="button" role="tab" aria-selected="false">Commercial <small>0/3</small></button></li>
+            <li><button type="button" role="tab" aria-selected="false">Actifs et risques <small>2/6</small></button></li>
+          </ul>
+          <ul class="drive-liste" role="tabpanel">
+            <li class="fournie"><span class="ext">PDF</span><span class="txt"><strong>Statuts à jour</strong><span class="petit">statuts-2021.pdf · 412 Ko</span></span><span class="etat pret">Fournie</span></li>
+            <li class="fournie"><span class="ext">PDF</span><span class="txt"><strong>Extrait Kbis récent</strong><span class="petit">kbis.pdf · 96 Ko</span></span><span class="etat pret">Fournie</span></li>
+            <li class="fournie"><span class="ext">✓</span><span class="txt"><strong>Procès-verbaux des assemblées des 3 dernières années</strong><span class="petit">Indiquée comme réunie</span></span><button class="btn btn-contour btn-mini" type="button">Je l'ai ✓</button></li>
+            <li><span class="ext">+</span><span class="txt"><strong>Répartition du capital et pacte d'associés éventuel</strong><span class="petit">Glissez le fichier ici ou cliquez</span></span><button class="btn btn-contour btn-mini" type="button">Je l'ai</button></li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="pied">
+        <p class="petit">Vos pièces et vos chiffres restent privés.</p>
+        <button class="gerer" type="button">Gérer mon dossier</button>
+      </div>
+    </main>
+
+    <div class="cta-tel"><a class="btn btn-principal" id="cta-tel" href="#"></a></div>
+  </div>
+</div>
+
+<div class="notes">
+  <section class="note">
+    <h2 class="affiche">Sur les pages de documents</h2>
+    <p class="petit">Même barre en haut, puis un fil d'Ariane qui ramène au dossier :</p>
+    <div class="ariane"><a href="#">← Mon dossier</a><span aria-hidden="true">›</span><span>Mémorandum</span></div>
+  </section>
+  <section class="note">
+    <h2 class="affiche">Comment la page décide</h2>
+    <ul>
+      <li>Le fil, le bouton « Continuer » et « À faire maintenant » se calculent à partir des données du dossier. Ces règles seront testées.</li>
+      <li>Les tâches suivent cet ordre : chiffres, questions, rédaction, recommandations du mémorandum, pièces. Trois au plus.</li>
+      <li>Le dépôt des pièces s'ouvre de lui-même quand c'est l'étape en cours. Sinon, il reste replié.</li>
+      <li>« PDF » ouvre le document et propose de l'enregistrer en PDF, comme aujourd'hui.</li>
+    </ul>
+  </section>
+  <section class="note">
+    <h2 class="affiche">À valider</h2>
+    <ul>
+      <li>Les cinq étapes et leurs noms.</li>
+      <li>L'action principale en cuivre, collée en haut sur ordinateur et en bas sur téléphone.</li>
+      <li>Les états des documents : prêt, à relire, à venir.</li>
+      <li>Le dépôt des pièces replié par défaut.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const ICO = {
+  chiffres: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  questions: '<path d="M4 5h16v11H9l-5 4z"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.4"/>',
+  redaction: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+  photo: '<path d="M3 7h4l2-2h6l2 2h4v12H3z"/><circle cx="12" cy="13" r="3.5"/>',
+  completer: '<path d="M6 3h8.5L19 7.5V21H6z"/><path d="M9 13h6M12 10v6"/>',
+  pieces: '<path d="M3 6h7l2 2h9v11H3z"/>',
+  valorisation: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  datapack: '<path d="M4 4h16v16H4zM4 10h16M10 4v16"/>',
+  teaser: '<path d="M6 3h8.5L19 7.5V21H6zM14 3v5h5M9 12.5h7M9 16.5h5"/>',
+  memo: '<path d="M4 5h16v12H4zM8 21h8M12 17v4"/>',
+};
+const svg = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICO[k]}</svg>`;
+const ETAPES = ["Estimation", "Vos chiffres", "Vos réponses", "Rédaction", "Relecture et envoi"];
+const DOCS = { valorisation: "Valorisation", datapack: "Datapack Excel", teaser: "Teaser anonyme", memo: "Mémorandum" };
+const DEBLOQUE = {
+  valorisation: "Se débloque avec vos chiffres et vos réponses.",
+  datapack: "Se débloque dès qu'un exercice est confirmé.",
+  teaser: "Rédigé à l'étape Rédaction, après vos réponses.",
+  memo: "Rédigé à l'étape Rédaction, après vos réponses.",
+};
+const EXPRESS = { etiq: "Valorisation express · comptes 2023", montant: "310 – 520 k€", base: "Estimée sur les derniers comptes publics et les multiples du secteur. Vos chiffres la préciseront.", lien: "Voir le calcul →" };
+const APPRO = { etiq: "Valeur des titres", montant: "420 – 560 k€", base: "Fondée sur les multiples du secteur ; DCF disponible en option.", lien: "Voir le détail et régler le DCF →" };
+
+const ETATS = {
+  nouveau: {
+    etape: 1, pct: 25, valeur: EXPRESS, cta: "Continuer : confirmer vos chiffres", pieces: 0,
+    taches: [
+      ["chiffres", "Confirmer vos 3 derniers exercices", "Aucun exercice confirmé pour l'instant", "Confirmer"],
+      ["questions", "Répondre aux 15 questions", "Des écrans courts, la plupart en un clic", "Commencer"],
+      ["pieces", "Déposer vos premières pièces", "0 pièce sur 21", "Déposer"],
+    ],
+    docs: { valorisation: ["venir"], datapack: ["venir"], teaser: ["venir"], memo: ["venir"] },
+  },
+  moitie: {
+    etape: 2, pct: 59, valeur: EXPRESS, cta: "Continuer : 6 questions restantes", pieces: 8,
+    taches: [
+      ["questions", "Répondre aux 6 dernières questions", "9 sur 15 déjà faites", "Reprendre"],
+      ["redaction", "Lancer la rédaction", "Le mémorandum et le teaser ne sont pas encore rédigés", "Rédiger"],
+      ["pieces", "Déposer 13 pièces manquantes", "8 pièces sur 21", "Déposer"],
+    ],
+    docs: { valorisation: ["venir"], datapack: ["pret", "Mis à jour le 12/11/2026"], teaser: ["venir"], memo: ["venir"] },
+  },
+  redige: {
+    etape: 4, pct: 100, valeur: APPRO, cta: "Continuer : relire le mémorandum", pieces: 17,
+    taches: [
+      ["photo", "Ajouter une photo de l'atelier", "Recommandation du mémorandum, page « Histoire »", "Ajouter"],
+      ["completer", "Compléter 2 éléments du chapitre « Équipe »", "Indiqués « À compléter » dans le mémorandum", "Compléter"],
+      ["pieces", "Déposer 4 pièces manquantes", "17 pièces sur 21", "Déposer"],
+    ],
+    docs: { valorisation: ["pret", "Mise à jour le 18/11/2026"], datapack: ["pret", "Mis à jour le 18/11/2026 · version 2"], teaser: ["relire", "Rédigé le 18/11/2026"], memo: ["relire", "Rédigé le 18/11/2026"] },
+  },
+  pret: {
+    etape: 4, pct: 100, valeur: APPRO, cta: "Continuer : envoyer votre dossier", pieces: 21, taches: [],
+    docs: { valorisation: ["pret", "Mise à jour le 18/11/2026"], datapack: ["pret", "Mis à jour le 18/11/2026 · version 2"], teaser: ["pret", "Relu le 19/11/2026"], memo: ["pret", "Relu le 19/11/2026"] },
+  },
+};
+const ACTIONS = {
+  valorisation: [["Ouvrir", 1], ["Excel", 0]],
+  datapack: [["Télécharger l'Excel", 1]],
+  teaser: [["Ouvrir", 1], ["PDF", 0]],
+  memo: [["Ouvrir", 1], ["PDF", 0]],
+};
+const LIB_ETAT = { pret: "Prêt", relire: "À relire", venir: "À venir" };
+const $ = (s) => document.querySelector(s);
+let ouvert = false;
+
+function dessiner(nom) {
+  const e = ETATS[nom];
+  $("#fil").innerHTML = ETAPES.map((t, i) => {
+    const num = `<span class="num" aria-hidden="true">${i < e.etape ? "✓" : i + 1}</span><span class="lib">${t}</span>`;
+    if (i < e.etape) return `<li class="fait"><a href="#" aria-label="${t}, terminée : revoir">${num}</a></li>`;
+    if (i === e.etape) return `<li class="actuelle"><span class="etape" aria-current="step">${num}</span></li>`;
+    return `<li><span class="etape">${num}</span></li>`;
+  }).join("");
+  $("#cta").textContent = e.cta; $("#cta-tel").textContent = e.cta;
+  $("#anneau-pct").textContent = `${e.pct} %`;
+  $("#anneau").setAttribute("aria-label", `${e.pct} % du parcours fait`);
+  $("#anneau-val").setAttribute("stroke-dasharray", `${(2 * Math.PI * 32 * e.pct / 100).toFixed(1)} 201`);
+  for (const k of ["etiq", "montant", "base", "lien"]) $(`#val-${k}`).textContent = e.valeur[k];
+  $("#afaire").innerHTML = e.taches.length
+    ? `<ul class="taches">${e.taches.map(([ico, t, d, a]) => `<li class="tache"><span class="tache-ico">${svg(ico)}</span><span class="tache-txt"><strong>${t}</strong><span class="petit">${d}</span></span><a class="btn btn-contour btn-mini" href="#">${a}</a></li>`).join("")}</ul>`
+    : `<div class="bravo"><strong>Tout est fait</strong><p>Vos documents sont relus et toutes vos pièces sont réunies. Il ne reste qu'à envoyer votre dossier.</p></div>`;
+  const prets = Object.values(e.docs).filter(([s]) => s !== "venir").length;
+  $("#docs-resume").textContent = `${prets} sur 4 disponibles`;
+  $("#docs").innerHTML = Object.entries(e.docs).map(([k, [s, date]]) => `
+    <article class="tuile doc${s === "venir" ? " a-venir" : ""}">
+      <div class="doc-haut"><span class="doc-ico">${svg(k)}</span><span class="etat ${s}">${LIB_ETAT[s]}</span></div>
+      <h3>${DOCS[k]}</h3>
+      <p class="petit">${s === "venir" ? DEBLOQUE[k] : date}</p>
+      ${s === "venir" ? "" : `<div class="actions">${ACTIONS[k].map(([l, p]) => `<a class="btn btn-mini ${p ? "btn-principal" : "btn-contour"}" href="#">${l}</a>`).join("")}</div>`}
+    </article>`).join("");
+  $("#pieces-compte").textContent = `${e.pieces} pièce${e.pieces > 1 ? "s" : ""} sur 21`;
+  $("#pieces-jauge").style.width = `${Math.round(100 * e.pieces / 21)}%`;
+  ouvert = false; pieces();
+}
+function pieces() {
+  $("#drive").hidden = !ouvert;
+  $("#pieces-bouton").setAttribute("aria-expanded", String(ouvert));
+  $("#pieces-bouton").textContent = ouvert ? "Replier" : "Ouvrir le dépôt";
+}
+$("#pieces-bouton").addEventListener("click", () => { ouvert = !ouvert; pieces(); });
+document.querySelectorAll("#seg-etat button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll("#seg-etat button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  dessiner(b.dataset.etat);
+}));
+document.querySelectorAll("#seg-largeur button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll("#seg-largeur button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  $("#cadre").classList.toggle("tel", b.dataset.largeur === "tel");
+}));
+document.addEventListener("click", (ev) => { if (ev.target.closest('a[href="#"]')) ev.preventDefault(); });
+dessiner("moitie");
+</script>
