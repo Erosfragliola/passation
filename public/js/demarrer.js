@@ -657,7 +657,9 @@ async function pret() {
     $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
     document.title = `${dossier.entreprise.nom} · Passation`;
     S.complet = Boolean(dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && dossier.parcours?.valorisation);
-    aller(etapeDemandee() || etapeCourante());
+    // Documents déjà rédigés : on rouvre sur l'écran final (récapitulatif et points à compléter), pas sur une question
+    // facultative laissée vide ; ?etape=… permet toujours d'y revenir (audit, point 17)
+    aller(etapeDemandee() || (S.complet || S.reponses.suivi?.pret_envoye ? "pret" : etapeCourante()));
     if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // pendant les questions, pas à la fin
   } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
