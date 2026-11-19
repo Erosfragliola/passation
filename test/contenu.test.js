@@ -167,7 +167,7 @@ describe("fichier de contenu et page d'accueil", () => {
   });
   it("bento : trois étapes, trois blocs, encoche du hero avec un exemple marqué fictif, sources réelles", () => {
     expect(PAGE).not.toMatch(/role="tablist"|role="tabpanel"|onglets\.js|data-dossier-final|hero-tuiles/);
-    expect([...PAGE.matchAll(/<li class="comment-etape" id="comment-(\d)">/g)].map((m) => m[1])).toEqual(["1", "2", "3"]);
+    expect([...PAGE.matchAll(/<li class="parcours-etape" id="comment-(\d)" data-scene>/g)].map((m) => m[1])).toEqual(["1", "2", "3"]);
     expect(PAGE.match(/<article class="bento-bloc /g)).toHaveLength(3);
     expect(PAGE.match(/href="#livrables"/g).length).toBeGreaterThanOrEqual(2);           // menu, menu mobile
     expect(PAGE.match(/class="hero-bulle /g)).toHaveLength(4);                           // quatre bulles logées dans la forme
@@ -176,5 +176,22 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(contenu.hero.carte.fictif).toBe("exemple fictif");                            // jamais présenté comme réel
     expect(contenu.sources.liste).toEqual(["INSEE", "INPI", "BODACC"]);                  // registres réellement utilisés
     expect(contenu.hero.note_comptes).toBe("");
+  });
+  it("lot 1 : scènes des étapes et tampon marqués fictifs, joués une fois, rien sans mouvement autorisé", () => {
+    const SCENES = readFileSync(new URL("../public/js/landing/scenes.js", import.meta.url), "utf8");
+    expect(SCENES).toMatch(/prefers-reduced-motion: reduce/);                            // état final directement
+    expect(SCENES).toMatch(/unobserve/);                                                 // une seule fois
+    expect(PAGE.match(/data-scene/g)).toHaveLength(4);                                   // trois étapes et le tampon
+    expect(PAGE.match(/data-t="comment\.illustrations\.fictif"/g)).toHaveLength(2);     // étapes 1 et 2 (chiffres d'exemple)
+    expect(contenu.comment.illustrations.fictif).toBe("exemple fictif");
+    expect(contenu.confidentialite.fictif).toBe("Exemple fictif");
+    expect(PAGE).toMatch(/class="confid-tampon"><span data-t="confidentialite\.apres">/);
+    expect(contenu.comment.etapes.every((e) => e.obtenez && e.chiffre)).toBe(true);
+  });
+  it("lot 1 : fiche de résultat à une seule action, pied de page avec le grand nom", () => {
+    expect(PAGE).not.toMatch(/dossier-cta|resultat-dossier/);
+    expect(PAGE.match(/id="resultat-ouvrir"/g)).toHaveLength(1);
+    expect(PAGE).toMatch(/<p class="pied-marque" aria-hidden="true" data-t="pied\.marque"><\/p>/);
+    expect(contenu.js.resultat.sources).toMatch(/\{exercice\}[\s\S]*\{mois\}/);
   });
 });

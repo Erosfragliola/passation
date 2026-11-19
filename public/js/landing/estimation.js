@@ -42,6 +42,26 @@ export function fourchette(bas, haut) {
   return `${k(bas)} – ${k(haut)} k€`;
 }
 
+/** Un montant seul, dans l'unité de sa fourchette (M€ si le haut atteint 1 M€) : « 1,9 M€ », « 400 k€ ». */
+export function montant(v, haut) {
+  if (haut >= 1e6) return `${nombre(v / 1e6, 1)} M€`;
+  return `${nombre(Math.round(v / 1e4) * 10, 0)} k€`;
+}
+
+/** Position de la valeur centrale sur la barre bas → haut, en % (0 à 100 ; 50 si la fourchette est nulle). */
+export function positionRepere(bas, central, haut) {
+  if (!(haut > bas)) return 50;
+  return Math.min(100, Math.max(0, ((central - bas) / (haut - bas)) * 100));
+}
+
+const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+/** Date d'une référence de multiples (« croisement-2026-11 » → « novembre 2026 ») ; null si absente. */
+export function moisSource(source) {
+  const m = /(\d{4})-(\d{2})$/.exec(String(source || ""));
+  if (!m || +m[2] < 1 || +m[2] > 12) return null;
+  return `${MOIS[+m[2] - 1]} ${m[1]}`;
+}
+
 /** Multiple affiché : « 5,6 » */
 export const multiple = (v) => nombre(v, Number.isInteger(v) ? 0 : 1);
 

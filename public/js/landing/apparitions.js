@@ -4,7 +4,7 @@
 // l'écran (ou au-dessus) au chargement reste visible tout de suite. Le hero, le résultat et l'histoire ont leurs
 // propres animations et ne sont pas concernés.
 const CIBLES = [
-  "#comment .surtitre", "#comment h2", "#comment .comment-etape",
+  "#comment .surtitre", "#comment h2", "#comment .parcours-etape",
   "#confidentialite .confid-bloc",
   "#livrables h2", "#livrables .chapo", "#livrables .bento-bloc",
   "#questions .surtitre", "#questions h2", "#questions .faq > *",
