@@ -658,11 +658,10 @@
       "saisie_vide": "Tapez le nom de votre société ou son SIREN à 9 chiffres."
     },
     "resultat": {
-      "titre": "Votre première estimation",
-      "code_intro": "Votre entreprise a désormais un nom de code :",
+      "code_intro": "Votre dossier circulera sous ce nom",
       "fourchette_titre": "Première fourchette",
       "methodes_titre": "Méthode",
-      "methode": "Multiples de l'EBE : {bas} à {haut} fois l'EBE (central {central}).",
+      "methode": "Calculée sur l'EBE {annee} ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur.",
       "methodes_approfondies": "Flux futurs actualisés et actif net corrigé : avec vos chiffres, dans l'estimation approfondie.",
       "note": "Estimation indicative, établie à partir des comptes publics {exercice}. Elle s'affine avec vos propres chiffres.",
       "note_saisie": "Estimation indicative, établie à partir des deux chiffres que vous avez saisis. L'estimation approfondie l'affine avec vos comptes complets.",
@@ -700,13 +699,20 @@
         "Le mémorandum complet",
         "Le datapack Excel"
       ],
-      "bas": "Bas",
-      "central": "Central",
-      "haut": "Haut",
       "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
       "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
       "dossier_bouton": "Voir mon dossier",
-      "dossier_note": "Gratuit · un code par e-mail · aucun mot de passe"
+      "dossier_note": "Gratuit · un code par e-mail · aucun mot de passe",
+      "tampon": "Confidentiel",
+      "profil": {
+        "secteur": "Secteur",
+        "region": "Région",
+        "anciennete": "Ancienneté",
+        "effectif": "Effectif"
+      },
+      "profil_note": "Ni nom, ni ville, ni chiffre identifiant : c'est ce que verra un repreneur.",
+      "prive": "Visible de vous seul",
+      "methode_saisie": "Calculée sur l'EBE que vous avez saisi ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur."
     },
     "video": {
       "pause": "Mettre la vidéo en pause",
