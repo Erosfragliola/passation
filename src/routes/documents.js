@@ -21,7 +21,7 @@ import { quotaClaude } from "../lib/ratelimit.js";
 import { lireSite, adressePublique } from "../documents/site.js";
 import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat, regionDe, SECTEURS_NAF } from "../documents/anonymat.js";
-import { faitsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
+import { faitsTeaser, visuelsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
 
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 const slug = (s) => String(s || "entreprise").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "entreprise";
@@ -68,8 +68,11 @@ async function lireTeaser(env, row) {
   if (!doc) return { teaser: null, nom_de_code: row.code_name ?? null };
   const { results } = await env.DB.prepare("SELECT section_key, content_md, edited_by_user FROM document_sections WHERE document_id = ?").bind(doc.id).all();
   const parCle = Object.fromEntries(results.map((s) => [s.section_key, s]));
+  let visuels = null;
+  try { visuels = visuelsTeaser(await contexte(env, row)); } catch (e) { console.log(`Visuels du teaser indisponibles : ${e.message}`); }
   return {
     nom_de_code: row.code_name,
+    visuels,
     teaser: {
       id: doc.id, version: doc.version, cree_le: doc.created_at,
       sections: SECTIONS_TEASER.map(([cle, titre]) => ({ cle, titre, contenu: parCle[cle]?.content_md ?? "", modifie: parCle[cle]?.edited_by_user === 1 })),
