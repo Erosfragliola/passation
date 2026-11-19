@@ -138,7 +138,7 @@ Cloudflare Worker (src/)
 | `migrations/` | Schéma de la base D1 |
 | `test/` | Tests automatisés et jeux de données enregistrés |
 | `scripts/` | Génération des images, polices, multiples, jeux de test ; calcul de référence Python |
-| `docs/` | Méthode, démonstration, décisions de méthode, refonte de l'accueil, livrables |
+| `docs/` | Démonstration, décisions de méthode, calculs de référence, livrables, maquettes en attente de choix |
 
 ## Limites connues
 
