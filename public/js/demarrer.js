@@ -643,7 +643,7 @@ async function pret() {
         .map(([t, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: t }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
     aCompleter.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: libellePoints(aCompleter.length) }), el("ul", {}, ...aCompleter.slice(0, 12).map((t) => el("li", { text: t })))) : null,
     remarques.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: "À vérifier dans la valorisation" }), el("ul", {}, ...remarques.map((t) => el("li", { text: t })))) : null,
-    el("p", { class: "petit" }, "Pour affiner (prime de taille, décotes, pondération) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), "."));
+    el("p", { class: "petit" }, "Pour affiner (prime de taille, décotes, pondération) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), ". Pour modifier une réponse : ", el("a", { href: `/espace/demarrer/?dossier=${id}&etape=questions`, text: "revoir vos réponses" }), "."));
 }
 
 // ================================================================== Chargement
