@@ -136,8 +136,7 @@ export async function ouvrirConnexion({ siren = "" } = {}) {
   d.setAttribute("aria-labelledby", "titre-dialog-connexion");
   d.innerHTML = `
     <button class="dialog-fermer" type="button" aria-label="Fermer">×</button>
-    <p class="etiquette">Espace dirigeant</p>
-    <h2 id="titre-dialog-connexion">Ouvrez votre <em>dossier</em>.</h2>
+    <h2 class="affiche" id="titre-dialog-connexion">Ouvrez votre dossier</h2>
     <div class="cx-zone"></div>`;
   document.body.append(d);
   const f = monterConnexion(d.querySelector(".cx-zone"), { siren });

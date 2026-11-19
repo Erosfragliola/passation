@@ -10,7 +10,8 @@ export const CHAMPS = [
   { cle: "charges_externes", groupe: "resultat", libelle: "Autres achats et charges externes", aide: "Loyers, sous-traitance, honoraires, énergie, etc.", obligatoire: true },
   { cle: "impots_taxes", groupe: "resultat", libelle: "Impôts et taxes", aide: "Hors impôt sur les sociétés" },
   { cle: "charges_personnel", groupe: "resultat", libelle: "Salaires et charges sociales", aide: "Salaires et traitements + charges sociales", obligatoire: true },
-  { cle: "ebe", groupe: "resultat", libelle: "EBE publié", aide: "Seulement si le détail des charges n'est pas disponible (comptes publics INPI)" },
+  { cle: "ebe", groupe: "resultat", libelle: "EBE publié", aide: "Seulement si le détail des charges n'est pas disponible (comptes publics INPI)",
+    ecran: "EBE des comptes publics", aideEcran: "Seulement si vous ne détaillez pas vos charges : repris des comptes publics (registre INPI)" },
   { cle: "dotations_amortissements", groupe: "resultat", libelle: "Dotations aux amortissements", aide: "Dotations aux amortissements sur immobilisations" },
   { cle: "resultat_exploitation", groupe: "resultat", libelle: "Résultat d'exploitation", aide: "Contrôle de cohérence" },
   { cle: "resultat_net", groupe: "resultat", libelle: "Résultat net", aide: "Bénéfice ou perte de l'exercice" },
@@ -30,6 +31,13 @@ export const CHAMPS = [
 ];
 
 export const CLES_CHAMPS = new Set(CHAMPS.map((c) => c.cle));
+
+/** Libellé et aide montrés au dirigeant. `libelle` et `aide` restent ceux du datapack Excel et de la lecture de liasse
+ *  (documents destinés aux repreneurs et aux conseils) ; `ecran` et `aideEcran` les remplacent à l'écran, sans jargon. */
+export const libelleEcran = (c) => c?.ecran ?? c?.libelle ?? "";
+export const aideEcran = (c) => c?.aideEcran ?? c?.aide ?? "";
+/** Explication de l'EBE, à la première occurrence de chaque écran (aide « ? » au survol, au clavier et au toucher). */
+export const AIDE_EBE = "Excédent brut d'exploitation : ce que l'activité dégage avant impôts, intérêts et amortissements.";
 export const EXERCICES_MAX = 3;
 
 /** Exercice → objet {cle: valeur} avec les seules valeurs validées (utilisées par le calcul). */

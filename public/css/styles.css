@@ -345,8 +345,6 @@ section { padding: 88px 0; }
 .message-carte { margin-top: 20px; padding: 16px 20px; border-radius: 16px; background: var(--sable); }
 .message-carte.erreur, .maquette-message.erreur { border-left: 4px solid var(--espresso); }
 .espace { padding-top: 0; }
-.dossier-tete { padding: 140px 0 56px; }
-.dossier-tete h1 { font-size: clamp(2.2rem, 5.5vw, 4rem); }
 .dossier-meta { margin-top: 12px; color: var(--pierre-nuit); font-family: var(--mono); font-size: 13px; letter-spacing: .04em; }
 .dossier-synthese { margin-top: 40px; display: grid; gap: 24px; padding-top: 24px; border-top: 1px solid var(--trait-nuit); }
 @media (min-width: 800px) { .dossier-synthese { grid-template-columns: 1fr 1fr; } }
@@ -389,6 +387,9 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 /* Connexion par code */
 .dialog-connexion { width: min(520px, calc(100vw - 32px)); max-width: none; position: relative; }
 .dialog-connexion .form-carte { margin-top: 18px; }
+/* Titre de la fenêtre de connexion (accueil) : même titre d'affiche que la page /connexion (19/11/2026) */
+.dialog-connexion h2.affiche { font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; text-transform: uppercase;
+  font-size: clamp(36px, 5vw, 48px); line-height: .95; letter-spacing: .005em; color: var(--vert); margin: 0 40px 0 0; }
 .dialog-fermer { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--trait-fort); background: transparent; color: var(--espresso); font-size: 1.4rem; line-height: 1; cursor: pointer; }
 .dialog-fermer:hover { background: var(--sable); }
 .champ-code { font-size: 1.7rem !important; letter-spacing: .45em; text-align: center; max-width: 280px; }
@@ -400,7 +401,6 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
   padding: 14px 22px; border-radius: var(--r-pilule); background: var(--espresso); color: var(--creme); box-shadow: 0 12px 40px rgba(0,0,0,.3); }
 
 /* ---------- Parcours de valorisation (espace/valorisation) ---------- */
-.parcours-tete { padding-bottom: 28px; }
 nav.etapes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 nav.etapes a { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--trait-nuit); color: var(--creme); text-decoration: none; font-size: .95rem; }
 nav.etapes a[aria-current] { background: var(--creme); color: var(--espresso); }
@@ -1118,9 +1118,6 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .ariane { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; margin-top: 4px; margin-bottom: 14px; }
 .ariane a { color: var(--vert); font-weight: 600; text-underline-offset: 3px; min-height: 32px; display: inline-flex; align-items: center; }
 .ariane-sep { color: var(--pierre-texte); }
-.ariane-nuit a { color: #F6F1E6; }
-.ariane-nuit .ariane-sep, .ariane-nuit [aria-current] { color: #C9BFAE; }
-.ariane-nuit [aria-current] { color: #F6F1E6; }
 
 @media (max-width: 420px) { .page-dossier .nav-actions #lien-dossier, body:not(.page-dossier) .nav-actions #btn-deconnexion { display: none; } }
 

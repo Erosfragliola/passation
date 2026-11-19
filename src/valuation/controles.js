@@ -2,14 +2,14 @@
 // seules les lignes signalées demandent son attention. Aucun chiffre n'est corrigé automatiquement.
 //   niveau « alerte »    : la ligne doit être vérifiée et validée à part
 //   niveau « attention » : signal à lire, n'empêche pas la validation de l'exercice
-import { CHAMPS } from "../../public/js/champs-financiers.js";
+import { CHAMPS, libelleEcran } from "../../public/js/champs-financiers.js";
 
 const v = (l, k) => (Number.isFinite(l?.[k]?.valeur) ? l[k].valeur : null);
 const ecart = (a, b) => Math.abs(a - b) / Math.max(Math.abs(a), Math.abs(b), 1);
 const ACTIF = ["immobilisations_nettes", "stocks", "creances_clients", "autres_creances", "placements", "tresorerie"];
 const PASSIF = ["capitaux_propres", "provisions_risques", "emprunts", "dettes_fournisseurs", "dettes_fiscales_sociales", "autres_dettes"];
 const NON_NEGATIFS = ["chiffre_affaires", "stocks", "creances_clients", "tresorerie", "placements", "emprunts", "dettes_fournisseurs", "dettes_fiscales_sociales", "charges_personnel", "achats_consommes", "charges_externes"];
-const libelle = (k) => CHAMPS.find((c) => c.cle === k)?.libelle ?? k;
+const libelle = (k) => libelleEcran(CHAMPS.find((c) => c.cle === k)) || k;
 const fmt = (x) => `${Math.round(x).toLocaleString("fr-FR")} €`;
 
 /**
@@ -25,7 +25,7 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
   // Lignes obligatoires vides
   const vides = CHAMPS.filter((c) => c.obligatoire && v(lignes, c.cle) === null)
     .filter((c) => !(["achats_consommes", "charges_externes", "charges_personnel"].includes(c.cle) && v(lignes, "ebe") !== null));
-  if (vides.length) ajoute("manquant", "alerte", vides.map((c) => c.cle), `${vides.length} ligne${vides.length > 1 ? "s" : ""} à compléter : ${vides.map((c) => c.libelle).join(", ")}.`);
+  if (vides.length) ajoute("manquant", "alerte", vides.map((c) => c.cle), `${vides.length} ligne${vides.length > 1 ? "s" : ""} à compléter : ${vides.map((c) => libelleEcran(c)).join(", ")}.`);
 
   // Valeurs impossibles
   for (const k of NON_NEGATIFS) if (v(lignes, k) !== null && v(lignes, k) < 0) ajoute("negatif", "alerte", [k], `${libelle(k)} ne peut pas être négatif (${fmt(v(lignes, k))}).`);
