@@ -195,3 +195,25 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(contenu.js.resultat.sources).toMatch(/\{exercice\}[\s\S]*\{mois\}/);
   });
 });
+
+// Nettoyage du 19/11/2026 : chaque clé du contenu doit servir. Une clé est lue si la page la cite (data-t, data-t-attr,
+// data-t-liste, data-t-json), ou si un script de l'accueil la lit dans le sous-arbre « js ». Exceptions documentées :
+// « cles » (liste à fournir par le propriétaire, conditions data-si et gabarits {…}), js.erreurs (lu par le code
+// d'erreur renvoyé par l'API), « _lisez_moi » (mode d'emploi du fichier).
+describe("aucune clé orpheline dans landing.json", () => {
+  const source = (f) => readFileSync(new URL(`../public/js/landing/${f}`, import.meta.url), "utf8");
+  const lues = new Set([
+    ...[...source("resultat.js").matchAll(/\bR\.([a-z_]+)/g)].map((m) => `js.resultat.${m[1]}`),
+    ...[...source("video.js").matchAll(/\btextes\.([a-z_]+)/g)].map((m) => `js.video.${m[1]}`),
+  ]);
+  const cites = new Set([...PAGE.matchAll(/data-t(?:-liste)?="([^"]+)"/g)].map((m) => m[1]));
+  for (const m of PAGE.matchAll(/data-t-attr="([^"]+)"/g)) for (const [, c] of lireAttributs(m[1])) cites.add(c);
+  const json = [...PAGE.matchAll(/data-t-json="([^"]+)"/g)].map((m) => m[1]).filter((c) => c !== "js");
+  const feuilles = [];
+  const parcourir = (v, c) => (v && typeof v === "object" ? Object.entries(v).forEach(([k, y]) => parcourir(y, c ? `${c}.${k}` : k)) : feuilles.push(c));
+  parcourir(contenu, "");
+  const servie = (c) => c === "_lisez_moi" || c.startsWith("cles.") || c.startsWith("js.erreurs.")
+    || [...cites, ...json].some((p) => c === p || c.startsWith(`${p}.`) || p.startsWith(`${c}.`))
+    || [...lues].some((p) => c === p || c.startsWith(`${p}.`));
+  it("toutes les clés sont lues par la page ou par ses scripts", () => expect(feuilles.filter((c) => !servie(c))).toEqual([]));
+});

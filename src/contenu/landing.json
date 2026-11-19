@@ -107,7 +107,6 @@
     "titre": "Trois étapes, sans surprise.",
     "etapes": [
       {
-        "surtitre": "Étape 1 · Votre SIREN",
         "chiffre": "30 secondes",
         "titre": "Une première fourchette de valeur",
         "texte": "Tapez le nom ou le SIREN de votre société : la fourchette s’affiche aussitôt, à partir des registres publics. Sans compte, et personne n’est averti.",
@@ -118,7 +117,6 @@
         ]
       },
       {
-        "surtitre": "Étape 2 · Vos chiffres",
         "chiffre": "Multiples du secteur",
         "titre": "Une fourchette sourcée",
         "texte": "Vous complétez quelques chiffres clés. Passation applique les multiples d’EBE (excédent brut d’exploitation) de votre secteur, sources datées, et contrôle le résultat par l’actif net.",
@@ -129,7 +127,6 @@
         ]
       },
       {
-        "surtitre": "Étape 3 · Vos documents",
         "chiffre": "9 chapitres",
         "titre": "Teaser, mémo et datapack",
         "texte": "Le teaser, anonyme, pour intéresser des repreneurs. Le mémo pour raconter toute votre entreprise. Le datapack, le fichier Excel des chiffres. Vous relisez, vous partagez.",
