@@ -213,8 +213,10 @@
   <!-- 2. Le dossier, en trois blocs (bento du 18/11/2026) -->
   <section id="livrables" class="bloc dossier" aria-labelledby="titre-dossier">
     <div class="conteneur">
-      <h2 id="titre-dossier" class="affiche" data-t="dossier.titre"></h2>
-      <p class="chapo" data-t="dossier.texte"></p>
+      <div class="livrables-tete">
+        <h2 id="titre-dossier" class="affiche" data-t="dossier.titre"></h2>
+        <p class="chapo" data-t="dossier.texte"></p>
+      </div>
       <div class="bento">
         <article class="bento-bloc bento-documents">
           <img class="bento-photo" src="/img/photos/etape-artisane-1600.webp" srcset="/img/photos/etape-artisane-800.webp 800w, /img/photos/etape-artisane-1600.webp 1600w" sizes="(min-width: 1024px) 700px, 100vw" data-t-attr="alt=dossier.documents.photo_alt" width="1600" height="900" loading="lazy">
@@ -253,6 +255,7 @@
       <ol class="etapes-parcours">
         <li class="parcours-etape" id="comment-1" data-scene>
           <span class="parcours-noeud" aria-hidden="true">01</span>
+          <p class="parcours-chiffre affiche" data-t="comment.etapes.0.chiffre"></p>
           <div class="parcours-scene" aria-hidden="true">
             <svg class="scene-svg scene-siren" viewBox="0 0 320 196" focusable="false">
               <clipPath id="frappe-siren"><rect class="s-frappe" x="34" y="26" width="196" height="36"/></clipPath>
@@ -268,14 +271,16 @@
               </g>
             </svg>
           </div>
-          <p class="parcours-chiffre affiche" data-t="comment.etapes.0.chiffre"></p>
-          <h3 data-t="comment.etapes.0.titre"></h3>
+          <h3><button class="parcours-ouvrir" type="button" aria-expanded="true" aria-controls="comment-1-detail"><span data-t="comment.etapes.0.titre"></span><span class="parcours-signe" aria-hidden="true"></span></button></h3>
+          <div class="parcours-detail" id="comment-1-detail"><div class="parcours-detail-int">
           <p class="etape-description" data-t="comment.etapes.0.texte"></p>
           <p class="parcours-obtenez" data-t="comment.etapes.0.obtenez"></p>
           <ul class="parcours-mentions"><li data-t="comment.etapes.0.pastilles.0"></li><li data-t="comment.etapes.0.pastilles.1"></li></ul>
+          </div></div>
         </li>
         <li class="parcours-etape" id="comment-2" data-scene>
           <span class="parcours-noeud" aria-hidden="true">02</span>
+          <p class="parcours-chiffre affiche" data-t="comment.etapes.1.chiffre"></p>
           <div class="parcours-scene" aria-hidden="true">
             <svg class="scene-svg scene-chiffres" viewBox="0 0 320 196" focusable="false">
               <text class="s-fictif" x="306" y="20" text-anchor="end" data-t="comment.illustrations.fictif"></text>
@@ -293,17 +298,19 @@
               </g>
             </svg>
           </div>
-          <p class="parcours-chiffre affiche" data-t="comment.etapes.1.chiffre"></p>
-          <h3 data-t="comment.etapes.1.titre"></h3>
+          <h3><button class="parcours-ouvrir" type="button" aria-expanded="true" aria-controls="comment-2-detail"><span data-t="comment.etapes.1.titre"></span><span class="parcours-signe" aria-hidden="true"></span></button></h3>
+          <div class="parcours-detail" id="comment-2-detail"><div class="parcours-detail-int">
           <p class="etape-description" data-t="comment.etapes.1.texte"></p>
           <p class="parcours-obtenez" data-t="comment.etapes.1.obtenez"></p>
           <ul class="parcours-mentions">
             <li data-si="duree_etape2" data-t="comment.etapes.1.pastilles.0"></li>
             <li data-si="prix_etape2" data-t="comment.etapes.1.pastilles.1"></li>
           </ul>
+          </div></div>
         </li>
         <li class="parcours-etape" id="comment-3" data-scene>
           <span class="parcours-noeud" aria-hidden="true">03</span>
+          <p class="parcours-chiffre affiche" data-t="comment.etapes.2.chiffre"></p>
           <div class="parcours-scene" aria-hidden="true">
             <svg class="scene-svg scene-documents" viewBox="0 0 320 196" focusable="false">
               <g class="s-doc s-d1">
@@ -325,14 +332,15 @@
               </g>
             </svg>
           </div>
-          <p class="parcours-chiffre affiche" data-t="comment.etapes.2.chiffre"></p>
-          <h3 data-t="comment.etapes.2.titre"></h3>
+          <h3><button class="parcours-ouvrir" type="button" aria-expanded="true" aria-controls="comment-3-detail"><span data-t="comment.etapes.2.titre"></span><span class="parcours-signe" aria-hidden="true"></span></button></h3>
+          <div class="parcours-detail" id="comment-3-detail"><div class="parcours-detail-int">
           <p class="etape-description" data-t="comment.etapes.2.texte"></p>
           <p class="parcours-obtenez" data-t="comment.etapes.2.obtenez"></p>
           <ul class="parcours-mentions">
             <li data-t="comment.etapes.2.pastilles.0"></li>
             <li data-si="prix_dossier" data-t="comment.etapes.2.pastilles.1"></li>
           </ul>
+          </div></div>
         </li>
       </ol>
     </div>
