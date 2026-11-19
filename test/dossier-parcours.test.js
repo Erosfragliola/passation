@@ -187,6 +187,11 @@ describe("teaser et mémorandum vides ou incomplets", () => {
     expect(e.documents[2].detail).toBe("2 parties sur 5 à rédiger");
   });
   it("teaser aux 5 parties rédigées → prêt", () => expect(etatParcours(d, memoComplet, plein).documents[2].etat).toBe("pret"));
+  it("teaser incomplet : une tâche « Rédiger 2 parties du teaser » et « Continuer » mène au teaser, pas « Tout est fait »", () => {
+    const e = etatParcours(d, memoComplet, teaser("Texte", "Texte", "Texte", "", ""));
+    expect(e.taches).toEqual([{ cle: "teaser", titre: "Rédiger 2 parties du teaser", detail: "Parties vides : atouts, operation", action: "Rédiger", href: `/espace/documents/teaser/?dossier=${ID}` }]);
+    expect(e.action).toEqual({ texte: "Continuer : compléter le teaser", href: `/espace/documents/teaser/?dossier=${ID}` });
+  });
   it("mémorandum créé mais 2 chapitres sur 3 non rédigés → incomplet, pas « à relire »", () => {
     const e = etatParcours(d, { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("marche", "Marché", { redigee: false }), section("clients", "Clients", { redigee: false })] }, plein);
     expect(e.documents[3]).toMatchObject({ etat: "incomplet", detail: "2 chapitres sur 3 à rédiger" });

@@ -121,6 +121,10 @@ export function etatParcours(d, memo = null, teaser = null) {
     const n = m.nonRedigees.length;
     taches.push({ cle: "chapitres", titre: `Rédiger ${n} ${pluriel(n, "chapitre", "chapitres")} du mémorandum`, detail: `${pluriel(n, "Chapitre", "Chapitres")} : ${m.nonRedigees.map((s) => s.court || s.titre).join(", ")}`, action: "Rédiger", href: liens.memo });
   }
+  if (teaserVides.length) {
+    const n = teaserVides.length;
+    taches.push({ cle: "teaser", titre: `Rédiger ${n} ${pluriel(n, "partie", "parties")} du teaser`, detail: `${pluriel(n, "Partie vide", "Parties vides")} : ${teaserVides.map((x) => x.titre).join(", ")}`, action: "Rédiger", href: liens.teaser });
+  }
   if (m && m.photos < 2) {
     taches.push(m.photos === 0
       ? { cle: "photo", titre: "Ajouter une photo de l'atelier ou des produits", detail: "Recommandation du mémorandum : elle rend la page « Savoir-faire » vivante", action: "Ajouter", href: `${liens.memo}#donnees` }
@@ -140,6 +144,7 @@ export function etatParcours(d, memo = null, teaser = null) {
     reponses: { texte: restantes === 1 ? "Continuer : la dernière question" : `Continuer : ${restantes} questions restantes`, href: `${liens.demarrer}&etape=questions` },
     redaction: { texte: "Continuer : lancer la rédaction", href: `${liens.demarrer}&etape=redaction` },
     relecture: memoARelire ? { texte: "Continuer : relire le mémorandum", href: liens.memo }
+      : teaserVides.length ? { texte: "Continuer : compléter le teaser", href: liens.teaser }
       : { texte: "Continuer : relire et envoyer votre dossier", href: `${liens.demarrer}&etape=pret` },
   }[actuelle];
 
