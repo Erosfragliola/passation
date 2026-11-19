@@ -2,7 +2,6 @@
 
 | Fichier | Origine | Licence |
 |---|---|---|
-| `photos/texture-sombre-1600.webp` | Création originale Passation, générée par `scripts/art/texture-peinte.html` (`npm run images`) | Propriété du projet |
 | `favicon.svg` | Création originale Passation | Propriété du projet |
 
 | Carte des régions (mémorandum, `public/js/carte-france.js`) | IGN Admin Express, contours simplifiés par github.com/gregoiredavid/france-geojson ; converti par `scripts/carte-france.mjs` | Licence ouverte Etalab (mention de la source) |
