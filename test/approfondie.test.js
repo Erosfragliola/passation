@@ -174,3 +174,26 @@ describe("synthèse de la valorisation approfondie", () => {
     expect(v.synthese.alertes.join(" ")).toMatch(/non consécutifs/);
   });
 });
+
+// Audit, point 18 : l'information sur l'actif net compare le HAUT de la fourchette (le calcul ne change pas).
+// Actif net corrigé = capitaux propres 900 000 + plus-values latentes − créances douteuses 10 000 ; haut des
+// multiples (valeur des titres) = 2 518 512,12 (test ci-dessus), inchangé par les plus-values latentes.
+describe("information « fourchette sous l'actif net corrigé »", () => {
+  const base = { secteur: "industrie", exercices, retraitements, previsions, decotes, primeTaille: 0.03, tauxReduit: false };
+  const info = (v) => v.synthese.alertes.find((a) => /actif net corrigé/.test(a));
+  it("plus-values 2 000 000 → actif net 2 890 000 > haut 2 518 512 : information avec le montant", () => {
+    const v = valorisationApprofondie({ ...base, complements: { ...complements, plus_values_latentes: 2_000_000 } }, HYP);
+    expect(v.synthese.plancher_ancc).toBe(2_890_000);
+    proche(v.synthese.haut, 2_518_512.12);
+    expect(info(v).replace(/[\u202f\u00a0]/g, " ")).toBe("Votre fourchette est inférieure à l'actif net corrigé de l'entreprise (2 890 000 €). Un repreneur paie rarement moins que cet actif : à examiner avec votre conseil.");
+  });
+  it("plus-values 1 200 000 → actif net 2 090 000 : au-dessus du centre (2 001 585) mais sous le haut, aucune information", () => {
+    const v = valorisationApprofondie({ ...base, complements: { ...complements, plus_values_latentes: 1_200_000 } }, HYP);
+    expect(v.synthese.plancher_ancc).toBe(2_090_000);
+    expect(info(v)).toBeUndefined();
+  });
+  it("aucun sigle dans les informations affichées", () => {
+    const v = valorisationApprofondie({ ...base, complements: { ...complements, plus_values_latentes: 2_000_000 } }, HYP);
+    expect(info(v)).not.toMatch(/ANCC/);
+  });
+});
