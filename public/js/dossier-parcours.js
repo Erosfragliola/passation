@@ -191,6 +191,11 @@ export function etatParcours(d, memo = null, teaser = null) {
     const n = teaserVides.length;
     taches.push({ cle: "teaser", titre: `Rédiger ${n} ${pluriel(n, "partie", "parties")} du teaser`, detail: `${pluriel(n, "Partie vide", "Parties vides")} : ${teaserVides.map((x) => x.titre).join(", ")}`, action: "Rédiger", href: liens.teaser });
   }
+  if (fait.chiffres && ex.recommandes_manquants?.length) {
+    const annees = [...ex.recommandes_manquants].sort((a, b) => b - a);
+    taches.push({ cle: "exercices", facultatif: true, titre: `Ajouter ${annees.join(" et ")} pour fiabiliser la fourchette (facultatif)`,
+      detail: `La fourchette repose déjà sur ${ex.dernier} ; les exercices précédents la confirment`, action: "Ajouter", href: `${liens.demarrer}&etape=exercice` });
+  }
   if (m && m.photos < 2) {
     taches.push(m.photos === 0
       ? { cle: "photo", facultatif: true, titre: "Ajouter une photo de l'atelier ou des produits", detail: "Recommandation du mémorandum : elle rend la page « Savoir-faire » vivante", action: "Ajouter", href: `${liens.memo}#donnees` }
@@ -198,7 +203,7 @@ export function etatParcours(d, memo = null, teaser = null) {
   }
   if (m?.nbACompleter) {
     const n = m.nbACompleter, chap = m.aCompleter.map((s) => `« ${s.court || s.titre} »`);
-    taches.push({ cle: "a-completer", titre: `Compléter ${n} ${pluriel(n, "point", "points")} du mémorandum`, detail: `Indiqués « À compléter » : ${chap.slice(0, 3).join(", ")}${chap.length > 3 ? "…" : ""}`, action: "Compléter", href: `${liens.memo}#section-${m.aCompleter[0].cle}` });
+    taches.push({ cle: "a-completer", facultatif: true, titre: `Compléter ${n} ${pluriel(n, "point", "points")} du mémorandum`, detail: `Indiqués « À compléter » : ${chap.slice(0, 3).join(", ")}${chap.length > 3 ? "…" : ""}`, action: "Compléter", href: `${liens.memo}#section-${m.aCompleter[0].cle}` });
   }
   if (manquantes > 0) {
     taches.push({ cle: "pieces", facultatif: true, titre: fournies === 0 ? "Déposer vos premières pièces" : `Déposer ${manquantes} ${pluriel(manquantes, "pièce manquante", "pièces manquantes")}`, detail: `${fournies} ${pluriel(fournies, "pièce", "pièces")} sur ${NB_PIECES}`, action: "Déposer", href: "#checklist", pieces: true });
@@ -210,23 +215,20 @@ export function etatParcours(d, memo = null, teaser = null) {
     ? { texte: affichees[0].titre, href: affichees[0].href, cle: affichees[0].cle, pieces: Boolean(affichees[0].pieces) }
     : { texte: "Relire et envoyer votre dossier", href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
 
-  // ---------- Action principale
-  const action = {
-    chiffres: { texte: "Continuer : confirmer vos chiffres", href: liens.demarrer },
-    reponses: { texte: restantes === 1 ? "Continuer : la dernière question" : `Continuer : ${restantes} questions restantes`, href: `${liens.demarrer}&etape=questions` },
-    redaction: { texte: "Continuer : lancer la rédaction", href: `${liens.demarrer}&etape=redaction` },
-    relecture: memoARelire ? { texte: "Continuer : relire le mémorandum", href: liens.memo }
-      : teaserVides.length ? { texte: "Continuer : compléter le teaser", href: liens.teaser }
-      : { texte: "Continuer : relire et envoyer votre dossier", href: `${liens.demarrer}&etape=pret` },
-  }[actuelle];
+  // ---------- Avancement : 100 % si et seulement si tout l'indispensable est fait
+  const brut = avancement({
+    estimation_express: d.estimation?.statut === "ok", dernier_exercice: fait.chiffres, questions_pct: q.pct,
+    valorisation_approfondie: Boolean(v), documents: ["datapack", "teaser", "memo"].filter((k) => docs[k]).length,
+  }).global;
+  const pct = pret ? 100 : Math.min(99, brut);
 
   // ---------- Documents
   const venir = (detail) => ({ etat: "a-venir", detail, actions: [] });
   const documents = [
-    { cle: "valorisation", titre: "Valorisation", ...(valo
+    { cle: "valorisation", titre: "Valorisation", ...(v
       ? { etat: "pret", detail: p.valorisation_le ? `Mise à jour le ${dateCourte(p.valorisation_le)}` : "Prête", actions: [{ libelle: "Ouvrir", href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: "Télécharger l'Excel", href: liens.datapack, telecharger: true }] }
-      : venir(exo ? "Calculée à l'étape Rédaction, avec vos réponses." : "Se débloque avec vos chiffres et vos réponses.")) },
-    { cle: "datapack", titre: "Datapack Excel", ...(exo
+      : venir(fait.chiffres ? "Calculée à l'étape Rédaction, avec vos réponses." : "Se débloque avec vos chiffres et vos réponses.")) },
+    { cle: "datapack", titre: "Datapack Excel", ...(p.exercices_complets
       ? { etat: "pret", detail: docs.datapack ? `Mis à jour le ${dateCourte(docs.datapack.le)}${docs.datapack.version > 1 ? ` · version ${docs.datapack.version}` : ""}` : "Préparé à partir de vos chiffres confirmés", actions: [{ libelle: "Télécharger l'Excel", href: liens.datapack, principal: true, telecharger: true }] }
       : venir("Se débloque dès qu'un exercice est confirmé.")) },
     { cle: "teaser", titre: "Teaser anonyme", ...(docs.teaser
