@@ -1,4 +1,5 @@
-// Questionnaire « Votre entreprise » : 8 écrans courts, sauvegarde automatique. Partagé par l'écran et le serveur.
+// Questionnaire complet (8 étapes), partagé par l'écran et le serveur. Le dirigeant n'en voit que la partie absente
+// du parcours guidé, facultative : POUR_ALLER_PLUS_LOIN (parcours.js).
 // Types : euros, pct (saisi en %, stocké en fraction), texte, oui_non, choix (options), regions (cases), exceptionnels (liste).
 
 export const ETAPES = [
@@ -61,7 +62,7 @@ export const ETAPES = [
   },
   {
     cle: "perspectives", titre: "Vos perspectives sur 5 ans",
-    intro: "Ces hypothèses alimentent le DCF. Sans réponse, nous partons de votre historique et l'indiquons.",
+    intro: "Votre estimation, présentée comme telle dans le mémorandum. Sans réponse, rien n'est affiché à sa place.",
     questions: [
       { cle: "croissance", type: "pct", libelle: "Croissance annuelle moyenne du chiffre d'affaires attendue" },
       { cle: "marge_ebe", type: "pct", libelle: "Marge d'EBE visée (EBE / chiffre d'affaires)" },
