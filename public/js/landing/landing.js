@@ -9,7 +9,7 @@ import { creerResultat } from "/js/landing/resultat.js";
 import { lancerFriseCles } from "/js/landing/frise.js";
 import { creerDossierFinal } from "/js/landing/histoire.js";
 import { lancerApparitions } from "/js/landing/apparitions.js";
-import { lancerScenes } from "/js/landing/scenes.js";
+import { lancerScenes, lancerEtapes } from "/js/landing/scenes.js";
 
 const $ = (s) => document.querySelector(s);
 const lire = (id) => { try { return JSON.parse(document.getElementById(id)?.textContent || "{}"); } catch { return {}; } };
@@ -60,4 +60,5 @@ document.querySelectorAll("[data-dossier-final]").forEach((zone) => new Intersec
 // Liens #comment-1, -2, -3 et #livrables (tuiles du hero) : ancres ordinaires, les étapes sont toutes visibles.
 
 lancerApparitions();
+lancerEtapes();
 lancerScenes();
