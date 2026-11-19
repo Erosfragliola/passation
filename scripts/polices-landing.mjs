@@ -10,7 +10,6 @@ const KIT = new URL("../_refonte/assets/fonts/", import.meta.url);
 const SORTIE = new URL("../public/fonts/", import.meta.url);
 const POLICES = [
   ["BigShoulders-Bold.ttf", "big-shoulders-bold.woff2"],             // tampon « Projet … »
-  ["NothingYouCouldDo-Regular.ttf", "nothing-you-could-do.woff2"],   // recto manuscrit des étiquettes
 ];
 
 // Index des balises connues (norme WOFF2, § 5.1) ; les autres sont écrites en clair (index 63)
