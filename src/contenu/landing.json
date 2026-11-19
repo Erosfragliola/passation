@@ -69,7 +69,7 @@
     "surtitre": "Préparer la cession de votre PME",
     "titre": "Vous avez bâti. Préparez votre *transmission*.",
     "sous_titre": "Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.",
-    "note": "Gratuit, sans compte · Personne n'est averti · Données des registres officiels",
+    "note": "Estimation gratuite, sans compte · Personne n'est averti · Données des registres officiels",
     "note_comptes": "",
     "preuves": {
       "dirigeants": "*{nb_dirigeants}* dirigeants accompagnés",
@@ -105,7 +105,7 @@
       "pied": "Calculée en 30 secondes depuis les comptes publics"
     },
     "coches": [
-      "Gratuit, sans compte",
+      "Estimation gratuite, sans compte",
       "Personne n’est averti",
       "Registres officiels"
     ],
@@ -620,9 +620,9 @@
   },
   "relance": {
     "titre": "Et si on regardait *votre entreprise* ?",
-    "texte": "C’est gratuit, sans compte, et vous aurez en 30 secondes une première idée de sa valeur.",
+    "texte": "L’estimation est gratuite et sans compte : en 30 secondes, une première idée de sa valeur.",
     "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
-    "tampon": "Gratuit · sans compte · 30 secondes ·",
+    "tampon": "Estimation gratuite · sans compte · 30 secondes ·",
     "livrables_titre": "Ce que contient votre dossier",
     "livrables": [
       "Une page anonyme, sous nom de code, pour intéresser des repreneurs.",
@@ -702,7 +702,7 @@
       "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
       "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
       "dossier_bouton": "Ouvrir mon dossier",
-      "dossier_note": "Gratuit · un code par e-mail · aucun mot de passe",
+      "dossier_note": "Votre dossier : gratuit, un code par e-mail, aucun mot de passe",
       "tampon": "Confidentiel",
       "profil": {
         "secteur": "Secteur",
