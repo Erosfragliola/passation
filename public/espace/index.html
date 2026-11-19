@@ -10,57 +10,67 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/espace-bento.css">
 </head>
-<body>
+<body class="page-dossier">
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 <header class="nav-zone">
   <nav class="nav" aria-label="Navigation principale">
     <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button></div>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/" aria-current="page">Mon dossier</a><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button></div>
   </nav>
 </header>
-<main id="contenu" class="espace espace-bento" aria-busy="true">
+<main id="contenu" class="espace espace-bento dossier-parcours" aria-busy="true">
+  <div class="bande-parcours">
+    <div class="conteneur bande-int">
+      <ol class="fil" id="fil" aria-label="Votre parcours"></ol>
+      <a class="btn btn-principal" id="cta" href="/espace/demarrer/">Continuer</a>
+    </div>
+  </div>
+
   <div class="conteneur">
     <div class="bento-espace">
       <section class="tuile tuile-vert tuile-dossier" aria-labelledby="dossier-nom">
-        <div>
-          <p class="etiquette">Votre dossier</p>
-          <p class="nom-code" id="nom-code"></p>
-          <h1 id="dossier-nom">Chargement…</h1>
-          <p class="dossier-meta" id="dossier-meta"></p>
+        <div class="dossier-haut">
+          <div>
+            <p class="nom-code" id="nom-code"></p>
+            <h1 class="affiche" id="dossier-nom">Chargement…</h1>
+            <p class="dossier-meta" id="dossier-meta"></p>
+          </div>
+          <div class="anneau" id="anneau" role="img" aria-label="">
+            <svg viewBox="0 0 80 80" aria-hidden="true"><circle class="fond" cx="40" cy="40" r="32"/><circle class="val" id="anneau-val" cx="40" cy="40" r="32" stroke-dasharray="0 201"/></svg>
+            <div aria-hidden="true"><strong id="avancement-global">–</strong><small>du parcours</small></div>
+          </div>
         </div>
-        <div class="avancement-anneau">
-          <svg viewBox="0 0 80 80" aria-hidden="true"><circle cx="40" cy="40" r="32" class="fond"/><circle cx="40" cy="40" r="32" class="val" id="anneau-val" stroke-dasharray="0 201" transform="rotate(-90 40 40)"/></svg>
-          <div><strong class="chiffre" id="avancement-global">–</strong><span class="petit">du dossier prêt</span></div>
-          <div class="jauge visuellement-cache" role="progressbar" aria-labelledby="avancement-global" aria-valuemin="0" aria-valuemax="100" id="jauge-globale"><span></span></div>
+        <div class="dossier-valeur">
+          <p class="valeur-etiquette" id="valeur-etiquette">Valorisation</p>
+          <p class="valeur-montant" id="valeur-montant">–</p>
+          <p class="valeur-base" id="valeur-base"></p>
+          <a class="valeur-lien" id="valeur-lien" href="/espace/valorisation/"></a>
         </div>
       </section>
-      <section class="tuile tuile-valeur">
-        <p class="etiquette" id="estimation-legende">Valorisation express</p>
-        <strong class="affiche" id="estimation-valeur">–</strong>
-        <a class="btn btn-contour btn-mini" id="lien-detaille" href="/espace/valorisation/">Voir le détail →</a>
-      </section>
-      <a class="tuile tuile-suite" id="prochaine-etape" href="/espace/demarrer/">
-        <span class="suite-fleche" aria-hidden="true">→</span>
-        <span><span class="etiquette">Prochaine étape</span><strong id="prochaine-texte">Continuer votre dossier</strong><span class="petit" id="prochaine-detail">Une étape à la fois : nous vous guidons.</span></span>
-        <span class="btn btn-cuivre">Continuer</span>
-      </a>
-      <a class="tuile doc-tuile" id="doc-valorisation" href="/espace/valorisation/"><span class="doc-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><strong>Valorisation</strong><span class="petit doc-etat"></span></a>
-      <a class="tuile doc-tuile" id="doc-teaser" href="/espace/documents/teaser/"><span class="doc-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h8.5L19 7.5V21H6zM14 3v5h5M9 12.5h7M9 16.5h5"/></svg></span><strong>Teaser anonyme</strong><span class="petit doc-etat"></span></a>
-      <a class="tuile doc-tuile" id="doc-memo" href="/espace/documents/memo/"><span class="doc-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H4zM8 21h8M12 17v4"/></svg></span><strong>Mémorandum</strong><span class="petit doc-etat"></span></a>
-      <a class="tuile doc-tuile" id="doc-datapack" href="#" download><span class="doc-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 10h16M10 4v16"/></svg></span><strong>Datapack Excel</strong><span class="petit doc-etat"></span></a>
-    </div>
 
-    <section class="pieces-zone" id="checklist" aria-labelledby="titre-pieces">
-      <div class="pieces-tete">
-        <div><h2 id="titre-pieces" class="affiche">Pièces à réunir</h2>
-          <p class="petit">Les documents habituellement demandés lors d'un audit d'acquisition. Glissez-les ici : ils restent privés et sont supprimés avec votre dossier.</p></div>
-        <p class="pieces-compte"><strong id="checklist-compte"></strong><span class="jauge-pieces" aria-hidden="true"><span id="jauge-pieces"></span></span></p>
-      </div>
-      <div class="drive">
-        <ul class="drive-dossiers" id="drive-dossiers" role="tablist" aria-label="Thèmes"></ul>
-        <div class="drive-contenu" id="checklist-groupes" role="tabpanel"></div>
-      </div>
-    </section>
+      <section class="tuile tuile-afaire" aria-labelledby="titre-afaire">
+        <h2 class="affiche" id="titre-afaire">À faire maintenant</h2>
+        <div id="afaire"></div>
+      </section>
+
+      <div class="section-titre"><h2 class="affiche" id="titre-docs">Vos documents</h2><p class="petit" id="docs-resume"></p></div>
+      <div class="docs" id="docs"></div>
+
+      <section class="tuile pieces-zone" id="checklist" aria-labelledby="titre-pieces">
+        <div class="pieces-resume">
+          <h2 id="titre-pieces" class="affiche">Pièces à réunir</h2>
+          <div class="pieces-compte"><strong id="checklist-compte"></strong><span class="jauge-pieces" aria-hidden="true"><span id="jauge-pieces"></span></span></div>
+          <button class="btn btn-contour" type="button" id="pieces-bouton" aria-expanded="false" aria-controls="pieces-depot">Ouvrir le dépôt</button>
+        </div>
+        <div class="pieces-depot" id="pieces-depot" hidden>
+          <p class="petit">Les documents habituellement demandés lors d'un audit d'acquisition. Glissez-les ici : ils restent privés et sont supprimés avec votre dossier.</p>
+          <div class="drive">
+            <div class="drive-dossiers" id="drive-dossiers" role="tablist" aria-label="Thèmes"></div>
+            <div class="drive-contenu" id="checklist-groupes" role="tabpanel" tabindex="0"></div>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <details class="gerer-dossier">
       <summary>Gérer mon dossier</summary>
@@ -68,6 +78,9 @@
       <button class="btn btn-danger" type="button" id="btn-supprimer">Supprimer mon dossier</button>
     </details>
   </div>
+
+  <div class="cta-tel"><a class="btn btn-principal" id="cta-tel" href="/espace/demarrer/">Continuer</a></div>
+
   <dialog id="dialog-supprimer" aria-labelledby="titre-supprimer">
     <h2 id="titre-supprimer">Supprimer ce dossier ?</h2>
     <p>Toutes ses données et tous ses fichiers seront effacés définitivement. Cette action est irréversible.</p>
@@ -85,6 +98,7 @@
   </div>
 </footer>
 <script src="/js/site.js" defer></script>
+<script type="module" src="/js/barre-espace.js"></script>
 <script type="module" src="/js/espace.js"></script>
 </body>
 </html>

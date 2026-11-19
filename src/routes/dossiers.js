@@ -65,7 +65,7 @@ async function detail(env, row) {
   const entreprise = JSON.parse(row.company_json || "{}");
   const lignes = await lireChiffres(env, row.id);
   const complets = Object.values(lignes).filter((l) => manquants(l).length === 0).length;
-  const approfondie = await env.DB.prepare("SELECT result_json FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();
+  const approfondie = await env.DB.prepare("SELECT result_json, created_at FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();
   const synthese = approfondie ? JSON.parse(approfondie.result_json).synthese ?? null : null;
   const questionnaire = avancementQuestionnaire(await lireReponses(env, row.id));
   const docs = await env.DB.prepare("SELECT kind, MAX(version) AS version, MAX(created_at) AS le FROM documents WHERE dossier_id = ? GROUP BY kind").bind(row.id).all();
@@ -79,7 +79,7 @@ async function detail(env, row) {
     },
     estimation: entreprise.estimation ?? null,
     checklist: [...coches],
-    parcours: { exercices_complets: complets, exercices_attendus: EXERCICES_MAX, questionnaire, valorisation: synthese },
+    parcours: { exercices_complets: complets, exercices_attendus: EXERCICES_MAX, questionnaire, valorisation: synthese, valorisation_le: approfondie?.created_at ?? null },
     documents: Object.fromEntries(docs.results.map((d) => [d.kind, { version: d.version, le: d.le }])),
     avancement: avancement({
       estimation_express: entreprise.estimation?.statut === "ok", checklist: coches,

@@ -949,9 +949,17 @@ $("#btn-tout").addEventListener("click", async (ev) => {
   b.disabled = false;
 });
 $("#btn-imprimer").addEventListener("click", () => window.print());
+/** Arrivée depuis la page du dossier : #section-<clé> ouvre la page du chapitre, #donnees ouvre les photos et le
+ *  site, ?imprimer=1 propose l'enregistrement en PDF une fois le mémorandum affiché. */
+async function suivreLien() {
+  const m = /^#section-([a-z-]+)$/.exec(location.hash);
+  if (m) { const k = diapos().findIndex((d) => d.dataset.section === m[1]); if (k >= 0) allerPage(k); }
+  if (location.hash === "#donnees") { $("#donnees").open = true; $("#donnees").scrollIntoView({ block: "start" }); }
+  if (new URLSearchParams(location.search).get("imprimer") === "1") { await document.fonts?.ready; window.print(); }
+}
 (async () => {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
   $("#lien-dossier").href = `/espace/?dossier=${id}`;
-  try { etat = await api(base); tout(); } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
+  try { etat = await api(base); tout(); suivreLien(); } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();

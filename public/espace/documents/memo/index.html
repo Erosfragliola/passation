@@ -16,10 +16,11 @@
 <header class="nav-zone pas-imprime">
   <nav class="nav" aria-label="Navigation principale">
     <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a></div>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button></div>
   </nav>
 </header>
 <main id="contenu" class="document-zone memo-studio" aria-busy="true">
+  <nav class="ariane conteneur pas-imprime" aria-label="Fil d'Ariane"><a id="ariane-dossier" href="/espace/"><span aria-hidden="true">← </span>Mon dossier</a><span class="ariane-sep" aria-hidden="true">›</span><span aria-current="page">Mémorandum</span></nav>
   <div class="conteneur studio-conteneur">
     <div class="studio-tete pas-imprime">
       <div>
@@ -72,6 +73,7 @@
   </div>
 </main>
 <script src="/js/site.js" defer></script>
+<script type="module" src="/js/barre-espace.js"></script>
 <script type="module" src="/js/memo.js"></script>
 </body>
 </html>
