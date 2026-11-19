@@ -1,53 +1,108 @@
-// Datapack Excel de la valorisation : 9 onglets, formules vivantes qui reproduisent le moteur (approfondie.js).
-// Cellules jaunes = hypothèses modifiables ; tout le reste se recalcule dans Excel. Les tests vérifient que les
-// formules redonnent exactement les chiffres du moteur (test/datapack.test.js).
-import { creerClasseur, S } from "./xlsx.js";
+// Datapack Excel de la valorisation, présenté comme un datapack de banque d'affaires : page de présentation (logo,
+// sommaire par section avec liens), onglets numérotés par section, bandeaux de section, retour « >> Présentation »
+// en tête de chaque onglet, montants en € (négatifs entre parenthèses). Charte Passation.
+// Formules vivantes qui reproduisent le moteur (approfondie.js) : les cellules cuivre sur fond crème sont les
+// hypothèses modifiables, tout le reste se recalcule dans Excel. Les tests vérifient que les formules redonnent
+// exactement les chiffres du moteur (test/datapack.test.js).
+import { creerClasseur, S, COULEURS } from "./xlsx.js";
+import { LOGO_PNG, LOGO_TAILLE } from "./logo-datapack.js";
 import { CHAMPS } from "../../public/js/champs-financiers.js";
 
-const ONGLETS = [
-  ["Couverture", "Identité, sommaire, avertissements"],
-  ["Comptes", "Comptes de résultat et bilans validés, EBE et BFR calculés"],
-  ["Retraitements", "Pont de l'EBE comptable à l'EBE normatif"],
-  ["Hypothèses", "Paramètres sourcés et datés, modifiables (cellules jaunes)"],
-  ["Passage aux titres", "Dette nette, BFR normatif, actifs hors exploitation"],
-  ["Multiples", "Méthode 1 : multiples d'EBE"],
-  ["DCF", "Méthode 2 : flux de trésorerie actualisés sur 5 ans"],
-  ["ANCC", "Méthode 3 : actif net comptable corrigé (plancher)"],
-  ["Synthèse", "Fourchettes, pondération, sensibilités"],
+// Noms des onglets : un seul endroit (les formules entre onglets les lisent ici)
+export const NOMS = {
+  presentation: "Présentation",
+  comptes: "1.1 Comptes",
+  retraitements: "1.2 Retraitements",
+  hypotheses: "1.3 Hypothèses",
+  titres: "2.1 Passage aux titres",
+  multiples: "2.2 Multiples",
+  dcf: "2.3 DCF",
+  ancc: "2.4 ANCC",
+  synthese: "2.5 Synthèse",
+};
+const X = (cle) => `'${NOMS[cle]}'!`;
+const SECTIONS = [
+  ["1", "Données et hypothèses", COULEURS.cuivre, [
+    ["comptes", "Comptes de résultat et bilans validés, EBE et BFR calculés"],
+    ["retraitements", "Pont de l'EBE comptable à l'EBE normatif"],
+    ["hypotheses", "Paramètres sourcés et datés, modifiables (cellules cuivre sur fond crème)"],
+  ]],
+  ["2", "Valorisation", COULEURS.vert, [
+    ["titres", "Dette nette, BFR normatif, actifs hors exploitation"],
+    ["multiples", "Méthode 1 : multiples d'EBE"],
+    ["dcf", "Méthode 2 : flux de trésorerie actualisés sur 5 ans"],
+    ["ancc", "Méthode 3 : actif net comptable corrigé (plancher)"],
+    ["synthese", "Fourchettes, pondération, sensibilités"],
+  ]],
 ];
+const ORDRE = [NOMS.presentation, ...SECTIONS.flatMap(([, , , l]) => l.map(([k]) => NOMS[k]))];
+const couleurOnglet = (cle) => SECTIONS.find(([, , , l]) => l.some(([k]) => k === cle))[2];
 
-export function construireDatapack({ entreprise, entree, H, resultat, genereLe = new Date() }) {
+/** Bandeau de section vert sur toute la largeur utile de l'onglet. */
+function bandeau(fe, r, texte, de = 0) {
+  for (let c = de; c < fe.largeurs.length; c++) fe.ecrire(r, c, c === de ? texte : "", S.section);
+  fe.hauteur(r, 18);
+}
+/** Ligne de tête d'un onglet : retour à la présentation et unité, dans la dernière colonne. */
+function tete(fe, unite = "en €") {
+  const c = fe.largeurs.length - 1;
+  fe.lien(0, c, ">> Présentation", NOMS.presentation);
+  if (unite) fe.ecrire(1, c, unite, S.unite);
+}
+
+export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode = null, genereLe = new Date() }) {
   const wb = creerClasseur();
   const annees = resultat.annees;
   const nA = annees.length;
   const ex = Object.fromEntries(entree.exercices.map((e) => [e.annee, e]));
   const dateTxt = genereLe.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
-  // ------------------------------------------------------------ 1. Couverture
-  const cv = wb.feuille("Couverture", { largeurs: [30, 70] });
-  cv.ecrire(0, 0, "Passation", S.sousTitre);
-  cv.ecrire(2, 0, entreprise.nom || "Entreprise", S.titre);
-  cv.ecrire(3, 0, `SIREN ${String(entreprise.siren || "").replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}${entreprise.ville ? ` · ${entreprise.ville}` : ""}`);
-  cv.ecrire(4, 0, `Datapack de valorisation · généré le ${dateTxt}`);
-  cv.ecrire(6, 0, "STRICTEMENT CONFIDENTIEL", S.confidentiel);
-  cv.ecrire(8, 0, "Sommaire", S.gras);
-  ONGLETS.forEach(([nom, desc], i) => { cv.ecrire(9 + i, 0, nom); cv.ecrire(9 + i, 1, desc, S.petit); });
-  cv.ecrire(19, 0, "Lecture", S.gras);
-  cv.ecrire(20, 0, "Cellules jaunes", S.saisieTexte); cv.ecrire(20, 1, "Hypothèses et saisies modifiables : toute modification se répercute dans les onglets suivants.");
-  cv.ecrire(21, 0, "Montants", S.normal); cv.ecrire(21, 1, "En euros. Chiffres validés par le dirigeant dans Passation.");
-  cv.ecrire(23, 0, "Avertissement", S.gras);
-  cv.ecrire(24, 0, "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable, d'un avocat ou d'un conseil en cession. Les hypothèses Passation sont sourcées et datées dans l'onglet « Hypothèses ».", S.petit);
+  // ------------------------------------------------------------ Présentation
+  const cv = wb.feuille(NOMS.presentation, { largeurs: [3, 7, 26, 66, 10], onglet: COULEURS.espresso });
+  cv.hauteur(0, 12); cv.hauteur(1, 34);
+  cv.image({ png: LOGO_PNG, r: 1, c: 1, largeur: LOGO_TAILLE.largeur / 2, hauteur: LOGO_TAILLE.hauteur / 2, nom: "Logo Passation" });
+  cv.ecrire(3, 1, `${nomDeCode ? (/^Projet /.test(nomDeCode) ? nomDeCode : `Projet ${nomDeCode}`) : entreprise.nom || "Entreprise"} | Datapack`, S.titreCouverture); cv.hauteur(3, 30);
+  if (nomDeCode) cv.ecrire(4, 1, entreprise.nom || "Entreprise", S.sousTitre);
+  cv.ecrire(5, 1, `SIREN ${String(entreprise.siren || "").replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}${entreprise.ville ? ` · ${entreprise.ville}` : ""}`);
+  cv.ecrire(6, 1, `Datapack de valorisation · généré le ${dateTxt}`);
+  cv.ecrire(7, 1, "STRICTEMENT CONFIDENTIEL", S.confidentiel);
+  let rc = 9;
+  bandeau(cv, rc++, "Sommaire", 1);
+  cv.ecrire(rc, 1, "N°", S.entete); cv.ecrire(rc, 2, "Onglet", S.entete); cv.ecrire(rc, 3, "Contenu", S.entete); cv.ecrire(rc, 4, "Lien", S.entete); rc++;
+  for (const [num, titre, , onglets] of SECTIONS) {
+    rc++;
+    cv.ecrire(rc, 1, num, S.sectionNumero); cv.ecrire(rc, 2, `Section ${num} – ${titre}`, S.gras); rc++;
+    for (const [cle, desc] of onglets) {
+      const [n, ...nom] = NOMS[cle].split(" ");
+      cv.ecrire(rc, 1, n); cv.ecrire(rc, 2, nom.join(" ")); cv.ecrire(rc, 3, desc, S.note); cv.lien(rc, 4, "Lien", NOMS[cle]);
+      rc++;
+    }
+  }
+  rc++;
+  bandeau(cv, rc++, "Lecture", 1);
+  const legende = [
+    [1000, S.saisieEuros, "Saisie ou hypothèse modifiable (cuivre sur fond crème) : se répercute dans tous les onglets."],
+    [1000, S.euros, "Formule : se recalcule seule, ne pas écraser."],
+    [1000, S.eurosTotal, "Total ou résultat d'une méthode."],
+    [-1000, S.euros, "Montants en euros validés par le dirigeant ; négatifs entre parenthèses, zéro noté « – »."],
+  ];
+  for (const [v, st, txt] of legende) { rc++; cv.ecrire(rc, 2, v, st); cv.ecrire(rc, 3, txt, S.note); }
+  rc += 2;
+  bandeau(cv, rc++, "Avertissement", 1);
+  rc++;
+  cv.ecrire(rc, 1, "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable, d'un avocat ou d'un conseil en cession. Les hypothèses Passation sont sourcées et datées dans l'onglet « " + NOMS.hypotheses + " ».", S.petit);
+  cv.fusionner(`B${rc + 1}:E${rc + 1}`); cv.hauteur(rc, 30);
 
   // ------------------------------------------------------------ 2. Comptes
-  const cp = wb.feuille("Comptes", { largeurs: [40, ...annees.map(() => 16), 60] });
+  const cp = wb.feuille(NOMS.comptes, { largeurs: [64, ...annees.map(() => 16), 60], onglet: couleurOnglet("comptes"), paysage: true });
   const colA = (i) => 1 + i;                      // colonne de l'année i
   const dernier = colA(nA - 1);
-  cp.ecrire(0, 0, "Comptes validés", S.titre);
-  cp.ecrire(2, 0, "Poste", S.entete); annees.forEach((a, i) => cp.ecrire(2, colA(i), a, S.entete)); cp.ecrire(2, nA + 1, "Où le trouver", S.entete);
+  cp.ecrire(0, 0, "Comptes validés", S.titre); tete(cp);
+  cp.ecrire(2, 0, "Poste", S.entete); annees.forEach((a, i) => cp.ecrire(2, colA(i), a, S.enteteDroite)); cp.ecrire(2, nA + 1, "Où le trouver", S.entete);
   const ligne = {};
   let r = 3;
   for (const [groupe, titre] of [["resultat", "Compte de résultat"], ["bilan", "Bilan"]]) {
-    cp.ecrire(r++, 0, titre, S.gras);
+    bandeau(cp, r++, titre);
     for (const c of CHAMPS.filter((x) => x.groupe === groupe)) {
       ligne[c.cle] = r;
       cp.ecrire(r, 0, c.libelle);
@@ -57,7 +112,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
     }
     r++;
   }
-  cp.ecrire(r++, 0, "Agrégats calculés", S.gras);
+  bandeau(cp, r++, "Agrégats calculés");
   const L = (cle, i) => cp.ref(ligne[cle], colA(i));
   const rEbe = r++, rBfr = r++, rJours = r++;
   cp.ecrire(rEbe, 0, "EBE (calculé)", S.gras);
@@ -71,80 +126,80 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
     cp.ecrire(rBfr, colA(i), { f: `${L("stocks", i)}+${L("creances_clients", i)}-${L("dettes_fournisseurs", i)}-${L("dettes_fiscales_sociales", i)}`, s: S.euros });
     cp.ecrire(rJours, colA(i), { f: `IF(${L("chiffre_affaires", i)}>0,${cp.ref(rBfr, colA(i))}/${L("chiffre_affaires", i)}*365,"")`, s: S.nombre });
   });
-  const CPx = (rr, i) => `'Comptes'!${cp.ref(rr, colA(i))}`;
+  const CPx = (rr, i) => `${X("comptes")}${cp.ref(rr, colA(i))}`;
 
   // ------------------------------------------------------------ 4. Hypothèses (avant les onglets qui les lisent)
-  const hy = wb.feuille("Hypothèses", { largeurs: [46, 14, 70, 14] });
-  hy.ecrire(0, 0, "Hypothèses", S.titre);
-  hy.ecrire(1, 0, "Cellules jaunes modifiables. Sources Passation datées ; « À compléter » = aucune source publique vérifiée.", S.petit);
-  hy.ecrire(3, 0, "Paramètre", S.entete); hy.ecrire(3, 1, "Valeur", S.entete); hy.ecrire(3, 2, "Source", S.entete); hy.ecrire(3, 3, "Date", S.entete);
+  const hy = wb.feuille(NOMS.hypotheses, { largeurs: [72, 14, 70, 14], onglet: couleurOnglet("hypotheses"), paysage: true });
+  hy.ecrire(0, 0, "Hypothèses", S.titre); tete(hy, "en € ou en %");
+  hy.ecrire(1, 0, "Cellules cuivre sur fond crème modifiables. Sources Passation datées ; « À compléter » = aucune source publique vérifiée.", S.petit);
+  hy.ecrire(3, 0, "Paramètre", S.entete); hy.ecrire(3, 1, "Valeur", S.enteteDroite); hy.ecrire(3, 2, "Source", S.entete); hy.ecrire(3, 3, "Date", S.entete);
   const hyp = {};
   let h = 4;
   const param = (cle, libelle, valeur, style, source = "", date = "") => {
-    hyp[cle] = `'Hypothèses'!${hy.ref(h, 1, true)}`;
+    hyp[cle] = `${X("hypotheses")}${hy.ref(h, 1, true)}`;
     hy.ecrire(h, 0, libelle); hy.ecrire(h, 1, valeur ?? null, style); hy.ecrire(h, 2, source, S.petit); hy.ecrire(h, 3, date, S.petit);
     h++;
   };
   const d = resultat.dcf, hd = d.hypotheses || {};
   const betaS = H.betas.secteurs[entree.secteur];
-  hy.ecrire(h++, 0, "Coût du capital", S.gras);
+  bandeau(hy, h++, "Coût du capital");
   param("rf", H.taux_sans_risque.libelle, H.taux_sans_risque.valeur, S.saisiePct, H.taux_sans_risque.source, H.taux_sans_risque.date);
   param("erp", H.prime_risque_marche.libelle, H.prime_risque_marche.valeur, S.saisiePct, H.prime_risque_marche.source, H.prime_risque_marche.date);
   param("prime", H.prime_taille.libelle, entree.primeTaille, S.saisiePct, Number.isFinite(entree.primeTaille) ? "Réglage du dirigeant" : "À compléter : aucune source publique gratuite vérifiée", "");
   param("bu", `Bêta désendetté du secteur (${betaS?.industrie_damodaran ?? "à compléter"})`, betaS?.beta_desendette ?? null, S.saisieNombre, H.betas.source, H.betas.date);
   param("de", "Ratio dette / capitaux propres cible (secteur)", Number.isFinite(entree.detteSurCapitaux) ? entree.detteSurCapitaux : betaS?.dette_sur_capitaux ?? null, S.saisieNombre, H.betas.source, H.betas.date);
   param("kd", H.cout_dette_avant_impot.libelle, H.cout_dette_avant_impot.valeur, S.saisiePct, H.cout_dette_avant_impot.source, H.cout_dette_avant_impot.date);
-  h++; hy.ecrire(h++, 0, "Impôt sur les sociétés", S.gras);
+  h++; bandeau(hy, h++, "Impôt sur les sociétés");
   param("tn", "Taux normal", H.impot_societes.taux_normal, S.saisiePct, H.impot_societes.source, H.impot_societes.date);
   param("tr", "Taux réduit PME", H.impot_societes.taux_reduit, S.saisiePct, H.impot_societes.source, H.impot_societes.date);
   param("plaf", "Plafond du taux réduit (€)", H.impot_societes.plafond_taux_reduit, S.saisieEuros, H.impot_societes.conditions_taux_reduit, "");
   param("elig", "Taux réduit applicable (1 = oui, 0 = non)", entree.tauxReduit ? 1 : 0, S.saisieNombre, "Réponse du dirigeant (capital détenu à 75 % par des personnes physiques)", "");
-  h++; hy.ecrire(h++, 0, "Prévisions (DCF)", S.gras);
+  h++; bandeau(hy, h++, "Prévisions (DCF)");
   param("g", "Croissance à l'infini", hd.croissance_terminale?.valeur ?? H.croissance_terminale.valeur, S.saisiePct, hd.croissance_terminale?.origine === "dirigeant" ? "Réglage du dirigeant" : H.croissance_terminale.source, H.croissance_terminale.date);
   param("gca", "Croissance annuelle du chiffre d'affaires", hd.croissance?.valeur ?? 0, S.saisiePct, hd.croissance?.origine ?? "", "");
   param("marge", "Marge d'EBE", hd.marge_ebe?.valeur ?? 0, S.saisiePct, hd.marge_ebe?.origine ?? "", "");
   param("amort", "Amortissements / CA", hd.amortissements_pct?.valeur ?? 0, S.saisiePct, hd.amortissements_pct?.origine ?? "", "");
   param("invest", "Investissements / CA", hd.investissements_pct?.valeur ?? 0, S.saisiePct, hd.investissements_pct?.origine ?? "", "");
   param("jours", "BFR en jours de CA", hd.bfr_jours?.valeur ?? 0, S.saisieNombre, hd.bfr_jours?.origine ?? "", "");
-  h++; hy.ecrire(h++, 0, "Multiples et synthèse", S.gras);
+  h++; bandeau(hy, h++, "Multiples et synthèse");
   const mult = resultat.multiples.multiples || {};
   param("mb", "Multiple d'EBE bas", mult.bas ?? null, S.saisieNombre, "Croisement de trois sources (src/data/multiples-sources.json)", "");
   param("mc", "Multiple d'EBE central", mult.central ?? null, S.saisieNombre, "", "");
   param("mh", "Multiple d'EBE haut", mult.haut ?? null, S.saisieNombre, "", "");
   param("poids", "Poids des multiples dans la synthèse (le DCF a le complément)", entree.ponderation?.multiples ?? H.ponderation.multiples, S.saisiePct, H.ponderation.note, "");
   param("mode", "EBE normatif : « moyenne » ou « dernier »", entree.modeEbe === "dernier" ? "dernier" : "moyenne", S.saisieTexte, "Réglage du dirigeant", "");
-  h++; hy.ecrire(h++, 0, "Décotes et primes", S.gras);
-  hy.ecrire(h, 0, "Facteur", S.entete); hy.ecrire(h, 1, "%", S.entete); hy.ecrire(h, 2, "Justification", S.entete); h++;
+  h++; bandeau(hy, h++, "Décotes et primes");
+  hy.ecrire(h, 0, "Facteur", S.entete); hy.ecrire(h, 1, "%", S.enteteDroite); hy.ecrire(h, 2, "Justification", S.entete); h++;
   const debutDec = h;
   for (const f of H.decotes_primes.facteurs) {
     const x = (entree.decotes || []).find((y) => y.cle === f.cle);
     hy.ecrire(h, 0, f.libelle); hy.ecrire(h, 1, x?.pct ?? 0, S.saisiePct); hy.ecrire(h, 2, x?.justification || "", S.saisieTexte); h++;
   }
-  hyp.facteur = `'Hypothèses'!${hy.ref(h, 1, true)}`;
+  hyp.facteur = `${X("hypotheses")}${hy.ref(h, 1, true)}`;
   hy.ecrire(h, 0, "Facteur appliqué aux valeurs d'entreprise (1 + somme)", S.gras);
   hy.ecrire(h, 1, { f: `1+SUM(${hy.ref(debutDec, 1)}:${hy.ref(h - 1, 1)})`, s: S.nombre });
   h += 2;
-  hy.ecrire(h++, 0, "Sources", S.gras);
+  bandeau(hy, h++, "Sources");
   for (const k of ["taux_sans_risque", "prime_risque_marche", "cout_dette_avant_impot", "impot_societes", "croissance_terminale", "betas"]) { hy.ecrire(h, 0, H[k].source, S.petit); hy.ecrire(h, 2, H[k].url || "", S.petit); h++; }
 
   // ------------------------------------------------------------ 3. Retraitements
-  const rt = wb.feuille("Retraitements", { largeurs: [46, ...annees.map(() => 16), 40] });
+  const rt = wb.feuille(NOMS.retraitements, { largeurs: [52, ...annees.map(() => 16), 40], onglet: couleurOnglet("retraitements") });
   const rr = entree.retraitements || {};
-  rt.ecrire(0, 0, "Pont de l'EBE comptable à l'EBE normatif", S.titre);
+  rt.ecrire(0, 0, "Pont de l'EBE comptable à l'EBE normatif", S.titre); tete(rt);
   rt.ecrire(2, 0, "Rémunération réelle du dirigeant (charges comprises)"); rt.ecrire(2, 1, rr.remuneration_dirigeant_reelle ?? null, S.saisieEuros);
   rt.ecrire(3, 0, "Rémunération normative d'un directeur salarié"); rt.ecrire(3, 1, rr.remuneration_normative ?? null, S.saisieEuros);
   rt.ecrire(4, 0, "Loyer payé (locaux du dirigeant ou d'une SCI)"); rt.ecrire(4, 1, rr.loyer_paye ?? null, S.saisieEuros);
   rt.ecrire(5, 0, "Loyer de marché"); rt.ecrire(5, 1, rr.loyer_marche ?? null, S.saisieEuros);
-  rt.ecrire(7, 0, "Éléments exceptionnels", S.gras);
+  bandeau(rt, 7, "Éléments exceptionnels");
   rt.ecrire(8, 0, "Libellé", S.entete); rt.ecrire(8, 1, "Exercice", S.entete); rt.ecrire(8, 2, "Montant", S.entete); rt.ecrire(8, 3, "Justification", S.entete);
   const exc = rr.exceptionnels || [];
   const lignesExc = Math.max(exc.length, 3);
   for (let i = 0; i < lignesExc; i++) {
-    const e = exc[i];
-    rt.ecrire(9 + i, 0, e?.libelle ?? "", S.saisieTexte); rt.ecrire(9 + i, 1, e?.annee ?? null, S.saisieNombre); rt.ecrire(9 + i, 2, e?.montant ?? null, S.saisieEuros); rt.ecrire(9 + i, 3, e?.justification ?? "", S.saisieTexte);
+    const e = exc[i]; // année en format général (pas « 2 024,000 »)
+    rt.ecrire(9 + i, 0, e?.libelle ?? "", S.saisieTexte); rt.ecrire(9 + i, 1, e?.annee ?? null, S.saisieTexte); rt.ecrire(9 + i, 2, e?.montant ?? null, S.saisieEuros); rt.ecrire(9 + i, 3, e?.justification ?? "", S.saisieTexte);
   }
   const p0 = 9 + lignesExc + 1;
-  rt.ecrire(p0, 0, "Pont", S.entete); annees.forEach((a, i) => rt.ecrire(p0, colA(i), a, S.entete));
+  rt.ecrire(p0, 0, "Pont", S.entete); annees.forEach((a, i) => rt.ecrire(p0, colA(i), a, S.enteteDroite));
   const [pE, pD, pL, pX, pR] = [p0 + 1, p0 + 2, p0 + 3, p0 + 4, p0 + 5];
   rt.ecrire(pE, 0, "EBE comptable"); rt.ecrire(pD, 0, "Rémunération du dirigeant ramenée à la normale"); rt.ecrire(pL, 0, "Loyer ramené au prix de marché"); rt.ecrire(pX, 0, "Éléments exceptionnels"); rt.ecrire(pR, 0, "EBE retraité", S.gras);
   annees.forEach((a, i) => {
@@ -159,14 +214,14 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
   const pN = pR + 2;
   rt.ecrire(pN, 0, "EBE normatif", S.gras);
   rt.ecrire(pN, 1, { f: `IF(${hyp.mode}="dernier",${rt.ref(pR, dernier)},AVERAGE(${rt.ref(pR, colA(0))}:${rt.ref(pR, dernier)}))`, s: S.eurosTotal });
-  const ebeN = `'Retraitements'!${rt.ref(pN, 1, true)}`;
+  const ebeN = `${X("retraitements")}${rt.ref(pN, 1, true)}`;
 
   // ------------------------------------------------------------ 5. Passage aux titres
-  const pt = wb.feuille("Passage aux titres", { largeurs: [52, 16, 50] });
+  const pt = wb.feuille(NOMS.titres, { largeurs: [52, 16, 50], onglet: couleurOnglet("titres") });
   const co = entree.complements || {};
-  pt.ecrire(0, 0, "Dette nette, BFR et actifs hors exploitation", S.titre);
+  pt.ecrire(0, 0, "Dette nette, BFR et actifs hors exploitation", S.titre); tete(pt);
   pt.ecrire(1, 0, `Dernier exercice : ${annees.at(-1)}`, S.petit);
-  pt.ecrire(3, 0, "Dette nette", S.entete); pt.ecrire(3, 1, "Montant", S.entete);
+  pt.ecrire(3, 0, "Dette nette", S.entete); pt.ecrire(3, 1, "Montant", S.enteteDroite);
   const dn = [
     ["Emprunts et dettes financières", { f: CPx(ligne.emprunts, nA - 1), s: S.euros }],
     ["Crédit-bail restant dû", co.credit_bail_restant ?? 0, S.saisieEuros],
@@ -178,21 +233,21 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
   ];
   dn.forEach(([lib, v, s], i) => { pt.ecrire(4 + i, 0, lib); pt.ecrire(4 + i, 1, v, s ?? S.euros); });
   pt.ecrire(11, 0, "Dette nette (négative = trésorerie nette)", S.gras); pt.ecrire(11, 1, { f: "SUM(B5:B11)", s: S.eurosTotal });
-  pt.ecrire(13, 0, "BFR", S.entete); pt.ecrire(13, 1, "Montant", S.entete);
+  pt.ecrire(13, 0, "BFR", S.entete); pt.ecrire(13, 1, "Montant", S.enteteDroite);
   pt.ecrire(14, 0, "BFR réel du dernier exercice"); pt.ecrire(14, 1, { f: CPx(rBfr, nA - 1), s: S.euros });
-  pt.ecrire(15, 0, "BFR normatif en jours (moyenne des exercices)"); pt.ecrire(15, 1, { f: `AVERAGE('Comptes'!${cp.ref(rJours, colA(0))}:${cp.ref(rJours, dernier)})`, s: S.nombre });
+  pt.ecrire(15, 0, "BFR normatif en jours (moyenne des exercices)"); pt.ecrire(15, 1, { f: `AVERAGE(${X("comptes")}${cp.ref(rJours, colA(0))}:${cp.ref(rJours, dernier)})`, s: S.nombre });
   pt.ecrire(16, 0, "BFR normatif (jours × dernier CA / 365)"); pt.ecrire(16, 1, { f: `B16/365*${CPx(ligne.chiffre_affaires, nA - 1)}`, s: S.euros });
   pt.ecrire(17, 0, "Écart de BFR (réel − normatif)", S.gras); pt.ecrire(17, 1, { f: "B15-B17", s: S.eurosGras });
   pt.ecrire(19, 0, "Actifs hors exploitation"); pt.ecrire(19, 1, co.actifs_hors_exploitation ?? 0, S.saisieEuros);
   pt.ecrire(21, 0, "Passage VE → titres = VE × facteur de décotes − dette nette + écart de BFR + actifs hors exploitation", S.petit);
-  const DN = "'Passage aux titres'!$B$12", ECART = "'Passage aux titres'!$B$18", HORS = "'Passage aux titres'!$B$20";
+  const DN = `${X("titres")}$B$12`, ECART = `${X("titres")}$B$18`, HORS = `${X("titres")}$B$20`;
   const versTitres = (ve) => `${ve}*${hyp.facteur}-${DN}+${ECART}+${HORS}`;
 
   // ------------------------------------------------------------ 6. Multiples
-  const mu = wb.feuille("Multiples", { largeurs: [40, 16, 16, 16] });
-  mu.ecrire(0, 0, "Méthode 1 : multiples d'EBE", S.titre);
+  const mu = wb.feuille(NOMS.multiples, { largeurs: [40, 16, 16, 16], onglet: couleurOnglet("multiples") });
+  mu.ecrire(0, 0, "Méthode 1 : multiples d'EBE", S.titre); tete(mu);
   mu.ecrire(2, 0, "EBE normatif"); mu.ecrire(2, 1, { f: ebeN, s: S.eurosGras });
-  mu.ecrire(4, 0, "", S.entete); mu.ecrire(4, 1, "Basse", S.entete); mu.ecrire(4, 2, "Centrale", S.entete); mu.ecrire(4, 3, "Haute", S.entete);
+  mu.ecrire(4, 0, "", S.entete); mu.ecrire(4, 1, "Basse", S.enteteDroite); mu.ecrire(4, 2, "Centrale", S.enteteDroite); mu.ecrire(4, 3, "Haute", S.enteteDroite);
   mu.ecrire(5, 0, "Multiple d'EBE");
   mu.ecrire(6, 0, "Valeur d'entreprise");
   mu.ecrire(7, 0, "Valeur des titres", S.gras);
@@ -203,9 +258,9 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
   });
 
   // ------------------------------------------------------------ 7. DCF
-  const dc = wb.feuille("DCF", { largeurs: [40, 15, 15, 15, 15, 15, 15] });
-  dc.ecrire(0, 0, "Méthode 2 : DCF sur 5 ans (convention de fin d'année)", S.titre);
-  dc.ecrire(2, 0, "Coût du capital", S.entete); dc.ecrire(2, 1, "Valeur", S.entete);
+  const dc = wb.feuille(NOMS.dcf, { largeurs: [72, 15, 15, 15, 15, 15, 15], onglet: couleurOnglet("dcf"), paysage: true });
+  dc.ecrire(0, 0, "Méthode 2 : DCF sur 5 ans (convention de fin d'année)", S.titre); tete(dc);
+  dc.ecrire(2, 0, "Coût du capital", S.entete); dc.ecrire(2, 1, "Valeur", S.enteteDroite);
   const cmpcL = [
     ["Bêta endetté = bêta désendetté × (1 + (1 − IS) × D/E)", `${hyp.bu}*(1+(1-${hyp.tn})*${hyp.de})`, S.nombre],
     ["Coût des fonds propres = taux sans risque + bêta × prime + prime de taille", `${hyp.rf}+B4*${hyp.erp}+${hyp.prime}`, S.pct2],
@@ -215,8 +270,8 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
   ];
   cmpcL.forEach(([lib, f, s], i) => { dc.ecrire(3 + i, 0, lib, i === 4 ? S.gras : S.normal); dc.ecrire(3 + i, 1, { f, s }); });
   const K = "$B$8", G = hyp.g;
-  dc.ecrire(9, 0, "Projection", S.entete); dc.ecrire(9, 1, "An 0", S.entete);
-  for (let t = 1; t <= 5; t++) dc.ecrire(9, 1 + t, `An ${t}`, S.entete);
+  dc.ecrire(9, 0, "Projection", S.entete); dc.ecrire(9, 1, "An 0", S.enteteDroite);
+  for (let t = 1; t <= 5; t++) dc.ecrire(9, 1 + t, `An ${t}`, S.enteteDroite);
   const R = { t: 10, ca: 11, ebe: 12, da: 13, ebit: 14, is: 15, inv: 16, bfr: 17, dbfr: 18, flux: 19, fa: 20, act: 21 };
   const libs = { t: "Année", ca: "Chiffre d'affaires", ebe: "EBE", da: "Amortissements", ebit: "Résultat d'exploitation (EBIT)", is: "Impôt sur l'EBIT", inv: "Investissements", bfr: "BFR", dbfr: "Variation du BFR", flux: "Flux disponible", fa: "Facteur d'actualisation", act: "Flux actualisé" };
   for (const [k, row] of Object.entries(R)) dc.ecrire(row, 0, libs[k], k === "flux" ? S.gras : S.normal);
@@ -244,22 +299,22 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
   dc.ecrire(24, 0, "Valeur terminale actualisée"); dc.ecrire(24, 1, { f: `IF(ISNUMBER(B24),B24/(1+${K})^5,"")`, s: S.euros });
   dc.ecrire(25, 0, "Somme des flux actualisés"); dc.ecrire(25, 1, { f: `IF(ISNUMBER(${K}),SUM(C22:G22),"")`, s: S.euros });
   dc.ecrire(26, 0, "Valeur d'entreprise (DCF)", S.gras); dc.ecrire(26, 1, { f: `IF(AND(ISNUMBER(B25),ISNUMBER(B26)),B25+B26,"À compléter")`, s: S.eurosGras });
-  dc.ecrire(28, 0, "", S.entete); dc.ecrire(28, 1, "CMPC + 1 pt", S.entete); dc.ecrire(28, 2, "CMPC", S.entete); dc.ecrire(28, 3, "CMPC − 1 pt", S.entete);
+  dc.ecrire(28, 0, "", S.entete); dc.ecrire(28, 1, "CMPC + 1 pt", S.enteteDroite); dc.ecrire(28, 2, "CMPC", S.enteteDroite); dc.ecrire(28, 3, "CMPC − 1 pt", S.enteteDroite);
   dc.ecrire(29, 0, "Valeur d'entreprise");
   dc.ecrire(29, 1, { f: `IF(ISNUMBER(B27),${veA(`(${K}+0.01)`, G)},"")`, s: S.euros });
   dc.ecrire(29, 2, { f: "B27", s: S.euros });
   dc.ecrire(29, 3, { f: `IF(ISNUMBER(B27),IF(${K}-0.01>${G},${veA(`(${K}-0.01)`, G)},""),"")`, s: S.euros });
   dc.ecrire(30, 0, "Valeur des titres", S.gras);
   for (const c of [1, 2, 3]) dc.ecrire(30, c, { f: `IF(ISNUMBER(${dc.ref(29, c)}),${versTitres(dc.ref(29, c))},"")`, s: S.eurosTotal });
-  dc.ecrire(32, 0, "Sensibilité à la croissance à l'infini (titres)", S.entete); dc.ecrire(32, 1, "g − 0,5 pt", S.entete); dc.ecrire(32, 2, "g", S.entete); dc.ecrire(32, 3, "g + 0,5 pt", S.entete);
+  dc.ecrire(32, 0, "Sensibilité à la croissance à l'infini (titres)", S.entete); dc.ecrire(32, 1, "g − 0,5 pt", S.enteteDroite); dc.ecrire(32, 2, "g", S.enteteDroite); dc.ecrire(32, 3, "g + 0,5 pt", S.enteteDroite);
   dc.ecrire(33, 0, "Valeur des titres");
   dc.ecrire(33, 1, { f: `IF(ISNUMBER(B27),IF(${K}>${G}-0.005,${versTitres(`(${veA(K, `(${G}-0.005)`)})`)},""),"")`, s: S.euros });
   dc.ecrire(33, 2, { f: "C31", s: S.euros });
   dc.ecrire(33, 3, { f: `IF(ISNUMBER(B27),IF(${K}>${G}+0.005,${versTitres(`(${veA(K, `(${G}+0.005)`)})`)},""),"")`, s: S.euros });
 
   // ------------------------------------------------------------ 8. ANCC
-  const an = wb.feuille("ANCC", { largeurs: [52, 16] });
-  an.ecrire(0, 0, "Méthode 3 : actif net comptable corrigé", S.titre);
+  const an = wb.feuille(NOMS.ancc, { largeurs: [52, 16, 30], onglet: couleurOnglet("ancc") });
+  an.ecrire(0, 0, "Méthode 3 : actif net comptable corrigé", S.titre); tete(an);
   an.ecrire(1, 0, "Présenté à part, comme plancher de négociation.", S.petit);
   an.ecrire(3, 0, "Capitaux propres"); an.ecrire(3, 1, { f: CPx(ligne.capitaux_propres, nA - 1), s: S.euros });
   an.ecrire(4, 0, "Plus-values latentes justifiées (immobilier, fonds)"); an.ecrire(4, 1, co.plus_values_latentes ?? 0, S.saisieEuros);
@@ -268,29 +323,30 @@ export function construireDatapack({ entreprise, entree, H, resultat, genereLe =
   an.ecrire(7, 0, "Actif net comptable corrigé", S.gras); an.ecrire(7, 1, { f: "B4+B5-B6-B7", s: S.eurosTotal });
 
   // ------------------------------------------------------------ 9. Synthèse
-  const sy = wb.feuille("Synthèse", { largeurs: [44, 16, 16, 16] });
-  sy.ecrire(0, 0, "Synthèse : valeur des titres", S.titre);
-  sy.ecrire(2, 0, "Méthode", S.entete); sy.ecrire(2, 1, "Basse", S.entete); sy.ecrire(2, 2, "Centrale", S.entete); sy.ecrire(2, 3, "Haute", S.entete);
-  sy.ecrire(3, 0, "Multiples d'EBE"); ["B8", "C8", "D8"].forEach((ref, i) => sy.ecrire(3, 1 + i, { f: `'Multiples'!${ref}`, s: S.euros }));
-  sy.ecrire(4, 0, "DCF (CMPC ± 1 pt)"); ["B31", "C31", "D31"].forEach((ref, i) => sy.ecrire(4, 1 + i, { f: `'DCF'!${ref}`, s: S.euros }));
-  sy.ecrire(5, 0, "Actif net corrigé (plancher)"); sy.ecrire(5, 2, { f: "'ANCC'!B8", s: S.euros });
+  const sy = wb.feuille(NOMS.synthese, { largeurs: [52, 16, 16, 16], onglet: couleurOnglet("synthese") });
+  sy.ecrire(0, 0, "Synthèse : valeur des titres", S.titre); tete(sy);
+  sy.ecrire(2, 0, "Méthode", S.entete); sy.ecrire(2, 1, "Basse", S.enteteDroite); sy.ecrire(2, 2, "Centrale", S.enteteDroite); sy.ecrire(2, 3, "Haute", S.enteteDroite);
+  sy.ecrire(3, 0, "Multiples d'EBE"); ["B8", "C8", "D8"].forEach((ref, i) => sy.ecrire(3, 1 + i, { f: `${X("multiples")}${ref}`, s: S.euros }));
+  sy.ecrire(4, 0, "DCF (CMPC ± 1 pt)"); ["B31", "C31", "D31"].forEach((ref, i) => sy.ecrire(4, 1 + i, { f: `${X("dcf")}${ref}`, s: S.euros }));
+  sy.ecrire(5, 0, "Actif net corrigé (plancher)"); sy.ecrire(5, 2, { f: `${X("ancc")}B8`, s: S.euros });
   sy.ecrire(7, 0, "Poids des multiples"); sy.ecrire(7, 1, { f: `IF(AND(ISNUMBER(C4),ISNUMBER(C5)),${hyp.poids},IF(ISNUMBER(C4),1,0))`, s: S.pct });
   sy.ecrire(8, 0, "Poids du DCF"); sy.ecrire(8, 1, { f: "IF(AND(ISNUMBER(C4),ISNUMBER(C5)),1-B8,IF(ISNUMBER(C5),1,0))", s: S.pct });
   sy.ecrire(10, 0, "Valeur des titres (synthèse)", S.gras);
   for (const [c, col] of [[1, "B"], [2, "C"], [3, "D"]]) {
     sy.ecrire(10, c, { f: `IF($B$8+$B$9=0,"À compléter",$B$8*IF($B$8=0,0,${col}4)+$B$9*IF($B$9=0,0,IF(ISNUMBER(${col}5),${col}5,C5)))`, s: S.eurosTotal });
   }
-  sy.ecrire(12, 0, "Sensibilités (valeur des titres)", S.entete); sy.ecrire(12, 1, "Basse", S.entete); sy.ecrire(12, 2, "Centrale", S.entete); sy.ecrire(12, 3, "Haute", S.entete);
+  sy.ecrire(12, 0, "Sensibilités (valeur des titres)", S.entete); sy.ecrire(12, 1, "Basse", S.enteteDroite); sy.ecrire(12, 2, "Centrale", S.enteteDroite); sy.ecrire(12, 3, "Haute", S.enteteDroite);
   sy.ecrire(13, 0, "Multiple d'EBE − 1x / + 1x");
   sy.ecrire(13, 1, { f: `IF(ISNUMBER(C4),${versTitres(`${ebeN}*(${hyp.mc}-1)`)},"")`, s: S.euros });
   sy.ecrire(13, 2, { f: "C4", s: S.euros });
   sy.ecrire(13, 3, { f: `IF(ISNUMBER(C4),${versTitres(`${ebeN}*(${hyp.mc}+1)`)},"")`, s: S.euros });
-  sy.ecrire(14, 0, "CMPC + 1 pt / − 1 pt"); ["B31", "C31", "D31"].forEach((ref, i) => sy.ecrire(14, 1 + i, { f: `'DCF'!${ref}`, s: S.euros }));
-  sy.ecrire(15, 0, "Croissance à l'infini − 0,5 pt / + 0,5 pt"); ["B34", "C34", "D34"].forEach((ref, i) => sy.ecrire(15, 1 + i, { f: `'DCF'!${ref}`, s: S.euros }));
-  sy.ecrire(17, 0, "Estimation indicative, non contractuelle. Calculs reproduits par formules : modifiez les cellules jaunes de l'onglet « Hypothèses ».", S.petit);
+  sy.ecrire(14, 0, "CMPC + 1 pt / − 1 pt"); ["B31", "C31", "D31"].forEach((ref, i) => sy.ecrire(14, 1 + i, { f: `${X("dcf")}${ref}`, s: S.euros }));
+  sy.ecrire(15, 0, "Croissance à l'infini − 0,5 pt / + 0,5 pt"); ["B34", "C34", "D34"].forEach((ref, i) => sy.ecrire(15, 1 + i, { f: `${X("dcf")}${ref}`, s: S.euros }));
+  // Contrôle (convention des datapacks bancaires) : la somme des poids doit faire 100 %
+  sy.ecrire(16, 0, "Contrôle : poids des multiples + poids du DCF = 100 %", S.petit); sy.ecrire(16, 1, { f: 'IF(ROUND($B$8+$B$9,6)=1,"OK","À vérifier")', s: S.controle });
+  sy.ecrire(17, 0, `Estimation indicative, non contractuelle. Calculs reproduits par formules : modifiez les cellules cuivre de l'onglet « ${NOMS.hypotheses} ».`, S.petit);
 
   // Ordre des onglets : celui du sommaire
-  const ordre = ONGLETS.map(([n]) => n);
-  wb.feuilles.sort((a, b) => ordre.indexOf(a.nom) - ordre.indexOf(b.nom));
+  wb.feuilles.sort((a, b) => ORDRE.indexOf(a.nom) - ORDRE.indexOf(b.nom));
   return wb;
 }

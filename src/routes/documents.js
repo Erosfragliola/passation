@@ -36,7 +36,7 @@ async function datapack(env, row, { stocker = false } = {}) {
     return json({ erreur: "chiffres_absents", message: "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack." }, 409);
   }
   const entreprise = { ...JSON.parse(row.company_json || "{}"), siren: row.siren };
-  const octets = construireDatapack({ entreprise, entree, H: hypotheses, resultat }).octets({ titre: `Datapack ${entreprise.nom || ""}` });
+  const octets = construireDatapack({ entreprise, entree, H: hypotheses, resultat, nomDeCode: row.code_name || (entreprise.naf ? projet(entreprise.naf) : null) }).octets({ titre: `Datapack ${entreprise.nom || ""}` });
   const version = await prochaineVersion(env, row.id, "datapack");
   const cle = `dossiers/${row.id}/documents/datapack-v${version}.xlsx`;
   await env.FILES.put(cle, octets, { httpMetadata: { contentType: XLSX } });

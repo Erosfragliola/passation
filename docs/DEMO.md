@@ -27,7 +27,7 @@ sont vérifiées par `test/demo.test.js` et ont été calculées indépendamment
 | 4 | Confirmer les exercices 2024 et 2025 | Validation par le dirigeant ; un exercice incomplet est écarté du calcul et signalé |
 | 5 | Valorisation | Multiples seuls, fourchette sans valeur centrale (décision du 19/11/2026) ; l'actif net corrigé en contrôle ; phrase qui explique l'écart avec l'estimation express |
 | 6 | « Affiner » : EBE retenu, décotes et primes, Recalculer | Le DCF n'est plus affiché ni réglable à l'écran ; il reste calculé dans le datapack (onglet DCF) |
-| 7 | Télécharger le datapack | 9 onglets, formules vivantes : modifier une cellule jaune recalcule tout |
+| 7 | Télécharger le datapack | présentation avec logo et sommaire cliquable, 8 onglets numérotés par section, formules vivantes : modifier une cellule cuivre recalcule tout |
 | 8 | Teaser, mémorandum (si la clé Claude est active) | Rédaction à partir des seuls faits validés ; contrôle d'anonymat du teaser |
 
 **La prime de taille de 3 % est une hypothèse de démonstration, pas une donnée sourcée.** Aucune source publique

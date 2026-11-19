@@ -86,9 +86,9 @@ describe("exercices incomplets (FIN-01)", () => {
     const { entree, H, r } = calcul({ 2024: caSeul(900_000), 2025: complet2025 });
     const wb = construireDatapack({ entreprise: { nom: "Exemple", siren: "000000000" }, entree, H, resultat: r, genereLe: new Date("2026-11-18") });
     const calc = wb.calculer();
-    expect(calc.lire("Comptes", 2, 1)).toBe(2025);
-    expect(calc.lire("Comptes", 2, 2)).not.toBe(2024);
-    proche(calc.valeur("Multiples", "B3"), 150_000);
-    proche(calc.valeur("Multiples", "C8"), 800_000);
+    expect(calc.lire("1.1 Comptes", 2, 1)).toBe(2025);
+    expect(calc.lire("1.1 Comptes", 2, 2)).not.toBe(2024);
+    proche(calc.valeur("2.2 Multiples", "B3"), 150_000);
+    proche(calc.valeur("2.2 Multiples", "C8"), 800_000);
   });
 });
