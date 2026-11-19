@@ -296,7 +296,7 @@
       "fictif": "exemple fictif",
       "siren": {
         "saisie": "Menuiserie Durand & Fils",
-        "libelle": "Première fourchette",
+        "libelle": "Valeur d'entreprise estimée",
         "valeur": "1,8 – 2,4 M€"
       },
       "chiffres": {
@@ -314,7 +314,7 @@
             "montant": "900 k€"
           }
         ],
-        "libelle": "Valeur des titres",
+        "libelle": "Valeur de vos titres",
         "fourchette": "1,8 – 2,4 M€",
         "bas": "1,8 M€",
         "haut": "2,4 M€"
