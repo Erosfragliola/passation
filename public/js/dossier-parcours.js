@@ -187,6 +187,11 @@ export function etatParcours(d, memo = null, teaser = null) {
     const n = m.nonRedigees.length;
     taches.push({ cle: "chapitres", titre: `Rédiger ${n} ${pluriel(n, "chapitre", "chapitres")} du mémorandum`, detail: `${pluriel(n, "Chapitre", "Chapitres")} : ${m.nonRedigees.map((s) => s.court || s.titre).join(", ")}`, action: "Rédiger", href: liens.memo });
   }
+  if (fait.chiffres && ex.recommandes_manquants?.length) {
+    const annees = [...ex.recommandes_manquants].sort((a, b) => b - a);
+    taches.push({ cle: "exercices", facultatif: true, titre: `Ajouter ${annees.join(" et ")} pour fiabiliser la fourchette (facultatif)`,
+      detail: `La fourchette repose déjà sur ${ex.dernier} ; les exercices précédents la confirment`, action: "Ajouter", href: `${liens.demarrer}&etape=exercice` });
+  }
   if (teaserVides.length) {
     const n = teaserVides.length;
     taches.push({ cle: "teaser", titre: `Rédiger ${n} ${pluriel(n, "partie", "parties")} du teaser`, detail: `${pluriel(n, "Partie vide", "Parties vides")} : ${teaserVides.map((x) => x.titre).join(", ")}`, action: "Rédiger", href: liens.teaser });
@@ -209,6 +214,13 @@ export function etatParcours(d, memo = null, teaser = null) {
     taches.push({ cle: "pieces", facultatif: true, titre: fournies === 0 ? "Déposer vos premières pièces" : `Déposer ${manquantes} ${pluriel(manquantes, "pièce manquante", "pièces manquantes")}`, detail: `${fournies} ${pluriel(fournies, "pièce", "pièces")} sur ${NB_PIECES}`, action: "Déposer", href: "#checklist", pieces: true });
   }
   const affichees = taches.slice(0, MAX_TACHES);
+
+  // ---------- Avancement : 100 % si et seulement si tout l'indispensable est fait
+  const brut = avancement({
+    estimation_express: d.estimation?.statut === "ok", dernier_exercice: fait.chiffres, questions_pct: q.pct,
+    valorisation_approfondie: Boolean(v), documents: ["datapack", "teaser", "memo"].filter((k) => docs[k]).length,
+  }).global;
+  const pct = pret ? 100 : Math.min(99, brut);
 
   // ---------- Action principale : exactement la première tâche (même libellé, même lien)
   const action = affichees.length
