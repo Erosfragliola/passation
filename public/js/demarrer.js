@@ -13,7 +13,6 @@ import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
-import { pointsACompleter, libellePoints } from "/js/dossier-parcours.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
