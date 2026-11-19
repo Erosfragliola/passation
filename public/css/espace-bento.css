@@ -55,86 +55,167 @@
   .page-guidee .guide-ecran, .page-guidee .message-carte { grid-column: 1; }
 }
 
-/* ---------- Espace dirigeant ---------- */
-.espace-bento { background: var(--creme); padding: 100px 0 64px; }
-.bento-espace { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
-.espace-bento .tuile { border-radius: 26px; background: #FFFDF8; border: 1px solid var(--trait); padding: 24px; min-width: 0; color: var(--espresso); text-decoration: none; }
-.tuile-vert { background: var(--vert) !important; color: #F6F1E6 !important; border-color: transparent !important; }
-.tuile-dossier { grid-column: span 8; display: flex; flex-direction: column; justify-content: space-between; gap: 22px; min-height: 250px; }
-.tuile-dossier .etiquette { color: #E9C9A4; margin: 0; }
-.nom-code { margin: 4px 0 0; font-family: var(--b-serif); font-style: italic; font-size: clamp(44px, 5.4vw, 66px); line-height: 1; color: #E9C9A4; }
-.tuile-dossier h1 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin: 8px 0 0; color: #F6F1E6; }
-.tuile-dossier .dossier-meta { color: #BCCBC0; margin: 2px 0 0; font-size: 14px; }
-.avancement-anneau { display: flex; align-items: center; gap: 16px; }
-.avancement-anneau svg { width: 80px; height: 80px; flex: none; }
-.avancement-anneau circle { fill: none; stroke-width: 9; }
-.avancement-anneau .fond { stroke: rgba(255, 255, 255, .12); }
-.avancement-anneau .val { stroke: #E9C9A4; stroke-linecap: round; transition: stroke-dasharray .6s ease; }
-.avancement-anneau strong { display: block; font: 700 36px/1 var(--b-affiche); color: #F6F1E6; }
-.avancement-anneau .petit { color: #BCCBC0; }
-.tuile-valeur { grid-column: span 4; display: grid; align-content: space-between; gap: 12px; }
-.tuile-valeur .etiquette { margin: 0; color: var(--cuivre); }
-.tuile-valeur .affiche { font-size: clamp(38px, 4vw, 54px); color: var(--vert); }
-.tuile-valeur .btn { justify-self: start; }
-.tuile-suite { grid-column: span 12; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: center; background: #F5E7D6 !important; border-color: transparent !important; }
-.suite-fleche { font: 700 44px/1 var(--b-affiche); color: var(--cuivre); }
-.tuile-suite .etiquette { margin: 0; color: var(--cuivre); }
-.tuile-suite strong { display: block; font-size: 19px; }
-.btn-cuivre { background: var(--cuivre); color: #fff; border-radius: 999px; }
-.doc-tuile { grid-column: span 3; display: grid; gap: 8px; align-content: start; transition: transform .15s ease, box-shadow .15s ease; }
-.doc-tuile:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -22px rgba(35, 30, 24, .5); }
-.doc-ico { width: 44px; height: 44px; border-radius: 14px; background: var(--sable); display: grid; place-items: center; }
-.doc-ico svg { width: 22px; height: 22px; fill: none; stroke: var(--vert); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.doc-tuile strong { font-size: 16.5px; }
-.doc-tuile .doc-etat { justify-self: start; border-radius: 99px; padding: 3px 10px; font-weight: 600; font-size: 13px; }
-.doc-tuile[data-etat="pret"] .doc-etat { background: rgba(46, 138, 98, .14); color: var(--b-vif); }
-.doc-tuile[data-etat="attente"] { opacity: .75; }
-.doc-tuile[data-etat="attente"] .doc-etat { background: var(--sable); color: var(--pierre-texte); font-weight: 500; }
+/* ---------- Page d'un dossier (19/11/2026, maquette validée) ----------
+   Bande collante : fil du parcours en 5 étapes + action principale (en bas sur téléphone). Puis peu de tuiles,
+   grandes : en-tête vert et « À faire maintenant », quatre documents, dépôt des pièces replié.
+   Petits textes cuivrés en #8E5530 (contraste AA) ; --cuivre reste réservé aux aplats et aux contours. */
+.page-dossier { --d-papier: #FFFDF8; --d-cuivre-texte: #8E5530; --d-vert-pale: #E3ECE6; --d-sable: #EFE5D3; }
+.espace-bento.dossier-parcours { background: var(--creme); padding: 84px 0 64px; }
+.dossier-parcours section { padding: 0; }
+.dossier-parcours :focus-visible { outline: 3px solid var(--cuivre); outline-offset: 3px; }
 
-/* Pièces : dépôt type Drive */
-.pieces-zone { margin-top: 40px; }
-.pieces-tete { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
-.pieces-tete h2 { font-size: clamp(34px, 4.4vw, 52px); color: var(--vert); margin: 0 0 6px; }
-.pieces-tete .petit { max-width: 60ch; margin: 0; }
-.pieces-compte { margin: 0; display: grid; gap: 6px; justify-items: end; }
-.jauge-pieces { width: 220px; height: 8px; border-radius: 4px; background: var(--sable); overflow: hidden; display: block; }
-.jauge-pieces span { display: block; height: 100%; background: var(--b-vif); transition: width .4s ease; }
-.drive { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 14px; border-radius: 28px; background: #FFFDF8; border: 1px solid var(--trait); padding: 14px; }
-.drive-dossiers { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; align-content: start; }
-.drive-dossiers button { width: 100%; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 11px 12px; border-radius: 14px; border: 0; background: transparent; font: inherit; color: var(--espresso); cursor: pointer; text-align: left; }
-.drive-dossiers button:hover { background: var(--sable); }
+.bande-parcours { position: sticky; top: 76px; z-index: 40; margin-bottom: 18px; padding: 10px 0; background: color-mix(in srgb, var(--creme) 92%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--trait); }
+.bande-int { display: flex; align-items: center; gap: 16px; }
+.fil { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; flex: 1; min-width: 0; }
+.fil li { flex: 1 1 0; min-width: 0; display: flex; padding: 0; margin: 0; background: none; border: 0; }
+.fil li.actuelle { flex-grow: 1.5; }
+.fil li > a, .fil li > .etape { flex: 1; min-width: 0; flex-direction: row; }
+.fil a, .fil .etape { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 10px; border-radius: 14px; font-size: 14.5px; font-weight: 500; text-decoration: none; color: var(--pierre-texte); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fil .lib { overflow: hidden; text-overflow: ellipsis; }
+.fil .num { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--trait-fort); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+.fil .fait a { color: var(--vert); }
+.fil .fait a:hover { background: var(--d-vert-pale); }
+.fil .fait .num { background: var(--b-vif); border-color: var(--b-vif); color: #fff; }
+.fil .actuelle .etape { background: var(--vert); color: var(--creme); }
+.fil .actuelle .num { border-color: #E9C9A4; color: #E9C9A4; }
+.btn-principal { background: var(--d-cuivre-texte); color: #fff; border-color: transparent; }
+.btn-principal:hover { background: #7A4828; }
+.bande-int .btn-principal { flex: none; min-height: 48px; padding: 0 22px; font-weight: 600; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; line-height: 48px; }
+.btn-petit { min-height: 40px; padding: 0 16px; font-size: 14.5px; font-weight: 500; }
+.cta-tel { display: none; }
+
+.bento-espace { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+.dossier-parcours .tuile { border-radius: 26px; padding: 26px; min-width: 0; background: var(--d-papier); border: 1px solid var(--trait); color: var(--espresso); }
+.dossier-parcours .affiche { margin: 0; text-wrap: balance; }
+
+/* En-tête du dossier */
+.dossier-parcours .tuile-dossier { grid-column: span 7; background: var(--vert); border-color: transparent; color: #F6F1E6; display: grid; gap: 22px; align-content: space-between; }
+.dossier-haut { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.dossier-haut > div:first-child { min-width: 0; }
+.dossier-parcours .nom-code { margin: 0; font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: 0; font-size: clamp(26px, 2.6vw, 32px); line-height: 1.1; color: #E9C9A4; }
+.dossier-parcours .tuile-dossier h1 { font-size: clamp(40px, 4.6vw, 64px); color: #F6F1E6; margin-top: 6px; overflow-wrap: anywhere; }
+.dossier-meta { margin: 8px 0 0; font-size: 14px; color: #C9D6CD; }
+.anneau { position: relative; flex: none; width: 96px; height: 96px; }
+.anneau svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.anneau circle { fill: none; stroke-width: 7; }
+.anneau .fond { stroke: rgba(246, 241, 230, .16); }
+.anneau .val { stroke: #E9C9A4; stroke-linecap: round; transition: stroke-dasharray .5s ease; }
+.anneau div { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.anneau strong { font: 700 24px/1 var(--b-affiche); }
+.anneau small { font-size: 11px; line-height: 1.2; color: #C9D6CD; }
+.dossier-valeur { display: grid; gap: 6px; padding-top: 18px; border-top: 1px solid rgba(246, 241, 230, .16); }
+.valeur-etiquette { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #E9C9A4; }
+.valeur-montant { margin: 0; font: 700 clamp(44px, 5vw, 72px)/1 var(--b-affiche); color: #F6F1E6; font-variant-numeric: tabular-nums; }
+.valeur-base { margin: 0; max-width: 52ch; font-size: 15px; color: #DCE5DF; }
+.valeur-lien { justify-self: start; font-size: 15px; font-weight: 600; color: #F6F1E6; text-underline-offset: 3px; }
+
+/* À faire maintenant */
+.dossier-parcours .tuile-afaire { grid-column: span 5; display: grid; gap: 14px; align-content: start; }
+.tuile-afaire h2 { font-size: 34px; color: var(--vert); }
+.taches { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.tache { display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 16px; border-radius: 18px; background: var(--creme); border: 1px solid var(--trait); }
+.dossier-parcours .ico { flex: none; width: 42px; height: 42px; border-radius: 13px; background: var(--d-sable); display: grid; place-items: center; color: var(--vert); }
+.dossier-parcours .ico svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tache-txt { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.tache-txt strong { font-size: 15.5px; line-height: 1.3; }
+.tache-txt .petit { margin: 0; }
+.tache .btn { flex: none; }
+.bravo { display: grid; gap: 8px; padding: 22px; border-radius: 20px; background: var(--d-vert-pale); }
+.bravo .affiche { font-size: 30px; color: var(--vert); }
+.bravo p:not(.affiche) { margin: 0; }
+
+/* Documents */
+.section-titre { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+.section-titre h2 { font-size: 34px; color: var(--vert); }
+.section-titre .petit { margin: 0; }
+.docs { display: contents; }
+.dossier-parcours .doc { grid-column: span 3; padding: 22px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; }
+.dossier-parcours .doc-a-venir { background: transparent; border-style: dashed; border-color: var(--trait-fort); }
+.doc-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.doc h3 { margin: 0; font: 700 26px/1 var(--b-affiche); text-transform: uppercase; }
+.doc .petit { margin: 0; }
+.etat { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.etat-pret { background: var(--d-vert-pale); color: var(--vert); }
+.etat-a-relire { background: #F5E7D6; color: var(--d-cuivre-texte); }
+.etat-a-venir { background: var(--d-sable); color: var(--pierre-texte); }
+.doc-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Pièces : résumé, puis dépôt type Drive (inchangé) quand il est ouvert */
+.dossier-parcours .pieces-zone { grid-column: 1 / -1; margin-top: 22px; background: var(--d-sable); border-color: transparent; display: grid; gap: 16px; }
+.pieces-resume { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; }
+.pieces-resume h2 { font-size: 34px; color: var(--vert); }
+.pieces-compte { flex: 1; min-width: 200px; display: grid; gap: 8px; margin: 0; }
+.pieces-compte strong { font-size: 17px; }
+.jauge-pieces { display: block; height: 8px; border-radius: 4px; background: rgba(35, 30, 24, .1); overflow: hidden; }
+.jauge-pieces span { display: block; height: 100%; background: var(--vert); transition: width .4s ease; }
+.pieces-depot { display: grid; gap: 14px; }
+.pieces-depot > .petit { margin: 0; max-width: 70ch; }
+.drive { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 14px; border-radius: 22px; background: var(--d-papier); padding: 14px; }
+.drive-dossiers { display: grid; gap: 4px; align-content: start; }
+.drive-dossiers button { width: 100%; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 44px; padding: 10px 12px; border-radius: 14px; border: 0; background: transparent; font: inherit; font-size: 15px; color: var(--espresso); text-align: left; cursor: pointer; }
+.drive-dossiers button:hover { background: var(--d-sable); }
 .drive-dossiers button[aria-selected="true"] { background: var(--vert); color: #fff; }
 .drive-dossiers svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; }
-.drive-dossiers small { font: 500 12px var(--mono); opacity: .8; }
+.drive-dossiers small { font-size: 12.5px; font-weight: 500; }
 .drive-contenu { display: grid; gap: 12px; min-width: 0; }
-.depot-zone { border: 2px dashed rgba(168, 101, 58, .5); border-radius: 22px; background: #F5E7D6; padding: 24px; display: grid; place-items: center; text-align: center; gap: 6px; cursor: pointer; transition: background .2s; }
+.depot-zone { border: 2px dashed rgba(168, 101, 58, .55); border-radius: 20px; background: #F5E7D6; padding: 22px; display: grid; place-items: center; text-align: center; gap: 6px; cursor: pointer; }
 .depot-zone.survol, .piece-zone.survol { background: #EDD3B7; }
-.depot-ico { width: 44px; height: 44px; border-radius: 50%; background: var(--cuivre); color: #fff; display: grid; place-items: center; font-size: 22px; }
+.depot-ico { width: 44px; height: 44px; border-radius: 50%; background: var(--d-cuivre-texte); color: #fff; display: grid; place-items: center; font-size: 22px; }
 .depot-zone strong { font-size: 17px; }
+.depot-zone .petit { margin: 0; }
+.depot-choisir { font-weight: 600; color: var(--vert); min-height: 32px; }
 .drive-pieces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.piece-zone { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--trait); background: var(--creme); cursor: pointer; min-height: 72px; transition: background .2s; }
-.piece-ico { width: 42px; height: 48px; border-radius: 9px; background: var(--sable); display: grid; place-items: center; font: 600 11px var(--mono); color: var(--pierre-texte); }
+.piece-zone { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; grid-template-areas: "ico texte etat" "ico ajout etat"; column-gap: 12px; align-items: center; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--trait); background: var(--creme); cursor: pointer; min-width: 0; height: 100%; }
+.piece-zone .piece-ico { grid-area: ico; }
+.piece-zone .piece-texte { grid-area: texte; }
+.piece-zone .depot-choisir { grid-area: ajout; justify-self: start; font-size: 13.5px; }
+.piece-zone .piece-etat { grid-area: etat; }
+.piece-ico { width: 42px; height: 48px; border-radius: 9px; background: var(--d-sable); display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--pierre-texte); }
 .piece.fournie .piece-ico { background: var(--vert); color: #fff; }
 .piece-texte { display: grid; gap: 2px; min-width: 0; }
 .piece-texte strong { font-size: 14.5px; }
+.piece-texte .petit { margin: 0; }
 .piece-fichiers { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 13px; }
 .piece-fichiers a { color: var(--vert); overflow-wrap: anywhere; }
-.piece-etat { font-size: 13px; border-radius: 999px; padding: 6px 12px; white-space: nowrap; background: rgba(46, 138, 98, .14); color: var(--b-vif); font-weight: 600; }
-.piece-etat.bouton { background: transparent; border: 1px solid var(--trait-fort); color: var(--espresso); font: inherit; font-size: 13px; cursor: pointer; }
-.piece-etat.bouton[aria-pressed="true"] { background: rgba(46, 138, 98, .14); color: var(--b-vif); border-color: transparent; font-weight: 600; }
-.espace-bento .gerer-dossier { margin-top: 28px; }
-@media (max-width: 960px) {
-  .bento-espace > * { grid-column: 1 / -1 !important; }
-  .doc-tuile { grid-column: span 6 !important; }
-  .tuile-suite { grid-template-columns: auto minmax(0, 1fr); } .tuile-suite .btn { display: none; }
-  .drive { grid-template-columns: 1fr; }
-  .drive-dossiers { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; }
-  .drive-pieces { grid-template-columns: 1fr; }
-}
-@media (max-width: 560px) { .doc-tuile { grid-column: 1 / -1 !important; } .pieces-compte { justify-items: start; } }
-.espace-bento #checklist-groupes { margin-top: 0; grid-template-columns: minmax(0, 1fr); }
-.tuile-valeur .affiche { text-transform: none; }
 .piece-fichiers .lien-simple { margin-left: 8px; }
+.piece-etat { font-size: 13px; border-radius: 999px; padding: 6px 12px; white-space: nowrap; background: var(--d-vert-pale); color: var(--vert); font-weight: 600; }
+.piece-etat.bouton { min-height: 36px; background: transparent; border: 1px solid var(--trait-fort); color: var(--espresso); font: inherit; font-size: 13px; cursor: pointer; }
+.piece-etat.bouton[aria-pressed="true"] { background: var(--d-vert-pale); color: var(--vert); border-color: transparent; font-weight: 600; }
+
+/* Gérer mon dossier : discret, en bas */
+.dossier-parcours .gerer-dossier { margin-top: 40px; border-top: 1px solid var(--trait); padding-top: 14px; }
+.dossier-parcours .gerer-dossier summary { font-size: 14px; color: var(--pierre-texte); font-weight: 500; }
+.dossier-parcours .gerer-dossier summary::after { font-size: 1.1rem; color: var(--pierre-texte); }
+
+@media (max-width: 1080px) {
+  .dossier-parcours .tuile-dossier, .dossier-parcours .tuile-afaire { grid-column: 1 / -1; }
+  .dossier-parcours .doc { grid-column: span 6; }
+  .fil .lib { font-size: 13.5px; }
+}
+@media (max-width: 760px) {
+  .espace-bento.dossier-parcours { padding-bottom: 96px; }
+  .bande-parcours { top: 72px; padding: 6px 0; }
+  .bande-int .btn-principal { display: none; }
+  .fil { gap: 4px; }
+  .fil li { flex: none; }
+  .fil li.actuelle { flex: 1 1 auto; }
+  .fil a, .fil .etape { padding: 6px; }
+  .fil li:not(.actuelle) .lib { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .dossier-parcours .tuile { padding: 20px; border-radius: 24px; }
+  .dossier-parcours .doc { grid-column: 1 / -1; }
+  .anneau { width: 76px; height: 76px; }
+  .anneau strong { font-size: 19px; }
+  .anneau small { font-size: 10px; }
+  .tache { flex-wrap: wrap; }
+  .tache-txt { flex: 1 1 calc(100% - 60px); }
+  .tache .btn { margin-left: 56px; }
+  .drive { grid-template-columns: 1fr; padding: 10px; }
+  .drive-dossiers { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; padding-bottom: 4px; }
+  .drive-pieces { grid-template-columns: 1fr; }
+  .cta-tel { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--creme) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--trait); }
+  .cta-tel .btn { width: 100%; min-height: 50px; font-weight: 600; }
+}
+@media (prefers-reduced-motion: reduce) { .anneau .val, .jauge-pieces span { transition: none; } }
 
 /* ---------- Mémorandum en mode présentation (18/11/2026) ---------- */
 /* Petits textes cuivrés en #8E5530 (« ocre texte » de l'accueil) : --cuivre n'atteint pas 4,5:1 (« jamais pour du texte ») */
@@ -166,14 +247,14 @@
 .panneau-titre { font-size: 19px; line-height: 1.25; letter-spacing: -.01em; margin: 0; }
 .panneau-etat { margin: 0; font-size: 14px; color: var(--pierre-texte); }
 .pastille-etat { border-radius: 99px; padding: 3px 10px; font-weight: 600; font-size: 13px; }
-.pastille-etat.ok { background: rgba(46, 138, 98, .14); color: var(--b-vif); }
+.pastille-etat.ok { background: rgba(46, 138, 98, .14); color: var(--vert); }
 .pastille-etat.a-faire { background: #F5E7D6; color: #8E5530; }
 .panneau-bloc { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--trait); }
 .panneau-bloc h3 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: #8E5530; }
 .panneau-recos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .panneau-recos li { display: grid; gap: 4px; padding: 10px 12px; border-radius: 14px; background: #F5E7D6; font-size: 14px; }
 .panneau-recos .lien-simple { justify-self: start; font-weight: 600; color: var(--vert); }
-.ok-reco { color: var(--b-vif) !important; }
+.ok-reco { color: var(--vert) !important; }
 .panneau-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .panneau-edition { display: grid; gap: 8px; }
 .panneau-edition:empty { display: none; }

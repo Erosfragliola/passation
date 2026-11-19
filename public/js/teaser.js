@@ -72,7 +72,11 @@ $("#btn-imprimer").addEventListener("click", () => window.print());
 async function charger() {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
   $("#lien-dossier").href = `/espace/?dossier=${id}`;
-  try { rendu(await api(base)); } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
+  try {
+    const d = await api(base); rendu(d);
+    // Arrivée depuis le bouton « PDF » de la page du dossier : on propose l'enregistrement une fois le teaser affiché
+    if (d.teaser && new URLSearchParams(location.search).get("imprimer") === "1") { await document.fonts?.ready; window.print(); }
+  } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 }
 charger();

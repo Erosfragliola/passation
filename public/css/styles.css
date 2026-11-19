@@ -1112,3 +1112,14 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .requis-note { color: #8B4A22; }
 .guide-todo .btn { margin-top: 10px; justify-content: space-between; text-align: left; }
 .guide-todo p.petit { margin: 4px 0 6px; }
+
+/* Espace : fil d'Ariane des pages de documents, et barre du haut sur petit écran (une seule action à côté du logo) */
+/* Fil d'Ariane des pages de documents */
+.ariane { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; margin-top: 4px; margin-bottom: 14px; }
+.ariane a { color: var(--vert); font-weight: 600; text-underline-offset: 3px; min-height: 32px; display: inline-flex; align-items: center; }
+.ariane-sep { color: var(--pierre-texte); }
+.ariane-nuit a { color: #F6F1E6; }
+.ariane-nuit .ariane-sep, .ariane-nuit [aria-current] { color: #C9BFAE; }
+.ariane-nuit [aria-current] { color: #F6F1E6; }
+
+@media (max-width: 420px) { .page-dossier .nav-actions #lien-dossier, body:not(.page-dossier) .nav-actions #btn-deconnexion { display: none; } }

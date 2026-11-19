@@ -62,6 +62,15 @@ function etapeCourante() {
   if (!S.reponses.suivi?.pret_envoye && !S.complet) return "redaction";
   return "pret";
 }
+/** Étape demandée par la page du dossier (?etape=…) : pour revoir une étape faite ou aller droit au but. Sans
+ *  chiffres, « chiffres » mène à l'envoi des comptes ; « questions » reprend à la première question sans réponse. */
+function etapeDemandee() {
+  const e = new URLSearchParams(location.search).get("etape");
+  if (e === "chiffres") return exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes";
+  if (e === "questions") { const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues)); S.q = Math.max(0, iq); return "questions"; }
+  if (e === "redaction" || e === "pret") return e;
+  return null;
+}
 const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
 function dessinerEtapes() {
   const i = ETAPES.findIndex(([k]) => k === (S.etape === "saisie" ? "comptes" : S.etape));
@@ -643,7 +652,7 @@ async function pret() {
     $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
     document.title = `${dossier.entreprise.nom} · Passation`;
     S.complet = Boolean(dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && dossier.parcours?.valorisation);
-    aller(etapeCourante());
+    aller(etapeDemandee() || etapeCourante());
     if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // pendant les questions, pas à la fin
   } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
