@@ -41,7 +41,7 @@ export function dateCourte(secondes) {
 }
 
 /** Points « À compléter » du mémorandum, un par élément signalé dans un chapitre : « Équipe : Nombre de salariés ».
- *  Seul décompte du travail restant, partagé par la page du dossier et l'écran final du parcours guidé. */
+ *  Seul décompte du travail restant (page du dossier, tâches et écran final du parcours guidé). */
 export function pointsACompleter(memo) {
   return (memo?.sections || []).flatMap((s) => (s.a_completer || []).map((t) => `${s.titre} : ${t}`));
 }
@@ -149,7 +149,7 @@ export function etatParcours(d, memo = null, teaser = null) {
     estimation: true, // le dirigeant a saisi son SIREN et vu la fiche : le dossier en est issu
     chiffres: Boolean(ex.dernier_complet), // le dernier exercice, confirmé par le dirigeant (jamais d'office)
     reponses: q.total > 0 && restantes === 0,
-    redaction: Boolean(v && docs.memo && docs.teaser && !(m && m.nonRedigees.length)),
+    redaction: Boolean(v && docs.memo && docs.teaser && !(m && m.nonRedigees.length) && !teaserVides.length),
     relecture: false, // l'envoi se fait hors de la page : l'étape reste la dernière ouverte
   };
   const pret = fait.chiffres && fait.reponses && fait.redaction;
@@ -180,7 +180,7 @@ export function etatParcours(d, memo = null, teaser = null) {
       action: q.faits ? "Reprendre" : "Commencer", href: `${liens.demarrer}&etape=questions`,
     });
   }
-  if (fait.chiffres && !fait.redaction && !m?.nonRedigees.length && (restantes === 0 || (q.pct || 0) >= SEUIL_REDACTION)) {
+  if (fait.chiffres && !fait.redaction && !m?.nonRedigees.length && !teaserVides.length && (restantes === 0 || (q.pct || 0) >= SEUIL_REDACTION)) {
     taches.push({ cle: "redaction", titre: v || docs.memo || docs.teaser ? "Terminer la rédaction" : "Lancer la rédaction", detail: "Valorisation, teaser et mémorandum, d'un coup", action: "Rédiger", href: `${liens.demarrer}&etape=redaction` });
   }
   if (m?.nonRedigees.length) {

@@ -100,30 +100,28 @@ function dessinerChiffres() {
   const annees = Object.keys(chiffres.exercices).map(Number).sort((a, b) => a - b);
   const att = exercicesAttendus(chiffres.exercices);
   const role = (a) => (a === att.dernier ? "indispensable" : att.recommandes.includes(a) ? "facultatif" : "information");
-  if (!annees.includes(anneeCourante)) anneeCourante = att.dernier ?? annees.at(-1) ?? null;
-  const manq = (a) => chiffres.manquants?.[a] || [];
-  remplacer($("#choix-annee"), el("span", { class: "petit", text: "Exercice :" }), ...annees.map((a) => el("button", { type: "button", class: "annee", "aria-pressed": String(a === anneeCourante),
-    onclick: () => { anneeCourante = a; dessinerChiffres(); } }, `${a}`, el("small", { text: ` · ${role(a)}${manq(a).length ? "" : " ✓"}` }))));
-  const zone = $("#chiffres-annee");
-  if (anneeCourante == null) {
-    remplacer(zone, el("p", { class: "carte vide", text: "Aucun exercice pour l'instant : ajoutez l'année de votre dernier exercice clos, ou déposez votre liasse." }));
-  } else {
-    const a = anneeCourante, l = chiffres.exercices[a] || {};
-    const detail = [...DETAIL].some((k) => l[k]?.valeur != null);
-    const principal = (c) => c.obligatoire || (c.cle === "ebe" && !detail && l.ebe?.valeur != null);
-    const bloc = (groupe, titre) => el("section", { class: "chiffres-bloc", "aria-label": titre }, el("h3", { text: titre }),
-      ...CHAMPS.filter((c) => c.groupe === groupe && principal(c) && !(DETAIL.has(c.cle) && !detail && l.ebe?.valeur != null)).map((c) => ligneChiffre(c, a)));
-    const facultatifs = CHAMPS.filter((c) => !principal(c));
-    const remplis = facultatifs.filter((c) => l[c.cle]?.valeur != null).length;
-    remplacer(zone, 
-      el("div", { class: "chiffres-grille" }, bloc("resultat", `Ce que l'entreprise gagne (${a})`), bloc("bilan", `Ce qu'elle possède et doit (fin ${a})`)),
-      el("details", { class: "chiffres-facultatifs" }, el("summary", {}, `Lignes facultatives (${facultatifs.length}${remplis ? `, dont ${remplis} remplie${remplis > 1 ? "s" : ""}` : ""})`),
-        el("div", { class: "chiffres-grille" }, ...facultatifs.map((c) => ligneChiffre(c, a)))),
-      el("div", { class: "chiffres-pied" },
-        el("span", { class: "petit" }, aideEbe(), " ", el("button", { type: "button", class: "lien-simple", onclick: () => retirerExercice(a) }, `Retirer ${a}`)),
-        el("span", { class: "chiffres-actions-pied" },
-          manq(a).length ? el("button", { type: "button", class: "btn btn-contour btn-petit", onclick: () => validerExercice(a) }, `Valider les lignes remplies de ${a}`) : null,
-          el("a", { class: "btn btn-vert btn-petit", href: "#entreprise" }, "Continuer : votre entreprise ", el("span", { class: "fleche", "aria-hidden": "true", text: "→" })))));
+  const table = $("#tableau-chiffres");
+  const tete = el("tr", {}, el("th", { scope: "col", text: "Poste" }), ...annees.map((a) => el("th", { scope: "col", class: "num" }, `${a} `, el("button", { type: "button", class: "lien-simple retirer", "aria-label": `Retirer l'exercice ${a}`, title: `Retirer ${a}`, onclick: () => retirerExercice(a) }, "×"), el("br"), el("span", { class: "petit", text: role(a) }))), el("th", { scope: "col", class: "col-ligne", text: "Ligne" }));
+  remplacer(table.tHead, tete);
+  const corps = [];
+  for (const [groupe, titre] of [["resultat", "Compte de résultat"], ["bilan", "Bilan"]]) {
+    corps.push(el("tr", { class: "groupe" }, el("th", { scope: "colgroup", colspan: String(annees.length + 2), text: titre })));
+    for (const c of CHAMPS.filter((x) => x.groupe === groupe)) {
+      const etat = etatLigne(c.cle, annees);
+      const tr = el("tr", { class: `ligne-${etat}`, "data-cle": c.cle });
+      tr.append(el("th", { scope: "row" }, el("span", { class: "poste", text: c.libelle }), c.obligatoire && att.dernier != null ? el("abbr", { class: "obligatoire", title: `Nécessaire pour l'exercice ${att.dernier}`, text: "*" }) : null, el("span", { class: "aide", text: c.aide })));
+      for (const a of annees) {
+        const v = chiffres.exercices[a]?.[c.cle];
+        const input = el("input", { type: "text", inputmode: "decimal", class: "montant", "aria-label": `${c.libelle}, ${a}`, value: v?.valeur != null ? fmt.format(v.valeur) : "", "data-annee": String(a) });
+        input.addEventListener("change", () => enregistrerCase(c.cle, a, input));
+        const src = v?.valeur != null ? el("span", { class: `source source-${v.source}`, text: { inpi: "INPI", liasse: "Liasse", dirigeant: "Vous" }[v.source] }) : null;
+        tr.append(el("td", { class: "num" }, input, src, v?.valide ? el("span", { class: "valide-marque", "aria-label": "validée", text: "✓" }) : null));
+      }
+      tr.append(el("td", { class: "col-ligne" }, etat === "validee"
+        ? el("span", { class: "petit valide-texte", text: "Validée" })
+        : el("button", { type: "button", class: "btn btn-mini", disabled: etat === "vide", onclick: () => validerLigne(c.cle, annees) }, "Valider")));
+      corps.push(tr);
+    }
   }
 
   // Seul le dernier exercice est réclamé ; les deux précédents sont proposés, jamais exigés ; les plus anciens, ignorés
@@ -264,7 +262,7 @@ function dessinerQuestionnaire() {
   const e = ETAPES[etapeQ];
   dessinerSousEtapes();
   const form = $("#questionnaire");
-  remplacer(form,
+  remplacer(form, 
     el("h3", { text: e.titre }), el("p", { class: "petit", text: e.intro }),
     ...e.questions.map((q) => champQuestion(e, q)),
     el("div", { class: "q-nav" },
@@ -462,9 +460,7 @@ function dessinerResultat() {
 
   remplacer(zone, 
     el("div", { class: "resultat-tete" }, tete, el("div", { class: "carte" }, el("h3", { text: "Votre fourchette et son contrôle" }), el("p", { class: "petit", text: "Valeur des titres. Barre : fourchette des multiples du secteur ; point : actif net corrigé, qui sert de contrôle et de plancher." }), ff)),
-    ...(alertes ? [el("details", { class: "carte alertes-repli" }, el("summary", {}, `Points d'attention (${alertes.childElementCount})`), alertes)] : []),
-    el("div", { class: "resultat-deplis" },
-    el("details", { class: "carte calcul-detail" }, el("summary", {}, el("strong", { text: "Comment la fourchette est calculée" })),
+    ...(alertes ? [alertes] : []), reglages,
     el("div", { class: "resultat-detail" },
       el("section", { class: "carte" }, el("h3", { text: "De l'EBE comptable à l'EBE normatif" }), tableau(["Pont EBE", "Montant"], pontLignes)),
       el("section", { class: "carte" }, el("h3", { text: "Multiples et passage à la valeur des titres" }), pontTitres),
