@@ -1,13 +1,11 @@
-// Page d'accueil : champ SIREN partagé (hero, en-tête, fin de l'histoire, relance) branché sur l'estimation express
-// et l'écran de résultat ; vidéos. Textes : src/contenu/landing.json, posés par le Worker dans <script id="textes">
-// (sous-arbre « js ») et <script id="textes-histoire"> (chapitres et dossier).
+// Page d'accueil : champ SIREN partagé (hero, en-tête, relance) branché sur l'estimation express et l'écran de
+// résultat ; vidéo. Textes : src/contenu/landing.json, posés par le Worker dans <script id="textes"> (sous-arbre
+// « js ») et <script id="textes-histoire"> (lu par l'écran de résultat).
 import { creerChampPartage } from "/js/landing/champ-siren.js";
 import { surveillerChamps } from "/js/landing/barres.js";
 import { lancerVideo } from "/js/landing/video.js";
 import { chargerEntreprise } from "/js/landing/estimation.js";
 import { creerResultat } from "/js/landing/resultat.js";
-import { lancerFriseCles } from "/js/landing/frise.js";
-import { creerDossierFinal } from "/js/landing/histoire.js";
 import { lancerApparitions } from "/js/landing/apparitions.js";
 import { lancerScenes, lancerEtapes } from "/js/landing/scenes.js";
 
@@ -40,22 +38,6 @@ $("#btn-autre")?.addEventListener("click", () => {
   barres.actualiser();
   champ.focaliser();
 });
-
-// « Comment ça marche » en onglets ; dossiers de l'exemple fictif dans leur état final (Pourquoi, Confidentialité),
-// construits à l'approche
-const H = lire("textes-histoire");
-lancerFriseCles($("#comment"), { chapitres: H.chapitres || [] });
-// Le dossier est dessiné à 520 px (tailles minimales de texte comprises), puis réduit d'un bloc à sa zone
-const LARGEUR_DOSSIER = 520;
-document.querySelectorAll("[data-dossier-final]").forEach((zone) => new IntersectionObserver(([e], o) => {
-  if (!e.isIntersecting || !H.chapitres) return;
-  o.disconnect();
-  const dossier = creerDossierFinal({ chapitres: H.chapitres, dossierTextes: H.dossier || {}, demo: H.demo });
-  zone.append(dossier);
-  const echelle = () => { if (zone.clientWidth) dossier.style.zoom = String(zone.clientWidth / LARGEUR_DOSSIER); };
-  new ResizeObserver(echelle).observe(zone);
-  echelle();
-}, { rootMargin: "800px 0px" }).observe(zone));
 
 // Liens #comment-1, -2, -3 et #livrables (tuiles du hero) : ancres ordinaires, les étapes sont toutes visibles.
 

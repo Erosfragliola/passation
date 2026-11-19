@@ -199,7 +199,7 @@ $("#fichier-liasse").addEventListener("change", async (ev) => {
 // ================================================================== 2. Votre entreprise
 let reponses = {}, etapeQ = 0, minuterie = null;
 function dessinerSousEtapes() {
-  remplacer($("#sous-etapes"), ...ETAPES.map((e, i) => el("li", {}, el("button", { type: "button", class: "lien-simple", "aria-current": i === etapeQ ? "step" : null, onclick: () => { etapeQ = i; dessinerQuestionnaire(); } }, `${i + 1}. ${e.titre}`))));
+  remplacer($("#sous-etapes"), ...ETAPES.map((e, i) => el("li", {}, el("button", { type: "button", class: "lien-simple", "aria-current": i === etapeQ ? "true" : null, onclick: () => { etapeQ = i; dessinerQuestionnaire(); } }, e.titre))));
 }
 function champQuestion(e, q) {
   const v = reponses[e.cle]?.[q.cle];
@@ -264,8 +264,8 @@ function dessinerQuestionnaire() {
   const e = ETAPES[etapeQ];
   dessinerSousEtapes();
   const form = $("#questionnaire");
-  remplacer(form, 
-    el("h3", { text: `${etapeQ + 1}. ${e.titre}` }), el("p", { class: "petit", text: e.intro }),
+  remplacer(form,
+    el("h3", { text: e.titre }), el("p", { class: "petit", text: e.intro }),
     ...e.questions.map((q) => champQuestion(e, q)),
     el("div", { class: "q-nav" },
       etapeQ > 0 ? el("button", { type: "button", class: "btn btn-contour", onclick: () => { etapeQ--; dessinerQuestionnaire(); form.querySelector("input,textarea")?.focus(); } }, "Précédent") : el("span"),
