@@ -13,7 +13,6 @@ import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
-import { pointsACompleter, libellePoints } from "/js/dossier-parcours.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -86,9 +85,11 @@ const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
 /** Fil des étapes : la liste et l'état fait / à venir sont ceux de la page du dossier (etatParcours) ; l'étape de
  *  l'écran affiché est mise en avant. Le pourcentage est le même que celui de la page du dossier. */
 function dessinerEtapes() {
-  const i = ETAPES.findIndex(([k]) => k === (S.etape === "saisie" ? "comptes" : S.etape));
-  remplacer($("#guide-etapes"), ...ETAPES.map(([k, t], j) => el("li", { class: j < i ? "fait" : j === i ? "actif" : null, "aria-current": j === i ? "step" : null }, el("span", { text: String(j + 1) }), t)));
-  const pct = Math.round(((i + 1) / ETAPES.length) * 100); // l'étape en cours compte : on ne part jamais de zéro
+  const ici = ETAPE_DE_L_ECRAN[S.etape];
+  const etats = Object.fromEntries((S.etat?.etapes || []).map((x) => [x.cle, x.etat]));
+  remplacer($("#guide-etapes"), ...ETAPES_PARCOURS.map(([k, t], j) => el("li", { class: k === ici ? "actif" : etats[k] === "fait" ? "fait" : null, "aria-current": k === ici ? "step" : null },
+    el("span", { text: etats[k] === "fait" && k !== ici ? "✓" : String(j + 1) }), t, el("span", { class: "visuellement-cache", text: etats[k] === "fait" ? " : faite" : "" }))));
+  const pct = S.etat?.avancement ?? 0;
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
 }
@@ -711,21 +712,22 @@ async function redaction() {
 /** Écran final : même état que la page du dossier (etatParcours), donc même statut, même pourcentage, même fourchette
  *  et mêmes tâches. « Prêt » seulement si tout l'indispensable est fait ; sinon « rédigé » et ce qui reste. */
 async function pret() {
-  const [val, memo] = await Promise.all([api(`${base}/valuation`), api(`${base}/documents/memo`)]);
-  const s = val.resultat?.synthese;
-  // Même décompte que la page du dossier (pointsACompleter) ; les remarques de la valorisation sont listées à part
-  const aCompleter = pointsACompleter(memo), remarques = (s?.alertes || []).filter((a) => !/en option/.test(a));
-  remplir(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
-    s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${fourchette(s.bas, s.haut)}` })) : null,
+  const e = (await rafraichirEtat()) || etatParcours(S.dossier, null);
+  const f = ecranFinal(e), v = e.valeur;
+  remplir(...titre(f.titre, f.aide),
+    v.bas != null && v.haut != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: v.etiquette }),
+      el("p", { class: "valeur-centrale chiffre", text: fourchette(v.bas, v.haut) }), el("p", { class: "petit", text: v.base }), v.ecart ? el("p", { class: "petit", text: v.ecart }) : null) : null,
+    f.reste.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: f.resteTitre }),
+      el("ul", {}, ...f.reste.map((t) => el("li", {}, t.pieces
+        ? el("a", { href: `/espace/?dossier=${id}#checklist`, text: t.titre })
+        : el("a", { href: t.href.startsWith("#") ? `/espace/?dossier=${id}${t.href}` : t.href, text: t.titre }), el("span", { class: "petit", text: ` · ${t.detail}` }))))) : null,
     el("div", { class: "guide-docs" },
       ...[["Valorisation détaillée", "Multiples du secteur, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
         ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],
         ["Teaser anonyme", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
         ["Mémorandum d'information", "La présentation complète, en diapositives", `/espace/documents/memo/?dossier=${id}`]]
         .map(([t, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: t }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
-    aCompleter.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: libellePoints(aCompleter.length) }), el("ul", {}, ...aCompleter.slice(0, 12).map((t) => el("li", { text: t })))) : null,
-    remarques.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: "À vérifier dans la valorisation" }), el("ul", {}, ...remarques.map((t) => el("li", { text: t })))) : null,
-    el("p", { class: "petit" }, "Pour affiner (prime de taille, décotes, pondération) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), ". Pour modifier une réponse : ", el("a", { href: `/espace/demarrer/?dossier=${id}&etape=questions`, text: "revoir vos réponses" }), "."));
+    el("p", { class: "petit" }, "Pour affiner (décotes et primes, EBE retenu) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), ". Pour modifier une réponse : ", el("a", { href: `/espace/demarrer/?dossier=${id}&etape=questions`, text: "revoir vos réponses" }), "."));
 }
 
 // ================================================================== Chargement
