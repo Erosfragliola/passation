@@ -51,7 +51,7 @@
     "confidentialite": "Confidentialité",
     "guides": "Guides",
     "questions": "Questions",
-    "espace": "Espace dirigeant",
+    "espace": "Mon dossier",
     "menu_ouvrir": "Ouvrir le menu",
     "telephone": "Nous appeler au {telephone}"
   },
@@ -69,7 +69,7 @@
     "surtitre": "Préparer la cession de votre PME",
     "titre": "Vous avez bâti. Préparez votre *transmission*.",
     "sous_titre": "Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.",
-    "note": "Gratuit, sans compte · Personne n'est averti · Données des registres officiels",
+    "note": "Estimation gratuite, sans compte · Personne n'est averti · Données des registres officiels",
     "note_comptes": "",
     "preuves": {
       "dirigeants": "*{nb_dirigeants}* dirigeants accompagnés",
@@ -101,11 +101,11 @@
       "titre": "Votre première estimation",
       "fictif": "exemple fictif",
       "code": "Projet Chêne",
-      "valeur": "2,1 – 2,8 M€",
+      "valeur": "1,8 – 2,4 M€",
       "pied": "Calculée en 30 secondes depuis les comptes publics"
     },
     "coches": [
-      "Gratuit, sans compte",
+      "Estimation gratuite, sans compte",
       "Personne n’est averti",
       "Registres officiels"
     ],
@@ -121,7 +121,7 @@
       "code": {
         "titre": "Votre nom de code",
         "code": "Projet Chêne",
-        "valeur": "2,1 – 2,8 M€",
+        "valeur": "1,8 – 2,4 M€",
         "fictif": "exemple fictif"
       },
       "docs": [
@@ -296,8 +296,8 @@
       "fictif": "exemple fictif",
       "siren": {
         "saisie": "Menuiserie Durand & Fils",
-        "libelle": "Valeur d'entreprise estimée",
-        "valeur": "1,4 – 2,4 M€"
+        "libelle": "Première fourchette",
+        "valeur": "1,8 – 2,4 M€"
       },
       "chiffres": {
         "lignes": [
@@ -307,16 +307,16 @@
           },
           {
             "poste": "EBE",
-            "montant": "380 k€"
+            "montant": "300 k€"
           },
           {
-            "poste": "Endettement net",
-            "montant": "20 k€"
+            "poste": "Trésorerie nette",
+            "montant": "900 k€"
           }
         ],
-        "libelle": "Valeur de vos titres",
-        "centrale": "1,4 – 2,4 M€",
-        "bas": "1,4 M€",
+        "libelle": "Valeur des titres",
+        "fourchette": "1,8 – 2,4 M€",
+        "bas": "1,8 M€",
         "haut": "2,4 M€"
       },
       "documents": [
@@ -619,9 +619,9 @@
   },
   "relance": {
     "titre": "Et si on regardait *votre entreprise* ?",
-    "texte": "C’est gratuit, sans compte, et vous aurez en 30 secondes une première idée de sa valeur.",
+    "texte": "L’estimation est gratuite et sans compte : en 30 secondes, une première idée de sa valeur.",
     "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
-    "tampon": "Gratuit · sans compte · 30 secondes ·",
+    "tampon": "Estimation gratuite · sans compte · 30 secondes ·",
     "livrables_titre": "Ce que contient votre dossier",
     "livrables": [
       "Une page anonyme, sous nom de code, pour intéresser des repreneurs.",
@@ -700,8 +700,8 @@
       ],
       "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
       "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
-      "dossier_bouton": "Voir mon dossier",
-      "dossier_note": "Gratuit · un code par e-mail · aucun mot de passe",
+      "dossier_bouton": "Ouvrir mon dossier",
+      "dossier_note": "Votre dossier : gratuit, un code par e-mail, aucun mot de passe",
       "tampon": "Confidentiel",
       "profil": {
         "secteur": "Secteur",

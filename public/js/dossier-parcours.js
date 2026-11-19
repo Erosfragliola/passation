@@ -40,6 +40,21 @@ export function dateCourte(secondes) {
   return new Date(secondes * 1000).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
+/** Points « À compléter » du mémorandum, un par élément signalé dans un chapitre : « Équipe : Nombre de salariés ».
+ *  Seul décompte du travail restant, partagé par la page du dossier et l'écran final du parcours guidé. */
+export function pointsACompleter(memo) {
+  return (memo?.sections || []).flatMap((s) => (s.a_completer || []).map((t) => `${s.titre} : ${t}`));
+}
+/** « 1 point à compléter », « 4 points à compléter ». */
+export const libellePoints = (n) => `${n} ${pluriel(n, "point", "points")} à compléter`;
+
+/** Une partie du teaser compte comme rédigée si elle a un vrai texte (ni vide, ni « À compléter »). */
+const partieRedigee = (contenu) => { const t = String(contenu ?? "").trim(); return t !== "" && !/^à compléter\.?$/i.test(t); };
+/** Parties du teaser encore vides (GET …/documents/teaser). Toutes sont indispensables : la page est courte. */
+export function partiesTeaserVides(teaser) {
+  return (teaser?.teaser?.sections || []).filter((s) => !partieRedigee(s.contenu));
+}
+
 /** Lecture du mémorandum : chapitres non rédigés, éléments « À compléter », photos. null si non rédigé. */
 export function lectureMemo(memo) {
   if (!memo) return null;
@@ -48,7 +63,7 @@ export function lectureMemo(memo) {
   return {
     nonRedigees: sections.filter((s) => !s.redigee),
     aCompleter,
-    nbACompleter: aCompleter.reduce((n, s) => n + s.a_completer.length, 0),
+    nbACompleter: pointsACompleter(memo).length,
     photos: (memo.photos || []).length,
   };
 }
@@ -105,8 +120,9 @@ export function explicationEcart(est, v) {
 /**
  * @param d  détail du dossier (GET /api/dossiers/:id)
  * @param memo  réponse de GET …/documents/memo, ou null si le mémorandum n'est pas rédigé
+ * @param teaser  réponse de GET …/documents/teaser, ou null si le teaser n'est pas rédigé
  */
-export function etatParcours(d, memo = null) {
+export function etatParcours(d, memo = null, teaser = null) {
   const id = d.id, p = d.parcours || {}, docs = d.documents || {};
   const ex = p.exercices || { dernier: null, dernier_complet: false, recommandes: [], recommandes_manquants: [], anciens: [] };
   const q = p.questions || { faits: 0, total: 0, pct: 0 };
@@ -114,6 +130,9 @@ export function etatParcours(d, memo = null) {
   const v = p.valorisation && Number.isFinite(p.valorisation.bas) && Number.isFinite(p.valorisation.haut) ? p.valorisation : null;
   const m = docs.memo ? lectureMemo(memo) : null;
   const memoARelire = Boolean(m && (m.nonRedigees.length || m.nbACompleter));
+  // Un document n'est « prêt » que s'il a du contenu : un teaser ou un mémorandum vide est « incomplet »
+  const teaserVides = docs.teaser && teaser ? partiesTeaserVides(teaser) : [];
+  const nbPartiesTeaser = teaser?.teaser?.sections?.length || 0;
   const fournies = new Set((d.checklist || []).filter((k) => CHECKLIST.some((g) => g.items.some(([c]) => c === k)))).size;
   const manquantes = NB_PIECES - fournies;
 
@@ -168,10 +187,9 @@ export function etatParcours(d, memo = null) {
     const n = m.nonRedigees.length;
     taches.push({ cle: "chapitres", titre: `Rédiger ${n} ${pluriel(n, "chapitre", "chapitres")} du mémorandum`, detail: `${pluriel(n, "Chapitre", "Chapitres")} : ${m.nonRedigees.map((s) => s.court || s.titre).join(", ")}`, action: "Rédiger", href: liens.memo });
   }
-  if (fait.chiffres && ex.recommandes_manquants?.length) {
-    const annees = [...ex.recommandes_manquants].sort((a, b) => b - a);
-    taches.push({ cle: "exercices", facultatif: true, titre: `Ajouter ${annees.join(" et ")} pour fiabiliser la fourchette (facultatif)`,
-      detail: `La fourchette repose déjà sur ${ex.dernier} ; les exercices précédents la confirment`, action: "Ajouter", href: `${liens.demarrer}&etape=exercice` });
+  if (teaserVides.length) {
+    const n = teaserVides.length;
+    taches.push({ cle: "teaser", titre: `Rédiger ${n} ${pluriel(n, "partie", "parties")} du teaser`, detail: `${pluriel(n, "Partie vide", "Parties vides")} : ${teaserVides.map((x) => x.titre).join(", ")}`, action: "Rédiger", href: liens.teaser });
   }
   if (m && m.photos < 2) {
     taches.push(m.photos === 0
@@ -180,7 +198,7 @@ export function etatParcours(d, memo = null) {
   }
   if (m?.nbACompleter) {
     const n = m.nbACompleter, chap = m.aCompleter.map((s) => `« ${s.court || s.titre} »`);
-    taches.push({ cle: "a-completer", facultatif: true, titre: `Compléter ${n} ${pluriel(n, "élément", "éléments")} du mémorandum`, detail: `Indiqués « À compléter » : ${chap.slice(0, 3).join(", ")}${chap.length > 3 ? "…" : ""}`, action: "Compléter", href: `${liens.memo}#section-${m.aCompleter[0].cle}` });
+    taches.push({ cle: "a-completer", titre: `Compléter ${n} ${pluriel(n, "point", "points")} du mémorandum`, detail: `Indiqués « À compléter » : ${chap.slice(0, 3).join(", ")}${chap.length > 3 ? "…" : ""}`, action: "Compléter", href: `${liens.memo}#section-${m.aCompleter[0].cle}` });
   }
   if (manquantes > 0) {
     taches.push({ cle: "pieces", facultatif: true, titre: fournies === 0 ? "Déposer vos premières pièces" : `Déposer ${manquantes} ${pluriel(manquantes, "pièce manquante", "pièces manquantes")}`, detail: `${fournies} ${pluriel(fournies, "pièce", "pièces")} sur ${NB_PIECES}`, action: "Déposer", href: "#checklist", pieces: true });
@@ -192,27 +210,34 @@ export function etatParcours(d, memo = null) {
     ? { texte: affichees[0].titre, href: affichees[0].href, cle: affichees[0].cle, pieces: Boolean(affichees[0].pieces) }
     : { texte: "Relire et envoyer votre dossier", href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
 
-  // ---------- Avancement : 100 % si et seulement si tout l'indispensable est fait
-  const brut = avancement({
-    estimation_express: d.estimation?.statut === "ok", dernier_exercice: fait.chiffres, questions_pct: q.pct,
-    valorisation_approfondie: Boolean(v), documents: ["datapack", "teaser", "memo"].filter((k) => docs[k]).length,
-  }).global;
-  const pct = pret ? 100 : Math.min(99, brut);
+  // ---------- Action principale
+  const action = {
+    chiffres: { texte: "Continuer : confirmer vos chiffres", href: liens.demarrer },
+    reponses: { texte: restantes === 1 ? "Continuer : la dernière question" : `Continuer : ${restantes} questions restantes`, href: `${liens.demarrer}&etape=questions` },
+    redaction: { texte: "Continuer : lancer la rédaction", href: `${liens.demarrer}&etape=redaction` },
+    relecture: memoARelire ? { texte: "Continuer : relire le mémorandum", href: liens.memo }
+      : teaserVides.length ? { texte: "Continuer : compléter le teaser", href: liens.teaser }
+      : { texte: "Continuer : relire et envoyer votre dossier", href: `${liens.demarrer}&etape=pret` },
+  }[actuelle];
 
   // ---------- Documents
   const venir = (detail) => ({ etat: "a-venir", detail, actions: [] });
   const documents = [
-    { cle: "valorisation", titre: "Valorisation", ...(v
-      ? { etat: "pret", detail: p.valorisation_le ? `Mise à jour le ${dateCourte(p.valorisation_le)}` : "Prête", actions: [{ libelle: "Ouvrir", href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: "Excel", href: liens.datapack, telecharger: true }] }
-      : venir(fait.chiffres ? "Calculée à l'étape Rédaction, avec vos réponses." : "Se débloque avec vos chiffres et vos réponses.")) },
-    { cle: "datapack", titre: "Datapack Excel", ...(p.exercices_complets
+    { cle: "valorisation", titre: "Valorisation", ...(valo
+      ? { etat: "pret", detail: p.valorisation_le ? `Mise à jour le ${dateCourte(p.valorisation_le)}` : "Prête", actions: [{ libelle: "Ouvrir", href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: "Télécharger l'Excel", href: liens.datapack, telecharger: true }] }
+      : venir(exo ? "Calculée à l'étape Rédaction, avec vos réponses." : "Se débloque avec vos chiffres et vos réponses.")) },
+    { cle: "datapack", titre: "Datapack Excel", ...(exo
       ? { etat: "pret", detail: docs.datapack ? `Mis à jour le ${dateCourte(docs.datapack.le)}${docs.datapack.version > 1 ? ` · version ${docs.datapack.version}` : ""}` : "Préparé à partir de vos chiffres confirmés", actions: [{ libelle: "Télécharger l'Excel", href: liens.datapack, principal: true, telecharger: true }] }
       : venir("Se débloque dès qu'un exercice est confirmé.")) },
     { cle: "teaser", titre: "Teaser anonyme", ...(docs.teaser
-      ? { etat: "pret", detail: `Rédigé le ${dateCourte(docs.teaser.le)}`, actions: [{ libelle: "Ouvrir", href: liens.teaser, principal: true }, { libelle: "PDF", href: `${liens.teaser}&imprimer=1` }] }
+      ? teaserVides.length
+        ? { etat: "incomplet", detail: `${teaserVides.length} ${pluriel(teaserVides.length, "partie", "parties")} sur ${nbPartiesTeaser} à rédiger`, actions: [{ libelle: "Rédiger", href: liens.teaser, principal: true }] }
+        : { etat: "pret", detail: `Rédigé le ${dateCourte(docs.teaser.le)}`, actions: [{ libelle: "Ouvrir", href: liens.teaser, principal: true }, { libelle: "Télécharger en PDF", href: `${liens.teaser}&imprimer=1` }] }
       : venir("Rédigé à l'étape Rédaction, après vos réponses.")) },
     { cle: "memo", titre: "Mémorandum", ...(docs.memo
-      ? { etat: memoARelire ? "a-relire" : "pret", detail: `Rédigé le ${dateCourte(docs.memo.le)}${m?.nbACompleter ? ` · ${m.nbACompleter} ${pluriel(m.nbACompleter, "élément", "éléments")} à compléter` : ""}`, actions: [{ libelle: "Ouvrir", href: liens.memo, principal: true }, { libelle: "PDF", href: `${liens.memo}&imprimer=1` }] }
+      ? m?.nonRedigees.length
+        ? { etat: "incomplet", detail: `${m.nonRedigees.length} ${pluriel(m.nonRedigees.length, "chapitre", "chapitres")} sur ${(memo?.sections || []).length} à rédiger`, actions: [{ libelle: "Rédiger", href: liens.memo, principal: true }] }
+        : { etat: memoARelire ? "a-relire" : "pret", detail: `Rédigé le ${dateCourte(docs.memo.le)}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: "Ouvrir", href: liens.memo, principal: true }, { libelle: "Télécharger en PDF", href: `${liens.memo}&imprimer=1` }] }
       : venir("Rédigé à l'étape Rédaction, après vos réponses.")) },
   ];
 

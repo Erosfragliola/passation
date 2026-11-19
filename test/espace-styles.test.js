@@ -47,7 +47,7 @@ describe("jargon : libellés montrés au dirigeant", () => {
   it("« EBE publié » devient « EBE des comptes publics » à l'écran ; le libellé de l'Excel ne change pas", () => {
     const ebe = CHAMPS.find((c) => c.cle === "ebe");
     expect(libelleEcran(ebe)).toBe("EBE des comptes publics");
-    expect(aideEcran(ebe)).toMatch(/comptes publics \(registre INPI\)/);
+    expect(aideEcran(ebe)).toMatch(/comptes publics \(registre national des entreprises\)/);
     expect(ebe.libelle).toBe("EBE publié"); // datapack Excel (document des repreneurs) inchangé
   });
   it("les autres champs gardent leur libellé à l'écran", () => {

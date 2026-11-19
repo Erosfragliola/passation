@@ -11,7 +11,7 @@ export const CHAMPS = [
   { cle: "impots_taxes", groupe: "resultat", libelle: "Impôts et taxes", aide: "Hors impôt sur les sociétés" },
   { cle: "charges_personnel", groupe: "resultat", libelle: "Salaires et charges sociales", aide: "Salaires et traitements + charges sociales", obligatoire: true },
   { cle: "ebe", groupe: "resultat", libelle: "EBE publié", aide: "Seulement si le détail des charges n'est pas disponible (comptes publics INPI)",
-    ecran: "EBE des comptes publics", aideEcran: "Seulement si vous ne détaillez pas vos charges : repris des comptes publics (registre INPI)" },
+    ecran: "EBE des comptes publics", aideEcran: "Seulement si vous ne détaillez pas vos charges : repris des comptes publics (registre national des entreprises)" },
   { cle: "dotations_amortissements", groupe: "resultat", libelle: "Dotations aux amortissements", aide: "Dotations aux amortissements sur immobilisations" },
   { cle: "resultat_exploitation", groupe: "resultat", libelle: "Résultat d'exploitation", aide: "Contrôle de cohérence" },
   { cle: "resultat_net", groupe: "resultat", libelle: "Résultat net", aide: "Bénéfice ou perte de l'exercice" },

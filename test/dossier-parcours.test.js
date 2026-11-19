@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  etatParcours, ecranFinal, explicationEcart, alertesDirigeant, resumeValorisation, lectureMemo, listeAnnees, dateCourte,
-  NB_PIECES, ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, ETIQUETTE_TITRES,
-} from "../public/js/dossier-parcours.js";
-import { NB_QUESTIONS } from "../public/js/parcours.js";
-import LANDING from "../src/contenu/landing.json";
+import { etatParcours, lectureMemo, dateCourte, NB_PIECES, ETAPES_PARCOURS, pointsACompleter, libellePoints, partiesTeaserVides } from "../public/js/dossier-parcours.js";
 
 // Dossiers entièrement fictifs. Les valeurs attendues sont comptées à la main à partir de ces données, pas tirées du code.
 const ID = "00000000-0000-4000-8000-000000000001";
@@ -170,9 +165,9 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     expect(e.pret).toBe(true);
     expect(e.avancement).toBe(100);
   });
-  it("À faire : photo (0 photo), 2 éléments du chapitre Équipe, 21 − 17 = 4 pièces, tous facultatifs", () => {
-    expect(e.taches.map((t) => t.titre)).toEqual(["Ajouter une photo de l'atelier ou des produits", "Compléter 2 éléments du mémorandum", "Déposer 4 pièces manquantes"]);
-    expect(e.taches.every((t) => t.facultatif)).toBe(true);
+  it("action principale : relire le mémorandum (2 éléments à compléter)", () => expect(e.action).toEqual({ texte: "Continuer : relire le mémorandum", href: `/espace/documents/memo/?dossier=${ID}` }));
+  it("À faire : photo (0 photo), 2 éléments du chapitre Équipe, 21 − 17 = 4 pièces", () => {
+    expect(e.taches.map((t) => t.titre)).toEqual(["Ajouter une photo de l'atelier ou des produits", "Compléter 2 points du mémorandum", "Déposer 4 pièces manquantes"]);
     expect(e.taches[1].detail).toBe("Indiqués « À compléter » : « Équipe »");
     expect(e.taches[1].href).toBe(`/espace/documents/memo/?dossier=${ID}#section-organisation`);
     expect(e.taches[0].href).toBe(`/espace/documents/memo/?dossier=${ID}#donnees`);
@@ -182,7 +177,7 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
   });
   it("mémorandum à relire, les trois autres prêts, avec leurs dates", () => {
     expect(e.documents.map((x) => x.etat)).toEqual(["pret", "pret", "pret", "a-relire"]);
-    expect(e.documents[3].detail).toBe("Rédigé le 18/11/2026 · 2 éléments à compléter");
+    expect(e.documents[3].detail).toBe("Rédigé le 18/11/2026 · 2 points à compléter");
     expect(e.documents[1].detail).toBe("Mis à jour le 18/11/2026 · version 2");
     expect(e.documents[0].detail).toBe("Mise à jour le 18/11/2026");
     expect(e.documents[3].actions.map((a) => a.href)).toEqual([`/espace/documents/memo/?dossier=${ID}`, `/espace/documents/memo/?dossier=${ID}&imprimer=1`]);
@@ -327,4 +322,46 @@ describe("lecture du mémorandum", () => {
     expect(l.photos).toBe(1);
   });
   it("mémorandum absent → null", () => expect(lectureMemo(null)).toBeNull());
+});
+
+// Audit, points 15 et 16 : un document vide n'est pas « prêt » ; un seul décompte des points à compléter.
+describe("teaser et mémorandum vides ou incomplets", () => {
+  const d = dossier({ documents: tousDocs, checklist: CHECKLIST_COMPLETE,
+    parcours: { exercices_complets: 3, questionnaire: { faits: 15, total: 15, pct: 100 }, valorisation: valo } });
+  const memoComplet = { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("organisation", "Équipe")] };
+  const teaser = (...contenus) => ({ teaser: { sections: ["accroche", "activite", "chiffres", "atouts", "operation"].map((cle, i) => ({ cle, titre: cle, contenu: contenus[i] ?? "" })) } });
+  const plein = teaser("Texte", "Texte", "Texte", "Texte", "Texte");
+  it("teaser aux 5 parties vides → incomplet, 5 parties sur 5 à rédiger, action Rédiger", () => {
+    const e = etatParcours(d, memoComplet, teaser());
+    expect(e.documents[2]).toMatchObject({ etat: "incomplet", detail: "5 parties sur 5 à rédiger" });
+    expect(e.documents[2].actions).toEqual([{ libelle: "Rédiger", href: `/espace/documents/teaser/?dossier=${ID}`, principal: true }]);
+  });
+  it("une partie « À compléter » et une partie d'espaces comptent comme vides : 2 sur 5", () => {
+    const e = etatParcours(d, memoComplet, teaser("Texte", "À compléter", "   ", "Texte", "Texte"));
+    expect(e.documents[2].detail).toBe("2 parties sur 5 à rédiger");
+  });
+  it("teaser aux 5 parties rédigées → prêt", () => expect(etatParcours(d, memoComplet, plein).documents[2].etat).toBe("pret"));
+  it("teaser incomplet : une tâche « Rédiger 2 parties du teaser » et « Continuer » mène au teaser, pas « Tout est fait »", () => {
+    const e = etatParcours(d, memoComplet, teaser("Texte", "Texte", "Texte", "", ""));
+    expect(e.taches).toEqual([{ cle: "teaser", titre: "Rédiger 2 parties du teaser", detail: "Parties vides : atouts, operation", action: "Rédiger", href: `/espace/documents/teaser/?dossier=${ID}` }]);
+    expect(e.action).toEqual({ texte: "Continuer : compléter le teaser", href: `/espace/documents/teaser/?dossier=${ID}` });
+  });
+  it("mémorandum créé mais 2 chapitres sur 3 non rédigés → incomplet, pas « à relire »", () => {
+    const e = etatParcours(d, { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("marche", "Marché", { redigee: false }), section("clients", "Clients", { redigee: false })] }, plein);
+    expect(e.documents[3]).toMatchObject({ etat: "incomplet", detail: "2 chapitres sur 3 à rédiger" });
+  });
+  it("partiesTeaserVides : rien à lire → aucune partie", () => expect(partiesTeaserVides(null)).toEqual([]));
+});
+
+describe("décompte unique des points à compléter", () => {
+  // 2 points dans « Équipe » + 1 dans « Marché » = 3, comptés une fois chacun
+  const memo = { sections: [section("organisation", "Équipe", { a_completer: ["Nombre de salariés", "Date d'arrivée"] }), section("marche", "Marché", { a_completer: ["Taille du marché"] }), section("synthese", "Synthèse")] };
+  it("liste « chapitre : point », dans l'ordre des chapitres", () => {
+    expect(pointsACompleter(memo)).toEqual(["Équipe : Nombre de salariés", "Équipe : Date d'arrivée", "Marché : Taille du marché"]);
+  });
+  it("même nombre pour la page du dossier (lectureMemo) et l'écran final", () => expect(lectureMemo(memo).nbACompleter).toBe(pointsACompleter(memo).length));
+  it("même formulation", () => {
+    expect(libellePoints(1)).toBe("1 point à compléter");
+    expect(libellePoints(4)).toBe("4 points à compléter");
+  });
 });

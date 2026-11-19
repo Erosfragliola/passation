@@ -24,7 +24,7 @@ describe("réponses proposées", () => {
   it("un dossier sans site : propositions sourcées, aucune distinction inventée", () => {
     const p = propositions({ entreprise: menuiserie, tcam: 0.067, reponses: {} });
     expect(p.activite.source).toBe(SOURCES_PROPOSITION.registres);
-    expect(p.activite.valeurs["activite.description"]).toMatch(/^Entreprise du secteur « Construction » créée en 1995 à Nantes/);
+    expect(p.activite.valeurs["activite.description"]).toMatch(/^Entreprise du secteur « Travaux de construction spécialisés » créée en 1995 à Nantes/);
     expect(p.activite.a_completer).toBe(true);                                // simple amorce : jamais validée d'un clic
     expect(p.distinctions).toBeUndefined();                                    // sans site, rien n'est deviné
     expect(p.equipe.valeurs["dirigeant.encadrement"]).toBe("Oui, un ou plusieurs responsables"); // tranche 12 : 20 à 49 salariés

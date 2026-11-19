@@ -21,6 +21,8 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
+/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const fmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
 const euros = (v) => (v == null || !Number.isFinite(v) ? "–" : `${fmt.format(Math.round(v))} €`);
 const court = (v) => {
@@ -79,7 +81,7 @@ window.addEventListener("popstate", montrer);
 // précédents facultatifs, les plus anciens pour information. Rien n'entre dans le calcul sans validation.
 let chiffres = null;
 let anneeCourante = null;
-const SOURCE = { inpi: "comptes publics (registre INPI)", liasse: "lu dans votre liasse" };
+const SOURCE = { inpi: "montant des comptes publics (registre national des entreprises)", liasse: "montant lu dans votre PDF" }; // formulation de la légende de main
 const DETAIL = new Set(["achats_consommes", "charges_externes", "charges_personnel"]);
 const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-chiffres", "aria-label": "Qu'est-ce que l'EBE ?" }, "?"),
   el("span", { role: "tooltip", id: "aide-ebe-chiffres", text: AIDE_EBE }));
@@ -100,11 +102,11 @@ function dessinerChiffres() {
   const role = (a) => (a === att.dernier ? "indispensable" : att.recommandes.includes(a) ? "facultatif" : "information");
   if (!annees.includes(anneeCourante)) anneeCourante = att.dernier ?? annees.at(-1) ?? null;
   const manq = (a) => chiffres.manquants?.[a] || [];
-  $("#choix-annee").replaceChildren(el("span", { class: "petit", text: "Exercice :" }), ...annees.map((a) => el("button", { type: "button", class: "annee", "aria-pressed": String(a === anneeCourante),
+  remplacer($("#choix-annee"), el("span", { class: "petit", text: "Exercice :" }), ...annees.map((a) => el("button", { type: "button", class: "annee", "aria-pressed": String(a === anneeCourante),
     onclick: () => { anneeCourante = a; dessinerChiffres(); } }, `${a}`, el("small", { text: ` · ${role(a)}${manq(a).length ? "" : " ✓"}` }))));
   const zone = $("#chiffres-annee");
   if (anneeCourante == null) {
-    zone.replaceChildren(el("p", { class: "carte vide", text: "Aucun exercice pour l'instant : ajoutez l'année de votre dernier exercice clos, ou déposez votre liasse." }));
+    remplacer(zone, el("p", { class: "carte vide", text: "Aucun exercice pour l'instant : ajoutez l'année de votre dernier exercice clos, ou déposez votre liasse." }));
   } else {
     const a = anneeCourante, l = chiffres.exercices[a] || {};
     const detail = [...DETAIL].some((k) => l[k]?.valeur != null);
@@ -113,7 +115,7 @@ function dessinerChiffres() {
       ...CHAMPS.filter((c) => c.groupe === groupe && principal(c) && !(DETAIL.has(c.cle) && !detail && l.ebe?.valeur != null)).map((c) => ligneChiffre(c, a)));
     const facultatifs = CHAMPS.filter((c) => !principal(c));
     const remplis = facultatifs.filter((c) => l[c.cle]?.valeur != null).length;
-    zone.replaceChildren(
+    remplacer(zone, 
       el("div", { class: "chiffres-grille" }, bloc("resultat", `Ce que l'entreprise gagne (${a})`), bloc("bilan", `Ce qu'elle possède et doit (fin ${a})`)),
       el("details", { class: "chiffres-facultatifs" }, el("summary", {}, `Lignes facultatives (${facultatifs.length}${remplis ? `, dont ${remplis} remplie${remplis > 1 ? "s" : ""}` : ""})`),
         el("div", { class: "chiffres-grille" }, ...facultatifs.map((c) => ligneChiffre(c, a)))),
@@ -197,7 +199,7 @@ $("#fichier-liasse").addEventListener("change", async (ev) => {
 // ================================================================== 2. Votre entreprise
 let reponses = {}, etapeQ = 0, minuterie = null;
 function dessinerSousEtapes() {
-  $("#sous-etapes").replaceChildren(...ETAPES.map((e, i) => el("li", {}, el("button", { type: "button", class: "lien-simple", "aria-current": i === etapeQ ? "true" : null, onclick: () => { etapeQ = i; dessinerQuestionnaire(); } }, e.titre))));
+  remplacer($("#sous-etapes"), ...ETAPES.map((e, i) => el("li", {}, el("button", { type: "button", class: "lien-simple", "aria-current": i === etapeQ ? "step" : null, onclick: () => { etapeQ = i; dessinerQuestionnaire(); } }, `${i + 1}. ${e.titre}`))));
 }
 function champQuestion(e, q) {
   const v = reponses[e.cle]?.[q.cle];
@@ -262,8 +264,8 @@ function dessinerQuestionnaire() {
   const e = ETAPES[etapeQ];
   dessinerSousEtapes();
   const form = $("#questionnaire");
-  form.replaceChildren(
-    el("h3", { text: e.titre }), el("p", { class: "petit", text: e.intro }),
+  remplacer(form, 
+    el("h3", { text: `${etapeQ + 1}. ${e.titre}` }), el("p", { class: "petit", text: e.intro }),
     ...e.questions.map((q) => champQuestion(e, q)),
     el("div", { class: "q-nav" },
       etapeQ > 0 ? el("button", { type: "button", class: "btn btn-contour", onclick: () => { etapeQ--; dessinerQuestionnaire(); form.querySelector("input,textarea")?.focus(); } }, "Précédent") : el("span"),
@@ -294,7 +296,7 @@ async function calculer() {
   try {
     dernier = await api(`${base}/valuation`, { method: "POST" });
     dessinerResultat();
-  } catch (e) { zone.replaceChildren(el("p", { class: "message-carte erreur", text: e.message })); }
+  } catch (e) { remplacer(zone, el("p", { class: "message-carte erreur", text: e.message })); }
   finally { zone.removeAttribute("aria-busy"); }
 }
 
@@ -355,7 +357,7 @@ function dessinerResultat() {
   const { resultat: r, hypotheses: H, entree } = dernier;
   const zone = $("#resultat");
   if (r?.statut === "hypotheses_invalides") {
-    zone.replaceChildren(el("div", { class: "carte vide" }, el("p", { text: "Certains réglages sont hors des bornes admises :" }),
+    remplacer(zone, el("div", { class: "carte vide" }, el("p", { text: "Certains réglages sont hors des bornes admises :" }),
       el("ul", {}, ...r.alertes.map((t) => el("li", { text: t }))),
       (r.erreurs || []).some((x) => x.champ.startsWith("reglages")) ? el("button", { type: "button", class: "btn btn-noir", onclick: async () => {
         if (!confirm("Rétablir les réglages par défaut (EBE retenu, décotes et primes) ?")) return;
@@ -367,7 +369,7 @@ function dessinerResultat() {
     return;
   }
   if (!r || r.statut !== "ok") {
-    zone.replaceChildren(el("div", { class: "carte vide" }, el("p", { text: "Validez un exercice complet (chiffre d'affaires, charges et bilan) pour obtenir une valorisation." }),
+    remplacer(zone, el("div", { class: "carte vide" }, el("p", { text: "Validez un exercice complet (chiffre d'affaires, charges et bilan) pour obtenir une valorisation." }),
       ...(r?.alertes || []).map((t) => el("p", { class: "petit", text: t })), el("a", { class: "btn btn-noir", href: "#chiffres" }, "Compléter mes chiffres")));
     $("#etat-valorisation").textContent = "";
     return;
@@ -458,7 +460,7 @@ function dessinerResultat() {
   const sens = r.sensibilites;
   const lignesSens = sens.multiple ? [{ cellules: ["Multiple d'EBE retenu, un point de moins / de plus", court(sens.multiple.moins), court(sens.multiple.plus)] }] : [];
 
-  zone.replaceChildren(
+  remplacer(zone, 
     el("div", { class: "resultat-tete" }, tete, el("div", { class: "carte" }, el("h3", { text: "Votre fourchette et son contrôle" }), el("p", { class: "petit", text: "Valeur des titres. Barre : fourchette des multiples du secteur ; point : actif net corrigé, qui sert de contrôle et de plancher." }), ff)),
     ...(alertes ? [el("details", { class: "carte alertes-repli" }, el("summary", {}, `Points d'attention (${alertes.childElementCount})`), alertes)] : []),
     el("div", { class: "resultat-deplis" },

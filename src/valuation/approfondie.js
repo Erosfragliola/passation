@@ -263,7 +263,11 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
     return poids.multiples * m + poids.dcf * d;
   };
   const synthese = { bas: comb("bas"), central: comb("central"), haut: comb("haut"), ponderation: poids, plancher_ancc: anc.valeur, alertes };
-  if (synthese.central != null && synthese.central < anc.valeur) alertes.push("La valeur centrale est inférieure à l'actif net corrigé : l'ANCC sert de plancher de négociation.");
+  // Information, sans sigle : toute la fourchette (son haut compris) est sous l'actif net corrigé calculé ci-dessus
+  if (synthese.haut != null && Number.isFinite(anc.valeur) && synthese.haut < anc.valeur) {
+    const euros = `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(Math.round(anc.valeur))} €`;
+    alertes.push(`Votre fourchette est inférieure à l'actif net corrigé de l'entreprise (${euros}). Un repreneur paie rarement moins que cet actif : à examiner avec votre conseil.`);
+  }
 
   // Sensibilités : multiple ± 1x, CMPC ± 1 pt, croissance terminale ± 0,5 pt (valeur des titres)
   const sensibilites = {};

@@ -8,6 +8,8 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
+/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
   const r = await fetch(chemin, { ...options, headers: { "content-type": "application/json" } });
@@ -95,7 +97,7 @@ function rendu(d) {
   zone.hidden = false;
   const s = Object.fromEntries(d.teaser.sections.map((x) => [x.cle, x]));
   const v = d.visuels || {};
-  zone.replaceChildren(
+  remplacer(zone, 
     el("header", { class: "doc-tete" },
       el("span", { class: "doc-marque", text: "Passation" }),
       el("span", { class: "doc-confidentiel", text: "Strictement confidentiel" })),
@@ -140,7 +142,7 @@ function editer(bloc, s) {
     try { rendu(await api(`${base}/sections/${s.cle}`, { method: "PUT", body: JSON.stringify({ contenu: ta.value }) })); message("Modification enregistrée."); }
     catch (e) { message(e.message + detailProblemes(e.problemes), true); enregistrer.disabled = false; }
   });
-  bloc.replaceChildren(el("h3", { text: s.titre }), ta, el("div", { class: "doc-edition" }, enregistrer, el("button", { type: "button", class: "lien-simple", onclick: charger }, "Annuler")));
+  remplacer(bloc, el("h3", { text: s.titre }), ta, el("div", { class: "doc-edition" }, enregistrer, el("button", { type: "button", class: "lien-simple", onclick: charger }, "Annuler")));
   ta.focus();
 }
 $("#btn-generer").addEventListener("click", async (ev) => {
