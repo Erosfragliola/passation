@@ -1190,3 +1190,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 }
 @media print { .tsr-courbe { max-height: 32mm; } .teaser { font-size: 10.5pt; } }
 .teaser .doc-section p, .teaser .doc-section li { text-align: justify; hyphens: auto; }
+
+/* Aide sous « Télécharger en PDF » : le bouton ouvre la fenêtre d'impression du navigateur (audit, point 10) */
+.aide-pdf { flex-basis: 100%; margin: 4px 0 0; font-size: 13px; color: var(--pierre-texte); }
+#btn-imprimer[hidden] ~ .aide-pdf { display: none; }

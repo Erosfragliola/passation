@@ -51,7 +51,7 @@
     "confidentialite": "Confidentialité",
     "guides": "Guides",
     "questions": "Questions",
-    "espace": "Espace dirigeant",
+    "espace": "Mon dossier",
     "menu_ouvrir": "Ouvrir le menu",
     "telephone": "Nous appeler au {telephone}"
   },
@@ -701,7 +701,7 @@
       ],
       "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
       "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
-      "dossier_bouton": "Voir mon dossier",
+      "dossier_bouton": "Ouvrir mon dossier",
       "dossier_note": "Gratuit · un code par e-mail · aucun mot de passe",
       "tampon": "Confidentiel",
       "profil": {

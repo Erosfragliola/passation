@@ -553,7 +553,7 @@ async function redaction() {
       }
     }],
     ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
-    ["teaser", "Teaser anonymisé", () => api(`${base}/documents/teaser`, { method: "POST" })],
+    ["teaser", "Teaser anonyme", () => api(`${base}/documents/teaser`, { method: "POST" })],
     ...SECTIONS.map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
   ];
   const libelle = Object.fromEntries(taches.map(([k, t]) => [k, t]));
@@ -638,7 +638,7 @@ async function pret() {
     el("div", { class: "guide-docs" },
       ...[["Valorisation détaillée", "Méthodes, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
         ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],
-        ["Teaser anonymisé", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
+        ["Teaser anonyme", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
         ["Mémorandum d'information", "La présentation complète, en diapositives", `/espace/documents/memo/?dossier=${id}`]]
         .map(([t, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: t }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
     aCompleter.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: libellePoints(aCompleter.length) }), el("ul", {}, ...aCompleter.slice(0, 12).map((t) => el("li", { text: t })))) : null,

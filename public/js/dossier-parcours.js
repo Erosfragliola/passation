@@ -147,7 +147,7 @@ export function etatParcours(d, memo = null, teaser = null) {
   const venir = (detail) => ({ etat: "a-venir", detail, actions: [] });
   const documents = [
     { cle: "valorisation", titre: "Valorisation", ...(valo
-      ? { etat: "pret", detail: p.valorisation_le ? `Mise à jour le ${dateCourte(p.valorisation_le)}` : "Prête", actions: [{ libelle: "Ouvrir", href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: "Excel", href: liens.datapack, telecharger: true }] }
+      ? { etat: "pret", detail: p.valorisation_le ? `Mise à jour le ${dateCourte(p.valorisation_le)}` : "Prête", actions: [{ libelle: "Ouvrir", href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: "Télécharger l'Excel", href: liens.datapack, telecharger: true }] }
       : venir(exo ? "Calculée à l'étape Rédaction, avec vos réponses." : "Se débloque avec vos chiffres et vos réponses.")) },
     { cle: "datapack", titre: "Datapack Excel", ...(exo
       ? { etat: "pret", detail: docs.datapack ? `Mis à jour le ${dateCourte(docs.datapack.le)}${docs.datapack.version > 1 ? ` · version ${docs.datapack.version}` : ""}` : "Préparé à partir de vos chiffres confirmés", actions: [{ libelle: "Télécharger l'Excel", href: liens.datapack, principal: true, telecharger: true }] }
@@ -155,12 +155,12 @@ export function etatParcours(d, memo = null, teaser = null) {
     { cle: "teaser", titre: "Teaser anonyme", ...(docs.teaser
       ? teaserVides.length
         ? { etat: "incomplet", detail: `${teaserVides.length} ${pluriel(teaserVides.length, "partie", "parties")} sur ${nbPartiesTeaser} à rédiger`, actions: [{ libelle: "Rédiger", href: liens.teaser, principal: true }] }
-        : { etat: "pret", detail: `Rédigé le ${dateCourte(docs.teaser.le)}`, actions: [{ libelle: "Ouvrir", href: liens.teaser, principal: true }, { libelle: "PDF", href: `${liens.teaser}&imprimer=1` }] }
+        : { etat: "pret", detail: `Rédigé le ${dateCourte(docs.teaser.le)}`, actions: [{ libelle: "Ouvrir", href: liens.teaser, principal: true }, { libelle: "Télécharger en PDF", href: `${liens.teaser}&imprimer=1` }] }
       : venir("Rédigé à l'étape Rédaction, après vos réponses.")) },
     { cle: "memo", titre: "Mémorandum", ...(docs.memo
       ? m?.nonRedigees.length
         ? { etat: "incomplet", detail: `${m.nonRedigees.length} ${pluriel(m.nonRedigees.length, "chapitre", "chapitres")} sur ${(memo?.sections || []).length} à rédiger`, actions: [{ libelle: "Rédiger", href: liens.memo, principal: true }] }
-        : { etat: memoARelire ? "a-relire" : "pret", detail: `Rédigé le ${dateCourte(docs.memo.le)}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: "Ouvrir", href: liens.memo, principal: true }, { libelle: "PDF", href: `${liens.memo}&imprimer=1` }] }
+        : { etat: memoARelire ? "a-relire" : "pret", detail: `Rédigé le ${dateCourte(docs.memo.le)}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: "Ouvrir", href: liens.memo, principal: true }, { libelle: "Télécharger en PDF", href: `${liens.memo}&imprimer=1` }] }
       : venir("Rédigé à l'étape Rédaction, après vos réponses.")) },
   ];
 

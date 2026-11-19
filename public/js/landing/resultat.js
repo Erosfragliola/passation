@@ -2,7 +2,7 @@
 // Chargement : l'analyse en quatre étapes (au moins 2,4 s, jamais plus que la réponse). Puis une fiche de synthèse
 // « repreneur » (19/11/2026) : à gauche le profil anonyme tel qu'il circulera (nom de code, tampon, secteur, région,
 // ancienneté, effectif) ; à droite la fourchette, visible du seul dirigeant, avec la méthode (multiples floutés) ; en
-// bas une ligne de sources datées et une seule action, « Voir mon dossier » (connexion par code, puis le parcours
+// bas une ligne de sources datées et une seule action, « Ouvrir mon dossier » (connexion par code, puis le parcours
 // guidé). Comptes confidentiels : deux chiffres sur la même fiche.
 import { estimationManuelle, fourchette, montant, moisSource, multiple, remplir } from "/js/landing/estimation.js";
 import { formaterSiren } from "/js/siren.js";
@@ -62,7 +62,7 @@ export function creerResultat({ section, textes = {}, histoire = {} }) {
       ligne.querySelector("dd").textContent = t[cle] || "";
       ligne.hidden = !t[cle];
     }
-    // Une seule suite : la connexion par code pour ce SIREN. Toutes les entrées « Espace dirigeant » (barre, menu
+    // Une seule suite : la connexion par code pour ce SIREN. Toutes les entrées « Mon dossier » (barre, menu
     // mobile) mènent aussi à ce dossier : sinon, après le code, le dirigeant revenait sur l'accueil sans dossier
     // (constaté le 17/11/2026)
     document.querySelectorAll("a[data-connexion]").forEach((a) => { a.href = `/connexion?siren=${d.siren}`; a.dataset.siren = d.siren; });

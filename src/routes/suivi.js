@@ -33,7 +33,7 @@ export async function routeTermine(request, env, row, user) {
   if (suivi.pret_envoye) return json({ ok: true, deja: true });
   const lien = new URL(`/espace/demarrer/?dossier=${row.id}`, request.url).href;
   const nom = JSON.parse(row.company_json || "{}").nom || "votre entreprise";
-  const r = await envoyerMessage(env, user.email, { sujet: "Votre dossier Passation est prêt", titre: `Le dossier de ${nom} est prêt.`, texte: "Valorisation, datapack Excel, teaser anonymisé et mémorandum d'information : tout est rédigé. Il vous reste à les relire.", lien, bouton: "Relire mon dossier" }, request.url);
+  const r = await envoyerMessage(env, user.email, { sujet: "Votre dossier Passation est prêt", titre: `Le dossier de ${nom} est prêt.`, texte: "Valorisation, datapack Excel, teaser anonyme et mémorandum d'information : tout est rédigé. Il vous reste à les relire.", lien, bouton: "Relire mon dossier" }, request.url);
   if (r.envoye) await ecrireSuivi(env, row.id, { ...suivi, pret_envoye: maintenant() });
   return json({ ok: true, envoye: r.envoye });
 }
