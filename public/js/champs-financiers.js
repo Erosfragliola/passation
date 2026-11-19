@@ -46,3 +46,35 @@ export function manquants(lignes) {
   // L'EBE publié validé remplace le détail des charges
   return CHAMPS.filter((c) => c.obligatoire && !ok(c.cle) && !(DETAIL_CHARGES.has(c.cle) && ok("ebe"))).map((c) => c.cle);
 }
+
+/**
+ * Exercices demandés au dirigeant (règle unique, partagée par le parcours guidé, la page du dossier, la page
+ * valorisation et le serveur) :
+ *   - le dernier exercice connu est indispensable (c'est celui que demande le parcours guidé) ;
+ *   - les deux exercices qui le précèdent immédiatement sont recommandés, jamais obligatoires ;
+ *   - une année plus ancienne (par exemple publiée isolément à l'INPI) n'est jamais réclamée : simple information.
+ * @param lignes { [annee]: { [cle]: { valeur, valide, source } } }
+ * @returns { dernier, dernier_complet, recommandes: [n-1, n-2], recommandes_manquants, anciens }
+ */
+export function exercicesAttendus(lignes = {}) {
+  const annees = Object.keys(lignes || {}).map(Number)
+    .filter((a) => Number.isInteger(a) && Object.values(lignes[a] || {}).some((x) => x?.valeur != null))
+    .sort((a, b) => b - a);
+  const dernier = annees[0] ?? null;
+  if (dernier == null) return { dernier: null, dernier_complet: false, recommandes: [], recommandes_manquants: [], anciens: [] };
+  const complet = (a) => Boolean(lignes[a]) && manquants(lignes[a]).length === 0;
+  const recommandes = [dernier - 1, dernier - 2];
+  return {
+    dernier, dernier_complet: complet(dernier), recommandes,
+    recommandes_manquants: recommandes.filter((a) => !complet(a)),
+    anciens: annees.filter((a) => a < dernier - 2),
+  };
+}
+
+/** Comptes publics à reprendre : le dernier exercice publié et, s'ils sont publiés, les deux qui le précèdent
+ *  immédiatement. Une année plus ancienne, isolée (l'INPI saute parfois des exercices), n'est pas reprise. */
+export function anneesAReprendre(annees = []) {
+  const l = [...new Set(annees.filter(Number.isInteger))].sort((a, b) => a - b);
+  const dernier = l.at(-1);
+  return dernier == null ? [] : l.filter((a) => a >= dernier - (EXERCICES_MAX - 1));
+}
