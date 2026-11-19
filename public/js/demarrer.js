@@ -1,15 +1,17 @@
 // Parcours guidé : une étape à la fois, une seule action principale par écran, reprise là où l'on s'est arrêté.
-//   1. Vos comptes : ce que Passation sait déjà, puis la liasse PDF ; à défaut, saisie de l'essentiel (un exercice
-//      par écran, les seuls postes obligatoires, l'EBE des comptes publics repris s'il existe)
-//   2. Vos chiffres : un clic par exercice ; seules les lignes signalées par les contrôles demandent attention
-//   3. Quelques questions : une par écran, choix rapides, questions sautées si elles ne s'appliquent pas ; la première
-//      demande le site internet (proposé depuis l'adresse e-mail), lu pendant les questions suivantes
-//   4. Votre site : faits relevés (décochez ce qui est faux) et logo
-//   5. Rédaction : valorisation, datapack, teaser et mémorandum générés d'un coup
-//   6. Votre dossier est prêt : relecture et points à compléter
-import { CHAMPS } from "/js/champs-financiers.js";
+// Les étapes sont celles de la page du dossier (liste unique ETAPES_PARCOURS, état calculé par etatParcours) :
+//   Estimation (faite : le dossier vient de la fiche de l'accueil)
+//   Vos chiffres : ce que Passation sait déjà, puis la liasse PDF ; à défaut, saisie de l'essentiel du dernier
+//      exercice (le seul indispensable) ; puis un clic de confirmation, seules les lignes signalées demandent attention
+//   Vos réponses : une question par écran, la première sur le site internet (proposé depuis l'adresse e-mail), lu
+//      pendant les questions suivantes ; puis les faits relevés sur le site (décochez ce qui est faux) et le logo
+//   Rédaction : valorisation, datapack, teaser et mémorandum générés d'un coup
+//   Relecture et envoi : « prêt » seulement si tout l'indispensable est fait, sinon ce qui reste (même décompte que
+//      la page du dossier)
+import { CHAMPS, exercicesAttendus } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
-import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail } from "/js/parcours.js";
+import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
+import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
 import { pointsACompleter, libellePoints } from "/js/dossier-parcours.js";
 
@@ -39,8 +41,7 @@ async function api(chemin, options = {}) {
   return d;
 }
 
-const ETAPES = [["comptes", "Vos comptes"], ["chiffres", "Vos chiffres"], ["questions", "Questions"], ["site", "Votre site"], ["redaction", "Rédaction"], ["pret", "Prêt"]];
-const S = { propositions: {}, email: "", dossier: null, chiffres: null, reponses: {}, memo: null, etape: "comptes", q: 0, vues: [], lectureSite: null, saisie: null };
+const S = { propositions: {}, email: "", dossier: null, etat: null, chiffres: null, reponses: {}, memo: null, etape: "comptes", q: 0, vues: [], aPoser: null, lectureSite: null, saisie: null };
 const PICTOS = {
   qualite: "M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.9 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z", outil: "M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2zM5 21l2-2",
   horloge: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-13v5l3 2", usine: "M3 21V10l6 4V10l6 4V6l6 3v12zM3 21h18", bouclier: "M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z",
@@ -54,9 +55,11 @@ const fleche = () => el("span", { class: "fleche", "aria-hidden": "true", text: 
 
 // ================================================================== Où en est-on ?
 const exercicesComplets = () => Object.entries(S.chiffres?.manquants || {}).filter(([, l]) => !l.length).length;
+/** Le dernier exercice (le seul indispensable, règle partagée exercicesAttendus) est-il confirmé ? */
+const dernierConfirme = () => exercicesAttendus(S.chiffres?.exercices).dernier_complet;
 const aDesChiffresAValider = () => Object.values(S.chiffres?.exercices || {}).some((l) => Object.values(l).some((x) => x.valeur != null && x.source !== "inpi"));
 function etapeCourante() {
-  if (!exercicesComplets()) return aDesChiffresAValider() ? "chiffres" : "comptes";
+  if (!dernierConfirme()) return aDesChiffresAValider() ? "chiffres" : "comptes";
   if (siteARepondre() && !S.complet && !S.reponses.suivi?.pret_envoye) { S.q = -1; return "questions"; }
   const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues));
   if (iq >= 0) { S.q = iq; return "questions"; }
@@ -70,11 +73,18 @@ function etapeCourante() {
 function etapeDemandee() {
   const e = new URLSearchParams(location.search).get("etape");
   if (e === "chiffres") return exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes";
-  if (e === "questions") { const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues)); S.q = Math.max(0, iq); return "questions"; }
+  // Exercices précédents (facultatifs) : saisie directe du premier qui manque
+  if (e === "exercice") { const x = exercicesAttendus(S.chiffres?.exercices); S.saisie = { annee: x.recommandes_manquants?.[0] ?? anneesSaisie().defaut, valeurs: {} }; return "saisie"; }
+  if (e === "questions") {
+    if (siteARepondre()) { S.q = -1; return "questions"; }
+    const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues)); S.q = Math.max(0, iq); return "questions";
+  }
   if (e === "redaction" || e === "pret") return e;
   return null;
 }
 const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
+/** Fil des étapes : la liste et l'état fait / à venir sont ceux de la page du dossier (etatParcours) ; l'étape de
+ *  l'écran affiché est mise en avant. Le pourcentage est le même que celui de la page du dossier. */
 function dessinerEtapes() {
   const i = ETAPES.findIndex(([k]) => k === (S.etape === "saisie" ? "comptes" : S.etape));
   remplacer($("#guide-etapes"), ...ETAPES.map(([k, t], j) => el("li", { class: j < i ? "fait" : j === i ? "actif" : null, "aria-current": j === i ? "step" : null }, el("span", { text: String(j + 1) }), t)));
@@ -82,7 +92,20 @@ function dessinerEtapes() {
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
 }
-function aller(etape) { if (etape === "questions" && S.etape !== "questions") rafraichirPropositions().then(() => { if (S.etape === "questions" && S.q >= 0) questions(); }); S.etape = etape; dessinerEtapes(); ({ comptes, saisie, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 }); }
+/** État du dossier relu au serveur (même calcul que la page du dossier), puis fil redessiné. */
+async function rafraichirEtat() {
+  try {
+    const d = await api(base);
+    const memo = d.documents?.memo ? await api(`${base}/documents/memo`).catch(() => null) : null;
+    S.dossier = d; S.etat = etatParcours(d, memo); dessinerEtapes();
+    return S.etat;
+  } catch { return S.etat; }
+}
+function aller(etape) {
+  if (etape === "questions" && S.etape !== "questions") { S.aPoser = null; rafraichirPropositions().then(() => { if (S.etape === "questions" && S.q >= 0) questions(); }); }
+  S.etape = etape; dessinerEtapes(); rafraichirEtat();
+  ({ comptes, saisie, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
+}
 const titre = (t, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: t }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
 /** Propositions recalculées quand de nouvelles données arrivent (comptes confirmés, site lu). */
@@ -103,7 +126,7 @@ function dejaFait() {
   const faits = [
     `Entreprise identifiée : ${e.nom || "votre société"}`,
     publics.length ? `Comptes publics récupérés : ${publics.join(", ")}` : null,
-    est?.statut === "ok" ? `Première valeur : ${fourchette(est.bas, est.haut)}` : null,
+    est?.statut === "ok" ? `${ETIQUETTE_EXPRESS}${est.exercice ? ` (comptes ${est.exercice})` : ""} : ${fourchette(est.bas, est.haut)}` : null,
   ].filter(Boolean);
   return el("div", { class: "carte guide-deja" }, el("p", { class: "etiquette", text: "Déjà fait" }),
     el("ul", {}, ...faits.map((t) => el("li", { text: t }))));
@@ -121,7 +144,7 @@ function comptes() {
     finally { $("#zone-depot")?.removeAttribute("aria-busy"); }
   });
   const versSaisie = (texte, classe = "lien-simple") => el("button", { type: "button", class: classe, onclick: () => { S.saisie = null; aller("saisie"); } }, texte);
-  const suite = exercicesComplets() || aDesChiffresAValider() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller("chiffres") }, "Continuer") : null;
+  const suite = dernierConfirme() || aDesChiffresAValider() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller("chiffres") }, "Continuer") : null;
   if (!lecture) {
     remplir(dejaFait(), ...titre("Saisissez l'essentiel de vos comptes", "Une dizaine de montants, à recopier de votre liasse fiscale ou de vos comptes annuels. C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre."),
       el("p", { class: "petit", text: "La lecture automatique des liasses n'est pas disponible pour le moment." }),
@@ -140,13 +163,13 @@ function comptes() {
 const DETAIL_CHARGES = ["achats_consommes", "charges_externes", "impots_taxes", "charges_personnel"];
 const BILAN_ESSENTIEL = ["stocks", "creances_clients", "tresorerie", "capitaux_propres", "emprunts", "dettes_fournisseurs", "dettes_fiscales_sociales"];
 const FACULTATIFS = new Set(["impots_taxes", "resultat_net"]);
-/** Exercice proposé : le plus récent encore incomplet parmi ceux connus, sinon le dernier exercice clos. */
+/** Exercice proposé : le dernier exercice connu s'il n'est pas confirmé (le seul indispensable), sinon le premier
+ *  des deux précédents qui manque, sinon le dernier exercice clos. Jamais une année isolée plus ancienne. */
 function anneesSaisie() {
   const y = new Date().getFullYear();
-  const connues = Object.keys(S.chiffres?.exercices || {}).map(Number);
-  const toutes = [...new Set([...connues, y - 1, y - 2, y - 3])].sort((a, b) => b - a);
-  const incomplete = (a) => !S.chiffres?.manquants?.[a] || S.chiffres.manquants[a].length > 0;
-  const defaut = connues.sort((a, b) => b - a).find(incomplete) ?? toutes.find(incomplete) ?? toutes[0];
+  const x = exercicesAttendus(S.chiffres?.exercices);
+  const toutes = [...new Set([...(x.dernier != null ? [x.dernier, ...x.recommandes] : []), y - 1, y - 2, y - 3])].sort((a, b) => b - a);
+  const defaut = x.dernier == null ? y - 1 : !x.dernier_complet ? x.dernier : x.recommandes_manquants[0] ?? x.dernier;
   return { toutes, defaut };
 }
 function saisie() {
@@ -197,18 +220,20 @@ function saisie() {
           const alerte = (S.chiffres.controles?.[annee] || []).some((c) => c.niveau === "alerte");
           if (!alerte && !(S.chiffres.manquants?.[annee] || []).length) S.chiffres = await api(`${base}/financials/${annee}/valider`, { method: "POST" });
           S.saisie = null;
-          if (alerte || !exercicesComplets()) { message(""); aller("chiffres"); }
+          if (alerte || !dernierConfirme()) { message(""); aller("chiffres"); }
           else { message(`Exercice ${annee} enregistré.`); aller(etapeCourante()); }
         } catch (e) { message(e.message, true); bouton.disabled = false; }
       } }, "Enregistrer cet exercice ", fleche())));
 }
 
 // ================================================================== 2. Vos chiffres
-/** Exercices à confirmer : ceux de la liasse ou saisis par le dirigeant (les comptes publics seuls sont incomplets). */
+/** Exercices à confirmer : le dernier (indispensable) et, s'ils ont été saisis ou lus dans la liasse, les deux qui le
+ *  précèdent (facultatifs). Une année plus ancienne publiée isolément n'est pas présentée. */
 function anneesUtiles() {
-  const toutes = Object.keys(S.chiffres.exercices).map(Number).sort((a, b) => b - a);
-  const propres = toutes.filter((a) => Object.values(S.chiffres.exercices[a]).some((x) => x.valeur != null && x.source !== "inpi"));
-  return (propres.length ? propres : toutes).slice(0, 3);
+  const x = exercicesAttendus(S.chiffres.exercices);
+  if (x.dernier == null) return [];
+  const propre = (a) => Object.values(S.chiffres.exercices[a] || {}).some((c) => c.valeur != null && c.source !== "inpi");
+  return [x.dernier, ...x.recommandes.filter((a) => S.chiffres.exercices[a] && propre(a))];
 }
 function chiffres() {
   const annees = anneesUtiles();
@@ -221,7 +246,7 @@ function chiffres() {
     const alertes = ctl.filter((c) => c.niveau === "alerte"), attentions = ctl.filter((c) => c.niveau === "attention");
     const bloquees = [...new Set(alertes.flatMap((c) => c.lignes))].filter((k) => k !== "manquant");
     return el("article", { class: `carte guide-exercice${valide ? " valide" : ""}` },
-      el("header", {}, el("h2", { text: `Exercice ${a}` }), valide ? el("span", { class: "pastille-ok", text: "✓ Confirmé" }) : null),
+      el("header", {}, el("h2", { text: `Exercice ${a}` }), valide ? el("span", { class: "pastille-ok", text: "✓ Confirmé" }) : a !== annees[0] ? el("span", { class: "petit", text: "Facultatif" }) : null),
       el("dl", { class: "guide-resume" },
         ...[["Chiffre d'affaires", val("chiffre_affaires")], ["EBE", ebe], ["Résultat net", val("resultat_net")], ["Capitaux propres", val("capitaux_propres")]]
           .map(([t, x]) => el("div", {}, el("dt", { text: t }), el("dd", { text: court(x) })))),
@@ -240,7 +265,7 @@ function chiffres() {
       el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; aller("saisie"); } }, "Saisir un autre exercice"), " · ",
       el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, "Déposer une autre liasse"), " · ",
       el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Mode détaillé (toutes les lignes)" })),
-    exercicesComplets() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller(etapeCourante()) }, "Continuer ", fleche()) : null);
+    dernierConfirme() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller(etapeCourante()) }, "Continuer ", fleche()) : null);
 }
 function ligneAVerifier(annee, cle, cellule) {
   const c = CHAMPS.find((x) => x.cle === cle);
@@ -377,8 +402,34 @@ async function enregistrerEcran() {
     }
   }
 }
+/** Écran vu : enregistré (« Passer » compte comme une réponse), pour que la page du dossier compte pareil. */
+function marquerVue(qid) {
+  if (S.vues.includes(qid)) return;
+  S.vues.push(qid);
+  S.reponses.parcours = { ...(S.reponses.parcours || {}), vues: [...S.vues] };
+  api(`${base}/answers/parcours`, { method: "PUT", body: JSON.stringify({ data: S.reponses.parcours }) }).then(() => rafraichirEtat()).catch(() => null);
+}
+/** Compteur « Question N sur M » : M = questions qui restaient à montrer en arrivant sur les questions (celles déjà
+ *  répondues, validées dans le récapitulatif ou passées n'y sont pas) ; il ne bouge pas d'un écran à l'autre. */
+const cleEcran = () => (S.q < 0 ? "site" : QUESTIONS[S.q]?.id);
+function compteur() {
+  if (!S.aPoser) S.aPoser = questionsAPoser(S.reponses, S.vues);
+  const cle = cleEcran();
+  if (cle && !S.aPoser.includes(cle)) S.aPoser = [...S.aPoser, cle].sort((a, b) => ordre(a) - ordre(b)); // revenue d'elle-même (« Retour »)
+  const n = S.aPoser.indexOf(cle) + 1, total = S.aPoser.length;
+  return el("div", { class: "q-tete" }, el("p", { class: "etiquette", text: `Question ${n} sur ${total}` }),
+    el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round((n / total) * 100)}%` })));
+}
+const ordre = (cle) => (cle === "site" ? -1 : QUESTIONS.findIndex((q) => q.id === cle));
+/** « Retour » : l'écran précédent dans la liste des questions montrées ; avant la première, les chiffres. */
+function precedente() {
+  const i = (S.aPoser || []).indexOf(cleEcran());
+  const prec = i > 0 ? S.aPoser[i - 1] : null;
+  if (prec == null) { aller("chiffres"); return; }
+  S.q = ordre(prec); questions();
+}
 function suivante(q) {
-  if (!S.vues.includes(q.id)) S.vues.push(q.id);
+  marquerVue(q.id);
   // Venu de la rédaction pour compléter une réponse indispensable : on y retourne dès que tout est rempli
   if (S.retour === "redaction") {
     const reste = questionsIncompletes(S.reponses);
@@ -394,18 +445,19 @@ function suivante(q) {
 function questionSite() {
   const proposition = S.reponses.site?.url || siteDepuisEmail(S.email) || "";
   const input = el("input", { type: "text", id: "site-url", inputmode: "url", value: proposition, placeholder: "www.votre-entreprise.fr", autocomplete: "url" });
-  const suivanteQ = () => { message(""); S.q = 0; questions(); };
+  // Question suivante encore sans réponse (le site n'est plus à poser)
+  const suivanteQ = () => { message(""); const j = QUESTIONS.findIndex((x) => !questionRepondue(x, S.reponses, S.vues)); if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante()); };
   remplir(
-    el("p", { class: "etiquette", text: `Question 1 sur ${QUESTIONS.length + 1}` }),
+    compteur(),
     ...titre(proposition ? "Est-ce bien le site de votre entreprise ?" : "Votre entreprise a-t-elle un site internet ?",
       "Nous y relevons votre activité et votre logo pour le mémorandum, pendant que vous répondez aux questions suivantes. Vous validerez chaque élément."),
     el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: "site-url", text: "Adresse du site" }), input),
     el("p", { class: "petit" }, el("button", { type: "button", class: "lien-simple", onclick: async () => {
-      try { S.reponses.site = { aucun: true }; await api(`${base}/answers/site`, { method: "PUT", body: JSON.stringify({ data: S.reponses.site }) }); suivanteQ(); }
+      try { S.reponses.site = { aucun: true }; await api(`${base}/answers/site`, { method: "PUT", body: JSON.stringify({ data: S.reponses.site }) }); rafraichirEtat(); suivanteQ(); }
       catch (e) { message(e.message, true); }
     } }, "Nous n'avons pas de site")),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, "Retour"),
+      el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, "Retour"),
       el("button", { type: "button", class: "btn btn-noir", onclick: () => {
         const url = input.value.trim();
         if (!url) { message("Indiquez l'adresse du site, ou choisissez « Nous n'avons pas de site ».", true); input.focus(); return; }
@@ -438,7 +490,8 @@ function recapitulatif() {
     bouton.disabled = true;
     try {
       for (const q of liste) if (coches.get(q.id)) for (const k of clesEnAttente(q)) { const [e, c] = k.split("."); await enregistrer(e, c, S.propositions[q.id].valeurs[k]); }
-      marquerRecap(); message("");
+      marquerRecap(); message(""); S.aPoser = null; // le compteur ne compte plus les réponses qui viennent d'être validées
+      rafraichirEtat();
       aller(etapeCourante());
     } catch (e) { message(e.message, true); bouton.disabled = false; }
   });
@@ -454,26 +507,27 @@ function recapitulatif() {
           el("span", { class: "recap-valeurs" }, ...clesEnAttente(q).map((k) => el("span", { text: libelleValeur(q, k, p.valeurs[k]) }))),
           el("small", { text: p.source }))));
     })),
-    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { marquerRecap(); questions(); } }, "Répondre question par question"), bouton));
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { marquerRecap(); S.aPoser = null; questions(); } }, "Répondre question par question"), bouton));
 }
 
 function questions() {
-  if (S.q < 0) return questionSite();
+  // Le récapitulatif des réponses préparées vient avant la première question : le compteur « Question N sur M » est
+  // fixé ensuite, une fois pour toutes (il ne repart pas de 1 après la validation des réponses préparées)
   if (!recapVu() && questionsPreparees().length >= 3) return recapitulatif();
+  if (S.q < 0) return questionSite();
   const q = QUESTIONS[S.q];
   const champs = [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])];
   const prop = S.propositions[q.id];
   const aValider = prop && Object.keys(prop.valeurs).some((k) => { const [e, c] = k.split("."); return S.reponses[e]?.[c] == null; });
   const seulChoix = !aValider && q.champs.length === 1 && ["choix", "valeurs"].includes(q.champs[0].type) && !q.suite?.si(S.reponses);
   remplir(
-    el("div", { class: "q-tete" }, el("p", { class: "etiquette", text: `Question ${S.q + 2} sur ${QUESTIONS.length + 1}` }),
-      el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round(((S.q + 2) / (QUESTIONS.length + 1)) * 100)}%` }))),
+    compteur(),
     aValider ? el("p", { class: "proposition-bandeau" }, el("strong", { text: "Réponse préparée par Passation" }), ` · ${prop.source}. Vérifiez, corrigez si besoin, puis validez.`) : null,
     ...titre(q.titre, q.aide),
     q.champs.some((c) => c.requis) ? el("p", { class: "petit requis-note", text: `Indispensable pour rédiger le mémorandum : ${q.champs.filter((c) => c.requis).map((c) => c.requis).join(", ")}.` }) : null,
     ...champs.map((c) => champ(c, q)),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => { S.q--; questions(); } }, "Retour"),
+      el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, "Retour"),
       seulChoix ? el("button", { type: "button", class: "lien-simple", onclick: () => suivante(q) }, "Passer")
         : el("button", { type: "button", class: `btn ${aValider ? "btn-vert" : "btn-noir"}`, onclick: async (ev) => {
           const bouton = ev.currentTarget;
@@ -540,7 +594,7 @@ async function enParallele(taches, n, f) {
 async function redaction() {
   const SECTIONS = [["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]];
   const taches = [
-    ["valorisation", "Valorisation (multiples et actif net ; DCF en option)", () => api(`${base}/valuation`, { method: "POST" })],
+    ["valorisation", "Valorisation (multiples d'EBE du secteur)", () => api(`${base}/valuation`, { method: "POST" })],
     ["etude-marche", "Étude de marché sur le web (deux minutes au plus)", async () => {
       const m = await (S.marche || null);
       if (m?.marche?.date) return;
@@ -627,7 +681,9 @@ async function redaction() {
   aller("pret");
 }
 
-// ================================================================== 6. Prêt
+// ================================================================== Relecture et envoi
+/** Écran final : même état que la page du dossier (etatParcours), donc même statut, même pourcentage, même fourchette
+ *  et mêmes tâches. « Prêt » seulement si tout l'indispensable est fait ; sinon « rédigé » et ce qui reste. */
 async function pret() {
   const [val, memo] = await Promise.all([api(`${base}/valuation`), api(`${base}/documents/memo`)]);
   const s = val.resultat?.synthese;
@@ -636,7 +692,7 @@ async function pret() {
   remplir(...titre("Votre dossier est prêt", "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier."),
     s?.central != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: "Valeur de vos titres" }), el("p", { class: "valeur-centrale chiffre", text: `${fmt.format(Math.round(s.central))} €` }), el("p", { text: `Fourchette : ${fourchette(s.bas, s.haut)}` })) : null,
     el("div", { class: "guide-docs" },
-      ...[["Valorisation détaillée", "Méthodes, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
+      ...[["Valorisation détaillée", "Multiples du secteur, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
         ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],
         ["Teaser anonyme", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
         ["Mémorandum d'information", "La présentation complète, en diapositives", `/espace/documents/memo/?dossier=${id}`]]
@@ -653,7 +709,8 @@ async function pret() {
   try {
     const [moi, dossier, ch, rep, props] = await Promise.all([api("/api/me"), api(base), api(`${base}/financials`), api(`${base}/answers`), api(`${base}/documents/memo/propositions`).catch(() => ({}))]);
     S.propositions = props.propositions || {};
-    S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {};
+    S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {}; S.vues = vuesDe(S.reponses);
+    S.etat = etatParcours(dossier, dossier.documents?.memo ? await api(`${base}/documents/memo`).catch(() => null) : null);
     $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
     // Nom de code au-dessus du nom réel, comme sur la page du dossier : c'est sous ce nom que le dossier circulera
     if (dossier.nom_de_code) { $("#guide-code").textContent = dossier.nom_de_code; $("#guide-nom-code").hidden = false; }

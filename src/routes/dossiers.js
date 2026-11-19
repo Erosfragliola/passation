@@ -14,8 +14,9 @@ import { sirenValide, nettoyerSiren } from "../lib/siren.js";
 import { chargerMaquette, CLE_MAQUETTE } from "../maquette/donnees.js";
 import { estimationExpress } from "../valuation/express.js";
 import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
-import { manquants, EXERCICES_MAX } from "../../public/js/champs-financiers.js";
-import { avancementQuestionnaire } from "../../public/js/questionnaire.js";
+import { manquants, exercicesAttendus } from "../../public/js/champs-financiers.js";
+import { avancementQuestions } from "../../public/js/parcours.js";
+import { resumeValorisation } from "../../public/js/dossier-parcours.js";
 import { routeValorisation, lireChiffres, lireReponses } from "./valorisation.js";
 import { routePieces } from "./pieces.js";
 import { projet } from "../documents/nom-de-code.js";
@@ -65,9 +66,11 @@ async function detail(env, row) {
   const entreprise = JSON.parse(row.company_json || "{}");
   const lignes = await lireChiffres(env, row.id);
   const complets = Object.values(lignes).filter((l) => manquants(l).length === 0).length;
+  const exercices = exercicesAttendus(lignes);
   const approfondie = await env.DB.prepare("SELECT result_json, created_at FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();
-  const synthese = approfondie ? JSON.parse(approfondie.result_json).synthese ?? null : null;
-  const questionnaire = avancementQuestionnaire(await lireReponses(env, row.id));
+  // Fourchette seulement (jamais de valeur centrale pour le dirigeant), et ce qui l'explique
+  const valorisation = approfondie ? resumeValorisation(JSON.parse(approfondie.result_json)) : null;
+  const questions = avancementQuestions(await lireReponses(env, row.id));
   const docs = await env.DB.prepare("SELECT kind, MAX(version) AS version, MAX(created_at) AS le FROM documents WHERE dossier_id = ? GROUP BY kind").bind(row.id).all();
   return {
     id: row.id, siren: row.siren, cree_le: row.created_at, statut: row.status,
@@ -79,11 +82,11 @@ async function detail(env, row) {
     },
     estimation: entreprise.estimation ?? null,
     checklist: [...coches],
-    parcours: { exercices_complets: complets, exercices_attendus: EXERCICES_MAX, questionnaire, valorisation: synthese, valorisation_le: approfondie?.created_at ?? null },
+    parcours: { exercices, exercices_complets: complets, questions, valorisation, valorisation_le: approfondie?.created_at ?? null },
     documents: Object.fromEntries(docs.results.map((d) => [d.kind, { version: d.version, le: d.le }])),
     avancement: avancement({
       estimation_express: entreprise.estimation?.statut === "ok", checklist: coches,
-      chiffres_valides: complets / EXERCICES_MAX, questionnaire_pct: questionnaire.pct, valorisation_approfondie: synthese?.central != null, documents: docs.results.length,
+      dernier_exercice: exercices.dernier_complet, questions_pct: questions.pct, valorisation_approfondie: valorisation != null, documents: docs.results.length,
     }),
   };
 }

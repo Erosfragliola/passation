@@ -79,6 +79,31 @@ describe("chiffres", () => {
     const v = await (await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2025, valeurs: { stocks: 200000 }, valider: true } })).json();
     expect(v.exercices["2025"].stocks).toEqual({ valeur: 200000, source: "dirigeant", valide: true });
   });
+  // Audit du 19/11/2026 : l'INPI publiait 2019, 2021 et 2024 ; la page valorisation réclamait 2019 et 2021
+  it("comptes publics non consécutifs : seul le dernier est repris ; dernier exercice indispensable, deux précédents facultatifs", async () => {
+    // Montants fictifs : seules les années comptent ici
+    const d = JSON.parse(env.DB.sqlite.prepare("SELECT payload_json FROM api_cache").get().payload_json);
+    d.ca = [{ annee: 2019, valeur: 900_000 }, { annee: 2021, valeur: 1_000_000 }, { annee: 2024, valeur: 1_200_000 }];
+    d.ebe = [{ annee: 2019, valeur: 90_000 }, { annee: 2021, valeur: 100_000 }, { annee: 2024, valeur: 120_000 }];
+    env.DB.sqlite.prepare("UPDATE api_cache SET payload_json = ?").run(JSON.stringify(d));
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    const v = await (await appel(`/api/dossiers/${id}/financials`, { cookie })).json();
+    expect(Object.keys(v.exercices)).toEqual(["2024"]);
+    const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
+    expect(detail.parcours.exercices).toEqual({ dernier: 2024, dernier_complet: false, recommandes: [2023, 2022], recommandes_manquants: [2023, 2022], anciens: [] });
+    // Les questions du parcours guidé (13) et celle du site : 14, aucune faite
+    expect(detail.parcours.questions).toEqual({ faits: 0, total: 14, pct: 0 });
+    // 15 (dossier) + 10 (estimation express) = 25
+    expect(detail.avancement.global).toBe(25);
+  });
+  it("écrans vus du parcours guidé enregistrés : « Passer » compte comme une réponse, côté serveur aussi", async () => {
+    const { cookie, id } = await seConnecter("a@exemple.fr");
+    await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { aucun: true } } });
+    expect((await appel(`/api/dossiers/${id}/answers/parcours`, { methode: "PUT", cookie, corps: { data: { vues: ["remuneration", "histoire"] } } })).status).toBe(200);
+    const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
+    // site + 2 écrans passés = 3 sur 14 ; 3 / 14 = 21,4 % → 21
+    expect(detail.parcours.questions).toEqual({ faits: 3, total: 14, pct: 21 });
+  });
   it("refuse une année absurde", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 1800, valeurs: {} } })).status).toBe(400);

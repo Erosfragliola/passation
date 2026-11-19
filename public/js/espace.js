@@ -30,6 +30,7 @@ const el = (tag, attrs = {}, ...enfants) => {
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const ICONES = {
   chiffres: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  exercices: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
   questions: '<path d="M4 5h16v11H9l-5 4z"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.4"/>',
   redaction: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
   chapitres: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
@@ -73,13 +74,17 @@ function afficher({ checklist = true } = {}) {
     if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: " : étape en cours" })));
     return el("li", {}, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: " : à venir" })));
   }));
-  for (const a of [$("#cta"), $("#cta-tel")]) { a.textContent = etat.action.texte; a.href = etat.action.href; }
+  // Action principale = première tâche de « À faire maintenant » (même libellé, même lien ; les pièces ouvrent le dépôt)
+  for (const a of [$("#cta"), $("#cta-tel")]) {
+    a.textContent = etat.action.texte; a.href = etat.action.href;
+    a.onclick = etat.action.pieces ? (ev) => { ev.preventDefault(); ouvrirPieces(true); } : null;
+  }
 
   // En-tête : nom de code, raison sociale, avancement, valeur et sa base
   $("#nom-code").textContent = dossier.nom_de_code || "";
   $("#dossier-nom").textContent = e.nom || "Votre entreprise";
   $("#dossier-meta").textContent = [e.ville, `SIREN ${dossier.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}`, e.date_creation ? `depuis ${e.date_creation.slice(0, 4)}` : null].filter(Boolean).join(" · ");
-  const g = dossier.avancement.global;
+  const g = etat.avancement; // même calcul que l'écran final du parcours guidé (etatParcours)
   $("#avancement-global").textContent = `${g} %`;
   $("#anneau").setAttribute("aria-label", `${g} % du parcours fait`);
   $("#anneau-val").setAttribute("stroke-dasharray", `${((2 * Math.PI * 32 * g) / 100).toFixed(1)} 201`);
@@ -87,6 +92,7 @@ function afficher({ checklist = true } = {}) {
   $("#valeur-etiquette").textContent = v.etiquette;
   $("#valeur-montant").textContent = v.bas != null && v.haut != null ? fourchette(v.bas, v.haut) : "À affiner";
   $("#valeur-base").textContent = v.base;
+  $("#valeur-ecart").textContent = v.ecart || ""; $("#valeur-ecart").hidden = !v.ecart;
   $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
 
   // À faire maintenant

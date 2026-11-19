@@ -98,6 +98,5 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   if (c != null) ajouter("perspectives", { "perspectives.croissance": c }, SOURCES_PROPOSITION.comptes);
 
   ajouter("cession", { "operation.accompagnement": "6 mois", "operation.repreneur": ["Indifférent"] }, SOURCES_PROPOSITION.frequent);
-  ajouter("capital", { "bilan.capital_personnes_physiques": "oui" }, SOURCES_PROPOSITION.frequent);
   return p;
 }

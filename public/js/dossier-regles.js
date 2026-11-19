@@ -38,22 +38,23 @@ export const CHECKLIST = [
 export const CLES_CHECKLIST = new Set(CHECKLIST.flatMap((g) => g.items.map(([k]) => k)));
 
 /**
- * Avancement de 0 à 100 par bloc, et global : les étapes du parcours guidé, pondérées. Le dirigeant ne part pas de
- * zéro : le dossier existe, donc l'entreprise est identifiée (15) ; première valeur express (10) ; un exercice
- * confirmé (20) et les trois (5 de plus) ; questionnaire (15, au prorata) ; valorisation approfondie (15) ; documents
- * (20, au prorata des 3). La checklist « Votre préparation » reste à part : elle n'entre pas dans le global.
- * @param d { estimation_express: bool, chiffres_valides: 0..1, questionnaire_pct: 0..100, valorisation_approfondie: bool,
+ * Avancement de 0 à 100 par bloc, et global : les étapes du parcours (liste unique ETAPES_PARCOURS), pondérées.
+ * Le dirigeant ne part pas de zéro : le dossier existe, donc l'entreprise est identifiée (15) ; une première valeur,
+ * express ou approfondie (10) ; le dernier exercice confirmé (25, le seul indispensable : les exercices précédents
+ * sont facultatifs et n'entrent pas dans le pourcentage) ; les questions du parcours (15, au prorata) ; valorisation
+ * approfondie (15) ; documents (20, au prorata des 3). La checklist « Votre préparation » reste à part.
+ * Ce calcul n'est lu qu'à un endroit pour l'affichage : etatParcours (dossier-parcours.js).
+ * @param d { estimation_express: bool, dernier_exercice: bool, questions_pct: 0..100, valorisation_approfondie: bool,
  *            documents: n (0..3), checklist: Set de clés cochées }
  */
 export function avancement(d) {
   const preparation = Math.round(100 * [...(d.checklist || [])].filter((k) => CLES_CHECKLIST.has(k)).length / CLES_CHECKLIST.size);
-  const part = Math.min(1, Math.max(0, d.chiffres_valides || 0));
-  const chiffres = Math.round(100 * part);
+  const chiffres = d.dernier_exercice ? 100 : 0;
   const valorisation = d.valorisation_approfondie ? 100 : d.estimation_express ? 25 : 0;
   const nDocs = Math.min(3, d.documents || 0);
   const documents = Math.round(100 * nDocs / 3);
-  const q = Math.min(100, Math.max(0, d.questionnaire_pct || 0));
-  const global = Math.round(15 + (d.estimation_express ? 10 : 0) + (part > 0 ? 20 : 0) + (part >= 1 ? 5 : 0)
+  const q = Math.min(100, Math.max(0, d.questions_pct || 0));
+  const global = Math.round(15 + (d.estimation_express || d.valorisation_approfondie ? 10 : 0) + (d.dernier_exercice ? 25 : 0)
     + 15 * q / 100 + (d.valorisation_approfondie ? 15 : 0) + 20 * nDocs / 3);
   return { global, chiffres, valorisation, documents, preparation };
 }

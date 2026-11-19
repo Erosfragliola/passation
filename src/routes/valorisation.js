@@ -11,7 +11,7 @@ import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { LIASSE, CLAUDE_QUOTAS } from "../config.js";
 import { quotaClaude } from "../lib/ratelimit.js";
-import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants } from "../../public/js/champs-financiers.js";
+import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants, anneesAReprendre } from "../../public/js/champs-financiers.js";
 import { ETAPES } from "../../public/js/questionnaire.js";
 import { claudeDisponible, lireLiasse, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
 import { assemblerEntree } from "../valuation/entree.js";
@@ -20,7 +20,8 @@ import { valorisationApprofondie } from "../valuation/approfondie.js";
 import { erreursEtape } from "../valuation/validation.js";
 import HYPOTHESES from "../data/hypotheses.json";
 
-const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche"]);
+// « parcours » : écrans du parcours guidé déjà vus (« Passer » compte comme une réponse), pour un décompte identique partout
+const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche", "parcours"]);
 const corpsJson = async (request) => { try { return await request.json(); } catch { return null; } };
 
 // ---------------------------------------------------------------- Chiffres
@@ -31,12 +32,13 @@ export async function lireChiffres(env, dossierId) {
   return lignes;
 }
 
-/** Premier passage : comptes publics (INPI) des 3 derniers exercices, proposés « à valider ». */
+/** Premier passage : comptes publics (INPI) du dernier exercice publié et des deux qui le précèdent immédiatement
+ *  (jamais une année isolée plus ancienne), proposés « à valider ». */
 async function preremplir(env, row) {
   const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM financials WHERE dossier_id = ?").bind(row.id).first();
   if (n?.n > 0) return;
   const e = JSON.parse(row.company_json || "{}");
-  const annees = [...new Set((e.ca || []).filter((x) => Number.isFinite(x.valeur)).map((x) => x.annee))].sort().slice(-EXERCICES_MAX);
+  const annees = anneesAReprendre((e.ca || []).filter((x) => Number.isFinite(x.valeur)).map((x) => x.annee));
   const stmts = [];
   for (const a of annees) {
     const ca = e.ca.find((x) => x.annee === a)?.valeur;

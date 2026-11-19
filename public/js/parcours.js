@@ -1,5 +1,6 @@
 // Questions du parcours guidé : une par écran, réponses rapides (choix) quand c'est possible, questions sautées
 // quand elles ne s'appliquent pas. Chaque réponse est rangée dans l'étape du questionnaire complet correspondante.
+import { ETAPES } from "./questionnaire.js";
 /** Périmètre de l'opération : réponses possibles (reprises telles quelles dans le schéma du mémorandum). */
 export const DETENTION = { direct: "En direct, à titre personnel", holding: "Par une société holding", associes: "Avec d'autres associés" };
 export const MURS = { societe: "À l'entreprise elle-même", dirigeant: "À vous ou à votre famille (souvent une SCI)", tiers: "À un propriétaire extérieur", aucun: "Pas de locaux en propre" };
@@ -77,9 +78,6 @@ export const QUESTIONS = [
       { etape: "operation", cle: "accompagnement", type: "choix", libelle: "Accompagnement du repreneur", options: ["3 mois", "6 mois", "12 mois", "Plus de 12 mois"] },
       { etape: "operation", cle: "repreneur", type: "multi", libelle: "Repreneur souhaité", options: [["Dirigeant indépendant", "equipe"], ["Entreprise du secteur", "usine"], ["Fonds d'investissement", "euro"], ["Salariés", "poignee"], ["Indifférent", "valide"]] },
     ] },
-  { id: "capital", titre: "Le capital est-il détenu à 75 % au moins par des personnes physiques ?", aide: "Cela détermine le taux d'impôt sur les sociétés utilisé (taux réduit de 15 % possible).",
-    chapitre: "Valorisation", pourquoi: "Le taux d'impôt utilisé dans la méthode des flux actualisés.",
-    champs: [{ etape: "bilan", cle: "capital_personnes_physiques", type: "valeurs", options: [["Oui", "oui"], ["Non", "non"], ["Je ne sais pas", "non"]] }] },
 ];
 
 const rempli = (v) => v != null && v !== "" && !(typeof v === "string" && !v.trim()) && !(Array.isArray(v) && !v.length);
@@ -97,8 +95,39 @@ export function questionRepondue(q, r, vues = []) {
 /** Questions dont une réponse indispensable manque (l'ordre du parcours). */
 export const questionsIncompletes = (r) => QUESTIONS.filter((q) => requisManquants(q, r).length);
 
+// ---------------------------------------------------------------- Une seule notion de « questions »
+// Les questions du dirigeant sont celles du parcours guidé, plus celle du site internet (posée en premier, dans
+// l'étape « Vos réponses »). Le total est le même partout : parcours guidé, page du dossier, serveur.
+/** Le site a-t-il une réponse (adresse donnée, ou « pas de site ») ? */
+export const siteRepondu = (r = {}) => Boolean(r.site?.url || r.site?.aucun);
+export const NB_QUESTIONS = QUESTIONS.length + 1;
+/** Écrans vus (« Passer » compte comme une réponse), enregistrés dans l'étape « parcours » des réponses. */
+export const vuesDe = (r = {}) => (Array.isArray(r.parcours?.vues) ? r.parcours.vues.filter((x) => typeof x === "string") : []);
+/** Questions répondues sur le total, et leur pourcentage (pour l'avancement global). */
+export function avancementQuestions(r = {}, vues = vuesDe(r)) {
+  const faits = QUESTIONS.filter((q) => questionRepondue(q, r, vues)).length + (siteRepondu(r) ? 1 : 0);
+  return { faits, total: NB_QUESTIONS, pct: Math.round((100 * faits) / NB_QUESTIONS) };
+}
+/**
+ * Questions qui restent à montrer, dans l'ordre du parcours : « site » d'abord s'il n'a pas de réponse, puis les
+ * identifiants des questions sans réponse. Le compteur « Question N sur M » du parcours guidé compte cette liste :
+ * les questions déjà répondues, pré-remplies et validées, ou passées n'y sont pas.
+ */
+export function questionsAPoser(r = {}, vues = vuesDe(r)) {
+  return [...(siteRepondu(r) ? [] : ["site"]), ...QUESTIONS.filter((q) => !questionRepondue(q, r, vues)).map((q) => q.id)];
+}
+
 /** Adresse de site proposée à partir d'une adresse e-mail professionnelle (jamais pour une messagerie grand public). */
 const MESSAGERIES = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook.fr", "hotmail.com", "hotmail.fr", "live.com", "live.fr", "msn.com", "yahoo.com", "yahoo.fr", "icloud.com", "me.com", "orange.fr", "wanadoo.fr", "free.fr", "sfr.fr", "neuf.fr", "laposte.net", "aol.com", "protonmail.com", "proton.me", "gmx.fr", "gmx.com", "bbox.fr", "numericable.fr", "club-internet.fr", "exemple.fr"]);
+/** Questions du questionnaire complet absentes du parcours guidé : facultatives (« Pour aller plus loin »), hors du
+ *  pourcentage et de « À faire maintenant ». Celles qui ne servaient qu'aux flux actualisés (méthode écartée, rien
+ *  ne les affiche) ne sont plus posées. */
+const CLES_DU_PARCOURS = new Set(QUESTIONS.flatMap((q) => [...q.champs, ...(q.suite?.champs || [])].map((c) => `${c.etape}.${c.cle}`)));
+const SANS_USAGE = new Set(["perspectives.investissements_pct", "bilan.capital_personnes_physiques"]);
+export const POUR_ALLER_PLUS_LOIN = ETAPES
+  .map((e) => ({ ...e, questions: e.questions.filter((q) => !CLES_DU_PARCOURS.has(`${e.cle}.${q.cle}`) && !SANS_USAGE.has(`${e.cle}.${q.cle}`)) }))
+  .filter((e) => e.questions.length);
+
 export function siteDepuisEmail(email) {
   const d = String(email || "").split("@")[1]?.toLowerCase().trim();
   if (!d || MESSAGERIES.has(d) || !d.includes(".")) return null;

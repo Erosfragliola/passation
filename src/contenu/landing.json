@@ -85,7 +85,7 @@
         },
         {
           "titre": "Estimation approfondie",
-          "texte": "Trois méthodes croisées"
+          "texte": "Multiples du secteur"
         },
         {
           "titre": "Teaser anonyme",
@@ -115,8 +115,8 @@
         "texte": "pour une première fourchette de valeur"
       },
       "methodes": {
-        "chiffre": "3 méthodes",
-        "texte": "croisées pour une valeur que vous pouvez défendre"
+        "chiffre": "3 sources",
+        "texte": "de multiples croisées, pour une fourchette que vous pouvez défendre"
       },
       "code": {
         "titre": "Votre nom de code",
@@ -206,7 +206,7 @@
         "recto": "combien ?",
         "numero": "09",
         "titre": "Valeur",
-        "detail": "trois méthodes, une fourchette"
+        "detail": "une fourchette sourcée"
       }
     ],
     "dossier": {
@@ -251,10 +251,10 @@
       },
       {
         "surtitre": "Étape 2 · Vos chiffres",
-        "chiffre": "3 méthodes",
-        "titre": "Une valeur argumentée",
-        "texte": "Vous complétez quelques chiffres clés. Passation croise trois méthodes de valorisation et vous montre d’où vient chaque écart, pour une valeur que vous pouvez défendre.",
-        "obtenez": "Vous obtenez une valeur centrale, avec le détail du calcul et ses sources.",
+        "chiffre": "Multiples du secteur",
+        "titre": "Une fourchette sourcée",
+        "texte": "Vous complétez quelques chiffres clés. Passation applique les multiples d’EBE (excédent brut d’exploitation) de votre secteur, sources datées, et contrôle le résultat par l’actif net.",
+        "obtenez": "Vous obtenez une fourchette, avec le détail du calcul et ses sources.",
         "pastilles": [
           "{duree_etape2}",
           "{prix_etape2}"
@@ -282,11 +282,10 @@
       "annotation": "votre première valeur"
     },
     "visuel2": {
-      "entete": "Trois méthodes · exemple fictif",
+      "entete": "Multiples du secteur · exemple fictif",
       "methodes": [
-        "Méthode 1",
-        "Méthode 2",
-        "Méthode 3"
+        "Multiples d’EBE",
+        "Actif net (contrôle)"
       ],
       "retenue": "Fourchette retenue"
     },
@@ -388,7 +387,7 @@
       {
         "type": "Datapack",
         "titre": "Tous les chiffres",
-        "texte": "Comptes, retraitements, hypothèses et les trois méthodes, avec des formules que votre expert-comptable peut vérifier.",
+        "texte": "Comptes, retraitements, multiples et passage à la valeur des titres, avec des formules que votre expert-comptable peut vérifier.",
         "format": "Excel · 9 onglets"
       }
     ],
@@ -465,8 +464,8 @@
       "formule": "=Multiples!D14",
       "lignes": [
         "Multiples de l’EBE",
-        "Flux actualisés (DCF)",
-        "Actif net corrigé"
+        "Passage aux titres",
+        "Actif net corrigé (contrôle)"
       ],
       "retenue": "Fourchette retenue",
       "valeur": "1,8 – 2,4 M€",
@@ -537,7 +536,7 @@
     "dossiers": "{chiffres.dossiers_prepares}",
     "dossiers_libelle": "dossiers préparés",
     "methodes": "3",
-    "methodes_libelle": "méthodes de valorisation croisées",
+    "methodes_libelle": "sources de multiples croisées et datées",
     "legendes": []
   },
   "guides": {
@@ -659,10 +658,10 @@
     },
     "resultat": {
       "code_intro": "Votre dossier circulera sous ce nom",
-      "fourchette_titre": "Première fourchette",
+      "fourchette_titre": "Valeur d'entreprise estimée",
       "methodes_titre": "Méthode",
       "methode": "Calculée sur l'EBE {annee} ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur.",
-      "methodes_approfondies": "Flux futurs actualisés et actif net corrigé : avec vos chiffres, dans l'estimation approfondie.",
+      "methodes_approfondies": "Avec vos chiffres, dans l'estimation approfondie : les mêmes multiples appliqués à vos comptes confirmés, contrôlés par l'actif net corrigé.",
       "note": "Estimation indicative, établie à partir des comptes publics {exercice}. Elle s'affine avec vos propres chiffres.",
       "note_saisie": "Estimation indicative, établie à partir des deux chiffres que vous avez saisis. L'estimation approfondie l'affine avec vos comptes complets.",
       "sur_mesure": "Sur mesure",
@@ -678,7 +677,7 @@
       "teaser": "Teaser anonyme de {nom} : secteur {secteur} ; région {region} ; ancienneté {anciennete} ; effectif {effectif}.",
       "non_renseigne": "Non renseigné",
       "ouvrir_titre": "Ouvrir mon dossier, gratuitement",
-      "ouvrir_texte": "Votre estimation y est gardée. Puis une valeur argumentée par trois méthodes, le teaser, le mémorandum et le fichier Excel. Un code par e-mail, aucun mot de passe.",
+      "ouvrir_texte": "Votre estimation y est gardée. Puis une fourchette argumentée par vos chiffres, le teaser, le mémorandum et le fichier Excel. Un code par e-mail, aucun mot de passe.",
       "inviter_titre": "Inviter mon expert-comptable",
       "inviter_texte": "Un e-mail prérempli, sans aucune donnée de votre dossier : vous choisissez ce que vous partagez.",
       "inviter_sujet": "La transmission de mon entreprise",
@@ -687,7 +686,7 @@
       "analyse_titre": "Ce que nous avons lu",
       "obtenir_titre": "Avec votre dossier, gratuitement",
       "obtenir": [
-        "Valeur en 3 méthodes",
+        "Une fourchette sourcée",
         "Teaser anonyme",
         "Mémorandum",
         "Datapack Excel"
@@ -748,8 +747,8 @@
     },
     "methodes": {
       "chiffre": "3",
-      "titre": "méthodes de valorisation croisées",
-      "texte": "Multiples, flux actualisés, actif net. Chaque hypothèse est sourcée, datée et modifiable : une valeur que vous pouvez défendre."
+      "titre": "sources de multiples croisées",
+      "texte": "Les multiples d’EBE (excédent brut d’exploitation) de votre secteur, croisés entre trois références datées, puis contrôlés par l’actif net. Chaque hypothèse est sourcée : une fourchette que vous pouvez défendre."
     },
     "liste": {
       "etapes": [

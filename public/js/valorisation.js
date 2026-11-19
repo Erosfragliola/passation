@@ -1,8 +1,13 @@
-// Mode détaillé « Valorisation approfondie » : 1. Vos chiffres (liasse PDF + validation ligne par ligne),
-// 2. Votre entreprise (questionnaire, sauvegarde automatique), 3. Votre valorisation (calcul du serveur, réglages).
-// Aucun calcul de valeur ici : tout vient de l'API (code testé). Cette page affiche et recueille.
-import { CHAMPS } from "/js/champs-financiers.js";
-import { ETAPES, REGIONS } from "/js/questionnaire.js";
+// Mode détaillé « Valorisation approfondie », en trois onglets (non numérotés : le fil du parcours est celui de la
+// page du dossier) : Vos chiffres (liasse PDF + validation ligne par ligne ; seul le dernier exercice est
+// indispensable), Pour aller plus loin (questions facultatives, absentes du parcours guidé), Votre valorisation
+// (calcul du serveur, réglages). Fourchette seule, jamais de valeur centrale ; multiples du secteur seulement,
+// l'actif net corrigé sert de contrôle. Aucun calcul de valeur ici : tout vient de l'API (code testé).
+import { CHAMPS, exercicesAttendus } from "/js/champs-financiers.js";
+import { REGIONS } from "/js/questionnaire.js";
+import { POUR_ALLER_PLUS_LOIN as ETAPES } from "/js/parcours.js";
+import { ETIQUETTE_TITRES, resumeValorisation, explicationEcart, alertesDirigeant } from "/js/dossier-parcours.js";
+import { fourchette } from "/js/landing/estimation.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -55,7 +60,7 @@ const PANNEAUX = ["chiffres", "entreprise", "valorisation"];
 function montrer() {
   const cle = PANNEAUX.includes(location.hash.slice(1)) ? location.hash.slice(1) : "chiffres";
   for (const p of PANNEAUX) $(`#${p}`).hidden = p !== cle;
-  document.querySelectorAll(".etapes a").forEach((a) => { if (a.dataset.etape === cle) a.setAttribute("aria-current", "step"); else a.removeAttribute("aria-current"); });
+  document.querySelectorAll(".etapes a").forEach((a) => { if (a.dataset.etape === cle) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
   if (cle === "valorisation") calculer();
   if (cle === "entreprise") dessinerQuestionnaire();
 }
@@ -70,6 +75,9 @@ function etatLigne(cle, annees) {
 }
 function dessinerChiffres() {
   const annees = Object.keys(chiffres.exercices).map(Number).sort((a, b) => a - b);
+  const att = exercicesAttendus(chiffres.exercices);
+  // Rôle de chaque exercice : le dernier est indispensable, les deux précédents facultatifs, les plus anciens pour information
+  const role = (a) => (a === att.dernier ? "indispensable" : att.recommandes.includes(a) ? "facultatif" : "information");
   const table = $("#tableau-chiffres");
   const tete = el("tr", {}, el("th", { scope: "col", text: "Poste" }), ...annees.map((a) => el("th", { scope: "col", class: "num" }, `${a} `, el("button", { type: "button", class: "lien-simple retirer", "aria-label": `Retirer l'exercice ${a}`, title: `Retirer ${a}`, onclick: () => retirerExercice(a) }, "×"))), el("th", { scope: "col", class: "col-ligne", text: "Ligne" }));
   remplacer(table.tHead, tete);
@@ -79,7 +87,7 @@ function dessinerChiffres() {
     for (const c of CHAMPS.filter((x) => x.groupe === groupe)) {
       const etat = etatLigne(c.cle, annees);
       const tr = el("tr", { class: `ligne-${etat}`, "data-cle": c.cle });
-      tr.append(el("th", { scope: "row" }, el("span", { class: "poste", text: c.libelle }), c.obligatoire ? el("abbr", { class: "obligatoire", title: "Obligatoire pour le calcul", text: "*" }) : null, el("span", { class: "aide", text: c.aide })));
+      tr.append(el("th", { scope: "row" }, el("span", { class: "poste", text: c.libelle }), c.obligatoire && att.dernier != null ? el("abbr", { class: "obligatoire", title: `Nécessaire pour l'exercice ${att.dernier}`, text: "*" }) : null, el("span", { class: "aide", text: c.aide })));
       for (const a of annees) {
         const v = chiffres.exercices[a]?.[c.cle];
         const input = el("input", { type: "text", inputmode: "decimal", class: "montant", "aria-label": `${c.libelle}, ${a}`, value: v?.valeur != null ? fmt.format(v.valeur) : "", "data-annee": String(a) });
@@ -95,12 +103,14 @@ function dessinerChiffres() {
   }
   remplacer(table.tBodies[0], ...corps);
 
-  const manque = Object.entries(chiffres.manquants).filter(([, l]) => l.length);
-  const complets = annees.length - manque.length;
-  $("#etat-chiffres").textContent = `${complets}/${Math.max(annees.length, 3)}`;
-  $("#etat-chiffres").setAttribute("aria-label", `${complets} exercices complets`);
-  const resume = manque.map(([a, l]) => `${a} : ${l.length} ligne${l.length > 1 ? "s" : ""} obligatoire${l.length > 1 ? "s" : ""} à compléter ou valider (${l.map((k) => CHAMPS.find((c) => c.cle === k)?.libelle).join(", ")})`);
-  message(resume.length ? resume.join(" · ") : annees.length ? "Tous les exercices sont complets et validés." : "", false, "#message-liasse");
+  // Seul le dernier exercice est réclamé ; les deux précédents sont proposés, jamais exigés ; les plus anciens, ignorés
+  $("#etat-chiffres").textContent = att.dernier == null ? "" : att.dernier_complet ? `✓ ${att.dernier}` : `${att.dernier} à confirmer`;
+  const libelles = (l) => l.map((k) => CHAMPS.find((c) => c.cle === k)?.libelle).join(", ");
+  const manqueDernier = att.dernier != null ? chiffres.manquants[att.dernier] || [] : [];
+  const resume = [];
+  if (manqueDernier.length) resume.push(`${att.dernier} : ${manqueDernier.length} ligne${manqueDernier.length > 1 ? "s" : ""} à compléter ou valider (${libelles(manqueDernier)})`);
+  if (att.dernier != null && att.recommandes_manquants.length) resume.push(`Facultatif : ajouter ${[...att.recommandes_manquants].sort((a, b) => b - a).join(" et ")} fiabilise la fourchette`);
+  message(resume.length ? resume.join(" · ") : annees.length ? "Vos exercices sont complets et validés." : "", false, "#message-liasse");
   if (!chiffres.lecture_automatique) message("La lecture automatique des liasses n'est pas encore activée sur ce site : saisissez vos chiffres à la main, ou réessayez plus tard.", false, "#message-liasse");
   $("#btn-liasse").disabled = !chiffres.lecture_automatique || chiffres.lectures_restantes === 0;
 }
@@ -250,14 +260,11 @@ function programmerSauvegarde(etape) {
     } catch (err) { $("#etat-enregistrement").textContent = `Non enregistré : ${err.message}`; }
   }, 600);
 }
-function majEtatQuestionnaire() {
-  let t = 0, f = 0;
-  for (const e of ETAPES) for (const q of e.questions) { t++; const v = reponses[e.cle]?.[q.cle]; if (v != null && v !== "" && !(Array.isArray(v) && !v.length)) f++; }
-  $("#etat-entreprise").textContent = `${Math.round((f / t) * 100)} %`;
-}
+/** Questions facultatives : pas de pourcentage (il ferait concurrence au décompte des questions du parcours). */
+function majEtatQuestionnaire() { $("#etat-entreprise").textContent = "facultatif"; }
 
 // ================================================================== 3. Votre valorisation
-let dernier = null;
+let dernier = null, dossierCourant = null;
 async function calculer() {
   const zone = $("#resultat");
   zone.setAttribute("aria-busy", "true");
@@ -269,8 +276,8 @@ async function calculer() {
 }
 
 function footballField(lignes) {
-  // lignes : [{ libelle, bas, central, haut, point, fort }] — une seule teinte, la ligne porte l'identité
-  const valeurs = lignes.flatMap((l) => [l.bas, l.haut, l.central, l.point]).filter(Number.isFinite);
+  // lignes : [{ libelle, bas, haut, point, fort }] — une seule teinte, la ligne porte l'identité ; jamais de valeur centrale
+  const valeurs = lignes.flatMap((l) => [l.bas, l.haut, l.point]).filter(Number.isFinite);
   if (!valeurs.length) return null;
   let min = Math.min(0, ...valeurs), max = Math.max(...valeurs);
   const marge = (max - min) * 0.08; max += marge;
@@ -280,7 +287,7 @@ function footballField(lignes) {
   svg.setAttribute("viewBox", `0 0 ${L} ${H}`);
   svg.setAttribute("class", "football");
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", `Fourchettes de valeur des titres par méthode : ${lignes.map((l) => `${l.libelle} ${l.point != null ? court(l.point) : `${court(l.bas)} à ${court(l.haut)}`}`).join(" ; ")}`);
+  svg.setAttribute("aria-label", `Valeur des titres : ${lignes.map((l) => `${l.libelle} ${l.point != null ? court(l.point) : fourchette(l.bas, l.haut)}`).join(" ; ")}`);
   const ns = (t, a) => { const n = document.createElementNS("http://www.w3.org/2000/svg", t); for (const [k, v] of Object.entries(a)) n.setAttribute(k, v); return n; };
   // Graduations recessives
   const pas = Math.pow(10, Math.floor(Math.log10((max - min) / 4)));
@@ -300,12 +307,11 @@ function footballField(lignes) {
     } else if (Number.isFinite(l.bas) && Number.isFinite(l.haut)) {
       cible = ns("rect", { x: x(Math.min(l.bas, l.haut)), y: y + 3, width: Math.max(2, Math.abs(x(l.haut) - x(l.bas))), height: 18, rx: 4, class: `ff-barre${l.fort ? " fort" : ""}` });
       svg.append(cible);
-      if (Number.isFinite(l.central)) svg.append(ns("line", { x1: x(l.central), x2: x(l.central), y1: y, y2: y + 24, class: "ff-central" }));
     } else {
       const t = ns("text", { x: G, y: y + 17, class: "ff-axe" }); t.textContent = "à compléter"; svg.append(t);
     }
     if (cible) {
-      const texte = l.point != null ? `${l.libelle} : ${euros(l.point)}` : `${l.libelle} : ${euros(l.bas)} à ${euros(l.haut)}${Number.isFinite(l.central) ? `, central ${euros(l.central)}` : ""}`;
+      const texte = l.point != null ? `${l.libelle} : ${euros(l.point)}` : `${l.libelle} : ${fourchette(l.bas, l.haut)}`;
       const zoneSurvol = ns("rect", { x: G, y, width: L - G, height: hL - 8, fill: "transparent" });
       zoneSurvol.addEventListener("pointermove", (ev) => { const r = svg.getBoundingClientRect(); bulle.textContent = texte; bulle.hidden = false; bulle.style.left = `${ev.clientX - r.left}px`; bulle.style.top = `${ev.clientY - r.top}px`; });
       zoneSurvol.addEventListener("pointerleave", () => { bulle.hidden = true; });
@@ -322,11 +328,6 @@ function tableau(entetes, lignes, { legende } = {}) {
     el("tbody", {}, ...lignes.map((l) => el("tr", { class: l.classe || null }, ...l.cellules.map((c, i) => (i === 0 ? el("th", { scope: "row", text: c }) : el("td", { class: "num", text: c }))))))));
 }
 
-function sourceH(h) {
-  if (!h) return null;
-  return el("span", { class: "petit source-h" }, h.source ? `Source : ${h.source}` : "", h.url ? [" · ", el("a", { href: h.url, target: "_blank", rel: "noopener", text: "voir" })] : null);
-}
-
 function dessinerResultat() {
   const { resultat: r, hypotheses: H, entree } = dernier;
   const zone = $("#resultat");
@@ -334,7 +335,7 @@ function dessinerResultat() {
     remplacer(zone, el("div", { class: "carte vide" }, el("p", { text: "Certains réglages sont hors des bornes admises :" }),
       el("ul", {}, ...r.alertes.map((t) => el("li", { text: t }))),
       (r.erreurs || []).some((x) => x.champ.startsWith("reglages")) ? el("button", { type: "button", class: "btn btn-noir", onclick: async () => {
-        if (!confirm("Rétablir les réglages par défaut (prime de taille, décotes, pondération, hypothèses) ?")) return;
+        if (!confirm("Rétablir les réglages par défaut (EBE retenu, décotes et primes) ?")) return;
         try { reponses.reglages = {}; await api(`${base}/answers/reglages`, { method: "PUT", body: JSON.stringify({ data: {} }) }); await calculer(); }
         catch (e) { message(e.message, true); }
       } }, "Rétablir les réglages par défaut") : null,
@@ -349,36 +350,30 @@ function dessinerResultat() {
     return;
   }
   const s = r.synthese;
-  $("#etat-valorisation").textContent = s.central != null ? court(s.central) : "à compléter";
+  const v = resumeValorisation(r);
+  $("#etat-valorisation").textContent = v ? fourchette(v.bas, v.haut) : "à compléter";
   const reg = reponses.reglages || {};
 
-  // --- Synthèse
+  // --- Synthèse : la fourchette seule (même format et même étiquette que la page du dossier), et ce qui l'explique
+  const ecart = v ? explicationEcart(dossierCourant?.estimation, v) : null;
   const tete = el("div", { class: "synthese-valeur carte" },
-    el("p", { class: "etiquette", text: "Valeur de vos titres (fonds propres)" }),
-    s.central != null
-      ? [el("p", { class: "valeur-centrale chiffre", text: euros(s.central) }), el("p", { class: "fourchette", text: `Fourchette : ${euros(s.bas)} – ${euros(s.haut)}` })]
-      : el("p", { class: "valeur-centrale", text: "À compléter" }),
-    el("p", { class: "petit", text: s.ponderation.dcf > 0 ? `Pondération : multiples ${pct(s.ponderation.multiples, 0)}, DCF ${pct(s.ponderation.dcf, 0)}. Actif net corrigé (plancher, présenté à part) : ${euros(s.plancher_ancc)}.`
-      : `Valeur fondée sur les multiples, la référence des cessions de PME. ${r.dcf?.statut === "ok" ? "Le DCF est calculé à titre indicatif et peut être ajouté dans « Affiner »." : "Le DCF est une option : il se calcule une fois la prime de taille renseignée dans « Affiner »."} Actif net corrigé (plancher, présenté à part) : ${euros(s.plancher_ancc)}.` }),
+    el("p", { class: "etiquette", text: ETIQUETTE_TITRES }),
+    el("p", { class: "valeur-centrale chiffre", text: v ? fourchette(v.bas, v.haut) : "À compléter" }),
+    el("p", { class: "petit", text: `Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, la référence des cessions de PME, après dettes et trésorerie. Contrôle par l'actif net corrigé (plancher de négociation) : ${euros(s.plancher_ancc)}.` }),
+    ecart ? el("p", { class: "petit", text: ecart }) : null,
     el("p", { class: "estimation-mention", text: "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable ou d'un conseil en cession." }),
     el("a", { class: "btn btn-sable", href: `${base}/documents/datapack`, download: "" }, "Télécharger le datapack Excel ", el("span", { class: "fleche", "aria-hidden": "true", text: "↓" })));
-  const alertes = s.alertes.length ? el("ul", { class: "alertes" }, ...s.alertes.map((a) => el("li", { text: a }))) : null;
+  const visibles = alertesDirigeant(s.alertes);
+  const alertes = visibles.length ? el("ul", { class: "alertes" }, ...visibles.map((a) => el("li", { text: a }))) : null;
 
-  const m = r.multiples, d = r.dcf;
+  // --- Fourchette et son contrôle : la barre des multiples, le point de l'actif net corrigé
+  const m = r.multiples;
   const ff = footballField([
-    { libelle: "Multiples d'EBE", bas: m.titres?.bas, central: m.titres?.central, haut: m.titres?.haut },
-    { libelle: "DCF", bas: d.titres?.bas, central: d.titres?.central, haut: d.titres?.haut ?? d.titres?.central },
-    { libelle: "Actif net corrigé", point: r.ancc.valeur },
-    { libelle: "Synthèse", bas: s.bas, central: s.central, haut: s.haut, fort: true },
+    { libelle: "Multiples d'EBE", bas: s.bas, haut: s.haut, fort: true },
+    { libelle: "Actif net (contrôle)", point: r.ancc.valeur },
   ]);
 
-  // --- Réglages (prime de taille, décotes, pondération, hypothèses)
-  const champPct = (cle, libelle, valeur, aideNoeud, { min, max, pas = 0.1 } = {}) => {
-    const idc = `reg-${cle}`;
-    const input = el("input", { id: idc, type: "number", step: String(pas), min: min ?? null, max: max ?? null, value: valeur != null ? String(Math.round(valeur * 10000) / 100) : "" });
-    input.addEventListener("change", () => { const n = lireNombre(input.value); reg[cle] = n == null || Number.isNaN(n) ? null : n / 100; });
-    return el("div", { class: "q" }, el("label", { for: idc, text: libelle }), el("div", { class: "champ-unite" }, input, el("span", { class: "unite", text: "%" })), aideNoeud);
-  };
+  // --- Réglages (EBE retenu, décotes et primes)
   const facteurs = H.decotes_primes.facteurs;
   const decotes = facteurs.map((f) => {
     const existant = (reg.decotes || []).find((x) => x.cle === f.cle) || { cle: f.cle, pct: 0, justification: "" };
@@ -395,27 +390,20 @@ function dessinerResultat() {
     curseur.addEventListener("input", maj); just.addEventListener("change", maj);
     return el("div", { class: "decote" }, el("label", { for: idc, text: f.libelle }), curseur, lu, just);
   });
-  const poids = el("input", { id: "reg-poids", type: "range", min: "0", max: "100", step: "5", value: String(Math.round((reg.poids_multiples ?? H.ponderation.multiples) * 100)) });
-  const poidsLu = el("output", { for: "reg-poids", text: `${poids.value} % / ${100 - poids.value} %` });
-  poids.addEventListener("input", () => { reg.poids_multiples = Number(poids.value) / 100; poidsLu.textContent = `${poids.value} % / ${100 - poids.value} %`; });
   const modeEbe = el("select", { id: "reg-mode-ebe" }, el("option", { value: "moyenne", selected: reg.mode_ebe !== "dernier", text: "Moyenne des exercices retraités" }), el("option", { value: "dernier", selected: reg.mode_ebe === "dernier", text: "Dernier exercice retraité" }));
   modeEbe.addEventListener("change", () => { reg.mode_ebe = modeEbe.value; });
 
   const reglages = el("details", { class: "carte reglages" },
-    el("summary", {}, el("strong", { text: "Affiner (pour votre conseil)" }), el("span", { class: "petit", text: " · hypothèses, prime de taille, décotes, pondération : chacune avec sa source" })),
+    el("summary", {}, el("strong", { text: "Affiner (pour votre conseil)" }), el("span", { class: "petit", text: " · EBE retenu, décotes et primes : chacune avec sa justification" })),
     el("div", { class: "reglages-grille" },
-      champPct("prime_taille", "Prime de taille et de risque spécifique (DCF)", reg.prime_taille, el("span", { class: "petit aide-q", text: H.prime_taille.note }), { min: 0, max: 20 }),
-      champPct("taux_sans_risque", "Taux sans risque", reg.taux_sans_risque ?? H.taux_sans_risque.valeur, sourceH(H.taux_sans_risque)),
-      champPct("prime_risque_marche", "Prime de risque du marché (France)", reg.prime_risque_marche ?? H.prime_risque_marche.valeur, sourceH(H.prime_risque_marche)),
-      champPct("cout_dette_avant_impot", "Coût de la dette avant impôt", reg.cout_dette_avant_impot ?? H.cout_dette_avant_impot.valeur, sourceH(H.cout_dette_avant_impot)),
-      champPct("croissance_terminale", "Croissance à l'infini", reg.croissance_terminale ?? H.croissance_terminale.valeur, sourceH(H.croissance_terminale)),
-      el("div", { class: "q" }, el("label", { for: "reg-mode-ebe", text: "EBE normatif" }), modeEbe),
-      el("div", { class: "q" }, el("label", { for: "reg-poids", text: "Multiples / DCF (le DCF est une option : 0 % par défaut, à activer si votre conseil le souhaite)" }), poids, poidsLu)),
+      el("div", { class: "q" }, el("label", { for: "reg-mode-ebe", text: "EBE normatif (EBE de référence)" }), modeEbe)),
     el("h4", { text: "Décotes et primes" }), el("p", { class: "petit", text: H.decotes_primes.note }),
     el("div", { class: "decotes" }, ...decotes),
     el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
       const bouton = ev.currentTarget; // vidé après « await »
       bouton.disabled = true;
+      // La pondération avec les flux actualisés n'est plus proposée : un réglage ancien est retiré (multiples seuls)
+      delete reg.poids_multiples;
       try { reponses.reglages = reg; await api(`${base}/answers/reglages`, { method: "PUT", body: JSON.stringify({ data: reg }) }); await calculer(); }
       catch (e) { message(e.message, true); } finally { bouton.disabled = false; }
     } }, "Recalculer"));
@@ -429,62 +417,33 @@ function dessinerResultat() {
   }
   pontLignes.push({ classe: "total fort", cellules: [`EBE normatif (${r.ebe_normatif.mode === "dernier" ? "dernier exercice" : `moyenne ${r.ebe_normatif.annees.join(", ")}`})`, euros(r.ebe_normatif.valeur)] });
 
-  // --- Pont VE → titres
+  // --- De la valeur d'entreprise à la valeur des titres, pour le bas et le haut de la fourchette
   const pt = r.pont_titres;
-  const pontTitres = m.statut === "ok" ? tableau(["Multiples d'EBE (centrale)", "Montant"], [
-    { cellules: [`EBE normatif × ${String(m.multiples.central).replace(".", ",")}`, euros(m.ve.central)] },
-    { cellules: [`Décotes et primes (× ${pt.facteur_decotes.toLocaleString("fr-FR", { maximumFractionDigits: 3 })})`, euros(m.ve.central * pt.facteur_decotes - m.ve.central)] },
-    ...r.dette_nette.lignes.filter((l) => l.montant).map((l) => ({ classe: "sous", cellules: [`  ${l.libelle}`, euros(-l.montant)] })),
-    { cellules: ["Écart de BFR (réel − normatif)", euros(pt.ecart_bfr)] },
-    ...(pt.hors_exploitation ? [{ cellules: ["Actifs hors exploitation", euros(pt.hors_exploitation)] }] : []),
-    { classe: "total fort", cellules: ["Valeur des titres", euros(m.titres.central)] },
-  ], { legende: `Multiples du secteur : ${[m.multiples.bas, m.multiples.central, m.multiples.haut].map((x) => x.toLocaleString("fr-FR")).join(" / ")} × EBE (croisement de trois sources datées, voir la méthode)` }) : el("p", { class: "petit", text: "Méthode des multiples non applicable ou à compléter." });
+  const mult = (x) => `× ${x.toLocaleString("fr-FR")}`;
+  const deuxCols = (lib, f) => ({ cellules: [lib, f("bas"), f("haut")] });
+  const pontTitres = m.statut === "ok" ? tableau(["De l'entreprise aux titres", "Bas", "Haut"], [
+    deuxCols("Multiple d'EBE du secteur", (k) => mult(m.multiples[k])),
+    deuxCols("Valeur d'entreprise (EBE normatif × multiple)", (k) => euros(m.ve[k])),
+    deuxCols(`Décotes et primes (× ${pt.facteur_decotes.toLocaleString("fr-FR", { maximumFractionDigits: 3 })})`, (k) => euros(m.ve[k] * pt.facteur_decotes - m.ve[k])),
+    ...r.dette_nette.lignes.filter((l) => l.montant).map((l) => ({ classe: "sous", cellules: [`  ${l.libelle}`, euros(-l.montant), euros(-l.montant)] })),
+    deuxCols("Écart de besoin en fonds de roulement (réel − normal)", () => euros(pt.ecart_bfr)),
+    ...(pt.hors_exploitation ? [deuxCols("Actifs hors exploitation", () => euros(pt.hors_exploitation))] : []),
+    { classe: "total fort", cellules: ["Valeur des titres", euros(m.titres.bas), euros(m.titres.haut)] },
+  ], { legende: "Multiples du secteur : croisement de trois sources datées, voir la méthode" }) : el("p", { class: "petit", text: "Méthode des multiples non applicable ou à compléter." });
 
-  // --- DCF
-  let blocDcf;
-  if (d.statut === "ok") {
-    const c = d.cmpc, hy = d.hypotheses;
-    blocDcf = [
-      tableau(["Coût du capital (CMPC)", "Valeur"], [
-        { cellules: ["Taux sans risque", pct(H.taux_sans_risque.valeur, 2)] },
-        { cellules: [`Bêta désendetté du secteur (${H.betas.secteurs[entree.secteur]?.industrie_damodaran ?? "–"})`, c.beta_desendette.toLocaleString("fr-FR", { maximumFractionDigits: 3 })] },
-        { cellules: ["Bêta endetté (structure cible du secteur)", c.beta_endette.toLocaleString("fr-FR", { maximumFractionDigits: 3 })] },
-        { cellules: ["Prime de risque du marché", pct(H.prime_risque_marche.valeur, 2)] },
-        { cellules: ["Prime de taille (vos réglages)", pct(entree.primeTaille, 2)] },
-        { cellules: ["Coût des fonds propres", pct(c.cout_fonds_propres, 2)] },
-        { cellules: ["Coût de la dette après impôt", pct(c.cout_dette_apres_impot, 2)] },
-        { cellules: ["Part de la dette", pct(c.poids_dette, 1)] },
-        { classe: "total fort", cellules: ["CMPC", pct(c.valeur, 2)] },
-      ]),
-      tableau(["Hypothèse (origine)", "Valeur"], Object.entries({ croissance: "Croissance annuelle du CA", marge_ebe: "Marge d'EBE", amortissements_pct: "Amortissements / CA", investissements_pct: "Investissements / CA", croissance_terminale: "Croissance à l'infini" })
-        .map(([k, lib]) => ({ cellules: [`${lib} (${hy[k].origine})`, pct(hy[k].valeur, 1)] })).concat([{ cellules: [`BFR en jours de CA (${hy.bfr_jours.origine})`, `${Math.round(hy.bfr_jours.valeur)} j`] }])),
-      null,
-    ];
-    // Tableau des flux, transposé (lignes = postes)
-    const postes = [["ca", "Chiffre d'affaires"], ["ebe", "EBE"], ["impot", "Impôt sur EBIT"], ["investissements", "Investissements"], ["variation_bfr", "Variation du BFR"], ["flux", "Flux disponible"], ["actualise", "Flux actualisé"]];
-    blocDcf[2] = tableau(["Flux (€)", ...d.detail.flux.map((f) => `An ${f.annee}`)], postes.map(([k, lib]) => ({ classe: k === "flux" ? "total" : null, cellules: [lib, ...d.detail.flux.map((f) => court(f[k]))] })));
-    blocDcf.push(el("p", { class: "petit", text: `Valeur terminale actualisée : ${euros(d.detail.vt_actualisee)} (${pct(d.detail.part_vt, 0)} de la valeur). Valeur d'entreprise DCF : ${euros(d.ve.central)} ; titres : ${euros(d.titres.central)}.` }));
-  } else {
-    blocDcf = [el("p", { class: "message-carte", text: d.statut === "a_completer" ? `DCF à compléter : ${d.manquant.join(", ")}. Renseignez-la dans « Hypothèses et réglages » ci-dessus.` : d.message || "DCF non applicable." })];
-  }
-
-  // --- Sensibilités
+  // --- Sensibilité au multiple (valeur des titres)
   const sens = r.sensibilites;
-  const lignesSens = [];
-  if (sens.multiple) lignesSens.push({ cellules: ["Multiple d'EBE − 1x / + 1x", court(sens.multiple.moins), court(sens.multiple.central), court(sens.multiple.plus)] });
-  if (sens.cmpc) lignesSens.push({ cellules: ["CMPC + 1 pt / − 1 pt (DCF)", court(sens.cmpc.plus_1pt), court(sens.cmpc.central), court(sens.cmpc.moins_1pt)] });
-  if (sens.croissance_terminale) lignesSens.push({ cellules: ["Croissance à l'infini − 0,5 pt / + 0,5 pt (DCF)", court(sens.croissance_terminale.moins_05pt), court(sens.croissance_terminale.central), court(sens.croissance_terminale.plus_05pt)] });
+  const lignesSens = sens.multiple ? [{ cellules: ["Multiple d'EBE retenu, un point de moins / de plus", court(sens.multiple.moins), court(sens.multiple.plus)] }] : [];
 
   remplacer(zone, 
     el("div", { class: "resultat-tete" }, tete, el("div", { class: "carte" }, el("h3", { text: "Fourchettes par méthode" }), el("p", { class: "petit", text: "Valeur des titres. Barre : fourchette ; trait : valeur centrale ; point : actif net corrigé." }), ff)),
     ...(alertes ? [alertes] : []), reglages,
     el("div", { class: "resultat-detail" },
-      el("section", { class: "carte" }, el("h3", { text: "1. De l'EBE comptable à l'EBE normatif" }), tableau(["Pont EBE", "Montant"], pontLignes)),
-      el("section", { class: "carte" }, el("h3", { text: "2. Multiples et passage à la valeur des titres" }), pontTitres),
-      el("section", { class: "carte" }, el("h3", { text: "3. DCF sur 5 ans" }), ...blocDcf),
-      el("section", { class: "carte" }, el("h3", { text: "4. Actif net comptable corrigé" }), tableau(["Poste", "Montant"], [...r.ancc.lignes.filter((l) => l.montant).map((l) => ({ cellules: [l.libelle, euros(l.montant)] })), { classe: "total fort", cellules: ["Actif net corrigé", euros(r.ancc.valeur)] }])),
-      lignesSens.length ? el("section", { class: "carte" }, el("h3", { text: "5. Sensibilités (valeur des titres)" }), tableau(["Variation", "Basse", "Centrale", "Haute"], lignesSens)) : null),
-    el("p", { class: "petit", text: `Hypothèses Passation du ${H.version}. ${H.modifiees?.length ? `Modifiées par vous : ${H.modifiees.join(", ")}.` : ""} Le calcul est fait par du code vérifié ; aucune intelligence artificielle n'intervient dans les montants.` }),
+      el("section", { class: "carte" }, el("h3", { text: "De l'EBE comptable à l'EBE normatif" }), tableau(["Pont EBE", "Montant"], pontLignes)),
+      el("section", { class: "carte" }, el("h3", { text: "Multiples et passage à la valeur des titres" }), pontTitres),
+      el("section", { class: "carte" }, el("h3", { text: "Contrôle : actif net comptable corrigé" }), tableau(["Poste", "Montant"], [...r.ancc.lignes.filter((l) => l.montant).map((l) => ({ cellules: [l.libelle, euros(l.montant)] })), { classe: "total fort", cellules: ["Actif net corrigé", euros(r.ancc.valeur)] }])),
+      lignesSens.length ? el("section", { class: "carte" }, el("h3", { text: "Sensibilité (valeur des titres)" }), tableau(["Variation", "Un point de moins", "Un point de plus"], lignesSens)) : null),
+    el("p", { class: "petit", text: `Hypothèses Passation du ${H.version}. Le calcul est fait par du code vérifié ; aucune intelligence artificielle n'intervient dans les montants.` }),
   );
 }
 
@@ -494,12 +453,14 @@ async function charger() {
   $("#lien-dossier").href = `/espace/?dossier=${id}`;
   document.querySelectorAll(".lien-guide").forEach((a) => { a.href = `/espace/demarrer/?dossier=${id}`; });
   const [dossier, ch, rep] = await Promise.all([api(base), api(`${base}/financials`), api(`${base}/answers`)]);
+  dossierCourant = dossier;
   document.title = `Valorisation · ${dossier.entreprise.nom} · Passation`;
   $("#dossier-nom").textContent = dossier.entreprise.nom;
   chiffres = ch; reponses = rep.reponses || {};
   dessinerChiffres();
   majEtatQuestionnaire();
-  if (dossier.parcours?.valorisation?.central != null) $("#etat-valorisation").textContent = court(dossier.parcours.valorisation.central);
+  const v = dossier.parcours?.valorisation;
+  if (v) $("#etat-valorisation").textContent = fourchette(v.bas, v.haut);
   montrer();
   $("main").removeAttribute("aria-busy");
 }

@@ -623,3 +623,11 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   depuis `main` (version Cloudflare c9c46e37), aucune migration à appliquer. Vérifié en ligne : mémorandum page par
   page et récapitulatif servis, routes privées 401, estimation 434436622 ok, aucune ressource en erreur sur
   l'accueil. Tests : 373. Les mémorandums déjà rédigés gardent leurs anciens textes jusqu'à « Rédiger à nouveau ».
+- **19/11/2026, branche `parcours-coherence`** (PR non fusionnée, non déployée), corrections de l'audit du parcours :
+  une seule fourchette (jamais de valeur centrale à l'écran ; « Valeur d'entreprise estimée » pour l'express,
+  « Valeur de vos titres » ensuite, phrase qui explique l'écart à partir des montants calculés) ; plus de DCF ni de
+  « trois méthodes » côté dirigeant (moteur et datapack inchangés) ; état unique `etatParcours` lu par la page du
+  dossier et l'écran final du parcours guidé (« prêt » et 100 % seulement si tout l'indispensable est fait) ; une seule
+  liste d'étapes (`ETAPES_PARCOURS`) ; questions = celles du parcours guidé + le site (14), le reste « Pour aller plus
+  loin », écrans vus enregistrés (étape `parcours`) ; action principale = première tâche ; seul le dernier exercice est
+  indispensable, les deux précédents facultatifs, années INPI isolées non reprises. Tests : 457.

@@ -213,15 +213,18 @@ describe("routes privées", () => {
 });
 
 describe("avancement", () => {
-  // Pondérations : identifiée 15, express 10, un exercice 20 (+5 pour les trois), questionnaire 15, approfondie 15, documents 20
-  it("blocs inchangés ; global = étapes du parcours, sans partir de zéro", () => {
+  // Pondérations : identifiée 15, première valeur (express ou approfondie) 10, dernier exercice confirmé 25 (le seul
+  // indispensable), questions du parcours 15, approfondie 15, documents 20
+  it("global = étapes du parcours, sans partir de zéro ; les exercices précédents n'y entrent pas", () => {
     expect(avancement({})).toEqual({ global: 15, chiffres: 0, valorisation: 0, documents: 0, preparation: 0 });
     expect(avancement({ estimation_express: true }).global).toBe(25);
-    // 15 + 10 + 20 + 15 × 0,5 = 52,5 → 53
-    expect(avancement({ estimation_express: true, chiffres_valides: 1 / 3, questionnaire_pct: 50 }).global).toBe(53);
+    // 15 + 10 + 25 + 15 × 0,5 = 57,5 → 58
+    expect(avancement({ estimation_express: true, dernier_exercice: true, questions_pct: 50 }).global).toBe(58);
     // la checklist ne compte pas dans le global : 15 + 10 + 25 + 20 = 70
-    expect(avancement({ estimation_express: true, chiffres_valides: 1, documents: 3, checklist: new Set(CLES_CHECKLIST) }))
+    expect(avancement({ estimation_express: true, dernier_exercice: true, documents: 3, checklist: new Set(CLES_CHECKLIST) }))
       .toEqual({ global: 70, chiffres: 100, valorisation: 25, documents: 100, preparation: 100 });
-    expect(avancement({ estimation_express: true, chiffres_valides: 1, questionnaire_pct: 100, valorisation_approfondie: true, documents: 3 }).global).toBe(100);
+    expect(avancement({ estimation_express: true, dernier_exercice: true, questions_pct: 100, valorisation_approfondie: true, documents: 3 }).global).toBe(100);
+    // comptes confidentiels (pas d'estimation express) : la valorisation approfondie suffit pour atteindre 100
+    expect(avancement({ dernier_exercice: true, questions_pct: 100, valorisation_approfondie: true, documents: 3 }).global).toBe(100);
   });
 });
