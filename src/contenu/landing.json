@@ -69,40 +69,11 @@
     "surtitre": "Préparer la cession de votre PME",
     "titre": "Vous avez bâti. Préparez votre *transmission*.",
     "sous_titre": "Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.",
-    "note": "Estimation gratuite, sans compte · Personne n'est averti · Données des registres officiels",
     "note_comptes": "",
     "preuves": {
       "dirigeants": "*{nb_dirigeants}* dirigeants accompagnés",
       "avis": "*{note_avis}/5* · {nb_avis} avis",
       "registres": ""
-    },
-    "tuiles": {
-      "libelle": "Un seul espace pour toute votre cession",
-      "liste": [
-        {
-          "titre": "Estimation express",
-          "texte": "30 secondes, gratuite"
-        },
-        {
-          "titre": "Estimation approfondie",
-          "texte": "Multiples du secteur"
-        },
-        {
-          "titre": "Teaser anonyme",
-          "texte": "Sous un nom de code"
-        },
-        {
-          "titre": "Mémo et datapack",
-          "texte": "Le dossier complet"
-        }
-      ]
-    },
-    "carte": {
-      "titre": "Votre première estimation",
-      "fictif": "exemple fictif",
-      "code": "Projet Chêne",
-      "valeur": "1,8 – 2,4 M€",
-      "pied": "Calculée en 30 secondes depuis les comptes publics"
     },
     "coches": [
       "Estimation gratuite, sans compte",
@@ -132,110 +103,7 @@
       ]
     }
   },
-  "histoire": {
-    "temps1": {
-      "surtitre": "Chaque soir, vous fermez.",
-      "titre": "Un jour, vous passerez *les clés.*",
-      "texte": "Chaque clé, vous savez ce qu'elle ouvre. Un repreneur, lui, ne le sait pas."
-    },
-    "temps2": {
-      "surtitre": "Avec Passation",
-      "titre": "Chaque clé devient un chapitre.",
-      "texte": "Neuf chapitres que vos conseils et vos repreneurs comprennent, sans vous."
-    },
-    "temps3": {
-      "surtitre": "Le dossier",
-      "titre": "Un dossier qui raconte, chiffre et convainc.",
-      "texte": "Le teaser : une page anonyme pour intéresser des repreneurs. Le mémo : l'histoire complète de votre entreprise. Le datapack : le fichier Excel des chiffres."
-    },
-    "temps4": {
-      "titre": "Et la vôtre ?",
-      "texte": "Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
-      "champ": "Et la vôtre ? Son nom ou son SIREN"
-    },
-    "chapitres": [
-      {
-        "recto": "bureau",
-        "numero": "01",
-        "titre": "Synthèse",
-        "detail": "l'opportunité en bref"
-      },
-      {
-        "recto": "portail",
-        "numero": "02",
-        "titre": "Histoire",
-        "detail": "création, étapes, implantation"
-      },
-      {
-        "recto": "atelier",
-        "numero": "03",
-        "titre": "Savoir-faire",
-        "detail": "métier, produits, services"
-      },
-      {
-        "recto": "camion",
-        "numero": "04",
-        "titre": "Clients",
-        "detail": "clientèle, zone, récurrence"
-      },
-      {
-        "recto": "vestiaire",
-        "numero": "05",
-        "titre": "Équipe",
-        "detail": "organisation, encadrement"
-      },
-      {
-        "recto": "coffre",
-        "numero": "06",
-        "titre": "Comptes",
-        "detail": "jusqu'à trois exercices"
-      },
-      {
-        "recto": "vitrine",
-        "numero": "07",
-        "titre": "Atouts",
-        "detail": "forces et perspectives"
-      },
-      {
-        "recto": "classeurs",
-        "numero": "08",
-        "titre": "Opération",
-        "detail": "part cédée, calendrier"
-      },
-      {
-        "recto": "combien ?",
-        "numero": "09",
-        "titre": "Valeur",
-        "detail": "une fourchette sourcée"
-      }
-    ],
-    "dossier": {
-      "entete": "Dossier de présentation",
-      "confidentiel": "Confidentiel",
-      "titre": "Votre entreprise",
-      "teaser": "Teaser anonyme",
-      "secteur": "Secteur",
-      "region": "Région",
-      "anciennete": "Ancienneté",
-      "effectif": "Effectif",
-      "pied": "Teaser · Mémo · Datapack",
-      "fictif": "Exemple fictif"
-    },
-    "demo": {
-      "nom": "MENUISERIE DURAND & FILS",
-      "meta": "SIREN 8•• ••• ••• · Nantes (44)",
-      "code": "Chêne",
-      "secteur": "Travaux de construction spécialisés",
-      "region": "Pays de la Loire",
-      "anciennete": "plus de 30 ans",
-      "effectif": "20 à 49 salariés",
-      "valeur_libelle": "Première valeur",
-      "valeur": "1,8 – 2,4 M€",
-      "mention": "Estimation indicative, non contractuelle."
-    }
-  },
   "comment": {
-    "surtitre": "Comment ça marche",
     "titre": "Trois étapes, sans surprise.",
     "etapes": [
       {
@@ -272,26 +140,6 @@
         ]
       }
     ],
-    "visuel1": {
-      "entete": "Résultat · exemple fictif",
-      "nom": "Menuiserie Durand & Fils",
-      "infos": "Nantes (44) · créée en 1995 · 20 à 49 salariés",
-      "valeur_libelle": "Première valeur",
-      "valeur": "1,8 – 2,4 M€",
-      "mention": "Estimation indicative, non contractuelle.",
-      "annotation": "votre première valeur"
-    },
-    "visuel2": {
-      "entete": "Multiples du secteur · exemple fictif",
-      "methodes": [
-        "Multiples d’EBE",
-        "Actif net (contrôle)"
-      ],
-      "retenue": "Fourchette retenue"
-    },
-    "visuel3": {
-      "alt": "Les neuf clés alignées, chacune sous l’étiquette de son chapitre, de la synthèse jusqu’à la valeur."
-    },
     "illustrations": {
       "fictif": "exemple fictif",
       "siren": {
@@ -327,165 +175,9 @@
     }
   },
   "pourquoi": {
-    "surtitre": "Pourquoi Passation",
-    "titre": "Pensé pour les PME, pas pour les grands groupes.",
-    "cartes": [
-      {
-        "titre": "Les mots et les chiffres d’une PME",
-        "texte": "Artisans, commerçants, industriels, prestataires : chaque étape parle votre langue, pas celle d’une banque d’affaires."
-      },
-      {
-        "titre": "Une valeur que vous pouvez défendre",
-        "texte": "Chaque hypothèse du calcul est sourcée et datée, et vous pouvez la modifier. Rien n’est une boîte noire.",
-        "visuel": {
-          "entete": "Hypothèses · exemple fictif",
-          "lignes": [
-            "Taux sans risque",
-            "Prime de risque",
-            "Multiple sectoriel"
-          ],
-          "source": "source datée",
-          "modifiable": "modifiable"
-        }
-      },
-      {
-        "titre": "Vos conseils gardent la main",
-        "texte": "Expert-comptable, avocat, banquier : vous leur transmettez le même dossier, en Excel et en PDF. Passation prépare, vous décidez.",
-        "visuel": {
-          "fichiers": [
-            "Projet-Chene-datapack.xlsx",
-            "Projet-Chene-memorandum.pdf",
-            "Projet-Chene-teaser.pdf"
-          ],
-          "mention": "Exemple fictif"
-        }
-      }
-    ],
-    "photo_alt": "Un artisan penché sur son établi, sous sa lampe",
-    "sources": "Données issues des registres publics officiels",
-    "hebergement": " · Hébergement {hebergement}",
-    "partenaires": " · {partenaires}",
-    "fictif": "Exemple fictif"
-  },
-  "livrables": {
-    "surtitre": "Ce que vous recevez",
-    "titre": "Trois documents, prêts à transmettre.",
-    "texte": "Ce que vous remettez à vos conseils, puis aux repreneurs. Ici pour une entreprise fictive, le « Projet Chêne ».",
-    "docs": [
-      {
-        "type": "Teaser",
-        "titre": "Une page, anonyme",
-        "texte": "Pour éveiller l’intérêt des repreneurs sans dévoiler votre nom : secteur, région, taille et première valeur.",
-        "format": "PDF · 1 page"
-      },
-      {
-        "type": "Mémorandum",
-        "titre": "L’histoire complète",
-        "texte": "Neuf chapitres, de la synthèse à l’opération, dont une étude de votre marché aux chiffres sourcés. Comme chez les banques d’affaires, il ne donne aucun prix : la valeur reste entre vous et vos conseils.",
-        "format": "PDF · 9 chapitres"
-      },
-      {
-        "type": "Datapack",
-        "titre": "Tous les chiffres",
-        "texte": "Comptes, retraitements, multiples et passage à la valeur des titres, avec des formules que votre expert-comptable peut vérifier.",
-        "format": "Excel · 9 onglets"
-      }
-    ],
-    "teaser": {
-      "entete": "Teaser · confidentiel",
-      "nom": "Projet Chêne",
-      "lignes": [
-        [
-          "Secteur",
-          "Travaux de construction spécialisés"
-        ],
-        [
-          "Région",
-          "Pays de la Loire"
-        ],
-        [
-          "Ancienneté",
-          "plus de 30 ans"
-        ],
-        [
-          "Effectif",
-          "20 à 49 salariés"
-        ]
-      ],
-      "valeur_libelle": "Première valeur",
-      "valeur": "1,8 – 2,4 M€"
-    },
-    "memo": {
-      "entete": "Mémorandum d’information",
-      "nom": "Projet Chêne",
-      "mention": "Strictement confidentiel",
-      "sommaire": "Sommaire",
-      "chapitres": [
-        {
-          "numero": "01",
-          "titre": "Synthèse"
-        },
-        {
-          "numero": "02",
-          "titre": "Histoire"
-        },
-        {
-          "numero": "03",
-          "titre": "Savoir-faire"
-        },
-        {
-          "numero": "04",
-          "titre": "Équipe"
-        },
-        {
-          "numero": "05",
-          "titre": "Marché"
-        },
-        {
-          "numero": "06",
-          "titre": "Clients"
-        },
-        {
-          "numero": "07",
-          "titre": "Finances"
-        },
-        {
-          "numero": "08",
-          "titre": "Perspectives"
-        },
-        {
-          "numero": "09",
-          "titre": "Opération"
-        }
-      ]
-    },
-    "datapack": {
-      "fichier": "Projet-Chene-datapack.xlsx",
-      "formule": "=Multiples!D14",
-      "lignes": [
-        "Multiples de l’EBE",
-        "Passage aux titres",
-        "Actif net corrigé (contrôle)"
-      ],
-      "retenue": "Fourchette retenue",
-      "valeur": "1,8 – 2,4 M€",
-      "hypothese": "Hypothèse modifiable",
-      "onglets": [
-        "Couverture",
-        "Comptes",
-        "Retraitements",
-        "Hypothèses",
-        "Passage aux titres",
-        "Multiples",
-        "DCF",
-        "ANCC",
-        "Synthèse"
-      ]
-    },
-    "fictif": "Exemple fictif"
+    "sources": "Données issues des registres publics officiels"
   },
   "confidentialite": {
-    "surtitre": "Confidentialité",
     "titre": "Personne ne saura. Sauf ceux que vous choisirez.",
     "texte": "Préparer une cession demande de la discrétion. Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
     "garanties": [
@@ -621,7 +313,6 @@
     "titre": "Et si on regardait *votre entreprise* ?",
     "texte": "L’estimation est gratuite et sans compte : en 30 secondes, une première idée de sa valeur.",
     "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
-    "tampon": "Estimation gratuite · sans compte · 30 secondes ·",
     "livrables_titre": "Ce que contient votre dossier",
     "livrables": [
       "Une page anonyme, sous nom de code, pour intéresser des repreneurs.",
@@ -659,9 +350,7 @@
     "resultat": {
       "code_intro": "Votre dossier circulera sous ce nom",
       "fourchette_titre": "Valeur d'entreprise estimée",
-      "methodes_titre": "Méthode",
       "methode": "Calculée sur l'EBE {annee} ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur.",
-      "methodes_approfondies": "Avec vos chiffres, dans l'estimation approfondie : les mêmes multiples appliqués à vos comptes confirmés, contrôlés par l'actif net corrigé.",
       "note": "Estimation indicative, établie à partir des comptes publics {exercice}. Elle s'affine avec vos propres chiffres.",
       "note_saisie": "Estimation indicative, établie à partir des deux chiffres que vous avez saisis. L'estimation approfondie l'affine avec vos comptes complets.",
       "sur_mesure": "Sur mesure",
@@ -674,30 +363,6 @@
       "voir": "Voir ma fourchette",
       "saisie_note": "Ces chiffres ne sont pas enregistrés tant que vous n'avez pas créé de compte.",
       "saisie_erreur": "Indiquez votre chiffre d'affaires et votre EBE, en milliers d'euros.",
-      "teaser": "Teaser anonyme de {nom} : secteur {secteur} ; région {region} ; ancienneté {anciennete} ; effectif {effectif}.",
-      "non_renseigne": "Non renseigné",
-      "ouvrir_titre": "Ouvrir mon dossier, gratuitement",
-      "ouvrir_texte": "Votre estimation y est gardée. Puis une fourchette argumentée par vos chiffres, le teaser, le mémorandum et le fichier Excel. Un code par e-mail, aucun mot de passe.",
-      "inviter_titre": "Inviter mon expert-comptable",
-      "inviter_texte": "Un e-mail prérempli, sans aucune donnée de votre dossier : vous choisissez ce que vous partagez.",
-      "inviter_sujet": "La transmission de mon entreprise",
-      "inviter_corps": "Bonjour,\n\nJe commence à préparer la transmission de mon entreprise avec Passation ({adresse}). J'aimerais en parler avec vous.\n\nBien cordialement,",
-      "autre": "Rechercher une autre entreprise",
-      "analyse_titre": "Ce que nous avons lu",
-      "obtenir_titre": "Avec votre dossier, gratuitement",
-      "obtenir": [
-        "Une fourchette sourcée",
-        "Teaser anonyme",
-        "Mémorandum",
-        "Datapack Excel"
-      ],
-      "dossier_titre": "Votre dossier est prêt à être ouvert",
-      "dossier_liste": [
-        "Une valeur argumentée par vos chiffres",
-        "Un teaser anonyme",
-        "Le mémorandum complet",
-        "Le datapack Excel"
-      ],
       "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
       "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
       "dossier_bouton": "Ouvrir mon dossier",

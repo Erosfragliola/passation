@@ -173,7 +173,7 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(PAGE.match(/class="hero-bulle /g)).toHaveLength(4);                           // quatre bulles logées dans la forme
     expect(PAGE).toMatch(/<div class="hero-scene" id="hero-scene">[\s\S]*class="conteneur hero-contenu"/);           // le texte est dans la forme
     expect(PAGE).not.toMatch(/pied-trousseau|resultat-suites|btn-autre/);
-    expect(contenu.hero.carte.fictif).toBe("exemple fictif");                            // jamais présenté comme réel
+    expect(contenu.hero.bulles.code.fictif).toBe("exemple fictif");                      // jamais présenté comme réel
     expect(contenu.sources.liste).toEqual(["INSEE", "INPI", "BODACC"]);                  // registres réellement utilisés
     expect(contenu.hero.note_comptes).toBe("");
   });
