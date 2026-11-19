@@ -101,7 +101,7 @@
       "titre": "Votre première estimation",
       "fictif": "exemple fictif",
       "code": "Projet Chêne",
-      "valeur": "2,1 – 2,8 M€",
+      "valeur": "1,8 – 2,4 M€",
       "pied": "Calculée en 30 secondes depuis les comptes publics"
     },
     "coches": [
@@ -121,7 +121,7 @@
       "code": {
         "titre": "Votre nom de code",
         "code": "Projet Chêne",
-        "valeur": "2,1 – 2,8 M€",
+        "valeur": "1,8 – 2,4 M€",
         "fictif": "exemple fictif"
       },
       "docs": [
@@ -298,7 +298,7 @@
       "siren": {
         "saisie": "Menuiserie Durand & Fils",
         "libelle": "Première fourchette",
-        "valeur": "1,4 – 2,4 M€"
+        "valeur": "1,8 – 2,4 M€"
       },
       "chiffres": {
         "lignes": [
@@ -308,16 +308,16 @@
           },
           {
             "poste": "EBE",
-            "montant": "380 k€"
+            "montant": "300 k€"
           },
           {
-            "poste": "Endettement net",
-            "montant": "20 k€"
+            "poste": "Trésorerie nette",
+            "montant": "900 k€"
           }
         ],
-        "libelle": "Valeur centrale des titres",
-        "centrale": "1,9 M€",
-        "bas": "1,4 M€",
+        "libelle": "Valeur des titres",
+        "fourchette": "1,8 – 2,4 M€",
+        "bas": "1,8 M€",
         "haut": "2,4 M€"
       },
       "documents": [
