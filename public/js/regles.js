@@ -5,7 +5,7 @@
  * Tranches d'effectif salarié de la nomenclature INSEE (variable « tranche d'effectif salarié » du
  * répertoire Sirene, reprise par recherche-entreprises.api.gouv.fr). NN = unité non employeuse.
  */
-export const TRANCHES = {
+const TRANCHES = {
   NN: { min: 0, max: 0 },
   "00": { min: 0, max: 0 },
   "01": { min: 1, max: 2 },
@@ -36,7 +36,7 @@ export function libelleSalaries(code) {
   return `${n(t.min)} à ${n(t.max)} salariés`;
 }
 
-export const ETAGES_MAX = 8;
+const ETAGES_MAX = 8;
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 
 /** Dernier exercice dont la valeur est connue ({annee, valeur} ou null). */
@@ -155,7 +155,7 @@ export function aVille(ville) {
 }
 
 const PALIERS = [500_000, 1_000_000, 2_000_000, 5_000_000, 10_000_000, 20_000_000, 50_000_000];
-export function libelleMontant(m) {
+function libelleMontant(m) {
   return m >= 1_000_000 ? `${m / 1_000_000} M€` : `${m / 1000} k€`;
 }
 

@@ -15,13 +15,13 @@ export const CODES_REGIONS = {
 };
 
 /** Tranches d'effectif regroupées (codes INSEE). */
-export const BANDES = [
+const BANDES = [
   { cle: "sans", libelle: "Sans salarié ou non renseigné", codes: ["NN", "00"] },
   { cle: "1_9", libelle: "1 à 9 salariés", codes: ["01", "02", "03"] },
   { cle: "10_49", libelle: "10 à 49 salariés", codes: ["11", "12"] },
   { cle: "50_plus", libelle: "50 salariés et plus", codes: ["21", "22", "31", "32", "41", "42", "51", "52", "53"] },
 ];
-export const PLAFOND_API = 10000;
+const PLAFOND_API = 10000;
 
 export const bandeDe = (codeTranche) => BANDES.find((b) => b.codes.includes(String(codeTranche || "NN")))?.cle ?? "sans";
 

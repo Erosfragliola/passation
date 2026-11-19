@@ -4,7 +4,7 @@
 
 import { requeteJson } from "../lib/requete.js";
 
-export const URL_INPI = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/ratios_inpi_bce/records";
+const URL_INPI = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/ratios_inpi_bce/records";
 const CHAMPS = "siren,date_cloture_exercice,chiffre_d_affaires,ebe,ebit,resultat_net,confidentiality,type_bilan";
 
 export async function exercicesBruts(siren, { fetch: f = fetch, ...options } = {}) {

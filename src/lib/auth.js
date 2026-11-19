@@ -3,10 +3,10 @@
 import { DURATIONS } from "../config.js";
 import { json } from "../http.js";
 
-export const NOM_COOKIE = "passation_session";
+const NOM_COOKIE = "passation_session";
 
 /** Chaîne aléatoire sûre (base64url, 32 octets par défaut). */
-export function aleatoire(octets = 32) {
+function aleatoire(octets = 32) {
   const b = crypto.getRandomValues(new Uint8Array(octets));
   return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
@@ -57,7 +57,7 @@ export async function creerSession(db, userId) {
 }
 
 /** Utilisateur connecté, ou null. */
-export async function utilisateurConnecte(request, env) {
+async function utilisateurConnecte(request, env) {
   const secret = lireCookie(request);
   if (!secret || secret.length < 20) return null;
   return env.DB.prepare(

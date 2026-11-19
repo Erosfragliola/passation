@@ -92,7 +92,7 @@ async function detail(env, row) {
 }
 
 /** Supprime un dossier et tout ce qui s'y rattache : lignes en base et fichiers R2 (préfixe dossiers/<id>/). */
-export async function supprimerDossier(env, id) {
+async function supprimerDossier(env, id) {
   if (env.FILES) {
     let curseur;
     do {
