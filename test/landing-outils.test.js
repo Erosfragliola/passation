@@ -143,3 +143,13 @@ describe("vidéo du hero : définition", () => {
     expect(uhd(2560, false)).toBe(false);
   });
 });
+
+import { planifier } from "../public/js/landing/scenes.js";
+describe("enchaînement des étapes animées", () => {
+  it("trois étapes visibles en même temps démarrent l'une après l'autre", () => {
+    expect(planifier([1, 2, 3], 1000, 2100)).toEqual([1000, 3100, 5200]);
+  });
+  it("une étape qui arrive après la fin de la précédente démarre tout de suite", () => {
+    expect(planifier([1], 9000, 2100, 3100)).toEqual([9000]);
+  });
+});

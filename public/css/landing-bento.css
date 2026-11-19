@@ -591,3 +591,46 @@
   .relance-garanties { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; text-align: left; }
   .relance-garanties li + li::before { content: none; }
 }
+
+/* ---------- Retouches du 19/11/2026 : en-tête du dossier, étapes enchaînées et dépliables ---------- */
+/* Dossier : moins d'air sous la bande des sources ; titre à gauche, chapô à droite, alignés sur la dernière ligne */
+.landing #livrables { padding-top: clamp(40px, 5vw, 72px); }
+.livrables-tete { display: grid; gap: 16px; }
+@media (min-width: 1024px) {
+  .livrables-tete { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: end; gap: 56px; }
+  .landing .dossier .livrables-tete h2 { max-width: none; }
+  .landing .dossier .livrables-tete .chapo { margin: 0 0 .45em; padding-left: 24px; border-left: 2px solid var(--ocre); max-width: 46ch; }
+}
+
+/* Étapes : le chiffre clé au-dessus de la bulle */
+.landing .parcours-chiffre { margin: 0 0 2px; line-height: 1; }
+/* Les nœuds s'allument l'un après l'autre (scenes.js enchaîne les étapes voisines) */
+.parcours-noeud { transition: background-color .35s ease, color .35s ease, box-shadow .35s ease; }
+.scene-attente .parcours-noeud { background: var(--sable); color: var(--vert); }
+.scene-joue .parcours-noeud { animation: noeud-actif .6s cubic-bezier(.3, 1.5, .5, 1) both; }
+@keyframes noeud-actif { 0% { transform: scale(.8); background: var(--sable); color: var(--vert); } 60% { transform: scale(1.14); } 100% { transform: scale(1); } }
+.scene-attente .parcours-chiffre { opacity: .25; }
+.parcours-chiffre { transition: opacity .5s ease; }
+.parcours-scene { cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
+.parcours-scene:hover { transform: translateY(-3px); box-shadow: 0 18px 36px -26px rgba(35, 30, 24, .45); }
+
+/* Titre de l'étape = bouton qui déplie l'argumentaire */
+.parcours-ouvrir { all: unset; box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 14px; cursor: pointer;
+  padding: 4px 0; color: inherit; font: inherit; border-radius: 8px; }
+.parcours-ouvrir:focus-visible { outline: 2px solid var(--ocre); outline-offset: 4px; }
+.parcours-signe { position: relative; flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--trait-fort); transition: background-color .2s ease, transform .3s ease; }
+.parcours-signe::before, .parcours-signe::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 2px; margin: -1px 0 0 -6px; background: var(--vert); border-radius: 1px; transition: transform .3s ease; }
+.parcours-signe::after { transform: rotate(90deg); }
+.parcours-ouvrir[aria-expanded="true"] .parcours-signe { background: var(--vert); }
+.parcours-ouvrir[aria-expanded="true"] .parcours-signe::before, .parcours-ouvrir[aria-expanded="true"] .parcours-signe::after { background: #F6F1E6; }
+.parcours-ouvrir[aria-expanded="true"] .parcours-signe::after { transform: rotate(0deg); }
+.parcours-ouvrir:hover .parcours-signe { transform: scale(1.08); }
+.sans-js .parcours-signe { display: none; }
+.parcours-detail { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .45s cubic-bezier(.2, .8, .2, 1), opacity .35s ease; }
+.parcours-detail-int { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 12px; }
+.parcours-etape.repliee .parcours-detail { grid-template-rows: 0fr; opacity: 0; }
+.etapes-parcours { align-items: start; }
+@media (prefers-reduced-motion: reduce) {
+  .parcours-detail, .parcours-scene, .parcours-signe, .parcours-signe::before, .parcours-signe::after { transition: none; }
+}
+@media (min-width: 900px) { .landing .parcours-etape h3 { font-size: clamp(17px, 1.35vw, 20px); } }
