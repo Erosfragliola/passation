@@ -631,3 +631,9 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   liste d'étapes (`ETAPES_PARCOURS`) ; questions = celles du parcours guidé + le site (14), le reste « Pour aller plus
   loin », écrans vus enregistrés (étape `parcours`) ; action principale = première tâche ; seul le dernier exercice est
   indispensable, les deux précédents facultatifs, années INPI isolées non reprises. Tests : 457.
+- **19/11/2026, nettoyage du dépôt** (PR #17, lot A, puis lot B après la fusion des PR ouvertes) : restes de l'ancienne
+  « histoire des clés » de l'accueil (modules, images, contenu), images et polices jamais téléchargées (dont Geist
+  Mono : `--mono` pointe sur Geist depuis le 18/11), 891 sélecteurs CSS morts (aucun élément dans 80 captures et une
+  classe ou un id absent de toutes les sources servies), 116 clés de `landing.json` jamais lues, exports inutilisés.
+  Preuve : tests verts et captures pixel à pixel (19 pages, 1440 et 390 px, animations normales et réduites), aucune
+  différence hors bruit. Tests : 465.
