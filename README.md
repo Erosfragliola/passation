@@ -94,7 +94,7 @@ En local : `npm run dev`, saisir un SIREN, demander un code (il s'affiche dans l
 npm test
 ```
 
-**356 tests Vitest** (26 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
+**425 tests Vitest** (31 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
 simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les API publiques sont simulés.
 
 - **Valorisation** : trois méthodes, passage VE → titres, cas limites (EBE négatif, comptes absents, un seul
