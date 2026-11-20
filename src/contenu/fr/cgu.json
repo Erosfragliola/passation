@@ -12,9 +12,11 @@
   "4_responsabilites_utilisateur": "4. Responsabilités de l’utilisateur",
   "utilisateur_garantit_qu_il_est": "L’utilisateur garantit qu’il est habilité à transmettre les informations qu’il saisit ou importe.",
   "5_limites_usage": "5. Limites d’usage",
-  "limites_usage_appliquent_pour_garantir": "Des limites d’usage s’appliquent pour garantir la qualité du service. À compléter : description.",
+  "limites_usage_appliquent_pour_garantir": "Pour maîtriser les coûts et éviter les abus : 10 valorisations express par heure depuis une même connexion ; 10 dossiers par compte ; 60 traitements automatiques par jour et par compte (lecture de liasse ou de site, rédaction du teaser et du mémorandum, étude de marché) ; par dossier, 6 lectures de liasse (3 fichiers de 10 Mo au plus) et 3 études de marché.",
   "6_tarifs": "6. Tarifs",
-  "completer": "À compléter.",
+  "tarifs": "Passation ne propose aujourd’hui aucune offre payante : le service est gratuit.",
+  "droit_applicable": "Les présentes conditions sont soumises au droit français.",
   "7_droit_applicable": "7. Droit applicable",
-  "meta_description": "Conditions générales d'utilisation de Passation, service d'aide à la préparation de la cession d'entreprise."
+  "meta_description": "Conditions générales d'utilisation de Passation, service d'aide à la préparation de la cession d'entreprise.",
+  "completer": "À compléter."
 }
