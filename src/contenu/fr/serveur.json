@@ -317,19 +317,12 @@
       "frequent": "choix le plus fréquent, à confirmer",
       "effectif": "d'après votre effectif (registres), à confirmer"
     },
-    "dates": {
-      "creation": "{annee} : création",
-      "creation_ville": "{annee} : création de l'entreprise (siège actuel à {ville})",
-      "transfert": "{annee} : transfert du siège",
-      "transfert_ville": "{annee} : transfert du siège à {ville}",
-      "denomination": "{annee} : changement de dénomination",
-      "reprise": "{annee} : reprise d'un fonds de commerce",
-      "reprise_ville": "{annee} : reprise d'un fonds de commerce à {ville}"
-    },
-    "activite": {
-      "secteur": "Entreprise du secteur « {secteur} »",
+    "precisions": {
+      "creation_ville": "siège actuel à {ville}",
       "ville": "à {ville}",
-      "precisez": ". Précisez vos métiers, vos produits ou services et vos clients."
+      "denomination": "changement de dénomination",
+      "reprise": "reprise d'un fonds de commerce",
+      "reprise_ville": "reprise d'un fonds de commerce à {ville}"
     }
   },
   "secteur": {

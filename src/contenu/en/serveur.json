@@ -317,19 +317,12 @@
       "frequent": "most common choice, to be confirmed",
       "effectif": "based on your headcount (registries), to be confirmed"
     },
-    "dates": {
-      "creation": "{annee}: founded",
-      "creation_ville": "{annee}: company founded (current headquarters in {ville})",
-      "transfert": "{annee}: headquarters moved",
-      "transfert_ville": "{annee}: headquarters moved to {ville}",
-      "denomination": "{annee}: name change",
-      "reprise": "{annee}: acquisition of a business",
-      "reprise_ville": "{annee}: acquisition of a business in {ville}"
-    },
-    "activite": {
-      "secteur": "Company in the “{secteur}” industry",
-      "ville": "in {ville}",
-      "precisez": ". Describe your trades, your products or services and your customers."
+    "precisions": {
+      "creation_ville": "current headquarters in {ville}",
+      "ville": "to {ville}",
+      "denomination": "name change",
+      "reprise": "acquisition of a business",
+      "reprise_ville": "acquisition of a business in {ville}"
     }
   },
   "secteur": {

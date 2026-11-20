@@ -14,7 +14,7 @@ const exo = (x = {}) => ({ dernier: 2024, dernier_complet: false, recommandes: [
 const dossier = (x = {}) => ({
   id: ID, estimation: { statut: "ok", exercice: 2024, methode: "multiple_ebe", agregat: 80_000, bas: 310_000, haut: 520_000 }, checklist: [], documents: {},
   ...x,
-  parcours: { exercices: exo(), exercices_complets: 0, questions: { faits: 0, total: 14, pct: 0 }, valorisation: null, ...(x.parcours || {}) },
+  parcours: { exercices: exo(), exercices_complets: 0, questions: { faits: 0, total: NB_QUESTIONS, pct: 0 }, valorisation: null, ...(x.parcours || {}) },
 });
 const valo = { bas: 420_000, haut: 560_000, annees: [2024], ebe_normatif: 80_000, dette_nette: -110_000, facteur_decotes: 1, ecart_bfr: 0, hors_exploitation: 0 };
 // 18/11/2026 à 10:00 heure de Paris (UTC+1) = 09:00 UTC : 1 794 960 000 s à minuit UTC + 9 × 3 600 = 1 794 992 400 s
@@ -24,7 +24,7 @@ const section = (cle, court, x = {}) => ({ cle, court, titre: court, redigee: tr
 const CHECKLIST_COMPLETE = ["statuts", "kbis", "pv-ag", "capital", "liasses", "situation", "emprunts", "balances", "organigramme", "registre", "contrats-cles", "accords", "clients", "contrats", "cgv", "baux", "equipements", "marques", "assurances", "litiges", "autorisations"];
 const memoComplet = { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("organisation", "Équipe")] };
 const toutFait = (x = {}) => dossier({ documents: tousDocs, checklist: CHECKLIST_COMPLETE, ...x,
-  parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), exercices_complets: 3, questions: { faits: 14, total: 14, pct: 100 }, valorisation: valo, ...(x.parcours || {}) } });
+  parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), exercices_complets: 3, questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100 }, valorisation: valo, ...(x.parcours || {}) } });
 
 describe("constantes : une seule liste d'étapes", () => {
   it("21 pièces attendues (4 juridiques, 4 financières, 4 sociales, 3 commerciales, 6 actifs et risques)", () => expect(NB_PIECES).toBe(21));
@@ -33,7 +33,9 @@ describe("constantes : une seule liste d'étapes", () => {
   });
   it("chaque écran du parcours guidé appartient à une étape de cette liste ; le site est une question de « Vos réponses »", () => {
     const cles = new Set(ETAPES_PARCOURS.map(([k]) => k));
-    expect(Object.keys(ETAPE_DE_L_ECRAN).sort()).toEqual(["chiffres", "comptes", "pret", "questions", "redaction", "saisie", "site"]);
+    expect(Object.keys(ETAPE_DE_L_ECRAN).sort()).toEqual(["accueil", "chiffres", "comptes", "photos", "pret", "questions", "redaction", "saisie", "site"]);
+    expect(ETAPE_DE_L_ECRAN.accueil).toBe("chiffres"); // l'accueil ouvre l'étape « Vos chiffres »
+    expect(ETAPE_DE_L_ECRAN.photos).toBe("reponses");  // logo et photos : juste après la lecture du site
     for (const e of Object.values(ETAPE_DE_L_ECRAN)) expect(cles.has(e)).toBe(true);
     expect(ETAPE_DE_L_ECRAN.site).toBe("reponses");
     expect(ETAPE_DE_L_ECRAN.comptes).toBe(ETAPE_DE_L_ECRAN.chiffres); // « Vos comptes » et « Vos chiffres » fusionnés
@@ -67,7 +69,7 @@ describe("dossier tout juste créé (comptes publics 2024 seulement, rien de con
     expect(e.etapes[0].href).toBe(`/espace/valorisation/?dossier=${ID}#chiffres`);
     expect(e.etapes[1].href).toBeNull();
   });
-  it("À faire : le seul exercice indispensable, les 14 questions, les premières pièces", () => {
+  it("À faire : le seul exercice indispensable, les 10 questions, les premières pièces", () => {
     expect(e.taches.map((t) => t.titre)).toEqual(["Confirmer l'exercice 2024", `Répondre aux ${NB_QUESTIONS} questions`, "Déposer vos premières pièces"]);
     expect(e.taches[2].detail).toBe("0 pièce sur 21");
     expect(e.taches[2].pieces).toBe(true);
@@ -260,7 +262,7 @@ describe("un seul état pour le parcours guidé et la page du dossier", () => {
   it.each([
     ["nouveau", dossier(), null],
     ["à moitié", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 6, total: 14, pct: 43 } } }), null],
-    ["rédaction à lancer", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 14, total: 14, pct: 100 } } }), null],
+    ["rédaction à lancer", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100 } } }), null],
     ["teaser manquant", toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet],
     ["prêt avec recommandations", toutFait({ checklist: [] }), { photos: [], sections: [section("a", "A", { a_completer: ["x"] })] }],
   ])("prochaine action = première tâche (%s)", (_, d, memo) => {
@@ -370,4 +372,22 @@ describe("décompte unique des points à compléter", () => {
   });
   it("même nombre pour la page du dossier (lectureMemo) et les tâches", () => expect(lectureMemo(memo).nbACompleter).toBe(pointsACompleter(memo).length));
   it("même formulation", () => { expect(libellePoints(1)).toBe("1 point à compléter"); expect(libellePoints(4)).toBe("4 points à compléter"); });
+});
+
+// 20/11/2026 : les photos trouvées sur le site sont proposées (« Choisir vos photos : 12 trouvées »), pas seulement
+// « Ajouter une photo » ; le lien mène à l'écran « Votre logo et vos photos » du parcours guidé.
+describe("photos trouvées sur le site", () => {
+  const d = toutFait({ checklist: CHECKLIST_COMPLETE, parcours: { valorisation_le: LE } });
+  const candidates = Array.from({ length: 12 }, (_, k) => `https://exemple.fr/p${k}.jpg`);
+  it("aucune photo choisie, 12 trouvées : « Choisir vos photos : 12 trouvées sur votre site », vers le parcours", () => {
+    const e = etatParcours(d, { photos: [], site: { photos_candidates: candidates }, sections: [section("synthese", "Synthèse")] });
+    const t = e.taches.find((x) => x.cle === "photo");
+    expect(t.titre).toBe("Choisir vos photos : 12 trouvées sur votre site");
+    expect(t.href).toBe(`/espace/demarrer/?dossier=${ID}&etape=photos`);
+    expect(t.facultatif).toBe(true);
+  });
+  it("sans photo trouvée : la tâche reste « Ajouter une photo » (dépôt)", () => {
+    const e = etatParcours(d, { photos: [], site: { photos_candidates: [] }, sections: [section("synthese", "Synthèse")] });
+    expect(e.taches.find((x) => x.cle === "photo").titre).toBe("Ajouter une photo de l'atelier ou des produits");
+  });
 });

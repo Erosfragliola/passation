@@ -1,6 +1,5 @@
 {
   "_lisez_moi": "Text of the /espace/demarrer/ page (set by the Worker, src/routes/pages.js). Same keys as src/contenu/fr/demarrer.json.",
-  "nom_sous_lequel_circulera_votre": "<span class=\"guide-code\" id=\"guide-code\"></span><span class=\"guide-code-aide\">the name your file will circulate under</span>",
   "votre_dossier": "Your file",
   "etapes": "Steps",
   "avancement": "Progress",
@@ -64,7 +63,8 @@
       "autre_exercice": "Enter another fiscal year",
       "autre_liasse": "Upload another tax return",
       "mode_detaille": "Detailed mode (all lines)",
-      "montant_lisible": "Enter a readable amount."
+      "montant_lisible": "Enter a readable amount.",
+      "valider_ligne": "Confirm"
     },
     "continuer": "Continue ",
     "clients": {
@@ -107,11 +107,35 @@
       "lire": "Read this website ",
       "lecture": "Reading your website…",
       "retenu_titre": "What we picked up from your website",
-      "retenu_aide": "Everything is ticked: untick anything inaccurate. Only ticked facts will be used in the memorandum.",
+      "retenu_aide": "{n} facts, grouped by theme. Remove what’s wrong or outdated: only what remains will be used.",
       "faits": "Facts found",
       "votre_logo": "Your logo",
       "choix_logo": "Logo choice",
-      "aucun_logo": "None"
+      "aucun_logo": "None",
+      "usage": "We pick up your business, your logo and your photos during the next two questions. You’ll confirm each item.",
+      "retirer": "Remove",
+      "remettre": "Restore",
+      "tranche": "{min} to {max} employees",
+      "a_verifier": "To check",
+      "conflit_creation": "Founding date",
+      "conflit_effectif": "Headcount",
+      "conflit_aide": "Your website and the registries don’t say the same thing. This fact isn’t used until you decide.",
+      "selon_site": "Your website: “{fait}”",
+      "selon_registres": "Public registries (French national business register)",
+      "les_deux": "Both are true",
+      "les_deux_aide": "For example: an older family business, with the current company founded on the registry date.",
+      "voir_autres": "See the {n} other facts",
+      "themes": {
+        "activite": "Business",
+        "savoir_faire": "Know-how and equipment",
+        "clients_zone": "Customers and area",
+        "histoire": "History and team",
+        "autre": "Other"
+      },
+      "lu": "Your website · {site} · {n} pages read",
+      "plus_tard": "Later",
+      "valider_faits": "Confirm these facts",
+      "usage_faits": "These facts feed the memorandum’s history, business, team and customers, presented as statements by the company."
     },
     "recap": {
       "valider": {
@@ -130,7 +154,13 @@
       "passer": "Skip",
       "il_manque": "{liste} is missing: it’s required to draft the memorandum.",
       "exact_continuer": "That’s right, continue ",
-      "ou_va": "Where your answer goes"
+      "ou_va": "Where your answer goes",
+      "ajouter": "Add",
+      "choix_max": "{n} of {max} at most.",
+      "choix_max_atteint": "{n} of {max}: untick one to change your choice.",
+      "preparee_court": "Answers prepared by Passation, {source}: check them before continuing.",
+      "nourrit": "Your answer feeds",
+      "propose": "suggested"
     },
     "redaction": {
       "sections": {
@@ -174,6 +204,75 @@
       "page_memo": "memorandum page",
       "modifier": ". To change an answer: ",
       "revoir": "review your answers"
+    },
+    "montants": {
+      "non_renseigne": "not entered",
+      "propose_court": "suggested, not saved",
+      "raison_neutre": "the same amount, so no adjustment",
+      "propose": "Suggested: {valeur} ({raison}). Not saved yet.",
+      "confirmer": "That’s my estimate"
+    },
+    "dates": {
+      "date": "Date",
+      "evenement": "Event",
+      "precision": "Details (optional)",
+      "exemple_date": "e.g. 2016",
+      "date_n": "Date of event {n}: year, month/year or full date",
+      "evenement_n": "Type of event {n}",
+      "precision_n": "Details, event {n}",
+      "retirer_n": "Remove event {n}",
+      "ajouter": "+ Add a date",
+      "formats": "Accepted formats: 2016, 03/2016 or 15/03/2016 (day/month/year).",
+      "illisible": "Unreadable date: “{date}”. Write 2016, 03/2016 or 15/03/2016."
+    },
+    "photos": {
+      "titre": "Your logo and photos",
+      "aide": "An illustrated memorandum reads better. Here’s what we found on your website.",
+      "compte": {
+        "zero": "No photo selected, {max} at most",
+        "one": "{n} photo selected, {max} at most",
+        "other": "{n} photos selected, {max} at most"
+      },
+      "utiliser": {
+        "one": "Use this photo",
+        "other": "Use these {n} photos"
+      },
+      "sans_photo": "Continue without photos",
+      "photo_n": "Photo {n} from your website",
+      "deposee": "Uploaded photo",
+      "cochez_droits": "First tick the box: these photos belong to the company, or you have the right to use them.",
+      "aucun_logo": "No logo",
+      "logo_aide": "It will appear on the memorandum’s cover and in the footer.",
+      "logo_aucun_aide": "No logo selected: the memorandum will show only its title.",
+      "changer": "Change",
+      "enregistrement": "Saving your choices…",
+      "echecs": {
+        "one": "One item couldn’t be retrieved from your website: you can upload it yourself.",
+        "other": "{n} items couldn’t be retrieved from your website: you can upload them yourself."
+      },
+      "cliquez": "Click the photos to use",
+      "usage": "{max} at most. The first one is the cover; the others illustrate the business and the team.",
+      "aucune": "We didn’t find a usable photo on your website (icons, banners and small images are left out).",
+      "droits": "These photos belong to the company, or I have the right to use them.",
+      "deposer": "Upload my own photos",
+      "formats": "(PNG, JPEG or WebP, 3 MB at most)",
+      "ou_va": "The logo goes on the cover and in the footer; the photos on the cover, the business and the team pages."
+    },
+    "accueil": {
+      "surtitre": "Detailed valuation · about twenty minutes",
+      "titre": "Let’s start the detailed valuation of your company",
+      "chapo": "At the end, you’ll have a reasoned valuation and the three documents a buyer asks for: the Excel datapack, the anonymous teaser and the information memorandum.",
+      "chiffres_titre": "Your figures",
+      "chiffres": "Your French tax return (liasse fiscale) as a PDF, or the essentials of your accounts in a few amounts.",
+      "chiffres_publics": "Your French tax return (liasse fiscale) as a PDF, or the essentials of your accounts in a few amounts. We already have the published accounts for {annees}.",
+      "reponses_titre": "Your answers",
+      "reponses": "{n} questions, mostly checkboxes. We prepare the answers from your website and the registries; you correct them.",
+      "redaction_titre": "Writing your documents",
+      "redaction": "Passation calculates and writes in a few minutes. You review everything before sending.",
+      "commencer": "Start",
+      "reprise": "You can stop at any time: everything is saved.",
+      "deja": "Already done:",
+      "deja_estimation": "quick estimate of {fourchette}."
     }
   }
 }

@@ -69,18 +69,54 @@ export function candidatsLogo(html, base) {
   return res.slice(0, 6);
 }
 
-/** Photos candidates : grandes images de contenu (ni logo, ni icône, ni pictogramme). */
-function candidatsPhotos(html, base) {
-  const res = [];
+export const PHOTO_LARGEUR_MIN = 600;
+const PHOTO_ALLONGEMENT_MAX = 3; // largeur / hauteur au-delà : bandeau
+const MOTS_PHOTO = /atelier|workshop|realisation|réalisation|chantier|projet|project|equipe|équipe|team|production|fabrication|usine|factory|savoir|metier|métier|travaux|portfolio|galerie|gallery/i;
+/** Clé de doublon d'une image : même fichier en plusieurs tailles (« photo-300x200.jpg », « photo@2x.jpg »,
+ *  « photo.jpg?w=800 ») → même clé. */
+export function cleImage(u) {
+  const p = new URL(u).pathname.toLowerCase();
+  return p.replace(/[-_]\d{2,4}x\d{2,4}(?=\.\w+$)/, "").replace(/@\d(\.\d)?x(?=\.\w+$)/, "").replace(/[-_](scaled|large|medium|small|thumb|thumbnail)(?=\.\w+$)/, "");
+}
+/** Plus grande image d'un srcset : « a.jpg 300w, b.jpg 1200w » → { url: "b.jpg", largeur: 1200 }. */
+function plusGrandSrcset(srcset) {
+  let mieux = null;
+  for (const part of String(srcset).split(",")) {
+    const [url, d] = part.trim().split(/\s+/);
+    const l = /^(\d+)w$/.exec(d || "")?.[1];
+    if (url && (!mieux || Number(l || 0) > mieux.largeur)) mieux = { url, largeur: Number(l || 0) };
+  }
+  return mieux;
+}
+/**
+ * Photos candidates : vraies photos de contenu (atelier, réalisations, équipe). Écartées : SVG et images en data:,
+ * logos, icônes, pictogrammes ; largeur connue < 600 px ; bandeaux (largeur / hauteur > 3) ; doublons (même fichier
+ * en plusieurs tailles : on garde la plus grande). Classées : nom, texte alternatif ou classe évoquant l'atelier, les
+ * réalisations ou l'équipe d'abord, puis l'ordre de la page.
+ */
+export function candidatsPhotos(html, base) {
+  const vues = new Map();
+  let rang = 0;
   for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
     const tag = m[0];
-    const src = /\s(?:data-src|src)\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1];
-    if (!src || /^data:/i.test(src) || /logo|icon|picto|sprite|avatar|flag|badge/i.test(tag) || /\.svg(\?|$)/i.test(src)) continue;
-    const l = Number(/\swidth\s*=\s*["']?(\d+)/i.exec(tag)?.[1] || 0), h = Number(/\sheight\s*=\s*["']?(\d+)/i.exec(tag)?.[1] || 0);
-    if ((l && l < 300) || (h && h < 200)) continue;
-    try { const u = new URL(src, base); if (/^https?:$/.test(u.protocol) && !res.includes(u.href)) res.push(u.href); } catch { /* ignoré */ }
+    const attr = (nom) => new RegExp(`\\s${nom}\\s*=\\s*["']([^"']+)["']`, "i").exec(tag)?.[1];
+    const srcset = attr("data-srcset") || attr("srcset");
+    const grand = srcset ? plusGrandSrcset(srcset) : null;
+    const src = grand?.url || attr("data-src") || attr("src");
+    if (!src || /^data:/i.test(src) || /logo|icon|picto|sprite|avatar|flag|badge|emoji|spinner|loader|placeholder/i.test(tag) || /\.svg(\?|#|$)/i.test(src)) continue;
+    const l = Number(attr("width") || 0) || grand?.largeur || 0, h = Number(attr("height") || 0);
+    if (l && l < PHOTO_LARGEUR_MIN) continue;
+    if (l && h && l / h > PHOTO_ALLONGEMENT_MAX) continue;
+    let u;
+    try { u = new URL(src, base); } catch { continue; }
+    if (!/^https?:$/.test(u.protocol)) continue;
+    const cle = cleImage(u.href);
+    const score = MOTS_PHOTO.test(`${u.pathname} ${attr("alt") || ""} ${attr("class") || ""} ${attr("title") || ""}`) ? 1 : 0;
+    const avant = vues.get(cle);
+    if (avant) { if (l > avant.largeur) Object.assign(avant, { url: u.href, largeur: l }); avant.score = Math.max(avant.score, score); continue; }
+    vues.set(cle, { url: u.href, largeur: l, score, rang: rang++ });
   }
-  return res;
+  return [...vues.values()].sort((a, b) => b.score - a.score || a.rang - b.rang).map((x) => x.url);
 }
 
 /** robots.txt : le chemin est-il autorisé pour tous les robots (« User-agent: * ») ? */
@@ -125,7 +161,7 @@ export async function lireSite(adresse, { fetch: f = fetch } = {}) {
     if (!robotsAutorise(robots, new URL(url).pathname)) continue;
     try {
       const html = await lire(url, f);
-      if (html) { pages.push({ url, ...texteDepuisHtml(html) }); for (const p of candidatsPhotos(html, new URL(url))) if (!photos.includes(p)) photos.push(p); }
+      if (html) { pages.push({ url, ...texteDepuisHtml(html) }); for (const p of candidatsPhotos(html, new URL(url))) if (!photos.some((x) => cleImage(x) === cleImage(p))) photos.push(p); }
     } catch { /* page ignorée */ }
   }
   return { url: base.href, pages, logos, photos: photos.slice(0, 16) };
