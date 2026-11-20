@@ -17,5 +17,429 @@
   "page_suivante": "Next page",
   "memorandum": "Memorandum",
   "aller_page": "Go to page",
-  "www_mon_entreprise_fr": "www.my-company.com"
+  "www_mon_entreprise_fr": "www.my-company.com",
+  "js": {
+    "site": {
+      "faits": "Facts found ({n}/{total} approved): tick the ones that are accurate",
+      "source": " source",
+      "logo_enregistre": "Logo saved.",
+      "logo_retenu": "Logo selected: see the cover below. You can choose another one.",
+      "choisir_logo": "Choose the company’s logo (or upload it).",
+      "candidat": "Candidate: {origine}",
+      "deposer_logo": "Upload a logo (PNG, JPEG, WebP)",
+      "lecture": "Reading the website… (about one minute)",
+      "releves": "{n} facts found on {pages} pages. Tick the accurate ones: only those will be used."
+    },
+    "photos": {
+      "cochez": "First tick the statement: the photos must belong to the company.",
+      "ajoutee": "Photo added.",
+      "titre": "Memorandum photos ({n}/6): cover, business, team.",
+      "attestation": "I confirm that the photos added belong to the company or that I have the right to use them.",
+      "photo_n": "Photo {n}",
+      "ajouter_site": "Add this photo from the website",
+      "candidate": "Website photo (candidate)",
+      "deposer": "Upload a photo (3 MB max)",
+      "entreprise": "Company photo",
+      "a_ajouter": "{quoi}: to be added",
+      "ou": "Memorandum page, step 1 (company photos)"
+    },
+    "themes": {
+      "taille": "Market size",
+      "tendance": "Trend",
+      "demande": "Demand",
+      "reglementation": "Regulation",
+      "concurrence": "Competition"
+    },
+    "marche": {
+      "en_cours": "Market research in progress: public registries and web search (one to two minutes)…",
+      "retenus": "{n} market facts kept, each with its source. Untick those that don’t match your market.",
+      "relancer": "Run the research again",
+      "lancer": "Run the market research",
+      "registres": "Registries: {n} active companies with NAF code {naf} in {region}, {part} of them with fewer than 10 employees.",
+      "faits": "Market facts ({n}/{total} kept)",
+      "aucun": "No sufficiently sourced market figure was found: the Market chapter will rely on the public registries.",
+      "restantes": {
+        "one": "{n} research run left",
+        "other": "{n} research runs left"
+      },
+      "structure_region": "Industry structure · {region}",
+      "par_tranche": "Active companies with NAF code {naf}, by headcount band",
+      "en_couleur": "Highlighted, the company’s band: {n} companies in the region are its size or larger.",
+      "structure": "Industry structure",
+      "lancez": "Run the market research (public registries)",
+      "annuaire": "Business directory (INSEE Sirene)",
+      "moteurs": "Market drivers",
+      "moteurs_message": "Published market figures, each with its source"
+    },
+    "verrou": {
+      "avant": "Before drafting the memorandum:",
+      "questionnaire": "Open the questionnaire"
+    },
+    "a_rediger": "{quoi}: to be drafted.",
+    "sources": {
+      "chiffres_valides": "figures approved by the owner",
+      "publiques": "public registries (INSEE, INPI)",
+      "site": "company website",
+      "dirigeant": "owner",
+      "calculs": "Passation calculations"
+    },
+    "suite": " (continued)",
+    "pied": {
+      "sources": {
+        "one": "Source: {liste}",
+        "other": "Sources: {liste}"
+      },
+      "notes": {
+        "one": "Note: {liste}",
+        "other": "Notes: {liste}"
+      }
+    },
+    "graph": {
+      "point": "{annee}: €{valeur}K",
+      "marge": ", margin {marge}",
+      "ca_keur": "Revenue (€K)",
+      "ebe_marge": "{ebe} (€K) and margin"
+    },
+    "charges": {
+      "achats": "Cost of goods",
+      "externes": "External expenses",
+      "personnel": "Payroll",
+      "impots": "Taxes and duties",
+      "aria": "Breakdown of {annee} revenue: {liste}",
+      "ca": "Revenue {annee}"
+    },
+    "jours": "{n} days",
+    "j": "{n} d",
+    "tableau": {
+      "en_keur": "In €K",
+      "cr_vide": "Income statement (no fiscal year approved)"
+    },
+    "tcam": "CAGR {de}-{a}",
+    "ebe": {
+      "comptable": "Reported EBITDA",
+      "retraite": "Adjusted EBITDA",
+      "marge_retraitee": "Adjusted EBITDA margin",
+      "normatif": "Normalized EBITDA used: {montant} ({base}).",
+      "pont_aria": "EBITDA bridge {annee}: {liste}",
+      "pont_point": "{libelle} €{valeur}K"
+    },
+    "dette": {
+      "tresorerie_nette": "Net cash",
+      "dette_nette": "Net financial debt",
+      "au": "12/31/{annee}",
+      "titre": "Net debt and working capital",
+      "message_tresorerie": "Net cash of {montant} at December 31, {annee}",
+      "message_dette": "Net financial debt of {montant} at December 31, {annee}",
+      "soit_ebe": ", or {multiple} adjusted EBITDA",
+      "indicateurs": "Financial structure indicators",
+      "tresorerie_au": "Net cash at {date}",
+      "dette_au": "Net debt at {date}",
+      "sur_ebe": "Net debt / normalized EBITDA",
+      "bfr_jours": "Working capital in days of revenue ({annee})",
+      "convention": "Debt is positive; cash and investments are deducted, shown in parentheses.",
+      "rapportee": "Net debt relative to normalized EBITDA: ",
+      "bfr_phrase": "Working capital of €{montant}K in {annee}, or ",
+      "de_ca": " of revenue.",
+      "bfr_graph": "Working capital in days of revenue"
+    },
+    "bfr": {
+      "titre": "Operating working capital",
+      "jours": "In days of revenue"
+    },
+    "clients": {
+      "client": "Customer",
+      "activite": "Business",
+      "premier": "Largest customer",
+      "cinq": "Top five",
+      "recurrent": "Recurring revenue",
+      "concentration": "Revenue concentration",
+      "en_pct": "As a % of revenue",
+      "part_premiers": "Share of top customers",
+      "implantation": "Commercial footprint",
+      "zone": "Area: {zone}",
+      "cinq_premiers": "Top five customers (anonymized)",
+      "premiers": "Top customers (anonymized)",
+      "fond_carte": "IGN Admin Express base map (Licence Ouverte)"
+    },
+    "carte": {
+      "aria": "Map of France: headquarters in {region}",
+      "region_inconnue": "region not provided",
+      "clients": ", customers in {liste}",
+      "nationale": ", nationwide presence",
+      "siege": "Headquarters",
+      "regions_clientes": "Customer regions",
+      "presence_nationale": "Nationwide presence"
+    },
+    "org": {
+      "murs": "Business premises",
+      "murs_societe": "Owned by the company",
+      "murs_tiers": "Outside landlord, lease in place",
+      "murs_dirigeant": "Owned by the owner · {cession}",
+      "cession_a_preciser": "sale to be specified",
+      "dirigeant_associes": "Owner and partners",
+      "dirigeant_cedant": "Selling owner",
+      "detention_a_completer": "Shareholding: to be completed",
+      "holding": "Seller’s holding company",
+      "holding_detail": "Holding company",
+      "societe": "Company",
+      "exploitation": "Operating company",
+      "perimetre": "Scope of the sale",
+      "hors_perimetre": "Out of scope",
+      "personne_physique": "Individual",
+      "holding_court": "Holding company"
+    },
+    "frise": {
+      "creation": "Company founded",
+      "historique": "History"
+    },
+    "cercles": {
+      "actives": "active companies in {region}",
+      "un_salarie": "have at least one employee",
+      "dix_salaries": "have 10 or more employees",
+      "naf": "NAF code {naf}",
+      "note": " of the region’s companies are its size or larger"
+    },
+    "dans_partie": "In this part",
+    "sommaire": "Contents",
+    "glossaire": {
+      "titre": "Glossary",
+      "financiers": "Financial terms",
+      "document": "Document terms",
+      "termes_financiers": [
+        [
+          "Revenue",
+          "Sales of goods and services"
+        ],
+        [
+          "EBITDA (EBE)",
+          "Earnings before interest, taxes, depreciation and amortization (French “excédent brut d’exploitation”)"
+        ],
+        [
+          "Adjusted EBITDA",
+          "EBITDA corrected for non-recurring items or items specific to current management"
+        ],
+        [
+          "Working capital",
+          "Inventories and trade receivables, minus trade, tax and social security payables"
+        ],
+        [
+          "Net debt",
+          "Borrowings and financial debt, minus cash and investments"
+        ],
+        [
+          "CAGR",
+          "Compound annual growth rate"
+        ],
+        [
+          "€K / €M",
+          "Thousands of euros / millions of euros"
+        ],
+        [
+          "(x)",
+          "Negative amount"
+        ],
+        [
+          "n/a",
+          "Not available"
+        ]
+      ],
+      "termes_document": [
+        [
+          "Code name",
+          "Name given to the project to keep the company confidential"
+        ],
+        [
+          "Seller",
+          "Shareholder or partner selling their shares"
+        ],
+        [
+          "Scope",
+          "What is sold: the company’s shares and, where applicable, the premises"
+        ],
+        [
+          "NAF",
+          "French classification of business activities, assigned by INSEE"
+        ],
+        [
+          "Public registries",
+          "Business directory (INSEE Sirene), filed accounts (INPI)"
+        ],
+        [
+          "Owner’s estimate",
+          "Data reported by the owner, not audited"
+        ]
+      ]
+    },
+    "avertissement": {
+      "titre": "Disclaimer",
+      "paragraphes": [
+        "This memorandum was prepared from information provided by the company’s owner, public data and market sources cited in the footer. This information has not been audited: its accuracy and completeness are not guaranteed.",
+        "This document is neither an offer nor a commitment. It does not replace the checks that any buyer carries out with their own advisors (accounting, legal, employment and tax due diligence).",
+        "It is provided under a confidentiality undertaking, for the sole purpose of allowing its recipient to decide whether to study the transaction. Any full or partial reproduction or distribution is prohibited."
+      ],
+      "fort": "All questions about this document or the transaction go through the owner, via Passation. The company’s employees, customers and suppliers must not be contacted directly under any circumstances."
+    },
+    "synthese": {
+      "en_bref": "{nom} at a glance",
+      "le_projet": "The project",
+      "considerations": "Key investment highlights",
+      "six_points": "Six strengths, developed in the memorandum’s chapters"
+    },
+    "kpi": {
+      "ca": "Revenue {annee}",
+      "ebe_retraite": "Adjusted EBITDA {annee}",
+      "tresorerie_nette": "Net cash {annee}",
+      "dette_nette": "Net debt {annee}",
+      "salaries": "Employees",
+      "ans": "{n} years",
+      "existence": "In business (since {annee})",
+      "croissance": "Annual growth {de}-{a}"
+    },
+    "operation": {
+      "envisagee": "Planned deal",
+      "part_cedee": "Share sold",
+      "motif": "Reason",
+      "calendrier": "Timeline",
+      "etapes": [
+        [
+          "Confidentiality",
+          "Each interested buyer signs a confidentiality undertaking before receiving the memorandum.",
+          "Information memorandum"
+        ],
+        [
+          "Review of the file",
+          "Reading the memorandum, written questions, then a meeting with the owner.",
+          "Written answers, company visit"
+        ],
+        [
+          "Indicative offers",
+          "Letters of intent: proposed price, financing, conditions and timeline.",
+          "Buyer’s letter of intent"
+        ],
+        [
+          "Due diligence",
+          "The selected buyer checks the accounts, contracts, and legal, employment and tax matters.",
+          "Access to company documents"
+        ],
+        [
+          "Signing",
+          "Negotiation of the sale agreement, signing, then transfer of ownership.",
+          "Sale agreement and deed of transfer"
+        ]
+      ],
+      "titre": "Background and planned deal",
+      "contexte": "Background",
+      "part_capital": "Share of capital sold",
+      "motif_cedant": "Seller’s reason",
+      "calendrier_souhaite": "Preferred timeline",
+      "accompagnement": "Transition support for the buyer",
+      "organigramme": "Legal structure chart",
+      "processus": "How the process works",
+      "processus_message": "A five-step process, conducted under a confidentiality undertaking",
+      "objet": "Purpose",
+      "documents": "Documents",
+      "interlocuteur": "Single point of contact",
+      "interlocuteur_texte": "the owner, via Passation. Employees, customers and suppliers must not be contacted directly.",
+      "calendrier_indicatif": "Indicative timeline: it depends on the number of interested buyers and the length of due diligence."
+    },
+    "histoire": {
+      "creation": "Year founded",
+      "existence": "In business",
+      "region_siege": "Headquarters region",
+      "salaries_insee": "Employees (INSEE band)"
+    },
+    "activite": {
+      "donnees_cles": "Key data",
+      "zone": "Sales area",
+      "en_images": "The company in pictures",
+      "photo_atelier": "Photo of the workshop or of completed work"
+    },
+    "organisation": {
+      "effectifs": "Headcount and site",
+      "site_principal": "Main site",
+      "creation": "Founded",
+      "region": "Region",
+      "equipe": "The team",
+      "photo_equipe": "Photo of the team or the site"
+    },
+    "finances": {
+      "retraitements_declares": "adjustments reported by the owner",
+      "marge_brute": "Gross margin",
+      "marge_nette": "Net margin",
+      "dette_nette": "Net debt",
+      "chiffres_cles": "Key financials",
+      "performances": "Historical performance · {periode}",
+      "aucun_exercice": "The figures (no fiscal year approved)",
+      "un_euro": "Where each euro of revenue goes ({annee})",
+      "compte_resultat": "Income statement {periode}",
+      "message_ca": "Revenue of {montant} in {annee}",
+      "en_hausse": ", up {pct} a year since {de}",
+      "en_baisse": ", down {pct} a year since {de}",
+      "non_consecutifs": "Non-consecutive fiscal years: growth annualized between two fiscal years shown.",
+      "message_ebe": "Adjusted EBITDA of {montant} in {annee}",
+      "soit_ca": ", or {pct} of revenue",
+      "retraitements": "Adjustments",
+      "aucun_retraitement": "No adjustment reported: adjusted EBITDA equals reported EBITDA.",
+      "sans_justification": "Adjustments reported without detailed justification.",
+      "pont_titre": "From reported to adjusted EBITDA {annee} (€K)"
+    },
+    "commentaires": "Comments",
+    "perspectives": {
+      "croissance": "Expected annual growth",
+      "estimation": "owner’s estimate",
+      "marge": "Target EBITDA margin",
+      "historique": "Historical revenue growth",
+      "avertissement": "The outlook presented is the owner’s. It has not been audited.",
+      "source_marche": "market research (sources cited in the Market chapter)"
+    },
+    "outils": {
+      "a_completer": "To be completed: ",
+      "rediger_nouveau": "Redraft",
+      "modifier": "Edit"
+    },
+    "voir_page": "See p. {n}",
+    "presentation": {
+      "couverture": "Cover",
+      "partie": "Part {n} · {titre}",
+      "page": "Page",
+      "une_page": "One page at a time",
+      "compteur": "Page {n} of {total}",
+      "page_n": "Page {n}"
+    },
+    "recos": {
+      "non_redige": "This chapter hasn’t been drafted yet.",
+      "photo_activite": "Add a photo of the workshop, products or completed work: it brings the page to life.",
+      "ajouter_photos": "Add photos",
+      "photo_equipe": "Add a photo of the team or the site.",
+      "marche_aucun": "No sourced market figure: run the market research, then keep the figures that seem right to you.",
+      "voir_marche": "See the market research",
+      "marche_retenus": "{n} market figures kept, each with its source: check that they really match your market.",
+      "verifier": "Check the figures",
+      "long": "The text is long for one page: shorten it, or have it redrafted.",
+      "modifie": "You edited this chapter: a new draft would replace your changes."
+    },
+    "etat": {
+      "a_rediger": "To draft",
+      "redige": "Drafted by Passation"
+    },
+    "panneau": {
+      "chapitre": " · chapter {court}",
+      "recommandations": "Recommendations",
+      "rien": "Nothing to flag: the page is complete.",
+      "automatique": "Page built automatically from your chapters and figures.",
+      "actions": "Actions",
+      "rediger_chapitre": "Draft this chapter",
+      "modifier_texte": "Edit the text"
+    },
+    "edition": {
+      "titre_aria": "Title of chapter {court}",
+      "enregistre": "Chapter saved.",
+      "titre": "Title (the chapter’s conclusion, one line)",
+      "texte": "Text (“- ” at the start of a line for a bullet, **bold** for the key fact)"
+    },
+    "redaction": {
+      "en_cours": "Drafting the section… (about 20 seconds)",
+      "fait": "Chapter drafted. Review it before sharing it."
+    }
+  }
 }
