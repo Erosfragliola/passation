@@ -8,11 +8,11 @@ backup*.sql
 *.dump.sql
 .DS_Store
 
-# Originaux photo/vidéo (lourds) : seules les versions optimisées de public/img/photos sont publiées
+# Original photos/videos (heavy): only the optimized versions in public/img/photos are published
 public/img/source/
 
-# Vidéos sources (lourdes)
+# Source videos (heavy)
 /video/
 
-# Kit de refonte de la landing (références et sources, non publiées)
+# Landing page redesign kit (references and sources, not published)
 /_refonte/

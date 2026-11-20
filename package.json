@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Boîte à outils du dirigeant de PME qui prépare la cession de son entreprise",
+  "description": "Toolbox for SME owners preparing the sale of their business",
   "engines": {
     "node": ">=22.13"
   },
