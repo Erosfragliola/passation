@@ -1,20 +1,20 @@
-// Appels à l'API Claude (SDK officiel). Clé : secret ANTHROPIC_API_KEY (wrangler secret put), jamais dans le code.
-// Lecture de liasse : le PDF est envoyé tel quel (bloc « document » base64) ; la réponse est un JSON contraint par
-// un schéma. Claude ne calcule rien : il recopie des chiffres, que le dirigeant valide ligne par ligne.
+// Calls to the Claude API (official SDK). Key: ANTHROPIC_API_KEY secret (wrangler secret put), never in the code.
+// Tax-return reading: the PDF is sent as is (base64 "document" block); the response is JSON constrained by
+// a schema. Claude calculates nothing: it copies figures, which the owner approves line by line.
 import Anthropic from "@anthropic-ai/sdk";
 import { contenuConcis } from "../documents/concision.js";
 import { MODELS } from "../config.js";
 import { CHAMPS } from "../../public/js/champs-financiers.js";
 import { t as tr, langue } from "../../public/js/i18n.js";
 
-/** Langue du texte produit : les consignes et les données restent en français ; en anglais, une instruction finale
- *  demande un texte rédigé en anglais (la langue de l'interface au moment de la génération). */
+/** Language of the text produced: instructions and data stay in French; in English, a final instruction asks for
+ *  text written in English (the interface language at generation time). */
 const langueDeSortie = () => (langue() === "en"
   ? "\n\nLANGUE DE SORTIE : rédige tout le texte que tu produis en anglais américain, sobre et professionnel, même si ces consignes et les données sont en français. Ne traduis pas les noms propres, les noms de code ni les marques ; « EBE » s'écrit « EBITDA »."
   : "");
 
 export const claudeDisponible = (env) => Boolean(env.ANTHROPIC_API_KEY);
-// ANTHROPIC_BASE_URL : réglage de développement uniquement (serveur simulé pour les essais locaux), absent en production.
+// ANTHROPIC_BASE_URL: development setting only (simulated server for local trials), absent in production.
 const client = (env) => new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 2, ...(env.ANTHROPIC_BASE_URL ? { baseURL: env.ANTHROPIC_BASE_URL } : {}) });
 
 const SCHEMA_LIASSE = {
@@ -52,7 +52,7 @@ const SCHEMA_LIASSE = {
   },
 };
 
-// Construite à l'appel (dictionnaires installés), toujours en français : la liasse est un document français.
+// Built at call time (dictionaries installed), always in French: the tax return is a French document.
 const consigneLiasse = () => `Tu lis une liasse fiscale française (formulaires 2033 du régime simplifié ou 2050 à 2059 du régime normal), ou des comptes annuels.
 Recopie les montants demandés, pour chaque exercice présent dans le document (exercice N et, s'il figure, exercice N-1).
 Règles :
@@ -85,7 +85,7 @@ export async function lireLiasse(env, pdfBase64) {
   return { ...donnees, usage: { entree: reponse.usage.input_tokens, sortie: reponse.usage.output_tokens } };
 }
 
-// ---------------------------------------------------------------- Teaser anonymisé
+// ---------------------------------------------------------------- Anonymized teaser
 const SCHEMA_TEASER = {
   type: "object", additionalProperties: false,
   required: ["accroche", "activite", "chiffres", "atouts", "operation"],
@@ -105,7 +105,7 @@ Règles absolues :
 - Chiffres : uniquement les fourchettes fournies, recopiées telles quelles. Jamais de montant précis.
 - 250 à 350 mots au total.`;
 
-/** @param faits objet de faits anonymes ; @param corrections termes à retirer (seconde tentative) */
+/** @param faits object of anonymous facts; @param corrections terms to remove (second attempt) */
 export async function redigerTeaser(env, faits, corrections = []) {
   const consigne = corrections.length
     ? `${CONSIGNE_TEASER}\nUne première version contenait des éléments identifiants à supprimer absolument : ${corrections.join(", ")}.`
@@ -125,7 +125,7 @@ export async function redigerTeaser(env, faits, corrections = []) {
   return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
 }
 
-// ---------------------------------------------------------------- Site internet → faits sourcés
+// ---------------------------------------------------------------- Website → sourced facts
 const SCHEMA_SITE = {
   type: "object", additionalProperties: false, required: ["faits", "termes_identifiants"],
   properties: {
@@ -161,10 +161,10 @@ export async function extraireSite(env, pages) {
   return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
 }
 
-// ---------------------------------------------------------------- Mémorandum : une section
-// Le titre affirme la conclusion du chapitre (convention des banques d'affaires) ; l'accroche le résume en une phrase
-// pour la liste des points forts de la synthèse. Longueurs contrôlées par le code (src/documents/memo.js, titreValide) :
-// les sorties structurées n'acceptent pas maxLength.
+// ---------------------------------------------------------------- Memorandum: one section
+// The title states the chapter's conclusion (investment-bank convention); the hook sums it up in one sentence
+// for the list of strengths in the summary. Lengths checked by the code (src/documents/memo.js, titreValide):
+// structured outputs do not accept maxLength.
 const SCHEMA_SECTION = {
   type: "object", additionalProperties: false, required: ["titre", "accroche", "introduction", "points", "a_completer"],
   properties: {
@@ -208,10 +208,10 @@ export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   return { titre: r.titre, accroche: r.accroche, contenu: contenuConcis(r), a_completer: r.a_completer || [] };
 }
 
-// ---------------------------------------------------------------- Mémorandum : étude de marché (recherche web)
-// Claude cherche sur le web des faits de marché sourcés (taille, tendances, réglementation, demande, concurrence) pour
-// le secteur et la région de l'entreprise. Garde-fou : un fait n'est retenu que si son adresse figure parmi les pages
-// réellement renvoyées par la recherche (faitsSourcesVerifies) ; le dirigeant valide ensuite chaque fait.
+// ---------------------------------------------------------------- Memorandum: market research (web search)
+// Claude searches the web for sourced market facts (size, trends, regulation, demand, competition) for the
+// company's industry and region. Safeguard: a fact is kept only if its address is among the pages actually
+// returned by the search (faitsSourcesVerifies); the owner then approves each fact.
 const THEMES_MARCHE = ["taille", "tendance", "demande", "reglementation", "concurrence"];
 const CONSIGNE_MARCHE = `Tu es analyste dans une banque d'affaires française. Tu prépares la partie « Marché » du mémorandum de cession d'une PME.
 Cherche sur le web des faits récents (moins de 4 ans) et chiffrés sur le marché de l'entreprise, en France et dans sa région : taille du marché ou de l'activité (chiffre d'affaires, volumes, nombre d'entreprises), évolution, tendances et moteurs de la demande, réglementation qui s'impose au secteur, structure concurrentielle.
@@ -223,7 +223,7 @@ Règles absolues :
 - 4 à 8 faits, en français, une phrase chacun.
 Réponds en terminant par un bloc \`\`\`json contenant exactement : {"faits":[{"theme":"taille|tendance|demande|reglementation|concurrence","fait":"phrase","chiffre":"le chiffre clé tel qu'écrit, ou null","annee":"année du chiffre, ou null","source":"nom de l'organisme","url":"adresse exacte"}]}`;
 
-/** Garde-fou : ne garde que les faits bien formés dont l'adresse a réellement été renvoyée par la recherche. */
+/** Safeguard: keeps only well-formed facts whose address was actually returned by the search. */
 export function faitsSourcesVerifies(faits, urlsConsultees) {
   const norm = (u) => String(u || "").trim().replace(/#.*$/, "").replace(/\/$/, "").toLowerCase();
   const connues = new Set([...urlsConsultees].map(norm));
@@ -234,22 +234,22 @@ export function faitsSourcesVerifies(faits, urlsConsultees) {
       annee: f.annee == null ? null : String(f.annee).slice(0, 9), source: String(f.source || "").trim().slice(0, 120) || null, url: String(f.url).trim() }));
 }
 
-/** Dernier objet JSON d'un texte (bloc \`\`\`json ou accolades finales). */
+/** Last JSON object in a text (```json block or final braces). */
 export function dernierJson(texte) {
   const blocs = [...String(texte).matchAll(/\`\`\`json\s*([\s\S]*?)\`\`\`/g)].map((m) => m[1]);
   const candidats = blocs.length ? blocs.reverse() : [String(texte).slice(String(texte).indexOf("{"))];
-  for (const c of candidats) { try { return JSON.parse(c); } catch { /* candidat suivant */ } }
+  for (const c of candidats) { try { return JSON.parse(c); } catch { /* next candidate */ } }
   return null;
 }
 
-/** @param contexte { secteur, activite_naf, region, description } (aucun nom d'entreprise) ; @returns { faits, urls, usage } */
+/** @param contexte { secteur, activite_naf, region, description } (no company name); @returns { faits, urls, usage } */
 export const MARCHE_DUREE_MAX_MS = 110000;
 export async function rechercherMarche(env, contexte) {
   const messages = [{ role: "user", content: `Entreprise à présenter (anonyme) :\n${JSON.stringify(contexte, null, 2)}` }];
   const urls = new Set();
   let texte = "", reponse;
-  // Budget : 4 recherches par tour, 2 tours au plus, 75 s par appel et 110 s en tout (l'étude ne doit pas faire
-  // attendre le dirigeant plus de deux minutes ; au-delà, le chapitre Marché s'appuie sur les registres publics)
+  // Budget: 4 searches per round, 2 rounds at most, 75 s per call and 110 s in total (the research must not keep
+  // the owner waiting more than two minutes; beyond that, the Market chapter relies on the public registries)
   const fin = Date.now() + MARCHE_DUREE_MAX_MS;
   for (let tour = 0; tour < 2; tour++) {
     const reste = fin - Date.now();
@@ -272,7 +272,7 @@ export async function rechercherMarche(env, contexte) {
   return { faits: faitsSourcesVerifies(brut?.faits, urls), urls: [...urls] };
 }
 
-/** Erreur d'authentification de l'API Claude (clé absente, mal copiée ou d'un autre type) : message explicite. */
+/** Claude API authentication error (key missing, badly copied or of another type): explicit message. */
 export const cleRefusee = (e) => e?.status === 401 || e?.status === 403;
-/** Message de la clé refusée, dans la langue de la requête (lu à chaque usage). */
+/** Message for a refused key, in the language of the request (read at each use). */
 export const MESSAGE_CLE_REFUSEE = { toString: () => tr("serveur.claude.cle_refusee"), toJSON: () => tr("serveur.claude.cle_refusee") };

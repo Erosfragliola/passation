@@ -1,11 +1,11 @@
-// Envoi du code de connexion. Brevo en production ; en local (127.0.0.1 / localhost) sans clé Brevo,
-// le code est affiché dans le terminal de développement. En production sans clé : refus explicite.
+// Sending of the sign-in code. Brevo in production; locally (127.0.0.1 / localhost) without a Brevo key,
+// the code is shown in the development terminal. In production without a key: explicit refusal.
 import { t as tr } from "../../public/js/i18n.js";
 const LOCAL = new Set(["127.0.0.1", "localhost"]);
 
 /**
- * @param {string} code  six chiffres
- * @param {string} urlSite  adresse de la requête (sert à reconnaître le mode local)
+ * @param {string} code  six digits
+ * @param {string} urlSite  address of the request (used to recognize local mode)
  */
 export async function envoyerCodeConnexion(env, email, code, urlSite, { fetch: f = fetch } = {}) {
   const hote = new URL(urlSite).hostname;
@@ -33,7 +33,7 @@ export async function envoyerCodeConnexion(env, email, code, urlSite, { fetch: f
   return res.ok ? { envoye: true, mode: "brevo" } : { envoye: false, raison: `brevo_${res.status}` };
 }
 
-/** Message de suivi du dossier (dossier prêt, rappel). Même règle : Brevo, ou terminal en local, sinon refus. */
+/** Follow-up message for the file (file ready, reminder). Same rule: Brevo, or terminal locally, otherwise refusal. */
 export async function envoyerMessage(env, email, { sujet, titre, texte, lien, bouton }, urlSite, { fetch: f = fetch } = {}) {
   const local = LOCAL.has(new URL(urlSite).hostname);
   if (!env.BREVO_API_KEY) {
