@@ -1,21 +1,21 @@
-// Datapack Excel de la valorisation, présenté comme un datapack de banque d'affaires : page de présentation (logo,
-// sommaire par section avec liens), onglets numérotés par section, bandeaux de section, retour « >> Présentation »
-// en tête de chaque onglet, montants en € (négatifs entre parenthèses). Charte Passation.
-// Formules vivantes qui reproduisent le moteur (approfondie.js) : les cellules cuivre sur fond crème sont les
-// hypothèses modifiables, tout le reste se recalcule dans Excel. Les tests vérifient que les formules redonnent
-// exactement les chiffres du moteur (test/datapack.test.js).
+// Excel datapack of the valuation, presented like an investment-bank datapack: overview page (logo, contents by
+// section with links), tabs numbered by section, section bands, ">> Overview" link back at the top of each tab,
+// amounts in € (negatives in parentheses). Passation branding.
+// Live formulas that reproduce the engine (approfondie.js): the copper cells on a cream background are the
+// editable assumptions, everything else is recalculated in Excel. The tests check that the formulas give back
+// exactly the engine's figures (test/datapack.test.js).
 import { creerClasseur, S, COULEURS } from "./xlsx.js";
 import { LOGO_PNG, LOGO_TAILLE } from "./logo-datapack.js";
 import { CHAMPS } from "../../public/js/champs-financiers.js";
 import { t as tr, locale } from "../../public/js/i18n.js";
 
-// Noms des onglets : un seul endroit (les formules entre onglets les lisent ici)
+// Tab names: a single place (formulas across tabs read them here)
 export const NOMS = {};
 for (const k of ["presentation", "comptes", "retraitements", "hypotheses", "titres", "multiples", "dcf", "ancc", "synthese"]) {
   Object.defineProperty(NOMS, k, { get: () => tr(`serveur.datapack_onglets.${k}`), enumerable: true });
 }
 const X = (cle) => `'${NOMS[cle]}'!`;
-/** Origine d'une hypothèse de prévision : « dirigeant » est un identifiant, affiché dans la langue du classeur. */
+/** Origin of a forecast assumption: "dirigeant" is an identifier, displayed in the workbook's language. */
 const origine = (o) => (o === "dirigeant" ? tr("serveur.valorisation_moteur.origines.dirigeant") : o ?? "");
 const SECTIONS = [
   ["1", tr("serveur.datapack.donnees_hypotheses"), COULEURS.cuivre, [
@@ -34,12 +34,12 @@ const SECTIONS = [
 const ORDRE = [NOMS.presentation, ...SECTIONS.flatMap(([, , , l]) => l.map(([k]) => NOMS[k]))];
 const couleurOnglet = (cle) => SECTIONS.find(([, , , l]) => l.some(([k]) => k === cle))[2];
 
-/** Bandeau de section vert sur toute la largeur utile de l'onglet. */
+/** Green section band across the tab's full usable width. */
 function bandeau(fe, r, texte, de = 0) {
   for (let c = de; c < fe.largeurs.length; c++) fe.ecrire(r, c, c === de ? texte : "", S.section);
   fe.hauteur(r, 18);
 }
-/** Ligne de tête d'un onglet : retour à la présentation et unité, dans la dernière colonne. */
+/** Header row of a tab: link back to the overview and unit, in the last column. */
 function tete(fe, unite = tr("serveur.datapack.unite_euros")) {
   const c = fe.largeurs.length - 1;
   fe.lien(0, c, tr("serveur.datapack.presentation"), NOMS.presentation);
@@ -53,7 +53,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   const ex = Object.fromEntries(entree.exercices.map((e) => [e.annee, e]));
   const dateTxt = genereLe.toLocaleDateString(locale(), { day: "numeric", month: "long", year: "numeric" });
 
-  // ------------------------------------------------------------ Présentation
+  // ------------------------------------------------------------ Overview
   const cv = wb.feuille(NOMS.presentation, { largeurs: [3, 7, 26, 66, 10], onglet: COULEURS.espresso });
   cv.hauteur(0, 12); cv.hauteur(1, 34);
   cv.image({ png: LOGO_PNG, r: 1, c: 1, largeur: LOGO_TAILLE.largeur / 2, hauteur: LOGO_TAILLE.hauteur / 2, nom: "Logo Passation" });
@@ -89,9 +89,9 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   cv.ecrire(rc, 1, tr("serveur.datapack.estimation_indicative_non_contractuelle") + NOMS.hypotheses + " ».", S.petit);
   cv.fusionner(`B${rc + 1}:E${rc + 1}`); cv.hauteur(rc, 30);
 
-  // ------------------------------------------------------------ 2. Comptes
+  // ------------------------------------------------------------ 2. Accounts
   const cp = wb.feuille(NOMS.comptes, { largeurs: [64, ...annees.map(() => 16), 60], onglet: couleurOnglet("comptes"), paysage: true });
-  const colA = (i) => 1 + i;                      // colonne de l'année i
+  const colA = (i) => 1 + i;                      // column of year i
   const dernier = colA(nA - 1);
   cp.ecrire(0, 0, tr("serveur.datapack.comptes_valides"), S.titre); tete(cp);
   cp.ecrire(2, 0, tr("serveur.datapack.poste"), S.entete); annees.forEach((a, i) => cp.ecrire(2, colA(i), a, S.enteteDroite)); cp.ecrire(2, nA + 1, tr("serveur.datapack.ou_trouver"), S.entete);
@@ -115,8 +115,8 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   cp.ecrire(rBfr, 0, tr("serveur.datapack.bfr_exploitation_stocks_clients"));
   cp.ecrire(rJours, 0, tr("serveur.datapack.bfr_jours_chiffre_affaires"));
   annees.forEach((_, i) => {
-    // Même règle que le moteur (approfondie.js, ebe) : détail complet des trois charges obligatoires, sinon EBE publié,
-    // sinon « Non déterminable » (jamais de charge manquante comptée à zéro).
+    // Same rule as the engine (approfondie.js, ebe): full detail of the three required expenses, otherwise published
+    // EBITDA, otherwise "Cannot be determined" (a missing expense is never counted as zero).
     const det = ["achats_consommes", "charges_externes", "charges_personnel"].map((k) => L(k, i)).join(",");
     cp.ecrire(rEbe, colA(i), { f: `IF(AND(ISNUMBER(${L("chiffre_affaires", i)}),COUNT(${det})=3),${L("chiffre_affaires", i)}+${L("autres_produits", i)}-${L("achats_consommes", i)}-${L("charges_externes", i)}-${L("impots_taxes", i)}-${L("charges_personnel", i)},IF(ISNUMBER(${L("ebe", i)}),${L("ebe", i)},"${tr("serveur.datapack.non_determinable")}"))`, s: S.eurosGras });
     cp.ecrire(rBfr, colA(i), { f: `${L("stocks", i)}+${L("creances_clients", i)}-${L("dettes_fournisseurs", i)}-${L("dettes_fiscales_sociales", i)}`, s: S.euros });
@@ -124,7 +124,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   });
   const CPx = (rr, i) => `${X("comptes")}${cp.ref(rr, colA(i))}`;
 
-  // ------------------------------------------------------------ 4. Hypothèses (avant les onglets qui les lisent)
+  // ------------------------------------------------------------ 4. Assumptions (before the tabs that read them)
   const hy = wb.feuille(NOMS.hypotheses, { largeurs: [72, 14, 70, 14], onglet: couleurOnglet("hypotheses"), paysage: true });
   hy.ecrire(0, 0, tr("serveur.datapack.hypotheses"), S.titre); tete(hy, tr("serveur.datapack.unite_euros_pct"));
   hy.ecrire(1, 0, tr("serveur.datapack.cellules_cuivre_sur_fond"), S.petit);
@@ -178,7 +178,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   bandeau(hy, h++, tr("serveur.datapack.sources"));
   for (const k of ["taux_sans_risque", "prime_risque_marche", "cout_dette_avant_impot", "impot_societes", "croissance_terminale", "betas"]) { hy.ecrire(h, 0, H[k].source, S.petit); hy.ecrire(h, 2, H[k].url || "", S.petit); h++; }
 
-  // ------------------------------------------------------------ 3. Retraitements
+  // ------------------------------------------------------------ 3. Adjustments
   const rt = wb.feuille(NOMS.retraitements, { largeurs: [52, ...annees.map(() => 16), 40], onglet: couleurOnglet("retraitements") });
   const rr = entree.retraitements || {};
   rt.ecrire(0, 0, tr("serveur.datapack.pont_ebe_comptable_ebe"), S.titre); tete(rt);
@@ -191,7 +191,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   const exc = rr.exceptionnels || [];
   const lignesExc = Math.max(exc.length, 3);
   for (let i = 0; i < lignesExc; i++) {
-    const e = exc[i]; // année en format général (pas « 2 024,000 »)
+    const e = exc[i]; // year in general format (not "2 024,000")
     rt.ecrire(9 + i, 0, e?.libelle ?? "", S.saisieTexte); rt.ecrire(9 + i, 1, e?.annee ?? null, S.saisieTexte); rt.ecrire(9 + i, 2, e?.montant ?? null, S.saisieEuros); rt.ecrire(9 + i, 3, e?.justification ?? "", S.saisieTexte);
   }
   const p0 = 9 + lignesExc + 1;
@@ -212,7 +212,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   rt.ecrire(pN, 1, { f: `IF(${hyp.mode}="dernier",${rt.ref(pR, dernier)},AVERAGE(${rt.ref(pR, colA(0))}:${rt.ref(pR, dernier)}))`, s: S.eurosTotal });
   const ebeN = `${X("retraitements")}${rt.ref(pN, 1, true)}`;
 
-  // ------------------------------------------------------------ 5. Passage aux titres
+  // ------------------------------------------------------------ 5. Bridge to equity
   const pt = wb.feuille(NOMS.titres, { largeurs: [52, 16, 50], onglet: couleurOnglet("titres") });
   const co = entree.complements || {};
   pt.ecrire(0, 0, tr("serveur.datapack.dette_nette_bfr_actifs"), S.titre); tete(pt);
@@ -318,7 +318,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   an.ecrire(6, 0, tr("serveur.datapack.creances_douteuses_moins")); an.ecrire(6, 1, co.creances_douteuses ?? 0, S.saisieEuros);
   an.ecrire(7, 0, tr("serveur.datapack.actif_net_comptable_corrige"), S.gras); an.ecrire(7, 1, { f: "B4+B5-B6-B7", s: S.eurosTotal });
 
-  // ------------------------------------------------------------ 9. Synthèse
+  // ------------------------------------------------------------ 9. Summary
   const sy = wb.feuille(NOMS.synthese, { largeurs: [52, 16, 16, 16], onglet: couleurOnglet("synthese") });
   sy.ecrire(0, 0, tr("serveur.datapack.synthese_valeur_titres"), S.titre); tete(sy);
   sy.ecrire(2, 0, tr("serveur.datapack.methode"), S.entete); sy.ecrire(2, 1, tr("serveur.datapack.basse"), S.enteteDroite); sy.ecrire(2, 2, tr("serveur.datapack.centrale"), S.enteteDroite); sy.ecrire(2, 3, tr("serveur.datapack.haute"), S.enteteDroite);
@@ -338,11 +338,11 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   sy.ecrire(13, 3, { f: `IF(ISNUMBER(C4),${versTitres(`${ebeN}*(${hyp.mc}+1)`)},"")`, s: S.euros });
   sy.ecrire(14, 0, tr("serveur.datapack.cmpc_1_pt_1")); ["B31", "C31", "D31"].forEach((ref, i) => sy.ecrire(14, 1 + i, { f: `${X("dcf")}${ref}`, s: S.euros }));
   sy.ecrire(15, 0, tr("serveur.datapack.croissance_infini_0_5")); ["B34", "C34", "D34"].forEach((ref, i) => sy.ecrire(15, 1 + i, { f: `${X("dcf")}${ref}`, s: S.euros }));
-  // Contrôle (convention des datapacks bancaires) : la somme des poids doit faire 100 %
+  // Check (convention of bank datapacks): the weights must add up to 100%
   sy.ecrire(16, 0, tr("serveur.datapack.controle_poids_multiples_poids"), S.petit); sy.ecrire(16, 1, { f: `IF(ROUND($B$8+$B$9,6)=1,"OK","${tr("serveur.datapack.a_verifier")}")`, s: S.controle });
   sy.ecrire(17, 0, tr("serveur.datapack.pied_synthese", { onglet: NOMS.hypotheses }), S.petit);
 
-  // Ordre des onglets : celui du sommaire
+  // Order of the tabs: that of the contents
   wb.feuilles.sort((a, b) => ORDRE.indexOf(a.nom) - ORDRE.indexOf(b.nom));
   return wb;
 }

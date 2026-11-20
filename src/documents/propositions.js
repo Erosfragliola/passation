@@ -1,6 +1,6 @@
-// Réponses proposées au dirigeant pour le parcours guidé (« Passation prépare, le dirigeant valide »).
-// Chaque proposition dit d'où elle vient : registres publics, comptes, site validé, ou « choix le plus fréquent »
-// (alors à confirmer). Rien n'est enregistré tant que le dirigeant n'a pas validé l'écran. Module pur, testé.
+// Answers proposed to the owner for the guided steps ("Passation prepares, the owner approves").
+// Each proposal says where it comes from: public registries, accounts, approved website, or "most common choice"
+// (then to be confirmed). Nothing is saved until the owner has approved the screen. Pure module, tested.
 import { regionDe, secteurDe } from "./anonymat.js";
 import { libelleEffectif } from "../../public/js/regles.js";
 import { t as tr } from "../../public/js/i18n.js";
@@ -11,14 +11,14 @@ for (const k of Object.keys(SOURCES_PROPOSITION)) Object.defineProperty(SOURCES_
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 const annee = (d) => (d ? Number(String(d).slice(0, 4)) || null : null);
 
-/** Croissance proposée : l'option la plus proche de la croissance annuelle moyenne passée. */
+/** Proposed growth: the option closest to the past compound annual growth. */
 export function croissanceProposee(tcam) {
   if (!ok(tcam)) return null;
   const options = [-0.05, 0, 0.05, 0.1, 0.15];
   return options.reduce((m, o) => (Math.abs(o - tcam) < Math.abs(m - tcam) ? o : m), options[0]);
 }
 
-/** Type de clientèle d'après la section NAF (commerce de détail, hébergement, services aux personnes : particuliers). */
+/** Type of customers based on the NAF section (retail trade, accommodation, personal services: individuals). */
 export function clienteleDuSecteur(naf, section) {
   if (/^47/.test(naf || "") || ["I", "S", "P", "Q", "R"].includes(section)) return ["Particuliers"];
   if (["F", "C", "H", "M", "N", "J", "B", "D", "E"].includes(section)) return ["Entreprises"];
@@ -32,7 +32,7 @@ const DISTINCTIONS = [
   ["Certifications", /certif|qualibat|rge|iso\s?\d|label|agr[ée]ment/i], ["Relation client", /conseil|accompagn|service client|sav|proximit/i],
 ];
 
-/** Dates clés : création, puis événements publics (transferts, dénomination, reprise de fonds). */
+/** Key dates: creation, then public events (transfers, name change, acquisition of a business). */
 export function datesCles(entreprise) {
   const lignes = [];
   const c = annee(entreprise.date_creation);
@@ -49,7 +49,7 @@ export function datesCles(entreprise) {
 
 /**
  * @param {{ entreprise: object, tcam: number|null, reponses: object }} donnees
- * @returns {Record<string, { valeurs: Record<string, any>, source: string }>} par identifiant de question
+ * @returns {Record<string, { valeurs: Record<string, any>, source: string }>} by question identifier
  */
 export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   const p = {};
@@ -63,21 +63,21 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   const effectif = libelleEffectif(entreprise.tranche_effectif?.code);
   const codeEff = String(entreprise.tranche_effectif?.code || "NN");
 
-  // Activité : faits du site, sinon une phrase tirée des registres (à compléter par le dirigeant)
+  // Business: website facts, otherwise a sentence drawn from the registries (to be completed by the owner)
   const activiteSite = faits.filter((f) => ["activite", "produits", "clients", "qualite"].includes(f.categorie)).slice(0, 5).map((f) => f.fait).join(" ");
   if (activiteSite) ajouter("activite", { "activite.description": activiteSite }, SOURCES_PROPOSITION.site);
   else if (secteur) ajouter("activite", { "activite.description": [tr("serveur.propositions.activite.secteur", { secteur }), annee(entreprise.date_creation) ? tr("regles.suggestion.creee", { annee: annee(entreprise.date_creation) }) : null, entreprise.ville ? tr("serveur.propositions.activite.ville", { ville: entreprise.ville }) : null, effectif ? `(${effectif})` : null].filter(Boolean).join(" ") + tr("serveur.propositions.activite.precisez") }, SOURCES_PROPOSITION.registres);
-  // Simple amorce tirée des registres : à compléter par le dirigeant, jamais validée d'un clic dans le récapitulatif
+  // Simple starting point drawn from the registries: to be completed by the owner, never approved in one click in the summary
   if (p.activite?.source === SOURCES_PROPOSITION.registres) p.activite.a_completer = true;
 
   ajouter("operation", { "operation.part_cedee": "100 %", "operation.calendrier": "6 à 12 mois" }, SOURCES_PROPOSITION.frequent);
 
-  // Ce qui distingue l'entreprise : repéré dans les faits du site
+  // What sets the company apart: found in the website facts
   const distinctions = DISTINCTIONS.filter(([, re]) => re.test(texteSite)).map(([n]) => n).slice(0, 3);
   const certifs = faits.filter((f) => DISTINCTIONS[4][1].test(f.fait)).map((f) => f.fait).join(" ");
   ajouter("distinctions", { "activite.distinctions": distinctions, "activite.certifications": certifs }, SOURCES_PROPOSITION.site);
 
-  // Équipe : encadrement estimé d'après l'effectif (à confirmer)
+  // Team: management estimated from the headcount (to be confirmed)
   const encadrement = codeEff >= "11" && codeEff !== "NN" ? "Oui, un ou plusieurs responsables" : ["01", "02", "03"].includes(codeEff) ? "En partie" : null;
   ajouter("equipe", { "dirigeant.encadrement": encadrement, "dirigeant.role_dirigeant": ["Commercial", "Gestion"] }, encadrement ? tr("serveur.propositions.sources.effectif") : SOURCES_PROPOSITION.frequent);
 

@@ -1,13 +1,13 @@
-// Structure du secteur d'une entreprise, tirée de l'annuaire public (recherche-entreprises, données INSEE Sirene) :
-// nombre d'entreprises actives du même code NAF dans la région, réparties par tranche d'effectif, et en France pour
-// les tranches de 10 salariés et plus (l'API plafonne ses comptes à 10 000 : au-delà, « plus de 10 000 »).
-// Tout ce qui est affiché est calculé ici (pourcentages, rang de l'entreprise) ; Claude ne fait que commenter.
+// Structure of a company's industry, drawn from the public directory (recherche-entreprises, INSEE Sirene data):
+// number of active companies with the same NAF code in the region, broken down by headcount band, and in France for
+// the bands of 10 employees or more (the API caps its counts at 10,000: beyond that, "more than 10,000").
+// Everything displayed is calculated here (percentages, the company's rank); Claude only comments.
 
 import { requeteJson } from "../lib/requete.js";
 import { URL_RECHERCHE } from "./entreprise.js";
 import { t as tr, T, avecTextes } from "../../public/js/i18n.js";
 
-/** Codes INSEE des régions (paramètre « region » de l'API). */
+/** INSEE codes of the regions ("region" parameter of the API). */
 export const CODES_REGIONS = {
   "Guadeloupe": "01", "Martinique": "02", "Guyane": "03", "La Réunion": "04", "Mayotte": "06",
   "Île-de-France": "11", "Centre-Val de Loire": "24", "Bourgogne-Franche-Comté": "27", "Normandie": "28",
@@ -15,7 +15,7 @@ export const CODES_REGIONS = {
   "Occitanie": "76", "Auvergne-Rhône-Alpes": "84", "Provence-Alpes-Côte d'Azur": "93", "Corse": "94",
 };
 
-/** Tranches d'effectif regroupées (codes INSEE). */
+/** Grouped headcount bands (INSEE codes). */
 const BANDES = [
   { cle: "sans", libelle: T, codes: ["NN", "00"] },
   { cle: "1_9", libelle: T, codes: ["01", "02", "03"] },
@@ -35,8 +35,8 @@ async function compter(params, f) {
 }
 
 /**
- * Comptes bruts (6 requêtes). @returns { region: {sans, 1_9, 10_49, 50_plus}, france: {10_49, 50_plus} } ou null si
- * le NAF ou la région manquent.
+ * Raw counts (6 requests). @returns { region: {sans, 1_9, 10_49, 50_plus}, france: {10_49, 50_plus} } or null if
+ * the NAF or the region is missing.
  */
 export async function compterSecteur({ naf, region }, { fetch: f = fetch } = {}) {
   const code = CODES_REGIONS[region];
@@ -48,7 +48,7 @@ export async function compterSecteur({ naf, region }, { fetch: f = fetch } = {})
   return { region: regionComptes, france };
 }
 
-/** Indicateurs calculés à partir des comptes (module pur, testé). */
+/** Indicators calculated from the counts (pure module, tested). */
 export function structureSecteur(comptes, { naf, region, trancheEntreprise, date }) {
   if (!comptes) return null;
   const r = comptes.region, ok = (v) => Number.isFinite(v);
@@ -57,7 +57,7 @@ export function structureSecteur(comptes, { naf, region, trancheEntreprise, date
   if (!(totalRegion > 0)) return null;
   const bande = bandeDe(trancheEntreprise);
   const iBande = BANDES.findIndex((b) => b.cle === bande);
-  // Rang de taille : part des entreprises de la région dans la même tranche ou au-dessus
+  // Size rank: share of the region's companies in the same band or above
   const auDessus = BANDES.slice(iBande).reduce((s, b) => s + (ok(r[b.cle]) ? r[b.cle] : 0), 0);
   const moins10 = (ok(r.sans) ? r.sans : 0) + (ok(r["1_9"]) ? r["1_9"] : 0);
   const france10 = ["10_49", "50_plus"].map((k) => comptes.france[k]);
@@ -68,7 +68,7 @@ export function structureSecteur(comptes, { naf, region, trancheEntreprise, date
     repartition: BANDES.map((b) => ({ cle: b.cle, libelle: b.libelle, n: ok(r[b.cle]) ? r[b.cle] : null, part: ok(r[b.cle]) ? r[b.cle] / totalRegion : null })),
     part_moins_10: moins10 / totalRegion,
     bande_entreprise: bande,
-    // « L'entreprise fait partie des X % d'entreprises de la région de sa taille ou plus grandes » (null si sans salarié)
+    // "The company is among the X% of companies in the region of its size or larger" (null if no employees)
     part_meme_taille_ou_plus: iBande > 0 ? auDessus / totalRegion : null,
     nombre_meme_taille_ou_plus_region: iBande > 0 ? auDessus : null,
     france_10_plus: france10.every(ok) ? france10[0] + france10[1] : null,

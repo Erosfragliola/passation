@@ -1,12 +1,12 @@
-// Longueurs du mémorandum garanties par le code (les sorties structurées n'acceptent pas maxLength) : une page doit
-// se lire en trente secondes. Introduction de deux phrases au plus, 6 points au plus, chaque point court.
+// Memorandum lengths guaranteed by the code (structured outputs do not accept maxLength): a page must be
+// readable in thirty seconds. Introduction of two sentences at most, 6 points at most, each point short.
 export const LIMITES = { introPhrases: 2, introCaracteres: 320, points: 6, titrePoint: 60, textePhrases: 2, texteCaracteres: 240 };
 
 const propre = (t) => String(t ?? "").replace(/\s+/g, " ").replace(/\*\*/g, "").trim();
-/** Phrases d'un texte (point, point d'exclamation ou d'interrogation suivi d'un espace et d'une majuscule). */
+/** Sentences of a text (period, exclamation or question mark followed by a space and a capital letter). */
 export const phrases = (t) => propre(t).split(/(?<=[.!?…])\s+(?=[A-ZÀ-ÖØ-Þ«"(0-9])/u).filter(Boolean);
 
-/** Coupe à n phrases et à une longueur maximale, sur une fin de phrase ou, à défaut, de mot (avec « … »). */
+/** Cuts to n sentences and a maximum length, at the end of a sentence or, failing that, of a word (with "…"). */
 export function couper(texte, nPhrases, max) {
   let t = phrases(texte).slice(0, nPhrases).join(" ");
   if (t.length <= max) return t;
@@ -17,7 +17,7 @@ export function couper(texte, nPhrases, max) {
   return `${t.slice(0, max - 1).replace(/\s+\S*$/, "").replace(/[,;:]$/, "")}…`;
 }
 
-/** { introduction, points: [{ titre, texte }] } → texte du chapitre : introduction, puis « - **Titre** : texte ». */
+/** { introduction, points: [{ titre, texte }] } → chapter text: introduction, then "- **Title**: text". */
 export function contenuConcis({ introduction = "", points = [] } = {}) {
   const intro = couper(introduction, LIMITES.introPhrases, LIMITES.introCaracteres);
   const lignes = (Array.isArray(points) ? points : [])

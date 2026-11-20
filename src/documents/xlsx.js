@@ -1,15 +1,15 @@
-// Écriture d'un classeur Excel (.xlsx = archive zip de XML, norme Office Open XML) sans dépendance lourde :
-// fflate pour le zip. Formules vivantes : chaque cellule calculée porte sa formule ET sa valeur en cache
-// (évaluée par formules.js), et le classeur demande à Excel de tout recalculer à l'ouverture.
+// Writing of an Excel workbook (.xlsx = zip archive of XML, Office Open XML standard) without a heavy dependency:
+// fflate for the zip. Live formulas: each calculated cell carries its formula AND its cached value
+// (evaluated by formules.js), and the workbook asks Excel to recalculate everything on opening.
 import { zipSync, strToU8 } from "fflate";
 import { evaluer, lettres } from "./formules.js";
 
 const xml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-// Styles (index dans cellXfs). Charte Passation, conventions d'un datapack bancaire : montants sans symbole (unité
-// « en € » en tête d'onglet), négatifs entre parenthèses, zéro affiché « – » ; saisies modifiables en cuivre sur fond
-// crème encadré, formules en encre ; sous-totaux en gras, totaux sur fond vert pâle ; bandeaux de section verts.
-// Les index 0 à 16 sont stables (les tests relisent le XML) ; les nouveaux styles s'ajoutent à la fin.
+// Styles (index in cellXfs). Passation branding, conventions of a bank datapack: amounts without a symbol (unit
+// "in €" at the top of the tab), negatives in parentheses, zero shown as "–"; editable inputs in copper on a framed
+// cream background, formulas in ink; subtotals in bold, totals on a pale green background; green section bands.
+// Indexes 0 to 16 are stable (the tests reread the XML); new styles are added at the end.
 export const S = { normal: 0, titre: 1, entete: 2, euros: 3, eurosGras: 4, pct: 5, saisieEuros: 6, saisiePct: 7, petit: 8, pct2: 9, nombre: 10, gras: 11, saisieNombre: 12, sousTitre: 13, eurosTotal: 14, saisieTexte: 15, confidentiel: 16, section: 17, lien: 18, titreCouverture: 19, unite: 20, sectionNumero: 21, enteteDroite: 22, controle: 23, note: 24 };
 export const COULEURS = { creme: "FBF6EC", espresso: "231E18", sable: "EADFCB", vert: "1E3A2E", cuivre: "A8653A", cuivreTexte: "8E5530", pierreTexte: "696155", vertPale: "E3EBE6" };
 const C = (h) => `FF${h}`;
@@ -71,7 +71,7 @@ const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </styleSheet>`;
 
 const base64EnOctets = (b64) => Uint8Array.from(atob(b64), (ch) => ch.charCodeAt(0));
-const EMU = 9525; // 1 px (96 ppp) en EMU
+const EMU = 9525; // 1 px (96 dpi) in EMU
 
 export function creerClasseur() {
   const feuilles = [];
@@ -82,22 +82,22 @@ export function creerClasseur() {
     const hauteurs = new Map(), fusions = [], liens = [], images = [];
     const f = {
       nom, largeurs, cellules, onglet, paysage, hauteurs, fusions, liens, images,
-      /** Écrit une cellule. contenu : nombre, texte, null, ou { f: "formule sans =", s } ; s = style. */
+      /** Writes a cell. contenu: number, text, null, or { f: "formula without =", s }; s = style. */
       ecrire(r, c, contenu, s = S.normal) {
         if (contenu && typeof contenu === "object") cellules.set(`${r},${c}`, { f: contenu.f, s: contenu.s ?? s });
         else cellules.set(`${r},${c}`, { v: contenu, s });
         return `${lettres(c)}${r + 1}`;
       },
       ref: (r, c, absolue = false) => (absolue ? `$${lettres(c)}$${r + 1}` : `${lettres(c)}${r + 1}`),
-      /** Hauteur de ligne en points. */
+      /** Row height in points. */
       hauteur(r, pt) { hauteurs.set(r, pt); },
-      /** Fusionne une plage, ex. « B30:D30 ». */
+      /** Merges a range, e.g. "B30:D30". */
       fusionner(plage) { fusions.push(plage); },
-      /** Lien interne vers la cellule A1 d'un autre onglet (texte souligné en cuivre). */
+      /** Internal link to cell A1 of another tab (text underlined in copper). */
       lien(r, c, texte, cible, s = S.lien) { this.ecrire(r, c, texte, s); liens.push({ ref: `${lettres(c)}${r + 1}`, cible }); },
-      /** Image PNG (base64) ancrée en haut à gauche de la cellule (r, c), taille d'affichage en pixels. */
+      /** PNG image (base64) anchored at the top left of cell (r, c), display size in pixels. */
       image({ png, r = 0, c = 0, largeur, hauteur, nom: nomImage = "Image", decalageX = 0, decalageY = 0 }) { images.push({ png, r, c, largeur, hauteur, nomImage, decalageX, decalageY }); },
-      /** Référence depuis une autre feuille. */
+      /** Reference from another sheet. */
       ext: (r, c) => `'${nom}'!${lettres(c)}${r + 1}`,
     };
     feuilles.push(f);
@@ -105,7 +105,7 @@ export function creerClasseur() {
     return f;
   }
 
-  /** Calcule toutes les formules (valeurs en cache), avec détection des références circulaires. */
+  /** Calculates all the formulas (cached values), with detection of circular references. */
   function calculer() {
     const cache = new Map(), enCours = new Set();
     const lire = (nomF, r, c) => {
@@ -158,7 +158,7 @@ export function creerClasseur() {
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${sheetPr}<sheetViews><sheetView workbookViewId="0" showGridLines="0"${fe === feuilles[0] ? ' tabSelected="1"' : ""}/></sheetViews><sheetFormatPr defaultRowHeight="13.2"/>${cols}<sheetData>${corps}</sheetData>${fusions}${liens}${mise}${dessin}</worksheet>`;
   }
 
-  /** Dessin (images) d'une feuille : ancrage sur une cellule, taille fixe. */
+  /** Drawing (images) of a sheet: anchored on a cell, fixed size. */
   function xmlDessin(fe, premierId) {
     const pics = fe.images.map((im, i) => `<xdr:oneCellAnchor><xdr:from><xdr:col>${im.c}</xdr:col><xdr:colOff>${Math.round(im.decalageX * EMU)}</xdr:colOff><xdr:row>${im.r}</xdr:row><xdr:rowOff>${Math.round(im.decalageY * EMU)}</xdr:rowOff></xdr:from><xdr:ext cx="${Math.round(im.largeur * EMU)}" cy="${Math.round(im.hauteur * EMU)}"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="${i + 2}" name="${xml(im.nomImage)}" descr="${xml(im.nomImage)}"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="rId${i + 1}"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${Math.round(im.largeur * EMU)}" cy="${Math.round(im.hauteur * EMU)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor>`).join("");
     const rels = fe.images.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${premierId + i}.png"/>`).join("");
@@ -170,7 +170,7 @@ export function creerClasseur() {
     };
   }
 
-  /** @returns Uint8Array du fichier .xlsx */
+  /** @returns Uint8Array of the .xlsx file */
   function octets({ titre = "Datapack", auteur = "Passation" } = {}) {
     const calc = calculer();
     const avecImages = feuilles.filter((f) => f.images.length);

@@ -1,6 +1,6 @@
-// Mini-évaluateur des formules du datapack (sous-ensemble d'Excel : + − × / ^, comparaisons, &, références
-// « Feuille!A1 » et plages, SUM, AVERAGE, IF, AND, OR, MIN, MAX, ISNUMBER, COUNT, ROUND). Sert à écrire les
-// valeurs en cache dans le fichier et, dans les tests, à vérifier que les formules redonnent les chiffres du moteur.
+// Mini-evaluator of the datapack formulas (subset of Excel: + − × / ^, comparisons, &, references
+// "Sheet!A1" and ranges, SUM, AVERAGE, IF, AND, OR, MIN, MAX, ISNUMBER, COUNT, ROUND). Used to write the
+// cached values into the file and, in the tests, to check that the formulas give back the engine's figures.
 
 const FONCTIONS = {
   SUM: (a) => a.flat(Infinity).filter((x) => typeof x === "number").reduce((s, x) => s + x, 0),
@@ -43,7 +43,7 @@ function colonne(lettres) { let n = 0; for (const c of lettres) n = n * 26 + (c.
 export function lettres(n) { let s = ""; n++; while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; }
 const decoupe = (ref) => { const m = /^([A-Z]+)(\d+)$/.exec(ref); return { c: colonne(m[1]), r: Number(m[2]) - 1 }; };
 
-/** Évalue une formule (sans « = ») ; lire(feuille, r, c) renvoie la valeur d'une cellule. */
+/** Evaluates a formula (without "="); lire(feuille, r, c) returns a cell's value. */
 export function evaluer(src, feuilleCourante, lire) {
   const t = lexer(src);
   let p = 0;
@@ -67,8 +67,8 @@ export function evaluer(src, feuilleCourante, lire) {
     if (x.k === "fn") {
       attendre("(");
       const args = [];
-      // IF n'utilise que la branche retenue : une erreur dans l'autre branche ne compte pas (comme dans Excel)
-      const sauter = () => { // avance jusqu'à la fin de l'argument courant (virgule ou parenthèse de même niveau)
+      // IF uses only the branch taken: an error in the other branch does not count (as in Excel)
+      const sauter = () => { // moves to the end of the current argument (comma or parenthesis at the same level)
         let n = 0;
         while (p < t.length) {
           const v = t[p].v;

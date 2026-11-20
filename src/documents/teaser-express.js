@@ -1,11 +1,11 @@
-// Teaser express, affiché dès l'estimation sur la page d'accueil : faits anonymes calculés par le code, aux mêmes
-// règles que le teaser du dossier (anonymat.js) : secteur au niveau de la division NAF, région, ancienneté par
-// paliers, tranche d'effectif INSEE. Jamais de nom, de ville, de SIREN ni de chiffre exact.
+// Quick teaser, shown with the estimate on the home page: anonymous facts calculated by the code, with the same
+// rules as the file's teaser (anonymat.js): industry at the NAF division level, region, age in bands,
+// INSEE headcount band. Never a name, a city, a SIREN or an exact figure.
 import { regionDe, anciennete, secteurDe } from "./anonymat.js";
 import { libelleSalaries } from "../../public/js/regles.js";
 import { nomDeCode } from "./nom-de-code.js";
 
-export { secteurDe }; // libellé unique du secteur, défini dans anonymat.js
+export { secteurDe }; // single industry label, defined in anonymat.js
 
 export function teaserExpress(d) {
   return {

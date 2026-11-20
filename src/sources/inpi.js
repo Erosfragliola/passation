@@ -1,6 +1,6 @@
-// Ratios financiers issus des comptes déposés (jeu ratios_inpi_bce, data.economie.gouv.fr).
-// Constats sur données réelles : un exercice confidentiel renvoie CA = 0 et EBE = 0 (et non null) ;
-// une même année peut exister en comptes complets (C) et simplifiés (S) ; des années manquent.
+// Financial ratios from the filed accounts (dataset ratios_inpi_bce, data.economie.gouv.fr).
+// Findings on real data: a confidential fiscal year returns revenue = 0 and EBITDA = 0 (not null);
+// the same year can exist as full (C) and simplified (S) accounts; some years are missing.
 
 import { requeteJson } from "../lib/requete.js";
 
@@ -16,7 +16,7 @@ export async function exercicesBruts(siren, { fetch: f = fetch, ...options } = {
 const PUBLIC = new Set(["Public", "Publication simplifiee"]);
 const PRIORITE_TYPE = { C: 0, S: 1, K: 2 };
 
-/** Un exercice par année ; chiffres à null si l'exercice n'est pas publié. */
+/** One fiscal year per year; figures set to null if the fiscal year is not published. */
 export function normaliserExercices(brut) {
   const parAnnee = new Map();
   for (const r of brut?.results || []) {

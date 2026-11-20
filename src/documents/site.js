@@ -1,5 +1,5 @@
-// Lecture du site internet de l'entreprise (pour le mémorandum) : adresse donnée par le dirigeant, même domaine,
-// 8 pages au plus, robots.txt respecté, ni réseaux sociaux ni avis. Fonctions pures + lecture avec fetch injectable.
+// Reading of the company's website (for the memorandum): address given by the owner, same domain,
+// 8 pages at most, robots.txt respected, no social networks or reviews. Pure functions + reading with an injectable fetch.
 import { USER_AGENT } from "../config.js";
 
 export const PAGES_MAX = 8;
@@ -7,7 +7,7 @@ const TAILLE_MAX = 1_500_000;
 const MOTS_UTILES = ["propos", "qui-sommes", "quisommes", "entreprise", "societe", "histoire", "savoir", "metier", "produit", "service", "prestation", "realisation", "reference", "equipe", "valeurs", "activite", "expertise", "atelier", "fabrication", "engagement", "certification", "qualite"];
 const MOTS_EXCLUS = ["contact", "mentions", "legal", "cgv", "cgu", "confidentialite", "privacy", "cookie", "panier", "cart", "compte", "login", "connexion", "recrutement", "emploi", "blog/page", "tag/", "wp-admin", "feed"];
 
-/** Adresse http(s) publique uniquement (pas d'IP, pas de nom local). Renvoie un URL normalisé ou null. */
+/** Public http(s) address only (no IP, no local name). Returns a normalized URL or null. */
 export function adressePublique(brut) {
   let u;
   try { u = new URL(/^https?:\/\//i.test(String(brut).trim()) ? String(brut).trim() : `https://${String(brut).trim()}`); } catch { return null; }
@@ -21,7 +21,7 @@ export function adressePublique(brut) {
 
 const domaine = (h) => h.replace(/^www\./, "");
 
-/** Liens internes utiles, classés (pages « à propos », « savoir-faire », « produits »… d'abord). */
+/** Useful internal links, ranked ("about", "know-how", "products"… pages first). */
 export function liensInternes(html, base) {
   const vus = new Set(), liste = [];
   for (const m of html.matchAll(/<a\b[^>]*href\s*=\s*["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
@@ -40,7 +40,7 @@ export function liensInternes(html, base) {
 }
 
 const ENTITES = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ", eacute: "é", egrave: "è", ecirc: "ê", agrave: "à", ccedil: "ç", ocirc: "ô", ucirc: "û", icirc: "î", rsquo: "’", laquo: "«", raquo: "»" };
-/** Texte lisible d'une page (sans scripts, styles, menus ni pieds de page), 8 000 caractères au plus. */
+/** Readable text of a page (without scripts, styles, menus or footers), 8,000 characters at most. */
 export function texteDepuisHtml(html) {
   const titre = (/<title[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1] || "").trim();
   const t = html
@@ -52,10 +52,10 @@ export function texteDepuisHtml(html) {
   return { titre, texte: t.slice(0, 8000) };
 }
 
-/** Candidats logo : image dont le nom, la classe ou le texte alternatif contient « logo », image de partage, icônes. */
+/** Logo candidates: image whose name, class or alt text contains "logo", share image, icons. */
 export function candidatsLogo(html, base) {
   const res = [];
-  const ajouter = (src, origine) => { try { const u = new URL(src, base); if (/^https?:$/.test(u.protocol) && !res.some((r) => r.url === u.href)) res.push({ url: u.href, origine }); } catch { /* ignoré */ } };
+  const ajouter = (src, origine) => { try { const u = new URL(src, base); if (/^https?:$/.test(u.protocol) && !res.some((r) => r.url === u.href)) res.push({ url: u.href, origine }); } catch { /* ignored */ } };
   for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
     const tag = m[0];
     if (/logo/i.test(tag)) { const src = /\ssrc\s*=\s*["']([^"']+)["']/i.exec(tag)?.[1]; if (src && !/^data:/i.test(src)) ajouter(src, "image « logo » de la page"); }
@@ -69,7 +69,7 @@ export function candidatsLogo(html, base) {
   return res.slice(0, 6);
 }
 
-/** Photos candidates : grandes images de contenu (ni logo, ni icône, ni pictogramme). */
+/** Candidate photos: large content images (no logo, icon or pictogram). */
 function candidatsPhotos(html, base) {
   const res = [];
   for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
@@ -78,12 +78,12 @@ function candidatsPhotos(html, base) {
     if (!src || /^data:/i.test(src) || /logo|icon|picto|sprite|avatar|flag|badge/i.test(tag) || /\.svg(\?|$)/i.test(src)) continue;
     const l = Number(/\swidth\s*=\s*["']?(\d+)/i.exec(tag)?.[1] || 0), h = Number(/\sheight\s*=\s*["']?(\d+)/i.exec(tag)?.[1] || 0);
     if ((l && l < 300) || (h && h < 200)) continue;
-    try { const u = new URL(src, base); if (/^https?:$/.test(u.protocol) && !res.includes(u.href)) res.push(u.href); } catch { /* ignoré */ }
+    try { const u = new URL(src, base); if (/^https?:$/.test(u.protocol) && !res.includes(u.href)) res.push(u.href); } catch { /* ignored */ }
   }
   return res;
 }
 
-/** robots.txt : le chemin est-il autorisé pour tous les robots (« User-agent: * ») ? */
+/** robots.txt: is the path allowed for all robots ("User-agent: *")? */
 export function robotsAutorise(robots, chemin) {
   if (!robots) return true;
   let actif = false;
@@ -108,12 +108,12 @@ async function lire(url, f) {
   return texte.length > TAILLE_MAX ? texte.slice(0, TAILLE_MAX) : texte;
 }
 
-/** Lit l'accueil puis les pages internes les plus utiles. @returns { pages: [{url, titre, texte}], logos, photos } */
+/** Reads the home page then the most useful internal pages. @returns { pages: [{url, titre, texte}], logos, photos } */
 export async function lireSite(adresse, { fetch: f = fetch } = {}) {
   const base = adressePublique(adresse);
   if (!base) throw new Error("adresse_invalide");
   let robots = "";
-  try { const r = await f(new URL("/robots.txt", base), { headers: { "user-agent": USER_AGENT }, signal: AbortSignal.timeout(5000) }); if (r.ok) robots = (await r.text()).slice(0, 50_000); } catch { /* pas de robots.txt */ }
+  try { const r = await f(new URL("/robots.txt", base), { headers: { "user-agent": USER_AGENT }, signal: AbortSignal.timeout(5000) }); if (r.ok) robots = (await r.text()).slice(0, 50_000); } catch { /* no robots.txt */ }
   if (!robotsAutorise(robots, base.pathname || "/")) throw new Error("robots_refuse");
   const accueil = await lire(base.href, f);
   if (!accueil) throw new Error("site_injoignable");
@@ -126,7 +126,7 @@ export async function lireSite(adresse, { fetch: f = fetch } = {}) {
     try {
       const html = await lire(url, f);
       if (html) { pages.push({ url, ...texteDepuisHtml(html) }); for (const p of candidatsPhotos(html, new URL(url))) if (!photos.includes(p)) photos.push(p); }
-    } catch { /* page ignorée */ }
+    } catch { /* page ignored */ }
   }
   return { url: base.href, pages, logos, photos: photos.slice(0, 16) };
 }

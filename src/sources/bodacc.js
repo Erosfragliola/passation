@@ -1,8 +1,8 @@
-// Annonces commerciales du BODACC (bodacc-datadila.opendatasoft.com).
-// Liste blanche : seules les créations, immatriculations, transferts de siège, changements de dénomination
-// et reprises de fonds (quand l'entreprise est l'ACHETEUSE) sont retenus. Tout le reste (procédures
-// collectives, radiations, dépôts de comptes, dirigeants, ventes par l'entreprise…) est écarté sans le signaler.
-// Les noms de personnes et les prix ne sont jamais conservés.
+// Commercial notices of the BODACC (bodacc-datadila.opendatasoft.com).
+// Allowlist: only creations, registrations, head-office transfers, name changes
+// and acquisitions of a business (when the company is the BUYER) are kept. Everything else (insolvency
+// proceedings, deregistrations, filings of accounts, officers, sales by the company…) is discarded without notice.
+// Names of people and prices are never kept.
 
 import { requeteJson } from "../lib/requete.js";
 
@@ -21,9 +21,9 @@ const chiffres = (s) => String(s || "").replace(/\D/g, "");
 const premiereVille = (v) => String(v || "").split(",")[0].trim() || null;
 
 /**
- * Retourne { ville_creation, evenements: [{date, type, detail|ancien|nouveau}] } dans l'ordre chronologique.
- * @param dateCreation date de création connue (AAAA-MM-JJ) : l'avis de création n'est retenu que s'il est
- *        publié dans l'année qui suit, sinon la ville de création reste inconnue.
+ * Returns { ville_creation, evenements: [{date, type, detail|ancien|nouveau}] } in chronological order.
+ * @param dateCreation known creation date (YYYY-MM-DD): the creation notice is kept only if it is
+ *        published within the following year, otherwise the city of creation stays unknown.
  */
 export function normaliserAnnonces(brut, siren, dateCreation = null) {
   const annonces = [...(brut?.results || [])].sort((a, b) => String(a.dateparution).localeCompare(String(b.dateparution)));
@@ -39,7 +39,7 @@ export function normaliserAnnonces(brut, siren, dateCreation = null) {
     const modif = json(a.modificationsgenerales);
     const descriptif = String(modif.descriptif || acte.descriptif || "").toLowerCase();
     const ville = premiereVille(a.ville);
-    const nom = premiereVille(a.commercant); // le premier nom est celui de l'entreprise visée
+    const nom = premiereVille(a.commercant); // the first name is that of the company concerned
 
     if (famille === "Créations" || (famille === "Immatriculations" && !descriptif.includes("transfert"))) {
       const ecart = dateCreation ? Math.abs(new Date(a.dateparution) - new Date(dateCreation)) / 864e5 : 0;
@@ -65,7 +65,7 @@ export function normaliserAnnonces(brut, siren, dateCreation = null) {
         evenements.push({ date: a.dateparution, type: "reprise_fonds", detail: villeFonds });
       }
     }
-    // Toute autre famille (procédures collectives, radiations, dépôts des comptes…) est ignorée.
+    // Any other family (insolvency proceedings, deregistrations, filings of accounts…) is ignored.
     if (ville && !villeCourante) villeCourante = ville;
     if (ville) villes.add(ville);
     if (nom && famille !== "Ventes et cessions") nomCourant = nom;
@@ -75,6 +75,6 @@ export function normaliserAnnonces(brut, siren, dateCreation = null) {
 
 const sansAccents = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 function memeVille(a, b) { return sansAccents(a) === sansAccents(b); }
-// Formes juridiques ignorées pour comparer deux dénominations (« SA X » et « X » sont le même nom).
+// Legal forms ignored when comparing two names ("SA X" and "X" are the same name).
 const FORMES = /\b(sa|sas|sasu|sarl|eurl|sci|snc|scop|sca|selarl|selas)\b/g;
 function memeNom(a, b) { return sansAccents(a).replace(FORMES, "").replace(/\s+/g, " ").trim() === sansAccents(b).replace(FORMES, "").replace(/\s+/g, " ").trim(); }
