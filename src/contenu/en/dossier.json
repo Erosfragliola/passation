@@ -205,5 +205,10 @@
     "non_redige_titre": "Your file isn’t drafted yet",
     "non_pret_aide": "It isn’t ready to send yet: {pct}% complete. Here’s what’s left.",
     "reste": "What’s left to do"
+  },
+  "formats": {
+    "nd": "n/a",
+    "exercice": "fiscal year {annee}",
+    "exercices": "fiscal years {de} to {a}"
   }
 }

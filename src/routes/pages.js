@@ -38,8 +38,8 @@ export const PAGES = {
 /** Pages publiques indexables (sitemap.xml). */
 export const PAGES_PUBLIQUES = ["/", "/connexion", "/cgu", "/confidentialite", "/mentions-legales"];
 /** Espaces de noms dont le JavaScript du navigateur a besoin (t() de public/js/i18n.js), en plus de celui de la page.
- *  Les modules partagés de l'espace (règles, champs, questionnaire, parcours, dossier) servent à toutes ses pages. */
-const POUR_JS_ESPACE = ["commun", "regles", "champs", "questionnaire", "parcours", "dossier"];
+ *  Les pages de l'espace partagent leurs modules et quelques textes : chacune reçoit tous les espaces de noms de l'espace. */
+const POUR_JS_ESPACE = ["commun", "regles", "champs", "questionnaire", "parcours", "dossier", "espace", "demarrer", "valorisation", "memo", "teaser"];
 const POUR_JS = {
   accueil: ["commun", "regles", "connexion_code"],
   connexion: ["commun", "connexion_code"],

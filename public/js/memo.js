@@ -18,7 +18,7 @@ function message(t, erreur = false) { const m = $("#message"); m.textContent = t
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
   const r = await fetch(chemin, { ...options, headers: enJson ? { "content-type": "application/json" } : {} });
-  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non_connecte"); }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(d.message || "Une erreur est survenue.");
   return d;
@@ -963,6 +963,6 @@ async function suivreLien() {
 (async () => {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
-  try { etat = await api(base); tout(); suivreLien(); } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
+  try { etat = await api(base); tout(); suivreLien(); } catch (e) { if (e.message !== "non_connecte") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();

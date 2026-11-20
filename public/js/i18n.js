@@ -5,7 +5,7 @@
 //                complété par le français pour toute clé absente) et la langue dans <html lang>.
 //   Worker     : src/i18n.js installe les dictionnaires et la langue de la requête en cours.
 //
-// t("espace.supprimer.confirmer", { nom: "X" }) : texte de la clé, {repères} remplacés. Une clé dont la valeur est
+// t("dossier.taches.chiffres.titre", { annee: 2024 }) : texte de la clé, {repères} remplacés. Une clé dont la valeur est
 // { one, other } (ou { zero, one, other }) choisit sa forme d'après valeurs.n (règles de pluriel de la langue).
 // Clé introuvable dans la langue : texte français ; introuvable partout : la clé elle-même (repérée par les tests).
 
@@ -66,6 +66,16 @@ export function lien(chemin, l = langueConnue()) {
   const prefixe = PREFIXES[l] || "";
   if (!prefixe || s === prefixe || s.startsWith(`${prefixe}/`)) return s;
   return s === "/" ? `${prefixe}/` : prefixe + s;
+}
+
+/** Nombre saisi par l'utilisateur → Number. Espaces, €, % ignorés ; en français la virgule est décimale
+ *  (« 1 234,5 »), en anglais elle sépare les milliers (« 1,234.5 »). "" → null ; illisible → NaN. */
+export function lireNombreSaisi(s, l = langue()) {
+  let x = String(s ?? "").replace(/[\s\u00a0\u202f€%]/g, "");
+  x = l === "fr" ? x.replace(",", ".") : x.replace(/,/g, "");
+  if (x === "" || x === "-") return null;
+  const n = Number(x);
+  return Number.isFinite(n) ? n : NaN;
 }
 
 /** Marqueur d'un texte traduit dans une définition partagée (questions, champs…) : avecTextes() le remplace par un

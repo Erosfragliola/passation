@@ -4,7 +4,7 @@
 import { CHECKLIST } from "/js/dossier-regles.js";
 import { etatParcours } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js"; // même arrondi que l'écran de résultat de la landing
-import { lien } from "/js/i18n.js";
+import { lien, t, nombre } from "/js/i18n.js";
 
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -16,9 +16,9 @@ function message(texte, erreur = false) {
 }
 async function api(chemin, options = {}) {
   const r = await fetch(chemin, { ...options, headers: { "content-type": "application/json", ...(options.headers || {}) } });
-  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non_connecte"); }
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d.message || "Erreur");
+  if (!r.ok) throw new Error(d.message || t("espace.js.erreur"));
   return d;
 }
 const el = (tag, attrs = {}, ...enfants) => {
@@ -44,7 +44,7 @@ const ICONES = {
   memo: '<path d="M4 5h16v12H4zM8 21h8M12 17v4"/>',
 };
 const icone = (k) => el("span", { class: "ico", "aria-hidden": "true", html: `<svg viewBox="0 0 24 24">${ICONES[k] || ""}</svg>` });
-const LIBELLE_ETAT = { pret: "Prêt", "a-relire": "À relire", incomplet: "Incomplet", "a-venir": "À venir" };
+const libelleEtat = (etat) => t(`espace.js.etats.${etat}`);
 
 async function charger() {
   const moi = await api("/api/me");
@@ -65,15 +65,15 @@ async function charger() {
 function afficher({ checklist = true } = {}) {
   etat = etatParcours(dossier, memo, teaser);
   const e = dossier.entreprise, id = dossier.id;
-  document.title = `${e.nom || "Votre dossier"} · Passation`;
+  document.title = t("espace.js.titre_page", { nom: e.nom || t("espace.js.votre_dossier") });
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
 
   // Fil du parcours : étapes faites cliquables, l'actuelle mise en avant
   remplacer($("#fil"), ...etat.etapes.map((x, i) => {
     const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(i + 1) }), el("span", { class: "lib", text: x.libelle })];
-    if (x.etat === "fait") return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": `${x.libelle} : étape terminée, revoir` }, contenu));
-    if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: " : étape en cours" })));
-    return el("li", {}, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: " : à venir" })));
+    if (x.etat === "fait") return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": t("espace.js.etape_faite", { etape: x.libelle }) }, contenu));
+    if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_en_cours") })));
+    return el("li", {}, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_a_venir") })));
   }));
   // Action principale = première tâche de « À faire maintenant » (même libellé, même lien ; les pièces ouvrent le dépôt)
   for (const a of [$("#cta"), $("#cta-tel")]) {
@@ -83,44 +83,44 @@ function afficher({ checklist = true } = {}) {
 
   // En-tête : nom de code, raison sociale, avancement, valeur et sa base
   $("#nom-code").textContent = dossier.nom_de_code || "";
-  $("#dossier-nom").textContent = e.nom || "Votre entreprise";
-  $("#dossier-meta").textContent = [e.ville, `SIREN ${dossier.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}`, e.date_creation ? `depuis ${e.date_creation.slice(0, 4)}` : null].filter(Boolean).join(" · ");
+  $("#dossier-nom").textContent = e.nom || t("espace.js.votre_entreprise");
+  $("#dossier-meta").textContent = [e.ville, `SIREN ${dossier.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}`, e.date_creation ? t("espace.js.depuis", { annee: e.date_creation.slice(0, 4) }) : null].filter(Boolean).join(" · ");
   const g = etat.avancement; // même calcul que l'écran final du parcours guidé (etatParcours)
-  $("#avancement-global").textContent = `${g} %`;
-  $("#anneau").setAttribute("aria-label", `${g} % du parcours fait`);
+  $("#avancement-global").textContent = t("espace.js.pct", { n: g });
+  $("#anneau").setAttribute("aria-label", t("espace.js.anneau", { n: g }));
   $("#anneau-val").setAttribute("stroke-dasharray", `${((2 * Math.PI * 32 * g) / 100).toFixed(1)} 201`);
   const v = etat.valeur;
   $("#valeur-etiquette").textContent = v.etiquette;
-  $("#valeur-montant").textContent = v.bas != null && v.haut != null ? fourchette(v.bas, v.haut) : "À affiner";
+  $("#valeur-montant").textContent = v.bas != null && v.haut != null ? fourchette(v.bas, v.haut) : t("espace.js.a_affiner");
   $("#valeur-base").textContent = v.base;
   $("#valeur-ecart").textContent = v.ecart || ""; $("#valeur-ecart").hidden = !v.ecart;
   $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
 
   // À faire maintenant
   remplacer($("#afaire"), etat.taches.length
-    ? el("ul", { class: "taches" }, ...etat.taches.map((t) => el("li", { class: "tache" },
-      icone(t.cle),
-      el("span", { class: "tache-txt" }, el("strong", { text: t.titre }), el("span", { class: "petit", text: t.detail })),
-      t.pieces ? el("button", { type: "button", class: "btn btn-contour btn-petit", onclick: () => ouvrirPieces(true) }, t.action)
-        : el("a", { class: "btn btn-contour btn-petit", href: t.href, "aria-label": `${t.action} : ${t.titre}` }, t.action))))
-    : el("div", { class: "bravo" }, el("p", { class: "affiche", text: "Tout est fait" }),
-      el("p", { text: "Vos documents sont rédigés et complets, et toutes vos pièces sont réunies. Relisez une dernière fois, puis envoyez votre dossier." })));
+    ? el("ul", { class: "taches" }, ...etat.taches.map((x) => el("li", { class: "tache" },
+      icone(x.cle),
+      el("span", { class: "tache-txt" }, el("strong", { text: x.titre }), el("span", { class: "petit", text: x.detail })),
+      x.pieces ? el("button", { type: "button", class: "btn btn-contour btn-petit", onclick: () => ouvrirPieces(true) }, x.action)
+        : el("a", { class: "btn btn-contour btn-petit", href: x.href, "aria-label": t("espace.js.action_de", { action: x.action, objet: x.titre }) }, x.action))))
+    : el("div", { class: "bravo" }, el("p", { class: "affiche", text: t("espace.js.bravo_titre") }),
+      el("p", { text: t("espace.js.bravo_texte") })));
 
   // Documents
   const prets = etat.documents.filter((x) => x.etat !== "a-venir").length;
-  $("#docs-resume").textContent = `${prets} sur ${etat.documents.length} disponibles`;
+  $("#docs-resume").textContent = t("espace.js.docs_resume", { n: prets, total: etat.documents.length });
   remplacer($("#docs"), ...etat.documents.map((x) => el("article", { class: `tuile doc doc-${x.etat}`, "aria-labelledby": `doc-titre-${x.cle}` },
-    el("div", { class: "doc-haut" }, icone(x.cle), el("span", { class: `etat etat-${x.etat}`, text: LIBELLE_ETAT[x.etat] })),
+    el("div", { class: "doc-haut" }, icone(x.cle), el("span", { class: `etat etat-${x.etat}`, text: libelleEtat(x.etat) })),
     el("h3", { id: `doc-titre-${x.cle}`, text: x.titre }),
     el("p", { class: "petit", text: x.detail }),
     x.actions.length ? el("div", { class: "doc-actions" }, ...x.actions.map((a) => el("a", {
       class: `btn btn-petit ${a.principal ? "btn-principal" : "btn-contour"}`, href: a.href, download: a.telecharger ? "" : null,
-      "aria-label": a.principal ? null : `${a.libelle} : ${x.titre}`,
+      "aria-label": a.principal ? null : t("espace.js.action_de", { action: a.libelle, objet: x.titre }),
     }, a.libelle))) : null)));
 
   // Pièces : résumé, et dépôt replié sauf quand c'est l'étape en cours (ou ouvert par le dirigeant)
   const { fournies, total } = etat.pieces;
-  $("#checklist-compte").textContent = `${fournies} ${fournies > 1 ? "pièces" : "pièce"} sur ${total}`;
+  $("#checklist-compte").textContent = t("dossier.taches.pieces.detail", { n: fournies, total });
   $("#jauge-pieces").style.width = `${Math.round((100 * fournies) / total)}%`;
   if (piecesOuvert == null) piecesOuvert = etat.pieces.ouvert || location.hash === "#checklist";
   ouvrirPieces(piecesOuvert, false);
@@ -130,7 +130,7 @@ function ouvrirPieces(ouvert, defiler = true) {
   piecesOuvert = ouvert;
   $("#pieces-depot").hidden = !ouvert;
   $("#pieces-bouton").setAttribute("aria-expanded", String(ouvert));
-  $("#pieces-bouton").textContent = ouvert ? "Replier" : "Ouvrir le dépôt";
+  $("#pieces-bouton").textContent = ouvert ? t("espace.js.replier") : t("espace.ouvrir_depot");
   if (ouvert && defiler) { $("#checklist").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); $("#drive-dossiers [aria-selected=true]")?.focus({ preventScroll: true }); }
 }
 $("#pieces-bouton").addEventListener("click", () => ouvrirPieces(!piecesOuvert, false));
@@ -139,7 +139,7 @@ $("#pieces-bouton").addEventListener("click", () => ouvrirPieces(!piecesOuvert, 
 // Un dossier par thème ; dans chaque thème, une ligne par pièce attendue, où l'on glisse ses fichiers (ou on clique).
 // Une pièce sans fichier peut aussi être cochée « je l'ai » (elle sera transmise autrement).
 let pieces = [], theme = 0;
-const taille = (o) => (o >= 1048576 ? `${(o / 1048576).toLocaleString("fr-FR", { maximumFractionDigits: 1 })} Mo` : `${Math.max(1, Math.round(o / 1024))} Ko`);
+const taille = (o) => (o >= 1048576 ? t("espace.js.mo", { n: nombre(o / 1048576, { maximumFractionDigits: 1 }) }) : t("espace.js.ko", { n: Math.max(1, Math.round(o / 1024)) }));
 const EXT = (n) => (/\.([a-z0-9]{2,5})$/i.exec(n)?.[1] || "").toUpperCase().slice(0, 4);
 
 async function chargerPieces() {
@@ -153,13 +153,13 @@ async function rafraichir() {
 async function envoyer(fichiers, item) {
   for (const f of fichiers) {
     const fd = new FormData(); fd.append("fichier", f); fd.append("item", item);
-    message(`Envoi de ${f.name}…`);
+    message(t("espace.js.envoi", { fichier: f.name }));
     try {
       const r = await fetch(`/api/dossiers/${dossier.id}/pieces`, { method: "POST", body: fd });
       const d = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(d.message || "Envoi impossible.");
-      pieces = d.pieces; message(`${f.name} : déposé.`);
-    } catch (err) { message(`${f.name} : ${err.message}`, true); }
+      if (!r.ok) throw new Error(d.message || t("espace.js.envoi_impossible"));
+      pieces = d.pieces; message(t("espace.js.depose", { fichier: f.name }));
+    } catch (err) { message(t("espace.js.fichier_erreur", { fichier: f.name, erreur: err.message }), true); }
   }
   await rafraichir();
 }
@@ -168,7 +168,7 @@ async function envoyer(fichiers, item) {
 function zoneDepot(item, contenu, classe, libelle) {
   const input = el("input", { type: "file", multiple: true, class: "visuellement-cache", tabindex: "-1", "aria-hidden": "true" });
   input.addEventListener("change", () => { if (input.files.length) envoyer([...input.files], item); });
-  const bouton = el("button", { type: "button", class: "lien-simple depot-choisir", "aria-label": `Ajouter un fichier : ${libelle}`, onclick: (ev) => { ev.stopPropagation(); input.click(); } }, "Ajouter un fichier");
+  const bouton = el("button", { type: "button", class: "lien-simple depot-choisir", "aria-label": t("espace.js.ajouter_fichier_de", { piece: libelle }), onclick: (ev) => { ev.stopPropagation(); input.click(); } }, t("espace.js.ajouter_fichier"));
   const zone = el("div", { class: classe }, contenu, bouton, input);
   zone.addEventListener("click", (ev) => { if (!ev.target.closest("a, button")) input.click(); });
   ["dragenter", "dragover"].forEach((t) => zone.addEventListener(t, (ev) => { ev.preventDefault(); zone.classList.add("survol"); }));
@@ -190,15 +190,15 @@ function dessinerChecklist() {
       onclick: () => choisirTheme(k, true),
       onkeydown: (ev) => { const pas = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[ev.key]; if (pas) { ev.preventDefault(); choisirTheme(theme + pas, true); } },
       html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11H3z"/></svg>',
-    }, el("span", { text: g.groupe }), el("small", { text: `${n}/${g.items.length}`, "aria-label": `${n} sur ${g.items.length}` }));
+    }, el("span", { text: g.groupe }), el("small", { text: `${n}/${g.items.length}`, "aria-label": t("espace.js.n_sur", { n, total: g.items.length }) }));
   }));
   $("#checklist-groupes").setAttribute("aria-labelledby", `theme-${theme}`);
   const g = CHECKLIST[theme];
   const prochaine = g.items.find(([c]) => !coches.has(c)) || g.items[0];
   remplacer($("#checklist-groupes"), 
     zoneDepot(prochaine[0], [
-      el("span", { class: "depot-ico", "aria-hidden": "true", text: "↑" }), el("strong", { text: `Glissez vos fichiers « ${g.groupe} » ici` }),
-      el("span", { class: "petit", text: `Rangés sous « ${prochaine[1]} » ; ou déposez-les sur la bonne ligne ci-dessous. PDF, images, Word, Excel · 20 Mo par fichier.` })], "depot-zone", `« ${g.groupe} »`),
+      el("span", { class: "depot-ico", "aria-hidden": "true", text: "↑" }), el("strong", { text: t("espace.js.glissez_groupe", { groupe: g.groupe }) }),
+      el("span", { class: "petit", text: t("espace.js.ranges_sous", { piece: prochaine[1] }) })], "depot-zone", t("dossier.guillemets", { texte: g.groupe })),
     el("ul", { class: "drive-pieces" }, ...g.items.map(([cle, libelle]) => {
       const fichiers = parItem(cle), fait = coches.has(cle);
       return el("li", { class: `piece${fait ? " fournie" : ""}` },
@@ -207,14 +207,14 @@ function dessinerChecklist() {
           el("div", { class: "piece-texte" }, el("strong", { text: libelle }),
             fichiers.length ? el("ul", { class: "piece-fichiers" }, ...fichiers.map((f) => el("li", {},
               el("a", { href: `/api/dossiers/${dossier.id}/pieces/${f.id}`, text: f.filename }), el("span", { class: "petit", text: ` · ${taille(f.size)}` }),
-              el("button", { type: "button", class: "lien-simple", "aria-label": `Retirer ${f.filename}`, onclick: async (ev) => { ev.stopPropagation(); try { pieces = (await api(`/api/dossiers/${dossier.id}/pieces/${f.id}`, { method: "DELETE" })).pieces; await rafraichir(); } catch (err) { message(err.message, true); } } }, "Retirer"))))
-              : el("span", { class: "petit", text: fait ? "Indiquée comme réunie" : "Glissez le fichier ici ou cliquez" })),
-          fichiers.length ? el("span", { class: "piece-etat", text: "Fournie" })
-            : el("button", { type: "button", class: "piece-etat bouton", "aria-pressed": String(fait), "aria-label": `Je l'ai : ${libelle}`, onclick: async (ev) => {
+              el("button", { type: "button", class: "lien-simple", "aria-label": t("espace.js.retirer_fichier", { fichier: f.filename }), onclick: async (ev) => { ev.stopPropagation(); try { pieces = (await api(`/api/dossiers/${dossier.id}/pieces/${f.id}`, { method: "DELETE" })).pieces; await rafraichir(); } catch (err) { message(err.message, true); } } }, t("espace.js.retirer")))))
+              : el("span", { class: "petit", text: fait ? t("espace.js.indiquee_reunie") : t("espace.js.glissez_ou_cliquez") })),
+          fichiers.length ? el("span", { class: "piece-etat", text: t("espace.js.fournie") })
+            : el("button", { type: "button", class: "piece-etat bouton", "aria-pressed": String(fait), "aria-label": t("espace.js.je_l_ai_de", { piece: libelle }), onclick: async (ev) => {
               ev.stopPropagation(); const b = ev.currentTarget; b.disabled = true;
               try { dossier = await api(`/api/dossiers/${dossier.id}/checklist/${cle}`, { method: "PUT", body: JSON.stringify({ done: !fait }) }); afficher({ checklist: false }); dessinerChecklist(); }
               catch (err) { message(err.message, true); b.disabled = false; }
-            } }, fait ? "Je l'ai ✓" : "Je l'ai")], "piece-zone", libelle));
+            } }, fait ? t("espace.js.je_l_ai_coche") : t("espace.js.je_l_ai"))], "piece-zone", libelle));
     })));
 }
 
@@ -229,4 +229,4 @@ $("#confirmer-supprimer").addEventListener("click", async () => {
   } catch (err) { dialogue.close(); message(err.message, true); }
 });
 
-charger().catch((err) => { if (err.message !== "non connecté") message(err.message, true); });
+charger().catch((err) => { if (err.message !== "non_connecte") message(err.message, true); });

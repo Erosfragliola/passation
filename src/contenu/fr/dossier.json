@@ -205,5 +205,10 @@
     "non_redige_titre": "Votre dossier n'est pas encore rédigé",
     "non_pret_aide": "Il n'est pas encore prêt à être envoyé : {pct} % du parcours. Voici ce qui reste.",
     "reste": "Ce qui reste à faire"
+  },
+  "formats": {
+    "nd": "n.d.",
+    "exercice": "exercice {annee}",
+    "exercices": "exercices {de} à {a}"
   }
 }

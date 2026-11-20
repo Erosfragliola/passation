@@ -66,3 +66,33 @@ describe("repli sur le français", () => {
     expect(completerParFrancais("en", fr, { a: "One", b: "", l: [], o: {} })).toEqual({ a: "One", b: "Deux", l: ["x", "y"], o: { c: "Trois" } });
   });
 });
+
+// Chaque clé citée en dur dans le code (t("a.b"), tr("a.b")) existe dans le dictionnaire français : sinon la page
+// afficherait la clé elle-même. Les clés construites (t(`a.${x}`)) sont vérifiées par leur préfixe.
+import { readdirSync, readFileSync } from "node:fs";
+import { SOURCES } from "../src/i18n.js";
+import { lireNombreSaisi } from "../public/js/i18n.js";
+describe("clés citées dans le code", () => {
+  const fichiers = (d) => readdirSync(new URL(`../${d}`, import.meta.url), { recursive: true }).filter((f) => f.endsWith(".js")).map((f) => `${d}/${f}`);
+  const code = [...fichiers("public/js"), ...fichiers("src")].map((f) => [f, readFileSync(new URL(`../${f}`, import.meta.url), "utf8")]);
+  const lire = (o, c) => c.split(".").reduce((v, k) => (v == null ? undefined : v[k]), o);
+  it("toutes présentes en français", () => {
+    const absentes = [];
+    for (const [f, s] of code) {
+      for (const m of s.matchAll(/\b(?:t|tr)\(\s*"([a-z_0-9]+(?:\.[a-zA-Z_0-9-]+)+)"/g)) if (lire(SOURCES.fr, m[1]) === undefined) absentes.push(`${f} : ${m[1]}`);
+      for (const m of s.matchAll(/\b(?:t|tr)\(\s*`([a-z_0-9]+(?:\.[a-zA-Z_0-9-]+)*)\.\$\{/g)) if (lire(SOURCES.fr, m[1]) === undefined) absentes.push(`${f} : ${m[1]}.…`);
+    }
+    expect(absentes).toEqual([]);
+  });
+});
+
+describe("nombres saisis", () => {
+  it("virgule décimale en français, séparateur de milliers en anglais", () => {
+    expect(lireNombreSaisi("1 234,5", "fr")).toBe(1234.5);
+    expect(lireNombreSaisi("1 250 000 €", "fr")).toBe(1250000);
+    expect(lireNombreSaisi("1,234.5", "en")).toBe(1234.5);
+    expect(lireNombreSaisi("€1,250,000", "en")).toBe(1250000);
+    expect(lireNombreSaisi("", "en")).toBeNull();
+    expect(lireNombreSaisi("abc", "fr")).toBeNaN();
+  });
+});
