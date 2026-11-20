@@ -1,12 +1,12 @@
-// Parcours de valorisation d'un dossier (le contrôle de propriété est fait par routeDossiers avant l'appel).
-//   GET    /api/dossiers/:id/financials                chiffres par exercice (pré-remplis avec les comptes publics)
-//   PUT    /api/dossiers/:id/financials  { annee, valeurs, valider }   enregistre et valide une ou plusieurs lignes
-//   DELETE /api/dossiers/:id/financials/:annee         retire un exercice
-//   POST   /api/dossiers/:id/uploads   (PDF)            liasse → R2 → lecture par Claude → lignes « à valider »
-//   GET    /api/dossiers/:id/answers                    réponses au questionnaire et réglages
-//   PUT    /api/dossiers/:id/answers/:etape { data }    sauvegarde automatique d'une étape
-//   POST   /api/dossiers/:id/valuation                  calcul (multiples, DCF si la prime de taille est réglée, ANCC), enregistré
-//   GET    /api/dossiers/:id/valuation                  dernier calcul
+// Valuation flow of a file (the ownership check is done by routeDossiers before the call).
+//   GET    /api/dossiers/:id/financials                figures per fiscal year (prefilled with the public accounts)
+//   PUT    /api/dossiers/:id/financials  { annee, valeurs, valider }   saves and approves one or more lines
+//   DELETE /api/dossiers/:id/financials/:annee         removes a fiscal year
+//   POST   /api/dossiers/:id/uploads   (PDF)            tax return → R2 → reading by Claude → lines "to approve"
+//   GET    /api/dossiers/:id/answers                    questionnaire answers and settings
+//   PUT    /api/dossiers/:id/answers/:etape { data }    autosave of a step
+//   POST   /api/dossiers/:id/valuation                  calculation (multiples, DCF if the size premium is set, ANCC), saved
+//   GET    /api/dossiers/:id/valuation                  latest calculation
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { LIASSE, CLAUDE_QUOTAS } from "../config.js";
@@ -21,8 +21,8 @@ import { erreursEtape } from "../valuation/validation.js";
 import HYPOTHESES_FR from "../data/hypotheses.json";
 import { t as tr, langue, valeur } from "../../public/js/i18n.js";
 
-/** Hypothèses avec leurs libellés dans la langue de la requête (valeurs, sources et dates inchangées) :
- *  traductions dans serveur.json (« hypotheses »). En français, le fichier tel quel. */
+/** Assumptions with their labels in the request's language (values, sources and dates unchanged):
+ *  translations in serveur.json ("hypotheses"). In French, the file as is. */
 function hypotheses() {
   if (langue() === "fr") return HYPOTHESES_FR;
   const H = structuredClone(HYPOTHESES_FR), T = valeur("serveur.hypotheses");
@@ -34,11 +34,11 @@ function hypotheses() {
   return H;
 }
 
-// « parcours » : écrans du parcours guidé déjà vus (« Passer » compte comme une réponse), pour un décompte identique partout
+// "parcours": screens of the guided steps already seen ("Skip" counts as an answer), for an identical count everywhere
 const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche", "parcours"]);
 const corpsJson = async (request) => { try { return await request.json(); } catch { return null; } };
 
-// ---------------------------------------------------------------- Chiffres
+// ---------------------------------------------------------------- Figures
 export async function lireChiffres(env, dossierId) {
   const { results } = await env.DB.prepare("SELECT year, field, value, source, validated FROM financials WHERE dossier_id = ? ORDER BY year").bind(dossierId).all();
   const lignes = {};
@@ -46,8 +46,8 @@ export async function lireChiffres(env, dossierId) {
   return lignes;
 }
 
-/** Premier passage : comptes publics (INPI) du dernier exercice publié et des deux qui le précèdent immédiatement
- *  (jamais une année isolée plus ancienne), proposés « à valider ». */
+/** First pass: public accounts (INPI) of the latest published fiscal year and of the two immediately before it
+ *  (never an isolated older year), proposed "to approve". */
 async function preremplir(env, row) {
   const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM financials WHERE dossier_id = ?").bind(row.id).first();
   if (n?.n > 0) return;
@@ -91,7 +91,7 @@ async function enregistrerLignes(env, dossierId, annee, valeurs, { valider, sour
     const valeur = brut === null || brut === "" ? null : Number(brut);
     if (valeur !== null && !Number.isFinite(valeur)) continue;
     const avant = existantes[cle];
-    // Une valeur validée par le dirigeant n'est jamais écrasée par une lecture automatique
+    // A value approved by the owner is never overwritten by an automatic reading
     if (source === "liasse" && avant?.valide) continue;
     const src = source === "liasse" ? "liasse" : avant && avant.valeur === valeur ? avant.source : "dirigeant";
     stmts.push(env.DB.prepare(`INSERT INTO financials (dossier_id, year, field, value, source, validated) VALUES (?, ?, ?, ?, ?, ?)
@@ -101,7 +101,7 @@ async function enregistrerLignes(env, dossierId, annee, valeurs, { valider, sour
   if (stmts.length) await env.DB.batch(stmts);
 }
 
-// ---------------------------------------------------------------- Liasse PDF
+// ---------------------------------------------------------------- PDF tax return
 const estPdf = (octets) => octets.length > 4 && octets[0] === 0x25 && octets[1] === 0x50 && octets[2] === 0x44 && octets[3] === 0x46; // %PDF
 function enBase64(octets) {
   let s = "";
@@ -143,7 +143,7 @@ async function deposerLiasse(request, env, row) {
   await env.DB.prepare("INSERT INTO uploads (id, dossier_id, r2_key, filename, mime, size, extracted_json, created_at) VALUES (?, ?, ?, ?, 'application/pdf', ?, ?, ?)")
     .bind(id, row.id, cle, String(fichier.name || "liasse.pdf").slice(0, 200), octets.length, JSON.stringify(lecture), maintenant()).run();
 
-  // Les montants lus deviennent des propositions « à valider » (jamais validées automatiquement)
+  // The amounts read become proposals "to approve" (never approved automatically)
   const proposes = [];
   for (const ex of (lecture.exercices || []).slice(0, EXERCICES_MAX + 1)) {
     if (!Number.isInteger(ex.annee) || ex.annee < 1990 || ex.annee > 2100) continue;
@@ -161,7 +161,7 @@ export async function lireReponses(env, dossierId) {
   return Object.fromEntries(results.map((r) => [r.step, JSON.parse(r.data_json)]));
 }
 
-// ---------------------------------------------------------------- Calcul
+// ---------------------------------------------------------------- Calculation
 export async function calculer(env, row) {
   const entreprise = JSON.parse(row.company_json || "{}");
   const { entree, H } = assemblerEntree(entreprise, await lireChiffres(env, row.id), await lireReponses(env, row.id), hypotheses());
@@ -186,7 +186,7 @@ export async function routeValorisation(request, env, row, sous, item) {
       return json(await vueChiffres(env, row));
     }
     if (m === "POST" && /^\d{4}\/valider$/.test(item || "")) {
-      // Validation de l'exercice en bloc : toutes les lignes remplies, sauf celles en alerte (à valider une par une)
+      // Approval of the fiscal year as a block: all filled lines, except those with an alert (to approve one by one)
       const annee = Number(item.slice(0, 4));
       const lignes = await lireChiffres(env, row.id);
       if (!lignes[annee]) return json({ erreur: "introuvable", message: tr("serveur.valorisation.exercice_introuvable") }, 404);

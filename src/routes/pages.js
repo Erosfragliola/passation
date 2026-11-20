@@ -1,27 +1,27 @@
-// Pages HTML du site, dans chaque langue : le fichier de public/ rempli avec src/contenu/<langue>/*.json.
-// Anglais aux adresses d'origine (/cgu), français sous /fr/ (/fr/cgu). Le texte reste du vrai HTML (lisible sans
-// JavaScript, indexable) ; une valeur vide retire l'élément.
+// HTML pages of the site, in each language: the file from public/ filled with src/contenu/<language>/*.json.
+// English at the original addresses (/cgu), French under /fr/ (/fr/cgu). The text stays real HTML (readable without
+// JavaScript, indexable); an empty value removes the element.
 //
-// Attributs reconnus dans les pages :
-//   data-t="chemin"                 contenu de l'élément (texte en ligne, ou paragraphes pour une liste) ;
-//   data-t-html="chemin"            contenu HTML recopié tel quel (liens, <strong>… dans le texte) ;
-//   data-t-attr="alt=chemin; …"     attributs ;
-//   data-si="cle cle2"              élément retiré si l'une des conditions manque (« cle », « legal.rcs »,
-//                                   « guides:3 » = au moins 3 entrées) ;
-//   data-si-un="cle cle2"           élément retiré si toutes ces conditions manquent ;
-//   data-sinon="cle"                élément retiré dès qu'une de ces conditions est remplie (contenu de repli) ;
-//   data-t-json="chemin"            <script type="application/json"> : sous-arbre pour le JavaScript de la page ;
-//   data-t-liste="cles.partenaires" une <li> par élément ;
-//   data-langue="en"                lien du sélecteur de langue : même page dans cette langue.
-// Les chemins se lisent dans l'espace de noms de la page (accueil.json pour « / »…) ; « commun.… » dans commun.json.
-// La page reçoit aussi <html lang>, les balises hreflang, canonical et og:locale, et, pour son JavaScript, le
-// dictionnaire <script id="i18n"> ; en français, les liens internes passent sous /fr/.
+// Attributes recognized in the pages:
+//   data-t="chemin"                 content of the element (inline text, or paragraphs for a list);
+//   data-t-html="chemin"            HTML content copied as is (links, <strong>… in the text);
+//   data-t-attr="alt=chemin; …"     attributes;
+//   data-si="cle cle2"              element removed if one of the conditions is missing ("cle", "legal.rcs",
+//                                   "guides:3" = at least 3 entries);
+//   data-si-un="cle cle2"           element removed if all these conditions are missing;
+//   data-sinon="cle"                element removed as soon as one of these conditions is met (fallback content);
+//   data-t-json="chemin"            <script type="application/json">: subtree for the page's JavaScript;
+//   data-t-liste="cles.partenaires" one <li> per element;
+//   data-langue="en"                link of the language switcher: same page in that language.
+// Paths are read in the page's namespace (accueil.json for "/"…); "commun.…" in commun.json.
+// The page also receives <html lang>, the hreflang, canonical and og:locale tags, and, for its JavaScript, the
+// <script id="i18n"> dictionary; in French, internal links move under /fr/.
 import { html, texte, lire, estVide, condition, lireAttributs, pourJs, jsonDansScript, clesVides, echapper, typographier, valeurAttribut, completer } from "../contenu/rendu.js";
 import { DICTIONNAIRES, CLES, LANGUES, LANGUE_DEFAUT, decouper, adresse, langueDuCookie } from "../i18n.js";
 
 const local = (url) => ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
 
-/** Espace de noms de chaque page (chemin sans préfixe de langue). */
+/** Namespace of each page (path without the language prefix). */
 export const PAGES = {
   "/": "accueil",
   "/connexion": "connexion",
@@ -35,10 +35,10 @@ export const PAGES = {
   "/espace/documents/memo/": "memo",
   "/espace/documents/teaser/": "teaser",
 };
-/** Pages publiques indexables (sitemap.xml). */
+/** Indexable public pages (sitemap.xml). */
 export const PAGES_PUBLIQUES = ["/", "/connexion", "/cgu", "/confidentialite", "/mentions-legales"];
-/** Espaces de noms dont le JavaScript du navigateur a besoin (t() de public/js/i18n.js), en plus de celui de la page.
- *  Les pages de l'espace partagent leurs modules et quelques textes : chacune reçoit tous les espaces de noms de l'espace. */
+/** Namespaces the browser's JavaScript needs (t() from public/js/i18n.js), in addition to the page's own.
+ *  The pages of the owner's space share their modules and some texts: each receives all the namespaces of the space. */
 const POUR_JS_ESPACE = ["commun", "regles", "champs", "questionnaire", "parcours", "dossier", "espace", "demarrer", "valorisation", "memo", "teaser"];
 const POUR_JS = {
   accueil: ["commun", "regles", "connexion_code"],
@@ -49,24 +49,24 @@ const POUR_JS = {
 const LOCALES_OG = { en: "en_US", fr: "fr_FR" };
 const RESSOURCE = /^\/(css|js|img|fonts|video)\/|\.(?!html?$)[a-z0-9]{2,5}$/i;
 
-/** Contenu d'une page : son espace de noms, « commun » et les réglages (« cles »). */
+/** Content of a page: its namespace, "commun" and the settings ("cles"). */
 export function contenuDePage(espace, langue) {
   const d = DICTIONNAIRES[langue];
   if (espace === "accueil") return completer({ ...d.accueil, cles: { ...CLES, ...d.accueil.cles }, commun: d.commun, langue });
   return { ...(d[espace] || {}), commun: d.commun, cles: CLES, langue, typo: false };
 }
 
-/** Lien interne vers la même page dans la langue de la page (ressources et API inchangées). */
+/** Internal link to the same page in the page's language (resources and API unchanged). */
 function lienLocal(href, langue) {
   if (!href || !href.startsWith("/") || href.startsWith("//") || href.startsWith("/api/") || RESSOURCE.test(href.split(/[?#]/)[0])) return href;
   const [chemin, reste = ""] = href.split(/(?=[?#])/);
   return adresse(decouper(chemin).chemin, langue) + reste;
 }
 
-/** Remplit une page HTML (Response) dans une langue. chemin : chemin sans préfixe ; espace : espace de noms. */
+/** Fills an HTML page (Response) in a language. chemin: path without prefix; espace: namespace. */
 export function rendrePage(page, { url, langue, chemin, espace, statut = page.status, indexable = true }) {
   const contenu = contenuDePage(espace, langue);
-  // Dictionnaire du JavaScript : sans l'espace « accueil », déjà posé dans la page (data-t-json)
+  // JavaScript dictionary: without the "accueil" namespace, already placed in the page (data-t-json)
   const espacesJs = [...(POUR_JS[espace] || ["commun"]), espace].filter((e) => e !== "accueil" && DICTIONNAIRES[langue][e]);
   const dictionnaireJs = Object.fromEntries(espacesJs.map((e) => [e, DICTIONNAIRES[langue][e]]));
   const absolue = (l) => url.origin + adresse(chemin, l);
@@ -83,7 +83,7 @@ export function rendrePage(page, { url, langue, chemin, espace, statut = page.st
     .on("html", {
       element(el) {
         el.setAttribute("lang", langue);
-        // En développement seulement : les clés à fournir, signalées dans la console par site.js
+        // In development only: the keys to provide, reported in the console by site.js
         if (espace === "accueil" && local(url)) el.setAttribute("data-contenu-manquant", clesVides(contenu).join(" "));
       },
     })
@@ -103,7 +103,7 @@ export function rendrePage(page, { url, langue, chemin, espace, statut = page.st
         const v = lire(contenu, el.getAttribute("data-t-html"));
         el.removeAttribute("data-t-html");
         if (estVide(v)) { el.remove(); return; }
-        // Le contenu inséré n'est pas relu par les autres règles : ses liens internes passent ici sous /fr/.
+        // The inserted content is not reread by the other rules: its internal links move under /fr/ here.
         const h = langue === LANGUE_DEFAUT ? String(v) : String(v).replace(/(\shref=")([^"]*)"/g, (m, a, href) => `${a}${lienLocal(href, langue)}"`);
         el.setInnerContent(h, { html: true });
       },
@@ -175,30 +175,30 @@ export function rendrePage(page, { url, langue, chemin, espace, statut = page.st
   const entetes = new Headers(reponse.headers);
   entetes.set("cache-control", "public, max-age=0, must-revalidate");
   entetes.set("content-language", langue);
-  entetes.delete("etag"); // le corps diffère du fichier d'origine
+  entetes.delete("etag"); // the body differs from the original file
   return new Response(reponse.body, { status: statut, headers: entetes });
 }
 
 const estHtml = (r) => (r.headers.get("content-type") || "").includes("text/html");
 
-/** Toute requête GET/HEAD hors API : page dans sa langue, ressource statique, redirection ou 404 traduite. */
+/** Any GET/HEAD request outside the API: page in its language, static resource, redirect or translated 404. */
 export async function routePage(request, env) {
   const url = new URL(request.url);
   const { langue, chemin } = decouper(url.pathname);
   // « /fr » → « /fr/ »
   if (langue !== LANGUE_DEFAUT && !url.pathname.startsWith(`${adresse("/", langue)}`)) return Response.redirect(new URL(adresse("/", langue) + url.search, url), 301);
-  // Retour sur l'accueil depuis un autre site (ou en tapant l'adresse) : la langue choisie avec le sélecteur.
+  // Back to the home page from another site (or by typing the address): the language chosen with the switcher.
   if (chemin === "/" && langue === LANGUE_DEFAUT) {
     const choix = langueDuCookie(request);
     const origine = request.headers.get("referer");
     let interne = false;
-    try { interne = Boolean(origine) && new URL(origine).origin === url.origin; } catch { /* en-tête invalide */ }
+    try { interne = Boolean(origine) && new URL(origine).origin === url.origin; } catch { /* invalid header */ }
     if (choix && choix !== langue && !interne) return new Response(null, { status: 302, headers: { location: adresse("/", choix) + url.search, vary: "cookie" } });
   }
 
   const cible = new URL(chemin + url.search, url);
   const brut = await env.ASSETS.fetch(new Request(cible, { method: request.method, headers: { accept: request.headers.get("accept") || "*/*" }, redirect: "manual" }));
-  // Redirection des ressources (/espace → /espace/, /cgu.html → /cgu) : rester dans la langue
+  // Redirect of resources (/espace → /espace/, /cgu.html → /cgu): stay in the language
   if (brut.status >= 300 && brut.status < 400 && brut.headers.get("location")) {
     const vers = new URL(brut.headers.get("location"), cible);
     return new Response(null, { status: brut.status, headers: { location: lienLocal(vers.pathname, langue) + vers.search } });
@@ -209,21 +209,21 @@ export async function routePage(request, env) {
     return rendrePage(page, { url, langue, chemin, espace: "erreur_404", statut: 404, indexable: false });
   }
   if (!brut.ok || !estHtml(brut)) {
-    // Ressource statique demandée sous /fr/ : même fichier
+    // Static resource requested under /fr/: same file
     return brut;
   }
   const espace = PAGES[chemin] || PAGES[chemin.replace(/\.html$/, "")];
   return rendrePage(brut, { url, langue, chemin, espace: espace || "commun", indexable: !chemin.startsWith("/espace/") });
 }
 
-/** robots.txt : tout est permis sauf l'API et l'espace privé ; adresse du sitemap. */
+/** robots.txt: everything is allowed except the API and the private space; address of the sitemap. */
 export function routeRobots(request) {
   const url = new URL(request.url);
   const corps = ["User-agent: *", "Disallow: /api/", "Disallow: /espace/", ...LANGUES.filter((l) => l !== LANGUE_DEFAUT).map((l) => `Disallow: ${adresse("/espace/", l)}`), "", `Sitemap: ${url.origin}/sitemap.xml`, ""].join("\n");
   return new Response(corps, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
 }
 
-/** sitemap.xml : chaque page publique dans chaque langue, avec ses versions alternatives. */
+/** sitemap.xml: each public page in each language, with its alternate versions. */
 export function routeSitemap(request) {
   const url = new URL(request.url);
   const abs = (chemin, l) => echapper(url.origin + adresse(chemin, l));

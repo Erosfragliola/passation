@@ -1,8 +1,8 @@
-// Connexion par code à 6 chiffres envoyé par e-mail (sans mot de passe, sans quitter la page).
-//   POST /api/auth/request { email }              → envoie un code (réponse identique que le compte existe ou non)
-//   POST /api/auth/code    { email, code, siren? } → vérifie le code, ouvre la session, crée le dossier du SIREN
-//   POST /api/auth/logout                         → ferme la session
-//   GET  /api/me                                  → utilisateur et ses dossiers (401 sinon)
+// Sign-in with a 6-digit code sent by email (no password, without leaving the page).
+//   POST /api/auth/request { email }              → sends a code (same response whether or not the account exists)
+//   POST /api/auth/code    { email, code, siren? } → checks the code, opens the session, creates the SIREN's file
+//   POST /api/auth/logout                         → closes the session
+//   GET  /api/me                                  → user and their files (401 otherwise)
 import { json } from "../http.js";
 import { DURATIONS, CODE_ESSAIS_MAX } from "../config.js";
 import { empreinte, maintenant, emailValide, normaliserEmail, creerSession, cookieSession,
@@ -34,7 +34,7 @@ export async function routeDemandeCode(request, env) {
   const t = maintenant();
   const id = crypto.randomUUID();
   const code = codeAleatoire();
-  // Un seul code actif par adresse : les précédents ne servent plus.
+  // A single active code per address: the previous ones no longer work.
   await env.DB.batch([
     env.DB.prepare("UPDATE login_codes SET used_at = ? WHERE email = ? AND used_at IS NULL").bind(t, email),
     env.DB.prepare("INSERT INTO login_codes (id, email, code_hash, created_at, expires_at) VALUES (?, ?, ?, ?, ?)")
@@ -57,7 +57,7 @@ export async function routeVerificationCode(request, env) {
   if (!emailValide(email) || !/^\d{6}$/.test(code)) {
     return json({ erreur: "code_invalide", message: tr("serveur.auth.code_compte_6_chiffres") }, 400);
   }
-  // Limite par IP : empêche d'essayer des codes sur de nombreuses adresses à la fois.
+  // Limit per IP: prevents trying codes on many addresses at once.
   const parIp = await verifierDebit(env.DB, request, env, "code-essai-ip", 30);
   if (!parIp.autorise) return json({ erreur: "trop_de_requetes", message: tr("serveur.auth.trop_essais_reessayez_dans") }, 429);
 
@@ -68,7 +68,7 @@ export async function routeVerificationCode(request, env) {
   const expire = () => json({ erreur: "code_expire", message: tr("serveur.auth.code_expire_ou_deja") }, 400);
   if (!ligne) return expire();
 
-  // L'essai est compté avant la comparaison, de façon atomique : impossible de dépasser la limite en parallèle.
+  // The attempt is counted before the comparison, atomically: the limit cannot be exceeded in parallel.
   const essai = await env.DB.prepare(
     "UPDATE login_codes SET attempts = attempts + 1 WHERE id = ? AND used_at IS NULL AND attempts < ? RETURNING attempts",
   ).bind(ligne.id, CODE_ESSAIS_MAX).first();
@@ -84,7 +84,7 @@ export async function routeVerificationCode(request, env) {
       message: tr("serveur.auth.code_incorrect", { n: restants }) }, 400);
   }
 
-  // Consommation atomique : le code ne sert qu'une fois.
+  // Atomic consumption: the code works only once.
   const consomme = await env.DB.prepare("UPDATE login_codes SET used_at = ? WHERE id = ? AND used_at IS NULL RETURNING id")
     .bind(t, ligne.id).first();
   if (!consomme) return expire();
@@ -103,7 +103,7 @@ export async function routeVerificationCode(request, env) {
   const siren = nettoyerSiren(corps.siren);
   if (sirenValide(siren)) {
     const dossier = await creerDossierPourSiren(env, user.id, siren).catch(() => null);
-    if (dossier) destination = `/espace/demarrer/?dossier=${dossier.id}`; // parcours guidé, repris là où il s'est arrêté
+    if (dossier) destination = `/espace/demarrer/?dossier=${dossier.id}`; // guided steps, resumed where they stopped
   }
   return json({ ok: true, destination: lien(destination) }, 200, { "set-cookie": cookieSession(secret), "cache-control": "no-store" });
 }

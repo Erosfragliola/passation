@@ -1,22 +1,22 @@
-// Pièces du dossier, dépôt type Drive (18/11/2026).
-//   GET    /api/dossiers/:id/pieces             liste des fichiers déposés
-//   POST   /api/dossiers/:id/pieces             (multipart : fichier, item) dépôt, coche l'élément de la liste
-//   GET    /api/dossiers/:id/pieces/:piece      téléchargement (le propriétaire du dossier seulement)
-//   DELETE /api/dossiers/:id/pieces/:piece      suppression ; l'élément est décoché s'il ne reste aucun fichier
+// Documents of the file, Drive-style upload (18/11/2026).
+//   GET    /api/dossiers/:id/pieces             list of uploaded files
+//   POST   /api/dossiers/:id/pieces             (multipart: file, item) upload, ticks the list item
+//   GET    /api/dossiers/:id/pieces/:piece      download (the file's owner only)
+//   DELETE /api/dossiers/:id/pieces/:piece      deletion; the item is unticked if no file is left
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { CLES_CHECKLIST } from "../../public/js/dossier-regles.js";
 import { t as tr } from "../../public/js/i18n.js";
 
 const PIECES = { tailleMax: 20 * 1024 * 1024, parDossier: 80 };
-/** Types acceptés : PDF, images, bureautique (Word, Excel, OpenDocument), texte. */
+/** Accepted types: PDF, images, office files (Word, Excel, OpenDocument), text. */
 const TYPES_PIECES = {
   pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", heic: "image/heic",
   doc: "application/msword", docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   xls: "application/vnd.ms-excel", xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   odt: "application/vnd.oasis.opendocument.text", ods: "application/vnd.oasis.opendocument.spreadsheet", txt: "text/plain", csv: "text/csv",
 };
-/** Nom de fichier nettoyé (affichage et téléchargement), extension conservée. */
+/** Cleaned file name (display and download), extension kept. */
 function nomPropre(nom) {
   const n = String(nom || "fichier").normalize("NFC").replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").replace(/\s+/g, " ").trim().slice(-120);
   return n || "fichier";

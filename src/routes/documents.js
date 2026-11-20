@@ -1,12 +1,12 @@
-// Documents du dossier (le contrôle de propriété est fait par routeDossiers avant l'appel).
-//   GET  /api/dossiers/:id/documents/datapack              datapack Excel (copie versionnée dans R2)
-//   GET  /api/dossiers/:id/documents/teaser                dernier teaser (sections)
-//   POST /api/dossiers/:id/documents/teaser                rédaction par Claude + contrôle d'anonymat (2 essais)
-//   PUT  /api/dossiers/:id/documents/teaser/sections/:cle  modification par le dirigeant (contrôlée aussi)
-//   GET  /api/dossiers/:id/documents/memo                  mémorandum (sections, site, tableau financier)
-//   POST /api/dossiers/:id/documents/memo/site { url }     lecture du site → faits à valider, termes, logos
-//   POST|GET /api/dossiers/:id/documents/memo/logo         logo (adresse ou fichier PNG/JPEG/WebP ≤ 1 Mo) / affichage
-//   POST|PUT /api/dossiers/:id/documents/memo/sections/:cle  rédaction par Claude / modification
+// Documents of the file (the ownership check is done by routeDossiers before the call).
+//   GET  /api/dossiers/:id/documents/datapack              Excel datapack (versioned copy in R2)
+//   GET  /api/dossiers/:id/documents/teaser                latest teaser (sections)
+//   POST /api/dossiers/:id/documents/teaser                drafting by Claude + anonymity check (2 attempts)
+//   PUT  /api/dossiers/:id/documents/teaser/sections/:cle  edit by the owner (also checked)
+//   GET  /api/dossiers/:id/documents/memo                  memorandum (sections, website, financial table)
+//   POST /api/dossiers/:id/documents/memo/site { url }     website reading → facts to approve, terms, logos
+//   POST|GET /api/dossiers/:id/documents/memo/logo         logo (address or PNG/JPEG/WebP file ≤ 1 MB) / display
+//   POST|PUT /api/dossiers/:id/documents/memo/sections/:cle  drafting by Claude / edit
 import { projet } from "../documents/nom-de-code.js";
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
@@ -55,7 +55,7 @@ async function prochaineVersion(env, dossierId, kind) {
   return (p?.v ?? 0) + 1;
 }
 
-/** Contexte commun : entreprise, valorisation, réponses, interdits d'anonymat. */
+/** Shared context: company, valuation, answers, anonymity exclusions. */
 async function contexte(env, row) {
   const entreprise = { ...JSON.parse(row.company_json || "{}"), siren: row.siren };
   const { resultat, entree } = await calculer(env, row);
@@ -108,7 +108,7 @@ async function genererTeaser(env, row) {
   }
   let code = row.code_name;
   if (!code) {
-    // Même nom de code que celui montré sur la page d'accueil (tiré du code NAF) ; au hasard sans code NAF
+    // Same code name as the one shown on the home page (drawn from the NAF code); random without a NAF code
     code = ctx.entreprise.naf ? projet(ctx.entreprise.naf) : `Projet ${NOMS_DE_CODE[crypto.getRandomValues(new Uint8Array(1))[0] % NOMS_DE_CODE.length]}`;
     await env.DB.prepare("UPDATE dossiers SET code_name = ? WHERE id = ?").bind(code, row.id).run();
   }
@@ -138,7 +138,7 @@ async function modifierSection(request, env, row, cle) {
   return json(await lireTeaser(env, row));
 }
 
-// ---------------------------------------------------------------- Mémorandum
+// ---------------------------------------------------------------- Memorandum
 const IMAGES = { png: [0x89, 0x50, 0x4e, 0x47], jpg: [0xff, 0xd8, 0xff], webp: [0x52, 0x49, 0x46, 0x46] };
 const typeImage = (o) => Object.entries(IMAGES).find(([, sig]) => sig.every((b, i) => o[i] === b))?.[0] ?? null;
 const MIME = { png: "image/png", jpg: "image/jpeg", webp: "image/webp" };
@@ -148,12 +148,12 @@ async function enregistrerSite(env, row, site) {
     ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(row.id, JSON.stringify(site), maintenant()).run();
 }
 
-/** Réponses proposées au dirigeant (registres, comptes, site validé, choix fréquents), à valider dans le parcours. */
+/** Answers proposed to the owner (registries, accounts, approved website, common choices), to approve in the flow. */
 async function propositionsDossier(env, row) {
   const reponses = await lireReponses(env, row.id);
   const entreprise = JSON.parse(row.company_json || "{}");
   let tcam = null;
-  try { const { resultat, entree } = await calculer(env, row); tcam = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) }).cr.tcam?.ca ?? null; } catch { /* sans comptes : pas de croissance proposée */ }
+  try { const { resultat, entree } = await calculer(env, row); tcam = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) }).cr.tcam?.ca ?? null; } catch { /* without accounts: no growth proposed */ }
   return propositions({ entreprise, tcam, reponses });
 }
 
@@ -177,7 +177,7 @@ async function lireMemo(env, row) {
     photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "" })),
     site, logo: Boolean(site?.logo),
     marche: reponses.marche ? { ...reponses.marche, essais_restants: Math.max(0, MARCHE.etudesMaxParDossier - (reponses.marche.essais || 0)) } : { essais_restants: MARCHE.etudesMaxParDossier },
-    // Chiffres calculés par le code : compte de résultat, EBE retraité, endettement, clients, périmètre, sources
+    // Figures calculated by the code: income statement, adjusted EBITDA, debt, customers, scope, sources
     chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources },
     memo: doc ? { id: doc.id, version: doc.version, cree_le: doc.created_at } : null,
     parties: PARTIES_MEMO,
@@ -190,7 +190,7 @@ async function lireMemo(env, row) {
   };
 }
 
-/** Structure du secteur (annuaire public, cache 24 h) : jamais bloquante, null si indisponible. */
+/** Industry structure (public directory, 24-hour cache): never blocking, null if unavailable. */
 async function secteurDe(env, entreprise) {
   const region = regionDe(entreprise.code_postal), naf = entreprise.naf;
   if (!region || !naf) return null;
@@ -204,14 +204,14 @@ async function secteurDe(env, entreprise) {
   return structureSecteur(comptes, { naf, region, trancheEntreprise: entreprise.tranche_effectif?.code, date });
 }
 
-/** Étude de marché : structure du secteur (registres) + faits sourcés trouvés sur le web, à valider par le dirigeant. */
+/** Market research: industry structure (registries) + sourced facts found on the web, to be approved by the owner. */
 async function etudeMarche(env, row) {
   if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: tr("serveur.documents.etude_marche_encore_activee") }, 503);
   const reponses = await lireReponses(env, row.id);
   const avant = reponses.marche || {};
   if ((avant.essais || 0) >= MARCHE.etudesMaxParDossier) return json({ erreur: "limite", message: tr("serveur.documents.marche_limite", { n: MARCHE.etudesMaxParDossier }) }, 429);
-  // Une étude déjà en cours (page rechargée, deuxième onglet) n'est pas relancée : on répond « en cours », avant le
-  // quota (qui décompte un traitement à chaque appel) pour qu'une demande en double ne consomme rien
+  // A study already in progress (page reloaded, second tab) is not restarted: we answer "in progress", before the
+  // quota (which counts one processing per call) so that a duplicate request consumes nothing
   const t0 = maintenant();
   if (avant.en_cours && t0 - avant.en_cours < 180 && !(avant.date > avant.en_cours)) return json({ erreur: "en_cours", message: tr("serveur.documents.etude_marche_deja_cours") }, 409);
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
@@ -227,7 +227,7 @@ async function etudeMarche(env, row) {
   try { r = await rechercherMarche(env, contexte); }
   catch (e) {
     console.log(`Étude de marché impossible : ${e.message}`);
-    // La structure du secteur (registres publics) est gardée même si la recherche web échoue ou dure trop
+    // The industry structure (public registries) is kept even if the web search fails or takes too long
     await ecrire({ ...avant, secteur: secteur ?? avant.secteur ?? null, en_cours: null, essais: (avant.essais || 0) + 1 });
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
     return json({ erreur: "recherche_echouee", message: tr("serveur.documents.recherche_chiffres_marche_abouti") }, 502);
@@ -301,7 +301,7 @@ async function servirLogo(env, row) {
   return new Response(obj.body, { headers: { "content-type": site.logo.type, "cache-control": "private, max-age=300", "x-content-type-options": "nosniff", "content-security-policy": "default-src 'none'" } });
 }
 
-// Photos de l'entreprise : 6 au plus, 3 Mo chacune, PNG/JPEG/WebP, avec attestation du dirigeant.
+// Company photos: 6 at most, 3 MB each, PNG/JPEG/WebP, with the owner's statement.
 const PHOTOS_MAX = 6;
 async function ajouterPhoto(request, env, row) {
   let octets, attestation = false, legende = "";
@@ -354,7 +354,7 @@ async function servirPhoto(env, row, n) {
 async function documentMemo(env, row) {
   const doc = await env.DB.prepare("SELECT id FROM documents WHERE dossier_id = ? AND kind = 'memo' ORDER BY version DESC LIMIT 1").bind(row.id).first();
   if (doc) return doc.id;
-  // Identifiant fixe par dossier + INSERT OR IGNORE : des rédactions lancées en parallèle partagent le même document
+  // Fixed identifier per file + INSERT OR IGNORE: drafts launched in parallel share the same document
   const id = `memo-${row.id}`;
   await env.DB.prepare("INSERT OR IGNORE INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES (?, ?, 'memo', 1, '', ?)").bind(id, row.id, maintenant()).run();
   return id;
@@ -387,7 +387,7 @@ async function modifierSectionMemo(request, env, row, cle) {
   if (!SECTIONS_MEMO.some((x) => x.cle === cle)) return json({ erreur: "section_inconnue" }, 404);
   let corps; try { corps = await request.json(); } catch { corps = null; }
   if (typeof corps?.contenu !== "string") return json({ erreur: "requete_invalide" }, 400);
-  // Le titre et l'accroche rédigés sont conservés, sauf si le dirigeant fournit un nouveau titre
+  // The drafted title and hook are kept, unless the owner provides a new title
   const docId = await documentMemo(env, row);
   const avant = await env.DB.prepare("SELECT content_md FROM document_sections WHERE document_id = ? AND section_key = ?").bind(docId, cle).first();
   let v = {}; try { v = avant ? JSON.parse(avant.content_md) : {}; } catch { v = {}; }
