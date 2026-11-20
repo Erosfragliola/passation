@@ -1,40 +1,46 @@
 // Règles du dossier (module pur, partagé entre le Worker, le navigateur et les tests) :
 // checklist « Votre préparation » et calcul de l'avancement (par bloc, et global selon les étapes du parcours).
+import { t, T, avecTextes } from "./i18n.js";
 
 /** Pièces habituellement demandées par un repreneur lors de l'audit d'acquisition. Liste indicative. */
 export const CHECKLIST = [
-  { groupe: "Juridique", items: [
-    ["statuts", "Statuts à jour"],
-    ["kbis", "Extrait Kbis récent"],
-    ["pv-ag", "Procès-verbaux des assemblées des 3 dernières années"],
-    ["capital", "Répartition du capital et pacte d'associés éventuel"],
+  { cle: "juridique", groupe: T, items: [
+    ["statuts", T],
+    ["kbis", T],
+    ["pv-ag", T],
+    ["capital", T],
   ] },
-  { groupe: "Financier", items: [
-    ["liasses", "Liasses fiscales et comptes annuels des 3 derniers exercices"],
-    ["situation", "Situation intermédiaire de l'exercice en cours"],
-    ["emprunts", "Détail des emprunts, crédits-bails et garanties données"],
-    ["balances", "Balances âgées clients et fournisseurs"],
+  { cle: "financier", groupe: T, items: [
+    ["liasses", T],
+    ["situation", T],
+    ["emprunts", T],
+    ["balances", T],
   ] },
-  { groupe: "Social", items: [
-    ["organigramme", "Organigramme"],
-    ["registre", "Registre unique du personnel"],
-    ["contrats-cles", "Contrats de travail des personnes clés"],
-    ["accords", "Accords d'entreprise et convention collective applicable"],
+  { cle: "social", groupe: T, items: [
+    ["organigramme", T],
+    ["registre", T],
+    ["contrats-cles", T],
+    ["accords", T],
   ] },
-  { groupe: "Commercial", items: [
-    ["clients", "Chiffre d'affaires par client (principaux clients)"],
-    ["contrats", "Contrats clients et fournisseurs importants"],
-    ["cgv", "Conditions générales de vente"],
+  { cle: "commercial", groupe: T, items: [
+    ["clients", T],
+    ["contrats", T],
+    ["cgv", T],
   ] },
-  { groupe: "Actifs et risques", items: [
-    ["baux", "Baux commerciaux et titres de propriété éventuels"],
-    ["equipements", "Inventaire des équipements principaux"],
-    ["marques", "Marques, brevets et noms de domaine"],
-    ["assurances", "Attestations d'assurance"],
-    ["litiges", "Litiges en cours ou passés récents"],
-    ["autorisations", "Autorisations, agréments et certifications"],
+  { cle: "actifs", groupe: T, items: [
+    ["baux", T],
+    ["equipements", T],
+    ["marques", T],
+    ["assurances", T],
+    ["litiges", T],
+    ["autorisations", T],
   ] },
 ];
+// Textes (groupes et pièces) : src/contenu/<langue>/dossier.json, lus à chaque accès dans la langue courante.
+for (const g of CHECKLIST) {
+  avecTextes(g, `dossier.checklist.${g.cle}`);
+  for (const item of g.items) Object.defineProperty(item, 1, { get: () => t(`dossier.checklist.${g.cle}.items.${item[0]}`), enumerable: true, configurable: true });
+}
 export const CLES_CHECKLIST = new Set(CHECKLIST.flatMap((g) => g.items.map(([k]) => k)));
 
 /**

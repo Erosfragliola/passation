@@ -7,6 +7,7 @@
 import { estimationManuelle, fourchette, montant, moisSource, multiple, remplir } from "/js/landing/estimation.js";
 import { formaterSiren } from "/js/siren.js";
 import { lien } from "/js/i18n.js";
+import { t } from "/js/i18n.js";
 
 const DUREE_MIN = 2400; // le temps de voir les quatre étapes de l'analyse
 const reduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -95,7 +96,7 @@ export function creerResultat({ section, textes = {} }) {
         if (k % 2) { const f = document.createElement("span"); f.className = "floute"; f.setAttribute("aria-hidden", "true"); f.textContent = valeurs[morceau]; e.append(f); }
         else e.append(document.createTextNode(morceau));
       }
-      e.setAttribute("aria-label", "Multiples de l'EBE du secteur : détaillés dans votre dossier.");
+      e.setAttribute("aria-label", t("regles.resultat.multiples_floutes"));
       methodes.append(e);
       note.textContent = (saisie ? R.note_saisie : remplir(R.note, { exercice: est.exercice })) + (est.avertissement ? ` ${est.avertissement}` : "");
     } else if (est.statut === "non_calculable") {

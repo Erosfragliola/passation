@@ -20,7 +20,7 @@ export function feuilles(v, chemin = "") {
 }
 
 /** Valeurs qui peuvent légitimement être identiques dans les deux langues. */
-const IDENTIQUES_ADMIS = /^(?:[A-Z]{2,6}|Passation|SIREN|SIRET|NAF|EBITDA|Excel|[\d\s.,:/%€$kM–+-]*|[a-z_]+:\{[a-z_.]+\}|\{[a-z0-9_.]+\}(?:\/5)?|English|Français|Datapack|Teaser|Guides?|Cookies|\d+ s|\d+ sources|Projet Chêne|Menuiserie Durand & Fils|.{0,2})$/;
+const IDENTIQUES_ADMIS = /^(?:[A-Z]{2,6}|Passation|SIREN|SIRET|NAF|EBITDA|Excel|[\d\s.,:/%€$kM–+-]*|[a-z_]+:\{[a-z_.]+\}|\{[a-z0-9_.]+\}(?:\/5)?|English|Français|Datapack|Teaser|Guides?|Cookies|Certifications|Production|Commercial|version \{n\}|qualifications, labels|\d+ s|\d+ sources|Projet Chêne|Menuiserie Durand & Fils|.{0,2})$/;
 
 export function comparer() {
   const erreurs = [], identiques = [];

@@ -1,0 +1,21 @@
+{
+  "_lisez_moi": "JavaScript text (t() from public/js/i18n.js). Same keys as src/contenu/fr/regles.json.",
+  "salaries": {
+    "non_employeuse": "non-employer",
+    "zero": "0 employees",
+    "et_plus": "{n} employees or more",
+    "un_deux": "1 or 2 employees",
+    "tranche": "{min} to {max} employees"
+  },
+  "effectif": {
+    "plus_de": "more than {n} people",
+    "un_deux": "one or two people",
+    "tranche": "{min} to {max} people"
+  },
+  "suggestion": {
+    "creee": "founded in {annee}"
+  },
+  "resultat": {
+    "multiples_floutes": "Industry EBITDA multiples: detailed in your file."
+  }
+}

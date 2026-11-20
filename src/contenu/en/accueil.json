@@ -69,7 +69,7 @@
       "code": {
         "titre": "Your code name",
         "code": "Projet Chêne",
-        "valeur": "€1.8M – €2.4M",
+        "valeur": "€1.8–2.4M",
         "fictif": "fictitious example"
       },
       "docs": [
@@ -119,7 +119,7 @@
       "siren": {
         "saisie": "Menuiserie Durand & Fils",
         "libelle": "Estimated enterprise value",
-        "valeur": "€1.8M – €2.4M"
+        "valeur": "€1.8–2.4M"
       },
       "chiffres": {
         "lignes": [
@@ -137,7 +137,7 @@
           }
         ],
         "libelle": "Value of your shares",
-        "fourchette": "€1.8M – €2.4M",
+        "fourchette": "€1.8–2.4M",
         "bas": "€1.8M",
         "haut": "€2.4M"
       },

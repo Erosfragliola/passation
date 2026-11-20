@@ -1,0 +1,96 @@
+{
+  "_lisez_moi": "Financial field labels (public/js/champs-financiers.js): « libelle » and « aide » for the datapack and tax-return reading, « ecran » and « aideEcran » on screen. Same keys as src/contenu/fr/champs.json.",
+  "champs": {
+    "chiffre_affaires": {
+      "libelle": "Revenue",
+      "aide": "Sales of goods + services sold (goods and services), income statement"
+    },
+    "autres_produits": {
+      "libelle": "Other operating income",
+      "aide": "Inventoried and capitalized production, operating grants"
+    },
+    "achats_consommes": {
+      "libelle": "Cost of goods and materials",
+      "aide": "Purchases of goods and materials, including changes in inventory"
+    },
+    "charges_externes": {
+      "libelle": "Other purchases and external expenses",
+      "aide": "Rent, subcontracting, fees, energy, etc."
+    },
+    "impots_taxes": {
+      "libelle": "Taxes and duties",
+      "aide": "Excluding corporate income tax"
+    },
+    "charges_personnel": {
+      "libelle": "Wages and payroll taxes",
+      "aide": "Wages and salaries + payroll taxes"
+    },
+    "ebe": {
+      "libelle": "Published EBITDA",
+      "aide": "Only if the breakdown of expenses is not available (INPI public accounts)",
+      "ecran": "EBITDA from the public accounts",
+      "aideEcran": "Only if you don’t break down your expenses: taken from the public accounts (French national business registry)"
+    },
+    "dotations_amortissements": {
+      "libelle": "Depreciation and amortization",
+      "aide": "Depreciation and amortization of fixed assets"
+    },
+    "resultat_exploitation": {
+      "libelle": "Operating income",
+      "aide": "Consistency check"
+    },
+    "resultat_net": {
+      "libelle": "Net income",
+      "aide": "Profit or loss for the fiscal year"
+    },
+    "immobilisations_nettes": {
+      "libelle": "Net fixed assets",
+      "aide": "Fixed assets, net values"
+    },
+    "stocks": {
+      "libelle": "Inventories",
+      "aide": "Inventories and work in progress, net value"
+    },
+    "creances_clients": {
+      "libelle": "Trade receivables",
+      "aide": "Customers and related accounts, net value"
+    },
+    "autres_creances": {
+      "libelle": "Other receivables",
+      "aide": "Excluding customers"
+    },
+    "placements": {
+      "libelle": "Investments",
+      "aide": "Marketable securities"
+    },
+    "tresorerie": {
+      "libelle": "Cash",
+      "aide": "Cash on the asset side"
+    },
+    "capitaux_propres": {
+      "libelle": "Shareholders’ equity",
+      "aide": "Total shareholders’ equity"
+    },
+    "provisions_risques": {
+      "libelle": "Provisions for risks and charges",
+      "aide": "Liabilities"
+    },
+    "emprunts": {
+      "libelle": "Borrowings and financial debt",
+      "aide": "Bank loans, overdrafts, other financial debt"
+    },
+    "dettes_fournisseurs": {
+      "libelle": "Trade payables",
+      "aide": "Suppliers and related accounts"
+    },
+    "dettes_fiscales_sociales": {
+      "libelle": "Tax and social security liabilities",
+      "aide": "Excluding corporate income tax if possible"
+    },
+    "autres_dettes": {
+      "libelle": "Other liabilities",
+      "aide": "Excluding suppliers, tax and social security"
+    }
+  },
+  "aide_ebe": "EBITDA (excédent brut d’exploitation): what the business generates before taxes, interest, depreciation and amortization."
+}

@@ -26,5 +26,10 @@
     "vos_documents": "Vos documents",
     "pdf": "Télécharger en PDF",
     "pdf_aide": "Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF »."
+  },
+  "site": {
+    "menu_ouvrir": "Ouvrir le menu",
+    "menu_fermer": "Fermer le menu",
+    "dossier_supprime": "Votre dossier et ses fichiers ont été supprimés."
   }
 }

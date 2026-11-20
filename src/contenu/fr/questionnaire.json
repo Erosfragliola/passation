@@ -1,0 +1,268 @@
+{
+  "_lisez_moi": "Textes du questionnaire complet (public/js/questionnaire.js) : étapes, questions, et libellés des réponses à choix (« options » : la clé est la valeur enregistrée, en français ; la valeur est le libellé affiché). Mêmes clés dans src/contenu/en/questionnaire.json.",
+  "etapes": {
+    "activite": {
+      "titre": "Votre activité",
+      "intro": "Ces réponses servent au teaser (anonymisé) et au mémorandum. Écrivez simplement, comme à un repreneur : rien n'est inventé à votre place.",
+      "questions": {
+        "description": {
+          "libelle": "Ce que fait l'entreprise, en quelques phrases",
+          "aide": "Métier, savoir-faire, ce qui la distingue."
+        },
+        "produits_services": {
+          "libelle": "Produits ou services principaux"
+        },
+        "clientele": {
+          "libelle": "Vos clients : qui sont-ils ? (particuliers, entreprises, secteurs)"
+        },
+        "zone": {
+          "libelle": "Zone commerciale principale"
+        },
+        "equipe": {
+          "libelle": "L'équipe : métiers clés, encadrement, ancienneté"
+        }
+      }
+    },
+    "atouts": {
+      "titre": "Vos atouts",
+      "intro": "Ce qui fait la valeur de l'entreprise aux yeux d'un repreneur.",
+      "questions": {
+        "forces": {
+          "libelle": "Les trois principales forces de l'entreprise"
+        },
+        "developpement": {
+          "libelle": "Pistes de développement qu'un repreneur pourrait suivre"
+        }
+      }
+    },
+    "operation": {
+      "titre": "L'opération envisagée",
+      "intro": "Ce que vous cherchez : ces éléments figurent dans le teaser et le mémorandum.",
+      "questions": {
+        "part_cedee": {
+          "libelle": "Part du capital à céder"
+        },
+        "motif": {
+          "libelle": "Motif de la cession",
+          "aide": "Par exemple : départ à la retraite, nouveau projet."
+        },
+        "accompagnement": {
+          "libelle": "Accompagnement proposé au repreneur",
+          "aide": "Durée et forme de la transition."
+        },
+        "calendrier": {
+          "libelle": "Calendrier souhaité"
+        }
+      }
+    },
+    "dirigeant": {
+      "titre": "Vous et votre rémunération",
+      "intro": "Pour comparer l'entreprise à une entreprise équivalente dirigée par un salarié, nous ramenons votre rémunération à un niveau « normal ».",
+      "questions": {
+        "remuneration_dirigeant_reelle": {
+          "libelle": "Votre rémunération annuelle réelle, charges sociales comprises",
+          "aide": "Salaire + charges + avantages payés par l'entreprise."
+        },
+        "remuneration_normative": {
+          "libelle": "Ce que coûterait un directeur salarié pour vous remplacer, charges comprises",
+          "aide": "Votre estimation ; votre expert-comptable peut vous aider. Laissez vide si vous ne savez pas."
+        },
+        "role_dirigeant": {
+          "libelle": "Ce que vous faites seul aujourd'hui (clients, production, gestion)",
+          "aide": "Sert à apprécier la dépendance de l'entreprise à votre personne."
+        }
+      }
+    },
+    "retraitements": {
+      "titre": "Loyer et éléments exceptionnels",
+      "intro": "Certains montants des comptes ne se répéteront pas chez un repreneur. Chaque ajustement doit être justifié.",
+      "questions": {
+        "loyer_paye": {
+          "libelle": "Loyer annuel payé, si les locaux vous appartiennent (ou à une SCI familiale)",
+          "aide": "Laissez vide si les locaux appartiennent à un tiers."
+        },
+        "loyer_marche": {
+          "libelle": "Loyer annuel de marché pour des locaux équivalents"
+        },
+        "exceptionnels": {
+          "libelle": "Charges ou produits exceptionnels inclus dans l'EBE",
+          "aide": "Montant positif : charge à réintégrer (l'EBE augmente). Négatif : produit à retirer."
+        }
+      }
+    },
+    "clients": {
+      "titre": "Vos clients",
+      "intro": "La concentration et la récurrence du chiffre d'affaires pèsent sur la valeur.",
+      "questions": {
+        "part_premier_client": {
+          "libelle": "Part du premier client dans le chiffre d'affaires"
+        },
+        "part_cinq_clients": {
+          "libelle": "Part des cinq premiers clients"
+        },
+        "part_recurrente": {
+          "libelle": "Part du chiffre d'affaires récurrent (contrats, abonnements, clients fidèles)"
+        },
+        "regions": {
+          "libelle": "Régions où se trouvent vos principaux clients",
+          "aide": "Elles seront marquées sur la carte du mémorandum."
+        }
+      }
+    },
+    "perspectives": {
+      "titre": "Vos perspectives sur 5 ans",
+      "intro": "Votre estimation, présentée comme telle dans le mémorandum. Sans réponse, rien n'est affiché à sa place.",
+      "questions": {
+        "croissance": {
+          "libelle": "Croissance annuelle moyenne du chiffre d'affaires attendue"
+        },
+        "marge_ebe": {
+          "libelle": "Marge d'EBE visée (EBE / chiffre d'affaires)"
+        },
+        "investissements_pct": {
+          "libelle": "Investissements annuels prévus, en % du chiffre d'affaires"
+        }
+      }
+    },
+    "bilan": {
+      "titre": "Dettes et actifs à préciser",
+      "intro": "Ces éléments ne se lisent pas toujours dans la liasse ; ils servent au passage de la valeur d'entreprise à la valeur de vos titres.",
+      "questions": {
+        "comptes_courants_remboursables": {
+          "libelle": "Comptes courants d'associés à rembourser"
+        },
+        "credit_bail_restant": {
+          "libelle": "Crédit-bail : loyers restant dus"
+        },
+        "dividendes_a_verser": {
+          "libelle": "Dividendes votés non encore versés"
+        },
+        "plus_values_latentes": {
+          "libelle": "Plus-values latentes (immobilier, fonds de commerce) que vous pouvez justifier"
+        },
+        "frais_etablissement": {
+          "libelle": "Frais d'établissement encore à l'actif"
+        },
+        "creances_douteuses": {
+          "libelle": "Créances douteuses non provisionnées"
+        },
+        "actifs_hors_exploitation": {
+          "libelle": "Actifs hors exploitation (trésorerie excédentaire, bien non utilisé)"
+        },
+        "capital_personnes_physiques": {
+          "libelle": "Le capital est-il détenu à 75 % au moins par des personnes physiques ?",
+          "aide": "Conditionne le taux réduit d'IS de 15 % (avec un chiffre d'affaires ≤ 10 M€)."
+        }
+      }
+    }
+  },
+  "options": {
+    "zone": {
+      "Locale": "Locale",
+      "Régionale": "Régionale",
+      "Nationale": "Nationale",
+      "Internationale": "Internationale"
+    },
+    "part_cedee": {
+      "100 %": "100 %",
+      "Majoritaire": "Majoritaire",
+      "Minoritaire": "Minoritaire",
+      "À définir": "À définir"
+    },
+    "distinctions": {
+      "Qualité": "Qualité",
+      "Sur mesure": "Sur mesure",
+      "Délais": "Délais",
+      "Équipements": "Équipements",
+      "Certifications": "Certifications",
+      "Relation client": "Relation client"
+    },
+    "encadrement": {
+      "Oui, un ou plusieurs responsables": "Oui, un ou plusieurs responsables",
+      "En partie": "En partie",
+      "Non, tout passe par moi": "Non, tout passe par moi"
+    },
+    "role_dirigeant": {
+      "Commercial": "Commercial",
+      "Production": "Production",
+      "Gestion": "Gestion",
+      "Achats": "Achats",
+      "Encadrement": "Encadrement"
+    },
+    "anciennete_equipe": {
+      "Moins de 3 ans": "Moins de 3 ans",
+      "3 à 10 ans": "3 à 10 ans",
+      "Plus de 10 ans": "Plus de 10 ans"
+    },
+    "motif": {
+      "Départ à la retraite": "Départ à la retraite",
+      "Nouveau projet": "Nouveau projet",
+      "Raisons personnelles": "Raisons personnelles",
+      "Autre": "Autre"
+    },
+    "calendrier": {
+      "Moins de 6 mois": "Moins de 6 mois",
+      "6 à 12 mois": "6 à 12 mois",
+      "1 à 2 ans": "1 à 2 ans",
+      "Plus de 2 ans": "Plus de 2 ans"
+    },
+    "detention": {
+      "En direct, à titre personnel": "En direct, à titre personnel",
+      "Par une société holding": "Par une société holding",
+      "Avec d'autres associés": "Avec d'autres associés"
+    },
+    "murs": {
+      "À l'entreprise elle-même": "À l'entreprise elle-même",
+      "À vous ou à votre famille (souvent une SCI)": "À vous ou à votre famille (souvent une SCI)",
+      "À un propriétaire extérieur": "À un propriétaire extérieur",
+      "Pas de locaux en propre": "Pas de locaux en propre"
+    },
+    "murs_cession": {
+      "Oui, avec l'entreprise": "Oui, avec l'entreprise",
+      "Non, un bail sera proposé au repreneur": "Non, un bail sera proposé au repreneur",
+      "À discuter": "À discuter"
+    },
+    "exceptionnel_signale": {
+      "Oui": "Oui",
+      "Non": "Non"
+    },
+    "type_clientele": {
+      "Particuliers": "Particuliers",
+      "Entreprises": "Entreprises",
+      "Collectivités": "Collectivités",
+      "Autres professionnels": "Autres professionnels"
+    },
+    "croissance": {},
+    "axes": {
+      "Nouveaux produits": "Nouveaux produits",
+      "Nouvelles zones": "Nouvelles zones",
+      "Nouveaux clients": "Nouveaux clients",
+      "Plus de capacité": "Plus de capacité",
+      "Vente en ligne": "Vente en ligne",
+      "Rachat d'un concurrent": "Rachat d'un concurrent"
+    },
+    "accompagnement": {
+      "3 mois": "3 mois",
+      "6 mois": "6 mois",
+      "12 mois": "12 mois",
+      "Plus de 12 mois": "Plus de 12 mois"
+    },
+    "repreneur": {
+      "Dirigeant indépendant": "Dirigeant indépendant",
+      "Entreprise du secteur": "Entreprise du secteur",
+      "Fonds d'investissement": "Fonds d'investissement",
+      "Salariés": "Salariés",
+      "Indifférent": "Indifférent"
+    }
+  },
+  "details": {
+    "distinctions": {
+      "Qualité": "finitions, matériaux",
+      "Sur mesure": "chaque projet est unique",
+      "Délais": "réactivité, plannings tenus",
+      "Équipements": "outil de production récent",
+      "Certifications": "qualifications, labels",
+      "Relation client": "conseil, suivi, SAV"
+    }
+  }
+}

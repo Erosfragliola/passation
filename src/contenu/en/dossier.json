@@ -1,0 +1,209 @@
+{
+  "_lisez_moi": "File text (public/js/dossier-regles.js, dossier-parcours.js): documents to gather, steps, file status. Same keys as src/contenu/fr/dossier.json.",
+  "checklist": {
+    "juridique": {
+      "groupe": "Legal",
+      "items": {
+        "statuts": "Up-to-date articles of association",
+        "kbis": "Recent Kbis extract (certificate of incorporation)",
+        "pv-ag": "Minutes of shareholder meetings for the last 3 years",
+        "capital": "Shareholding structure and any shareholders’ agreement"
+      }
+    },
+    "financier": {
+      "groupe": "Financial",
+      "items": {
+        "liasses": "Tax returns and annual accounts for the last 3 fiscal years",
+        "situation": "Interim statements for the current fiscal year",
+        "emprunts": "Details of loans, lease financing and guarantees given",
+        "balances": "Aged customer and supplier balances"
+      }
+    },
+    "social": {
+      "groupe": "HR",
+      "items": {
+        "organigramme": "Organization chart",
+        "registre": "Staff register",
+        "contrats-cles": "Employment contracts of key people",
+        "accords": "Company agreements and applicable collective bargaining agreement"
+      }
+    },
+    "commercial": {
+      "groupe": "Commercial",
+      "items": {
+        "clients": "Revenue by customer (main customers)",
+        "contrats": "Major customer and supplier contracts",
+        "cgv": "General terms of sale"
+      }
+    },
+    "actifs": {
+      "groupe": "Assets and risks",
+      "items": {
+        "baux": "Commercial leases and any title deeds",
+        "equipements": "Inventory of main equipment",
+        "marques": "Trademarks, patents and domain names",
+        "assurances": "Insurance certificates",
+        "litiges": "Ongoing or recent litigation",
+        "autorisations": "Permits, approvals and certifications"
+      }
+    }
+  },
+  "etapes": {
+    "estimation": "Estimate",
+    "chiffres": "Your figures",
+    "reponses": "Your answers",
+    "redaction": "Drafting",
+    "relecture": "Review and send"
+  },
+  "etiquette_express": "Estimated enterprise value",
+  "etiquette_titres": "Value of your shares",
+  "annees": {
+    "suite": "{de} to {a}",
+    "liste": "{debut} and {fin}"
+  },
+  "point": "{chapitre}: {point}",
+  "points_a_completer": {
+    "one": "{n} item to complete",
+    "other": "{n} items to complete"
+  },
+  "alerte_plancher": "Part of the range is below the adjusted net assets, which serve as a floor in negotiations.",
+  "ecart": {
+    "comptes": "{annees} accounts confirmed",
+    "sur_ebe": "calculation based on EBITDA (EBE) instead of revenue",
+    "ebe_retenu": "EBITDA (EBE) of {ebe} used instead of {avant}",
+    "decotes": "{pct}% discounts applied",
+    "primes": "{pct}% premiums applied",
+    "tresorerie": "net cash of {montant} added",
+    "dettes": "net debt of {montant} deducted",
+    "bfr_superieur": "working capital above normal: {montant}",
+    "bfr_inferieur": "working capital below normal: {montant}",
+    "hors_exploitation": "non-operating assets of {montant} added",
+    "phrase": "Your range moves from {avant} to {apres}.",
+    "phrase_raisons": "Your range moves from {avant} to {apres}: {raisons}."
+  },
+  "taches": {
+    "chiffres": {
+      "titre_aucun": "Confirm your latest fiscal year",
+      "detail_aucun": "No fiscal year confirmed yet",
+      "titre": "Confirm fiscal year {annee}",
+      "detail": "The only required fiscal year: the valuation is based on it"
+    },
+    "questions": {
+      "titre_reste": {
+        "one": "Answer the last question",
+        "other": "Answer the last {n} questions"
+      },
+      "titre": "Answer the {n} questions",
+      "detail_reste": "{faits} of {total} already done",
+      "detail": "Short screens, most of them one click"
+    },
+    "redaction": {
+      "terminer": "Finish drafting",
+      "lancer": "Start drafting",
+      "detail": "Valuation, teaser and memorandum, in one go"
+    },
+    "chapitres": {
+      "titre": {
+        "one": "Draft {n} memorandum chapter",
+        "other": "Draft {n} memorandum chapters"
+      },
+      "detail": {
+        "one": "Chapter: {liste}",
+        "other": "Chapters: {liste}"
+      }
+    },
+    "teaser": {
+      "titre": {
+        "one": "Draft {n} teaser section",
+        "other": "Draft {n} teaser sections"
+      },
+      "detail": {
+        "one": "Empty section: {liste}",
+        "other": "Empty sections: {liste}"
+      }
+    },
+    "exercices": {
+      "titre": "Add {annees} to make the range more reliable (optional)",
+      "detail": "The range is already based on {annee}; earlier fiscal years confirm it"
+    },
+    "photo": {
+      "titre_premiere": "Add a photo of the workshop or the products",
+      "detail_premiere": "Memorandum recommendation: it brings the “Know-how” page to life",
+      "titre_seconde": "Add a photo of the team or the site",
+      "detail_seconde": "Memorandum recommendation, “Team” page"
+    },
+    "a_completer": {
+      "titre": {
+        "one": "Complete {n} memorandum item",
+        "other": "Complete {n} memorandum items"
+      },
+      "detail": "Marked “To be completed”: {liste}"
+    },
+    "pieces": {
+      "titre_premieres": "Upload your first documents",
+      "titre": {
+        "one": "Upload {n} missing document",
+        "other": "Upload {n} missing documents"
+      },
+      "detail": {
+        "one": "{n} document of {total}",
+        "other": "{n} documents of {total}"
+      }
+    }
+  },
+  "guillemets": "“{texte}”",
+  "actions": {
+    "confirmer": "Confirm",
+    "reprendre": "Resume",
+    "commencer": "Start",
+    "rediger": "Draft",
+    "ajouter": "Add",
+    "completer": "Complete",
+    "deposer": "Upload",
+    "ouvrir": "Open",
+    "excel": "Download the Excel file"
+  },
+  "relire_envoyer": "Review and send your file",
+  "documents": {
+    "valorisation": "Valuation",
+    "datapack": "Excel datapack",
+    "teaser": "Anonymous teaser",
+    "memo": "Memorandum",
+    "mise_a_jour_f": "Updated on {date}",
+    "mis_a_jour": "Updated on {date}",
+    "version": "version {n}",
+    "prete": "Ready",
+    "calculee_redaction": "Calculated at the Drafting step, with your answers.",
+    "debloque_chiffres_reponses": "Unlocks with your figures and your answers.",
+    "prepare_chiffres": "Prepared from your confirmed figures",
+    "debloque_exercice": "Unlocks as soon as a fiscal year is confirmed.",
+    "parties_a_rediger": {
+      "one": "{n} of {total} sections to draft",
+      "other": "{n} of {total} sections to draft"
+    },
+    "redige_le": "Drafted on {date}",
+    "redige_redaction": "Drafted at the Drafting step, after your answers.",
+    "chapitres_a_rediger": {
+      "one": "{n} of {total} chapters to draft",
+      "other": "{n} of {total} chapters to draft"
+    }
+  },
+  "valeur": {
+    "base_titres": "Based on your industry’s EBITDA (EBE) multiples, after debt and cash.",
+    "voir_detail": "See the details",
+    "comptes": "{annee} accounts",
+    "base_express": "Estimated from the latest public accounts and industry multiples, before debt and cash; your figures will refine it.",
+    "voir_calcul": "See the calculation",
+    "base_aucune": "The public accounts are not enough for a first estimate: your figures will make it possible.",
+    "saisir": "Enter your figures"
+  },
+  "final": {
+    "pret_titre": "Your file is ready",
+    "pret_aide": "Review each document before sharing it. You can edit everything.",
+    "plus_loin": "Going further (optional)",
+    "redige_titre": "Your file is drafted",
+    "non_redige_titre": "Your file isn’t drafted yet",
+    "non_pret_aide": "It isn’t ready to send yet: {pct}% complete. Here’s what’s left.",
+    "reste": "What’s left to do"
+  }
+}

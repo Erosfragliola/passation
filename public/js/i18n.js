@@ -68,6 +68,15 @@ export function lien(chemin, l = langueConnue()) {
   return s === "/" ? `${prefixe}/` : prefixe + s;
 }
 
+/** Marqueur d'un texte traduit dans une définition partagée (questions, champs…) : avecTextes() le remplace par un
+ *  accesseur, lu à chaque accès dans la langue de la page ou de la requête (jamais figé au chargement du module). */
+export const T = Symbol("texte");
+/** Remplace chaque propriété marquée T par un accesseur : t(`${base}.${propriété}`). */
+export function avecTextes(objet, base) {
+  for (const [k, v] of Object.entries(objet)) if (v === T) Object.defineProperty(objet, k, { get: () => t(`${base}.${k}`), enumerable: true, configurable: true });
+  return objet;
+}
+
 /** Nombre au format de la langue (options d'Intl.NumberFormat). */
 export const nombre = (v, options = {}, l = langue()) => new Intl.NumberFormat(locale(l), options).format(v);
 

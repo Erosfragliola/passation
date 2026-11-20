@@ -3,10 +3,10 @@
 // indispensable), Pour aller plus loin (questions facultatives, absentes du parcours guidé), Votre valorisation
 // (calcul du serveur, réglages). Fourchette seule, jamais de valeur centrale ; multiples du secteur seulement,
 // l'actif net corrigé sert de contrôle. Aucun calcul de valeur ici : tout vient de l'API (code testé).
-import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, AIDE_EBE } from "/js/champs-financiers.js";
+import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
 import { POUR_ALLER_PLUS_LOIN as ETAPES } from "/js/parcours.js";
-import { ETIQUETTE_TITRES, resumeValorisation, explicationEcart, alertesDirigeant } from "/js/dossier-parcours.js";
+import { etiquetteTitres, resumeValorisation, explicationEcart, alertesDirigeant } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
 import { lien } from "/js/i18n.js";
 
@@ -85,7 +85,7 @@ let anneeCourante = null;
 const SOURCE = { inpi: "montant des comptes publics (registre national des entreprises)", liasse: "montant lu dans votre PDF" }; // formulation de la légende de main
 const DETAIL = new Set(["achats_consommes", "charges_externes", "charges_personnel"]);
 const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-chiffres", "aria-label": "Qu'est-ce que l'EBE ?" }, "?"),
-  el("span", { role: "tooltip", id: "aide-ebe-chiffres", text: AIDE_EBE }));
+  el("span", { role: "tooltip", id: "aide-ebe-chiffres", text: aideEbe() }));
 function ligneChiffre(c, a) {
   const v = chiffres.exercices[a]?.[c.cle];
   const input = el("input", { type: "text", inputmode: "decimal", class: "montant", id: `m-${c.cle}`, value: v?.valeur != null ? fmt.format(v.valeur) : "" });
@@ -383,7 +383,7 @@ function dessinerResultat() {
   // --- Synthèse : la fourchette seule (même format et même étiquette que la page du dossier), et ce qui l'explique
   const ecart = v ? explicationEcart(dossierCourant?.estimation, v) : null;
   const tete = el("div", { class: "synthese-valeur carte" },
-    el("p", { class: "etiquette", text: ETIQUETTE_TITRES }),
+    el("p", { class: "etiquette", text: etiquetteTitres() }),
     el("p", { class: "valeur-centrale chiffre", text: v ? fourchette(v.bas, v.haut) : "À compléter" }),
     el("p", { class: "petit", text: `Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, la référence des cessions de PME, après dettes et trésorerie. Contrôle par l'actif net corrigé (plancher de négociation) : ${euros(s.plancher_ancc)}.` }),
     ecart ? el("p", { class: "petit", text: ecart }) : null,

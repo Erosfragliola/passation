@@ -1,5 +1,6 @@
 // Règles de traduction des données d'une entreprise en maquette et en frise.
 // Module pur (aucun accès réseau ni DOM) : utilisé par le Worker, le navigateur et les tests.
+import { t as tr, nombre } from "./i18n.js";
 
 /**
  * Tranches d'effectif salarié de la nomenclature INSEE (variable « tranche d'effectif salarié » du
@@ -26,14 +27,14 @@ const TRANCHES = {
 
 /** Libellé INSEE de la tranche d'effectif salarié : « 20 à 49 salariés », « non employeuse », « 0 salarié ». */
 export function libelleSalaries(code) {
-  if (code === "NN") return "non employeuse";
+  if (code === "NN") return tr("regles.salaries.non_employeuse");
   const t = TRANCHES[code];
   if (!t) return null;
-  const n = (v) => v.toLocaleString("fr-FR");
-  if (t.max === 0) return "0 salarié";
-  if (t.max == null) return `${n(t.min)} salariés et plus`;
-  if (code === "01") return "1 ou 2 salariés";
-  return `${n(t.min)} à ${n(t.max)} salariés`;
+  const n = (v) => nombre(v);
+  if (t.max === 0) return tr("regles.salaries.zero");
+  if (t.max == null) return tr("regles.salaries.et_plus", { n: n(t.min) });
+  if (code === "01") return tr("regles.salaries.un_deux");
+  return tr("regles.salaries.tranche", { min: n(t.min), max: n(t.max) });
 }
 
 const ETAGES_MAX = 8;
@@ -184,9 +185,9 @@ export function personnages(code, max = 8) {
 export function libelleEffectif(code) {
   const t = TRANCHES[code];
   if (!t || t.max === 0) return null;
-  if (t.max == null) return `plus de ${t.min.toLocaleString("fr-FR")} personnes`;
-  if (code === "01") return "une ou deux personnes";
-  return `de ${t.min.toLocaleString("fr-FR")} à ${t.max.toLocaleString("fr-FR")} personnes`;
+  if (t.max == null) return tr("regles.effectif.plus_de", { n: nombre(t.min) });
+  if (code === "01") return tr("regles.effectif.un_deux");
+  return tr("regles.effectif.tranche", { min: nombre(t.min), max: nombre(t.max) });
 }
 
 /**

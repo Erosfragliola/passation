@@ -1,0 +1,21 @@
+{
+  "_lisez_moi": "Textes du JavaScript (t() de public/js/i18n.js). Mêmes clés dans src/contenu/en/regles.json.",
+  "salaries": {
+    "non_employeuse": "non employeuse",
+    "zero": "0 salarié",
+    "et_plus": "{n} salariés et plus",
+    "un_deux": "1 ou 2 salariés",
+    "tranche": "{min} à {max} salariés"
+  },
+  "effectif": {
+    "plus_de": "plus de {n} personnes",
+    "un_deux": "une ou deux personnes",
+    "tranche": "de {min} à {max} personnes"
+  },
+  "suggestion": {
+    "creee": "créée en {annee}"
+  },
+  "resultat": {
+    "multiples_floutes": "Multiples de l'EBE du secteur : détaillés dans votre dossier."
+  }
+}

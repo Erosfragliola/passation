@@ -1,0 +1,161 @@
+{
+  "_lisez_moi": "Text of the guided-steps questions (public/js/parcours.js). Same keys as src/contenu/fr/parcours.json.",
+  "questions": {
+    "activite": {
+      "titre": "In a few sentences, what does your company do?",
+      "aide": "We’ve prepared a draft: edit it freely.",
+      "pourquoi": "It’s the first thing a buyer reads: your trades, your products or services, your customers.",
+      "chapitre": "2.2 Business and know-how",
+      "champs": {
+        "description": {
+          "requis": "the description of your business"
+        }
+      }
+    },
+    "distinctions": {
+      "titre": "What sets you apart from your competitors?",
+      "aide": "One to three answers.",
+      "pourquoi": "A buyer looks for what makes the company hard to copy. Without an answer, the chapter shows “To be completed”.",
+      "chapitre": "2.2 Business and know-how",
+      "champs": {
+        "certifications": {
+          "libelle": "Certifications or qualifications (optional)",
+          "exemple": "e.g. Qualibat, RGE, ISO 9001"
+        }
+      }
+    },
+    "equipe": {
+      "titre": "Can your team run day to day without you?",
+      "pourquoi": "The buyer wants to know what depends on you: that’s what they will have to take over or organize.",
+      "chapitre": "2.3 Organization and team",
+      "champs": {
+        "encadrement": {
+          "libelle": "Is there a management layer in place?"
+        },
+        "role_dirigeant": {
+          "libelle": "What you do yourself"
+        },
+        "anciennete_equipe": {
+          "libelle": "Average employee length of service"
+        }
+      }
+    },
+    "histoire": {
+      "titre": "Your company’s key dates",
+      "aide": "One line per date: “year: what happened”. Add what’s missing (expansion, new trade, acquisition).",
+      "pourquoi": "The memorandum’s timeline: it shows the company’s continuity.",
+      "chapitre": "2.1 History and identity"
+    },
+    "operation": {
+      "titre": "What do you want to sell, and when?",
+      "pourquoi": "The scope and timeline of the deal, presented without any price.",
+      "chapitre": "5.2 Planned deal",
+      "champs": {
+        "part_cedee": {
+          "libelle": "Share of the capital",
+          "requis": "the share of the capital being sold"
+        },
+        "motif": {
+          "libelle": "Reason"
+        },
+        "calendrier": {
+          "libelle": "Preferred timeline"
+        }
+      }
+    },
+    "remuneration": {
+      "titre": "Your pay",
+      "aide": "To compare with what a salaried manager would cost. Including payroll taxes, per year.",
+      "pourquoi": "The gap with normal pay is an EBITDA adjustment, and therefore affects the value.",
+      "chapitre": "4.3 Adjusted EBITDA",
+      "champs": {
+        "remuneration_dirigeant_reelle": {
+          "libelle": "What you cost the company"
+        },
+        "remuneration_normative": {
+          "libelle": "What a manager replacing you would cost (leave blank if you don’t know)"
+        }
+      }
+    },
+    "detention": {
+      "titre": "How do you hold your shares in the company?",
+      "pourquoi": "The legal structure chart and the scope of the sale.",
+      "chapitre": "5.2 Legal structure chart"
+    },
+    "locaux": {
+      "titre": "Who owns the company’s premises?",
+      "aide": "A buyer always asks: are they also buying the premises, or becoming a tenant?",
+      "pourquoi": "The premises are in or out of scope; an unusual rent is adjusted.",
+      "chapitre": "5.2 Legal structure chart",
+      "champs": {
+        "murs_cession": {
+          "libelle": "Are the premises part of the sale?"
+        },
+        "loyer_paye": {
+          "libelle": "Annual rent paid by the company"
+        },
+        "loyer_marche": {
+          "libelle": "Annual market rent for equivalent premises"
+        }
+      }
+    },
+    "exceptionnel": {
+      "titre": "Did a one-off expense or income affect your latest accounts?",
+      "aide": "For example: a dispute, an insurance claim, a one-time grant.",
+      "pourquoi": "An item that won’t recur is neutralized in adjusted EBITDA.",
+      "chapitre": "4.3 Adjusted EBITDA"
+    },
+    "clients": {
+      "titre": "Your customers",
+      "pourquoi": "Customer concentration and recurrence are closely examined by every buyer.",
+      "chapitre": "3.3 Customers",
+      "champs": {
+        "type_clientele": {
+          "libelle": "Your customers are mostly"
+        },
+        "part_premier_client": {
+          "libelle": "Share of revenue from your largest customer"
+        },
+        "zone": {
+          "libelle": "Sales area"
+        },
+        "regions": {
+          "libelle": "Regions of your main customers"
+        }
+      }
+    },
+    "principaux_clients": {
+      "titre": "Your top five customers",
+      "aide": "No names at all: they will appear as “Customer 1” to “Customer 5”. An estimate is enough; leave blank what you don’t know.",
+      "pourquoi": "The table of the top five customers, anonymized.",
+      "chapitre": "3.3 Customers"
+    },
+    "perspectives": {
+      "titre": "How do you see the next 5 years?",
+      "aide": "An average annual estimate is enough.",
+      "pourquoi": "The growth drivers a buyer could pursue; presented as your estimate.",
+      "chapitre": "5.1 Growth opportunities",
+      "champs": {
+        "croissance": {
+          "libelle": "Annual revenue growth"
+        },
+        "axes": {
+          "libelle": "Possible growth opportunities"
+        }
+      }
+    },
+    "cession": {
+      "titre": "How do you see the handover?",
+      "pourquoi": "The support you offer reassures the buyer about keeping the customers and the know-how.",
+      "chapitre": "5.2 Planned deal",
+      "champs": {
+        "accompagnement": {
+          "libelle": "Transition support for the buyer"
+        },
+        "repreneur": {
+          "libelle": "Preferred buyer"
+        }
+      }
+    }
+  }
+}

@@ -37,8 +37,14 @@ export const PAGES = {
 };
 /** Pages publiques indexables (sitemap.xml). */
 export const PAGES_PUBLIQUES = ["/", "/connexion", "/cgu", "/confidentialite", "/mentions-legales"];
-/** Espaces de noms dont le JavaScript du navigateur a besoin (t() de public/js/i18n.js), en plus de la page. */
-const POUR_JS = ["commun"];
+/** Espaces de noms dont le JavaScript du navigateur a besoin (t() de public/js/i18n.js), en plus de celui de la page.
+ *  Les modules partagés de l'espace (règles, champs, questionnaire, parcours, dossier) servent à toutes ses pages. */
+const POUR_JS_ESPACE = ["commun", "regles", "champs", "questionnaire", "parcours", "dossier"];
+const POUR_JS = {
+  accueil: ["commun", "regles", "connexion_code"],
+  connexion: ["commun", "connexion_code"],
+  espace: POUR_JS_ESPACE, demarrer: POUR_JS_ESPACE, valorisation: POUR_JS_ESPACE, memo: POUR_JS_ESPACE, teaser: POUR_JS_ESPACE,
+};
 
 const LOCALES_OG = { en: "en_US", fr: "fr_FR" };
 const RESSOURCE = /^\/(css|js|img|fonts|video)\/|\.(?!html?$)[a-z0-9]{2,5}$/i;
@@ -60,7 +66,9 @@ function lienLocal(href, langue) {
 /** Remplit une page HTML (Response) dans une langue. chemin : chemin sans préfixe ; espace : espace de noms. */
 export function rendrePage(page, { url, langue, chemin, espace, statut = page.status, indexable = true }) {
   const contenu = contenuDePage(espace, langue);
-  const dictionnaireJs = Object.fromEntries([...POUR_JS, espace].filter((e) => DICTIONNAIRES[langue][e]).map((e) => [e, DICTIONNAIRES[langue][e]]));
+  // Dictionnaire du JavaScript : sans l'espace « accueil », déjà posé dans la page (data-t-json)
+  const espacesJs = [...(POUR_JS[espace] || ["commun"]), espace].filter((e) => e !== "accueil" && DICTIONNAIRES[langue][e]);
+  const dictionnaireJs = Object.fromEntries(espacesJs.map((e) => [e, DICTIONNAIRES[langue][e]]));
   const absolue = (l) => url.origin + adresse(chemin, l);
   const tete = [
     `<link rel="canonical" href="${echapper(absolue(langue))}">`,

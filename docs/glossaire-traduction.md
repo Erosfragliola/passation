@@ -79,7 +79,7 @@ sociétés, noms de personnes, noms de villes, adresses e-mail, codes (« Projet
 | Date | 19 novembre 2026 ; 19/11/2026 | November 19, 2026 ; 11/19/2026 |
 | Nombre | 1 234,50 | 1,234.50 |
 | Montant | 12,50 € ; 1,8 M€ ; 450 k€ | €12.50 ; €1.8M ; €450K |
-| Fourchette | 1,8 – 2,4 M€ | €1.8M – €2.4M |
+| Fourchette | 1,8 – 2,4 M€ ; 150 – 230 k€ | €1.8–2.4M ; €150–230K |
 | Pourcentage | 12,5 % | 12.5% |
 | Téléphone | 01 23 45 67 89 | +33 1 23 45 67 89 |
 

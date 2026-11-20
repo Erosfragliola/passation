@@ -8,10 +8,10 @@
 //   Rédaction : valorisation, datapack, teaser et mémorandum générés d'un coup
 //   Relecture et envoi : « prêt » seulement si tout l'indispensable est fait, sinon ce qui reste (même décompte que
 //      la page du dossier)
-import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, AIDE_EBE } from "/js/champs-financiers.js";
+import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe } from "/js/champs-financiers.js";
 import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
-import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
+import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
 import { lien } from "/js/i18n.js";
 
@@ -133,7 +133,7 @@ function dejaFait() {
   const faits = [
     `Entreprise identifiée : ${e.nom || "votre société"}`,
     publics.length ? `Comptes publics récupérés : ${publics.join(", ")}` : null,
-    est?.statut === "ok" ? `${ETIQUETTE_EXPRESS}${est.exercice ? ` (comptes ${est.exercice})` : ""} : ${fourchette(est.bas, est.haut)}` : null,
+    est?.statut === "ok" ? `${etiquetteExpress()}${est.exercice ? ` (comptes ${est.exercice})` : ""} : ${fourchette(est.bas, est.haut)}` : null,
   ].filter(Boolean);
   return el("div", { class: "carte guide-deja" }, el("p", { class: "etiquette", text: "Déjà fait" }),
     el("ul", {}, ...faits.map((t) => el("li", { text: t }))));
@@ -192,7 +192,7 @@ function saisie() {
   const cles1 = ["chiffre_affaires", ...(detail ? DETAIL_CHARGES : ["ebe"]), "resultat_net"];
   const brut = (cle) => S.saisie.valeurs[cle] ?? (l[cle]?.valeur != null ? fmt.format(l[cle].valeur) : "");
   const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-saisie", "aria-label": "Qu'est-ce que l'EBE ?" }, "?"),
-    el("span", { role: "tooltip", id: "aide-ebe-saisie", text: AIDE_EBE }));
+    el("span", { role: "tooltip", id: "aide-ebe-saisie", text: aideEbe() }));
   const champ = (cle) => {
     const c = CHAMPS.find((x) => x.cle === cle), cell = l[cle];
     const input = el("input", { type: "text", inputmode: "decimal", id: `s-${cle}`, "data-cle": cle, value: brut(cle), autocomplete: "off" });
