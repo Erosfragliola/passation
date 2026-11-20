@@ -274,4 +274,5 @@ export async function rechercherMarche(env, contexte) {
 
 /** Erreur d'authentification de l'API Claude (clé absente, mal copiée ou d'un autre type) : message explicite. */
 export const cleRefusee = (e) => e?.status === 401 || e?.status === 403;
-export const MESSAGE_CLE_REFUSEE = "La lecture et la rédaction automatiques sont momentanément indisponibles : la clé de l'API Claude du site est refusée. L'administrateur du site doit la remplacer.";
+/** Message de la clé refusée, dans la langue de la requête (lu à chaque usage). */
+export const MESSAGE_CLE_REFUSEE = { toString: () => tr("serveur.claude.cle_refusee"), toJSON: () => tr("serveur.claude.cle_refusee") };

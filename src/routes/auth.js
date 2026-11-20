@@ -13,7 +13,7 @@ import { sirenValide, nettoyerSiren } from "../lib/siren.js";
 import { creerDossierPourSiren, listerDossiers } from "./dossiers.js";
 import { lien, t as tr } from "../../public/js/i18n.js";
 
-const MESSAGE_ENVOI = "Si l'adresse est valide, un code à 6 chiffres vient de vous être envoyé. Il est valable 10 minutes.";
+const messageEnvoi = () => tr("serveur.auth.envoi");
 
 async function lireCorps(request) {
   try { return await request.json(); } catch { return null; }
@@ -46,7 +46,7 @@ export async function routeDemandeCode(request, env) {
     if (envoi.raison !== "envoi_non_configure") console.log(`Envoi du code impossible : ${envoi.raison}`);
     return json({ erreur: "envoi_impossible", message: tr("serveur.auth.envoi_e_mails_ne") }, 503);
   }
-  return json({ ok: true, message: MESSAGE_ENVOI });
+  return json({ ok: true, message: messageEnvoi() });
 }
 
 export async function routeVerificationCode(request, env) {

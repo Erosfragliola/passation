@@ -5,6 +5,7 @@
 
 import { requeteJson } from "../lib/requete.js";
 import { URL_RECHERCHE } from "./entreprise.js";
+import { t as tr, T, avecTextes } from "../../public/js/i18n.js";
 
 /** Codes INSEE des régions (paramètre « region » de l'API). */
 export const CODES_REGIONS = {
@@ -16,11 +17,12 @@ export const CODES_REGIONS = {
 
 /** Tranches d'effectif regroupées (codes INSEE). */
 const BANDES = [
-  { cle: "sans", libelle: "Sans salarié ou non renseigné", codes: ["NN", "00"] },
-  { cle: "1_9", libelle: "1 à 9 salariés", codes: ["01", "02", "03"] },
-  { cle: "10_49", libelle: "10 à 49 salariés", codes: ["11", "12"] },
-  { cle: "50_plus", libelle: "50 salariés et plus", codes: ["21", "22", "31", "32", "41", "42", "51", "52", "53"] },
+  { cle: "sans", libelle: T, codes: ["NN", "00"] },
+  { cle: "1_9", libelle: T, codes: ["01", "02", "03"] },
+  { cle: "10_49", libelle: T, codes: ["11", "12"] },
+  { cle: "50_plus", libelle: T, codes: ["21", "22", "31", "32", "41", "42", "51", "52", "53"] },
 ];
+for (const b of BANDES) avecTextes(b, `serveur.secteur.bandes.${b.cle}`);
 const PLAFOND_API = 10000;
 
 export const bandeDe = (codeTranche) => BANDES.find((b) => b.codes.includes(String(codeTranche || "NN")))?.cle ?? "sans";
@@ -71,6 +73,6 @@ export function structureSecteur(comptes, { naf, region, trancheEntreprise, date
     nombre_meme_taille_ou_plus_region: iBande > 0 ? auDessus : null,
     france_10_plus: france10.every(ok) ? france10[0] + france10[1] : null,
     france_10_plus_plafonne: france10.some(plafonne),
-    source: `Annuaire des entreprises (INSEE Sirene), entreprises actives du code NAF ${naf}, consulté le ${date}`,
+    source: tr("serveur.secteur.source", { naf, date }),
   };
 }

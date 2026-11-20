@@ -22,7 +22,7 @@ import { lireSite, adressePublique } from "../documents/site.js";
 import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat, regionDe, SECTEURS_NAF } from "../documents/anonymat.js";
 import { faitsTeaser, visuelsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
-import { t as tr } from "../../public/js/i18n.js";
+import { t as tr, locale } from "../../public/js/i18n.js";
 
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 const slug = (s) => String(s || "entreprise").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "entreprise";
@@ -200,7 +200,7 @@ async function secteurDe(env, entreprise) {
     try { comptes = await compterSecteur({ naf, region }); if (comptes) await ecrireCache(env.DB, cle, comptes); }
     catch (e) { console.log(`Structure du secteur indisponible : ${e.message}`); return null; }
   }
-  const date = new Date().toLocaleDateString("fr-FR");
+  const date = new Date().toLocaleDateString(locale());
   return structureSecteur(comptes, { naf, region, trancheEntreprise: entreprise.tranche_effectif?.code, date });
 }
 
@@ -248,10 +248,10 @@ async function lireSiteRoute(request, env, row) {
     lecture = await lireSite(corps.url);
     faits = await extraireSite(env, lecture.pages);
   } catch (e) {
-    const messages = { robots_refuse: "Ce site interdit la lecture automatique (robots.txt) : nous le respectons.", site_injoignable: "Le site ne répond pas ou ne renvoie pas de page lisible.", adresse_invalide: "Adresse de site invalide." };
+    const messages = { robots_refuse: tr("serveur.documents.site.robots"), site_injoignable: tr("serveur.documents.site.injoignable"), adresse_invalide: tr("serveur.documents.site.adresse") };
     console.log(`Lecture du site impossible : ${e.message}`);
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
-    return json({ erreur: e.message, message: messages[e.message] || "Lecture du site impossible. Réessayez plus tard." }, 422);
+    return json({ erreur: e.message, message: messages[e.message] || tr("serveur.documents.site.impossible") }, 422);
   }
   const ancien = (await lireReponses(env, row.id)).site || {};
   const site = {

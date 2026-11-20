@@ -3,14 +3,10 @@
 // (alors à confirmer). Rien n'est enregistré tant que le dirigeant n'a pas validé l'écran. Module pur, testé.
 import { regionDe, secteurDe } from "./anonymat.js";
 import { libelleEffectif } from "../../public/js/regles.js";
+import { t as tr } from "../../public/js/i18n.js";
 
-export const SOURCES_PROPOSITION = {
-  registres: "d'après les registres publics",
-  comptes: "d'après vos comptes",
-  site: "d'après votre site",
-  secteur: "d'après votre secteur d'activité",
-  frequent: "choix le plus fréquent, à confirmer",
-};
+export const SOURCES_PROPOSITION = Object.fromEntries(["registres", "comptes", "site", "secteur", "frequent"].map((k) => [k, null]));
+for (const k of Object.keys(SOURCES_PROPOSITION)) Object.defineProperty(SOURCES_PROPOSITION, k, { get: () => tr(`serveur.propositions.sources.${k}`), enumerable: true });
 
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 const annee = (d) => (d ? Number(String(d).slice(0, 4)) || null : null);
@@ -40,13 +36,13 @@ const DISTINCTIONS = [
 export function datesCles(entreprise) {
   const lignes = [];
   const c = annee(entreprise.date_creation);
-  if (c) lignes.push(`${c} : création${entreprise.ville ? ` de l'entreprise (siège actuel à ${entreprise.ville})` : ""}`);
+  if (c) lignes.push(entreprise.ville ? tr("serveur.propositions.dates.creation_ville", { annee: c, ville: entreprise.ville }) : tr("serveur.propositions.dates.creation", { annee: c }));
   for (const e of entreprise.evenements || []) {
     const a = annee(e.date);
     if (!a) continue;
-    if (e.type === "transfert_siege") lignes.push(`${a} : transfert du siège${e.detail ? ` à ${e.detail}` : ""}`);
-    else if (e.type === "denomination") lignes.push(`${a} : changement de dénomination`);
-    else if (e.type === "reprise_fonds") lignes.push(`${a} : reprise d'un fonds de commerce${e.detail ? ` à ${e.detail}` : ""}`);
+    if (e.type === "transfert_siege") lignes.push(e.detail ? tr("serveur.propositions.dates.transfert_ville", { annee: a, ville: e.detail }) : tr("serveur.propositions.dates.transfert", { annee: a }));
+    else if (e.type === "denomination") lignes.push(tr("serveur.propositions.dates.denomination", { annee: a }));
+    else if (e.type === "reprise_fonds") lignes.push(e.detail ? tr("serveur.propositions.dates.reprise_ville", { annee: a, ville: e.detail }) : tr("serveur.propositions.dates.reprise", { annee: a }));
   }
   return lignes.slice(0, 6);
 }
@@ -70,7 +66,7 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   // Activité : faits du site, sinon une phrase tirée des registres (à compléter par le dirigeant)
   const activiteSite = faits.filter((f) => ["activite", "produits", "clients", "qualite"].includes(f.categorie)).slice(0, 5).map((f) => f.fait).join(" ");
   if (activiteSite) ajouter("activite", { "activite.description": activiteSite }, SOURCES_PROPOSITION.site);
-  else if (secteur) ajouter("activite", { "activite.description": [`Entreprise du secteur « ${secteur} »`, annee(entreprise.date_creation) ? `créée en ${annee(entreprise.date_creation)}` : null, entreprise.ville ? `à ${entreprise.ville}` : null, effectif ? `(${effectif})` : null].filter(Boolean).join(" ") + ". Précisez vos métiers, vos produits ou services et vos clients." }, SOURCES_PROPOSITION.registres);
+  else if (secteur) ajouter("activite", { "activite.description": [tr("serveur.propositions.activite.secteur", { secteur }), annee(entreprise.date_creation) ? tr("regles.suggestion.creee", { annee: annee(entreprise.date_creation) }) : null, entreprise.ville ? tr("serveur.propositions.activite.ville", { ville: entreprise.ville }) : null, effectif ? `(${effectif})` : null].filter(Boolean).join(" ") + tr("serveur.propositions.activite.precisez") }, SOURCES_PROPOSITION.registres);
   // Simple amorce tirée des registres : à compléter par le dirigeant, jamais validée d'un clic dans le récapitulatif
   if (p.activite?.source === SOURCES_PROPOSITION.registres) p.activite.a_completer = true;
 
@@ -83,7 +79,7 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
 
   // Équipe : encadrement estimé d'après l'effectif (à confirmer)
   const encadrement = codeEff >= "11" && codeEff !== "NN" ? "Oui, un ou plusieurs responsables" : ["01", "02", "03"].includes(codeEff) ? "En partie" : null;
-  ajouter("equipe", { "dirigeant.encadrement": encadrement, "dirigeant.role_dirigeant": ["Commercial", "Gestion"] }, encadrement ? "d'après votre effectif (registres), à confirmer" : SOURCES_PROPOSITION.frequent);
+  ajouter("equipe", { "dirigeant.encadrement": encadrement, "dirigeant.role_dirigeant": ["Commercial", "Gestion"] }, encadrement ? tr("serveur.propositions.sources.effectif") : SOURCES_PROPOSITION.frequent);
 
   ajouter("histoire", { "activite.dates_cles": datesCles(entreprise).join("\n") }, SOURCES_PROPOSITION.registres);
 

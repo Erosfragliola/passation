@@ -18,8 +18,21 @@ import { assemblerEntree } from "../valuation/entree.js";
 import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
 import { erreursEtape } from "../valuation/validation.js";
-import HYPOTHESES from "../data/hypotheses.json";
-import { t as tr } from "../../public/js/i18n.js";
+import HYPOTHESES_FR from "../data/hypotheses.json";
+import { t as tr, langue, valeur } from "../../public/js/i18n.js";
+
+/** Hypothèses avec leurs libellés dans la langue de la requête (valeurs, sources et dates inchangées) :
+ *  traductions dans serveur.json (« hypotheses »). En français, le fichier tel quel. */
+function hypotheses() {
+  if (langue() === "fr") return HYPOTHESES_FR;
+  const H = structuredClone(HYPOTHESES_FR), T = valeur("serveur.hypotheses");
+  for (const [k, champs] of Object.entries(T || {})) {
+    if (!H[k] || typeof champs !== "object") continue;
+    for (const [x, v] of Object.entries(champs)) if (x !== "facteurs" && typeof v === "string") H[k][x] = v;
+  }
+  for (const f of H.decotes_primes?.facteurs || []) f.libelle = T?.decotes_primes?.facteurs?.[f.cle] ?? f.libelle;
+  return H;
+}
 
 // « parcours » : écrans du parcours guidé déjà vus (« Passer » compte comme une réponse), pour un décompte identique partout
 const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche", "parcours"]);
@@ -151,7 +164,7 @@ export async function lireReponses(env, dossierId) {
 // ---------------------------------------------------------------- Calcul
 export async function calculer(env, row) {
   const entreprise = JSON.parse(row.company_json || "{}");
-  const { entree, H } = assemblerEntree(entreprise, await lireChiffres(env, row.id), await lireReponses(env, row.id), HYPOTHESES);
+  const { entree, H } = assemblerEntree(entreprise, await lireChiffres(env, row.id), await lireReponses(env, row.id), hypotheses());
   const resultat = valorisationApprofondie(entree, H);
   return { resultat, entree, hypotheses: H };
 }
@@ -197,7 +210,7 @@ export async function routeValorisation(request, env, row, sous, item) {
       const c = await corpsJson(request);
       const donnees = c?.data;
       if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 60_000) return json({ erreur: "requete_invalide", message: tr("serveur.valorisation.reponses_invalides") }, 400);
-      const erreurs = erreursEtape(item, donnees, HYPOTHESES);
+      const erreurs = erreursEtape(item, donnees, hypotheses());
       if (erreurs.length) return json({ erreur: "hypothese_invalide", message: erreurs.map((x) => x.message).join(" "), erreurs }, 400);
       await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, ?, ?, ?)
         ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)

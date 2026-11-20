@@ -17,7 +17,8 @@
     "code_incorrect": {
       "one": "Code incorrect. Encore {n} essai.",
       "other": "Code incorrect. Encore {n} essais."
-    }
+    },
+    "envoi": "Si l'adresse est valide, un code à 6 chiffres vient de vous être envoyé. Il est valable 10 minutes."
   },
   "documents": {
     "validez_abord_chiffres_moins": "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack.",
@@ -44,7 +45,13 @@
     "corrigez_reglages": "Corrigez d'abord vos réglages : {alertes}",
     "marche_limite": "L'étude de marché a déjà été lancée {n} fois pour ce dossier.",
     "photos_max": "{n} photos au plus.",
-    "avant_memo": "Avant le mémorandum : {liste}."
+    "avant_memo": "Avant le mémorandum : {liste}.",
+    "site": {
+      "robots": "Ce site interdit la lecture automatique (robots.txt) : nous le respectons.",
+      "injoignable": "Le site ne répond pas ou ne renvoie pas de page lisible.",
+      "adresse": "Adresse de site invalide.",
+      "impossible": "Lecture du site impossible. Réessayez plus tard."
+    }
   },
   "pieces": {
     "envoyez_fichier": "Envoyez un fichier.",
@@ -89,7 +96,8 @@
     "hors_bornes_pct": "{cle} : {valeur} est hors des bornes admises ({min} à {max}). Les pourcentages s'expriment en fraction (5 % = 0,05).",
     "negatif": "{cle} : un montant négatif ({valeur}) n'est pas admis.",
     "decote_inconnue": "Décote inconnue : « {cle} ».",
-    "hors_bornes": "{libelle} : {valeur} est hors des bornes admises ({min} à {max})."
+    "hors_bornes": "{libelle} : {valeur} est hors des bornes admises ({min} à {max}).",
+    "element_n": "Élément exceptionnel n° {n}"
   },
   "dossiers": {
     "dossier_introuvable": "Dossier introuvable.",
@@ -237,5 +245,328 @@
     },
     "recurrent": "environ {n} % du chiffre d'affaires récurrent",
     "france": "France"
+  },
+  "valorisation_moteur": {
+    "retraitements": {
+      "dirigeant": "Rémunération du dirigeant ramenée à la normale",
+      "loyer": "Loyer ramené au prix de marché",
+      "exceptionnel": "Élément exceptionnel"
+    },
+    "dette": {
+      "credit_bail": "Crédit-bail restant dû",
+      "comptes_courants": "Comptes courants d'associés remboursables",
+      "provisions": "Provisions pour risques",
+      "dividendes": "Dividendes votés non versés",
+      "tresorerie": "Trésorerie"
+    },
+    "ancc": {
+      "plus_values": "Plus-values latentes déclarées (immobilier, fonds)",
+      "frais_etablissement": "Frais d'établissement (sans valeur)",
+      "creances_douteuses": "Créances douteuses"
+    },
+    "alertes": {
+      "exercice_incomplet": {
+        "one": "Exercice {annee} écarté du calcul : {n} ligne obligatoire à compléter ou à valider.",
+        "other": "Exercice {annee} écarté du calcul : {n} lignes obligatoires à compléter ou à valider."
+      },
+      "ebe_indeterminable": "Exercice {annee} écarté du calcul : EBE non déterminable (charges ou EBE publié manquants).",
+      "non_consecutifs": "Exercices non consécutifs : les moyennes portent sur les exercices disponibles.",
+      "aucun_exercice": "Aucun exercice complet et validé.",
+      "ebe_negatif": "EBE normatif négatif ou nul : la méthode des multiples d'EBE ne s'applique pas.",
+      "multiples_a_completer": "Multiples du secteur à compléter.",
+      "dcf_a_completer": "DCF à compléter : {liste}.",
+      "valeur_terminale": "La valeur terminale représente plus de 80 % du DCF : résultat très sensible aux hypothèses de long terme.",
+      "cp_negatifs": "Capitaux propres corrigés négatifs.",
+      "dcf_option": "Synthèse sur les multiples. Le DCF est proposé en option : renseignez la prime de taille dans « Affiner » si votre conseil le souhaite.",
+      "sous_ancc": "Votre fourchette est inférieure à l'actif net corrigé de l'entreprise ({montant}). Un repreneur paie rarement moins que cet actif : à examiner avec votre conseil."
+    },
+    "origines": {
+      "defaut": "par défaut (0 %, un seul exercice)",
+      "historique_ca": "historique du CA (borné entre −5 % et +10 %)",
+      "ebe_sur_ca": "EBE normatif / dernier CA",
+      "a_completer": "à compléter (0 %)",
+      "dotations": "moyenne historique des dotations / CA",
+      "maintien": "égal aux amortissements (investissement de maintien)",
+      "bfr": "BFR normatif historique",
+      "inflation": "objectif d'inflation BCE",
+      "dirigeant": "dirigeant"
+    },
+    "manquant": {
+      "beta": "bêta du secteur",
+      "prime_taille": "prime de taille",
+      "taux": "taux sans risque"
+    }
+  },
+  "controles": {
+    "lignes_a_completer": {
+      "one": "{n} ligne à compléter : {liste}.",
+      "other": "{n} lignes à compléter : {liste}."
+    },
+    "negatif": "{libelle} ne peut pas être négatif ({montant}).",
+    "ca_public": "Le chiffre d'affaires saisi ({saisi}) diffère des comptes publiés ({publie}). Vérifiez l'exercice et l'unité.",
+    "bilan": "Le bilan ne s'équilibre pas : actif {actif}, passif {passif}. Une ligne manque peut-être (charges constatées d'avance, comptes courants…).",
+    "ebe": "L'EBE calculé ({ebe}) s'éloigne du résultat d'exploitation augmenté des dotations ({rex}). Vérifiez les charges.",
+    "variation": "Le chiffre d'affaires varie fortement par rapport à l'exercice précédent ({avant} → {apres}). Vérifiez l'unité (euros ou milliers d'euros)."
+  },
+  "propositions": {
+    "sources": {
+      "registres": "d'après les registres publics",
+      "comptes": "d'après vos comptes",
+      "site": "d'après votre site",
+      "secteur": "d'après votre secteur d'activité",
+      "frequent": "choix le plus fréquent, à confirmer",
+      "effectif": "d'après votre effectif (registres), à confirmer"
+    },
+    "dates": {
+      "creation": "{annee} : création",
+      "creation_ville": "{annee} : création de l'entreprise (siège actuel à {ville})",
+      "transfert": "{annee} : transfert du siège",
+      "transfert_ville": "{annee} : transfert du siège à {ville}",
+      "denomination": "{annee} : changement de dénomination",
+      "reprise": "{annee} : reprise d'un fonds de commerce",
+      "reprise_ville": "{annee} : reprise d'un fonds de commerce à {ville}"
+    },
+    "activite": {
+      "secteur": "Entreprise du secteur « {secteur} »",
+      "ville": "à {ville}",
+      "precisez": ". Précisez vos métiers, vos produits ou services et vos clients."
+    }
+  },
+  "secteur": {
+    "bandes": {
+      "sans": {
+        "libelle": "Sans salarié ou non renseigné"
+      },
+      "1_9": {
+        "libelle": "1 à 9 salariés"
+      },
+      "10_49": {
+        "libelle": "10 à 49 salariés"
+      },
+      "50_plus": {
+        "libelle": "50 salariés et plus"
+      }
+    },
+    "source": "Annuaire des entreprises (INSEE Sirene), entreprises actives du code NAF {naf}, consulté le {date}"
+  },
+  "datapack_onglets": {
+    "presentation": "Présentation",
+    "comptes": "1.1 Comptes",
+    "retraitements": "1.2 Retraitements",
+    "hypotheses": "1.3 Hypothèses",
+    "titres": "2.1 Passage aux titres",
+    "multiples": "2.2 Multiples",
+    "dcf": "2.3 DCF",
+    "ancc": "2.4 ANCC",
+    "synthese": "2.5 Synthèse"
+  },
+  "datapack": {
+    "donnees_hypotheses": "Données et hypothèses",
+    "comptes_resultat_bilans_valides": "Comptes de résultat et bilans validés, EBE et BFR calculés",
+    "pont_ebe_comptable_ebe": "Pont de l'EBE comptable à l'EBE normatif",
+    "parametres_sources_dates_modifiables": "Paramètres sourcés et datés, modifiables (cellules cuivre sur fond crème)",
+    "valorisation": "Valorisation",
+    "dette_nette_bfr_normatif": "Dette nette, BFR normatif, actifs hors exploitation",
+    "methode_1_multiples_ebe": "Méthode 1 : multiples d'EBE",
+    "methode_2_flux_tresorerie": "Méthode 2 : flux de trésorerie actualisés sur 5 ans",
+    "methode_3_actif_net": "Méthode 3 : actif net comptable corrigé (plancher)",
+    "fourchettes_ponderation_sensibilites": "Fourchettes, pondération, sensibilités",
+    "presentation": ">> Présentation",
+    "entreprise": "Entreprise",
+    "strictement_confidentiel": "STRICTEMENT CONFIDENTIEL",
+    "sommaire": "Sommaire",
+    "onglet": "Onglet",
+    "contenu": "Contenu",
+    "lien": "Lien",
+    "lecture": "Lecture",
+    "saisie_ou_hypothese_modifiable": "Saisie ou hypothèse modifiable (cuivre sur fond crème) : se répercute dans tous les onglets.",
+    "formule_se_recalcule_seule": "Formule : se recalcule seule, ne pas écraser.",
+    "total_ou_resultat_methode": "Total ou résultat d'une méthode.",
+    "montants_euros_valides_par": "Montants en euros validés par le dirigeant ; négatifs entre parenthèses, zéro noté « – ».",
+    "avertissement": "Avertissement",
+    "estimation_indicative_non_contractuelle": "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable, d'un avocat ou d'un conseil en cession. Les hypothèses Passation sont sourcées et datées dans l'onglet « ",
+    "comptes_valides": "Comptes validés",
+    "poste": "Poste",
+    "ou_trouver": "Où le trouver",
+    "compte_resultat": "Compte de résultat",
+    "bilan": "Bilan",
+    "agregats_calcules": "Agrégats calculés",
+    "ebe_calcule": "EBE (calculé)",
+    "bfr_exploitation_stocks_clients": "BFR d'exploitation (stocks + clients − fournisseurs − dettes fiscales et sociales)",
+    "bfr_jours_chiffre_affaires": "BFR en jours de chiffre d'affaires",
+    "non_determinable": "Non déterminable",
+    "hypotheses": "Hypothèses",
+    "cellules_cuivre_sur_fond": "Cellules cuivre sur fond crème modifiables. Sources Passation datées ; « À compléter » = aucune source publique vérifiée.",
+    "parametre": "Paramètre",
+    "valeur": "Valeur",
+    "source": "Source",
+    "date": "Date",
+    "cout_capital": "Coût du capital",
+    "reglage_dirigeant": "Réglage du dirigeant",
+    "completer_aucune_source_publique": "À compléter : aucune source publique gratuite vérifiée",
+    "ratio_dette_capitaux_propres": "Ratio dette / capitaux propres cible (secteur)",
+    "impot_sur_societes": "Impôt sur les sociétés",
+    "taux_normal": "Taux normal",
+    "taux_reduit_pme": "Taux réduit PME",
+    "plafond_taux_reduit": "Plafond du taux réduit (€)",
+    "taux_reduit_applicable_1": "Taux réduit applicable (1 = oui, 0 = non)",
+    "reponse_dirigeant_capital_detenu": "Réponse du dirigeant (capital détenu à 75 % par des personnes physiques)",
+    "previsions_dcf": "Prévisions (DCF)",
+    "croissance_infini": "Croissance à l'infini",
+    "croissance_annuelle_chiffre_affaires": "Croissance annuelle du chiffre d'affaires",
+    "marge_ebe": "Marge d'EBE",
+    "amortissements_ca": "Amortissements / CA",
+    "investissements_ca": "Investissements / CA",
+    "bfr_jours_ca": "BFR en jours de CA",
+    "multiples_synthese": "Multiples et synthèse",
+    "multiple_ebe_bas": "Multiple d'EBE bas",
+    "croisement_trois_sources_src": "Croisement de trois sources (src/data/multiples-sources.json)",
+    "multiple_ebe_central": "Multiple d'EBE central",
+    "multiple_ebe_haut": "Multiple d'EBE haut",
+    "poids_multiples_dans_synthese": "Poids des multiples dans la synthèse (le DCF a le complément)",
+    "ebe_normatif_moyenne_ou": "EBE normatif : « moyenne » ou « dernier »",
+    "decotes_primes": "Décotes et primes",
+    "facteur": "Facteur",
+    "justification": "Justification",
+    "facteur_applique_aux_valeurs": "Facteur appliqué aux valeurs d'entreprise (1 + somme)",
+    "sources": "Sources",
+    "remuneration_reelle_dirigeant_charges": "Rémunération réelle du dirigeant (charges comprises)",
+    "remuneration_normative_directeur_salarie": "Rémunération normative d'un directeur salarié",
+    "loyer_paye_locaux_dirigeant": "Loyer payé (locaux du dirigeant ou d'une SCI)",
+    "loyer_marche": "Loyer de marché",
+    "elements_exceptionnels": "Éléments exceptionnels",
+    "libelle": "Libellé",
+    "exercice": "Exercice",
+    "montant": "Montant",
+    "pont": "Pont",
+    "ebe_comptable": "EBE comptable",
+    "remuneration_dirigeant_ramenee_normale": "Rémunération du dirigeant ramenée à la normale",
+    "loyer_ramene_prix_marche": "Loyer ramené au prix de marché",
+    "ebe_retraite": "EBE retraité",
+    "ebe_normatif": "EBE normatif",
+    "dette_nette_bfr_actifs": "Dette nette, BFR et actifs hors exploitation",
+    "dette_nette": "Dette nette",
+    "emprunts_dettes_financieres": "Emprunts et dettes financières",
+    "credit_bail_restant": "Crédit-bail restant dû",
+    "comptes_courants_associes_remboursables": "Comptes courants d'associés remboursables",
+    "provisions_pour_risques": "Provisions pour risques",
+    "dividendes_votes_non_verses": "Dividendes votés non versés",
+    "tresorerie_moins": "Trésorerie (en moins)",
+    "placements_moins": "Placements (en moins)",
+    "dette_nette_negative_tresorerie": "Dette nette (négative = trésorerie nette)",
+    "bfr_reel_dernier_exercice": "BFR réel du dernier exercice",
+    "bfr_normatif_jours_moyenne": "BFR normatif en jours (moyenne des exercices)",
+    "bfr_normatif_jours_dernier": "BFR normatif (jours × dernier CA / 365)",
+    "ecart_bfr_reel_normatif": "Écart de BFR (réel − normatif)",
+    "actifs_hors_exploitation": "Actifs hors exploitation",
+    "passage_ve_titres_ve": "Passage VE → titres = VE × facteur de décotes − dette nette + écart de BFR + actifs hors exploitation",
+    "basse": "Basse",
+    "centrale": "Centrale",
+    "haute": "Haute",
+    "multiple_ebe": "Multiple d'EBE",
+    "valeur_entreprise": "Valeur d'entreprise",
+    "valeur_titres": "Valeur des titres",
+    "non_applicable": "Non applicable",
+    "methode_2_dcf_sur": "Méthode 2 : DCF sur 5 ans (convention de fin d'année)",
+    "beta_endette_beta_desendette": "Bêta endetté = bêta désendetté × (1 + (1 − IS) × D/E)",
+    "cout_fonds_propres_taux": "Coût des fonds propres = taux sans risque + bêta × prime + prime de taille",
+    "part_dette_e_1": "Part de la dette = D/E / (1 + D/E)",
+    "cout_dette_apres_impot": "Coût de la dette après impôt",
+    "completer": "À compléter",
+    "projection": "Projection",
+    "an_0": "An 0",
+    "annee": "Année",
+    "chiffre_affaires": "Chiffre d'affaires",
+    "amortissements": "Amortissements",
+    "resultat_exploitation_ebit": "Résultat d'exploitation (EBIT)",
+    "impot_sur_ebit": "Impôt sur l'EBIT",
+    "investissements": "Investissements",
+    "variation_bfr": "Variation du BFR",
+    "flux_disponible": "Flux disponible",
+    "facteur_actualisation": "Facteur d'actualisation",
+    "flux_actualise": "Flux actualisé",
+    "valeur_terminale_gordon_shapiro": "Valeur terminale (Gordon-Shapiro) = flux an 5 × (1 + g) / (CMPC − g)",
+    "cmpc_g": "CMPC ≤ g",
+    "valeur_terminale_actualisee": "Valeur terminale actualisée",
+    "somme_flux_actualises": "Somme des flux actualisés",
+    "valeur_entreprise_dcf": "Valeur d'entreprise (DCF)",
+    "cmpc_1_pt": "CMPC + 1 pt",
+    "cmpc_1_pt_2": "CMPC − 1 pt",
+    "sensibilite_croissance_infini_titres": "Sensibilité à la croissance à l'infini (titres)",
+    "g_0_5_pt": "g − 0,5 pt",
+    "g_0_5_pt_2": "g + 0,5 pt",
+    "methode_3_actif_net_2": "Méthode 3 : actif net comptable corrigé",
+    "presente_part_comme_plancher": "Présenté à part, comme plancher de négociation.",
+    "capitaux_propres": "Capitaux propres",
+    "plus_values_latentes_justifiees": "Plus-values latentes justifiées (immobilier, fonds)",
+    "frais_etablissement_sans_valeur": "Frais d'établissement (sans valeur, en moins)",
+    "creances_douteuses_moins": "Créances douteuses (en moins)",
+    "actif_net_comptable_corrige": "Actif net comptable corrigé",
+    "synthese_valeur_titres": "Synthèse : valeur des titres",
+    "methode": "Méthode",
+    "multiples_ebe": "Multiples d'EBE",
+    "dcf_cmpc_1_pt": "DCF (CMPC ± 1 pt)",
+    "actif_net_corrige_plancher": "Actif net corrigé (plancher)",
+    "poids_multiples": "Poids des multiples",
+    "poids_dcf": "Poids du DCF",
+    "valeur_titres_synthese": "Valeur des titres (synthèse)",
+    "sensibilites_valeur_titres": "Sensibilités (valeur des titres)",
+    "multiple_ebe_1x_1x": "Multiple d'EBE − 1x / + 1x",
+    "cmpc_1_pt_1": "CMPC + 1 pt / − 1 pt",
+    "croissance_infini_0_5": "Croissance à l'infini − 0,5 pt / + 0,5 pt",
+    "controle_poids_multiples_poids": "Contrôle : poids des multiples + poids du DCF = 100 %",
+    "genere_le": "Datapack de valorisation · généré le {date}",
+    "section_num": "Section {num} – {titre}",
+    "beta_secteur": "Bêta désendetté du secteur ({industrie})",
+    "dernier_exercice": "Dernier exercice : {annee}",
+    "pied_synthese": "Estimation indicative, non contractuelle. Calculs reproduits par formules : modifiez les cellules cuivre de l'onglet « {onglet} ».",
+    "a_verifier": "À vérifier",
+    "unite_euros": "en €",
+    "unite_euros_pct": "en € ou en %"
+  },
+  "hypotheses": {
+    "_lisez_moi": "Libellés de src/data/hypotheses.json (valeurs, sources et dates restent dans ce fichier) ; « facteurs » : décotes et primes, par clé.",
+    "taux_sans_risque": {
+      "libelle": "Taux sans risque en euros : taux comptant à 10 ans de la courbe des emprunts d'État notés AAA de la zone euro",
+      "note": "Méthode Damodaran : taux sans risque en euros (État AAA) ; le risque pays de la France est compté dans la prime de risque ci-dessous, pas dans le taux."
+    },
+    "prime_risque_marche": {
+      "libelle": "Prime de risque des actions pour la France (marché mature 4,23 % + prime pays 0,78 %)"
+    },
+    "prime_taille": {
+      "libelle": "Prime de taille et de risque spécifique d'une PME non cotée",
+      "note": "À compléter. Aucune source publique et gratuite vérifiée (les références usuelles, comme Kroll Cost of Capital Navigator, sont payantes). Tant qu'elle n'est pas renseignée, le DCF n'est pas calculé et la synthèse repose sur les multiples seuls."
+    },
+    "cout_dette_avant_impot": {
+      "libelle": "Coût de la dette avant impôt : taux moyen des nouveaux crédits aux PME en France"
+    },
+    "impot_societes": {
+      "conditions_taux_reduit": "Chiffre d'affaires de l'exercice ≤ 10 000 000 € ; capital entièrement libéré et détenu pour au moins 75 % par des personnes physiques (ou par une société elle-même détenue à 75 % par des personnes physiques)."
+    },
+    "croissance_terminale": {
+      "libelle": "Croissance à l'infini (valeur terminale) : objectif d'inflation à moyen terme de la BCE, soit une croissance nulle en volume"
+    },
+    "betas": {
+      "libelle": "Bêta désendetté corrigé de la trésorerie et ratio dette / capitaux propres du secteur (Europe de l'Ouest)"
+    },
+    "decotes_primes": {
+      "note": "À compléter : aucun pourcentage par défaut n'est sourcé. Chaque facteur part de 0 % ; le dirigeant (ou son conseil) règle le curseur et écrit sa justification.",
+      "facteurs": {
+        "dependance_dirigeant": "Dépendance au dirigeant",
+        "concentration_clients": "Concentration des clients",
+        "recurrence": "Récurrence du chiffre d'affaires",
+        "croissance": "Dynamique de croissance",
+        "taille": "Taille et liquidité des titres"
+      }
+    },
+    "ponderation": {
+      "note": "Décision du dirigeant du 18/11/2026 (remplace celle du 10/11) : multiples seuls par défaut ; le DCF est calculé et présenté en option (recoupement), activable par la pondération ; l'actif net corrigé est présenté à part comme plancher."
+    }
+  },
+  "claude": {
+    "cle_refusee": "La lecture et la rédaction automatiques sont momentanément indisponibles : la clé de l'API Claude du site est refusée. L'administrateur du site doit la remplacer."
+  },
+  "express": {
+    "avertissement": "EBE négatif ou absent : estimation sur le chiffre d'affaires, plus incertaine."
   }
 }

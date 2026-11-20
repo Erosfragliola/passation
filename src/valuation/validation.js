@@ -1,11 +1,11 @@
-import { t as tr } from "../../public/js/i18n.js";
+import { t as tr, langue, locale } from "../../public/js/i18n.js";
 // Validation des hypothèses et réglages saisis par le dirigeant (FIN-04, audit du 18/11/2026). Module pur, testé.
 // Une valeur hors bornes est refusée avec un message : elle n'est jamais ramenée silencieusement dans les bornes.
 // Bornes : src/data/hypotheses.json (bornes_saisie, decotes_primes.facteurs).
 
 const absent = (x) => x === null || x === undefined || x === "";
 const pct = (x) => `${Math.round(x * 1000) / 10} %`;
-const fmt = (x) => `${Math.round(x).toLocaleString("fr-FR")} €`;
+const fmt = (x) => { const n = Math.round(x).toLocaleString(locale()); return langue() === "fr" ? `${n} €` : `€${n}`; };
 
 /**
  * @param etape  étape du questionnaire ou « reglages »
@@ -38,7 +38,7 @@ export function erreursEtape(etape, data, H) {
 
   if (etape === "retraitements" && !absent(data.exceptionnels)) {
     if (!Array.isArray(data.exceptionnels)) erreurs.push({ champ: "retraitements.exceptionnels", message: tr("serveur.validation.elements_exceptionnels_doivent_etre") });
-    else data.exceptionnels.forEach((x, i) => { if (!absent(x?.montant)) nombre(`retraitements.exceptionnels.${i}`, x.montant, `Élément exceptionnel n° ${i + 1}`); });
+    else data.exceptionnels.forEach((x, i) => { if (!absent(x?.montant)) nombre(`retraitements.exceptionnels.${i}`, x.montant, tr("serveur.validation.element_n", { n: i + 1 })); });
   }
 
   if (etape === "reglages" && !absent(data.decotes)) {
