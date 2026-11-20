@@ -85,16 +85,5 @@ export const ETAPES = [
   },
 ];
 
-/** Avancement du questionnaire : questions renseignées / total. */
-export function avancementQuestionnaire(reponses = {}) {
-  let total = 0, faits = 0;
-  for (const e of ETAPES) for (const q of e.questions) {
-    total++;
-    const v = reponses[e.cle]?.[q.cle];
-    if (v != null && v !== "" && !(Array.isArray(v) && !v.length)) faits++;
-  }
-  return { faits, total, pct: Math.round((faits / total) * 100) };
-}
-
 /** Régions métropolitaines (découpage de 2016), pour la question « regions » et la carte du mémorandum. */
 export const REGIONS = ["Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté", "Bretagne", "Centre-Val de Loire", "Corse", "Grand Est", "Hauts-de-France", "Île-de-France", "Normandie", "Nouvelle-Aquitaine", "Occitanie", "Pays de la Loire", "Provence-Alpes-Côte d'Azur"];

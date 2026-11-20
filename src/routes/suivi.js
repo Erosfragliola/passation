@@ -17,7 +17,7 @@ async function ecrireSuivi(env, dossierId, suivi) {
 }
 
 /** Le dossier est complet : valorisation, datapack, teaser et toutes les sections du mémorandum (SECTIONS_MEMO). */
-export async function dossierComplet(env, dossierId) {
+async function dossierComplet(env, dossierId) {
   const docs = await env.DB.prepare("SELECT kind, id FROM documents WHERE dossier_id = ?").bind(dossierId).all();
   const kinds = new Set(docs.results.map((d) => d.kind));
   const val = await env.DB.prepare("SELECT 1 AS ok FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' LIMIT 1").bind(dossierId).first();

@@ -203,7 +203,7 @@ export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
 // Claude cherche sur le web des faits de marché sourcés (taille, tendances, réglementation, demande, concurrence) pour
 // le secteur et la région de l'entreprise. Garde-fou : un fait n'est retenu que si son adresse figure parmi les pages
 // réellement renvoyées par la recherche (faitsSourcesVerifies) ; le dirigeant valide ensuite chaque fait.
-export const THEMES_MARCHE = ["taille", "tendance", "demande", "reglementation", "concurrence"];
+const THEMES_MARCHE = ["taille", "tendance", "demande", "reglementation", "concurrence"];
 const CONSIGNE_MARCHE = `Tu es analyste dans une banque d'affaires française. Tu prépares la partie « Marché » du mémorandum de cession d'une PME.
 Cherche sur le web des faits récents (moins de 4 ans) et chiffrés sur le marché de l'entreprise, en France et dans sa région : taille du marché ou de l'activité (chiffre d'affaires, volumes, nombre d'entreprises), évolution, tendances et moteurs de la demande, réglementation qui s'impose au secteur, structure concurrentielle.
 Sources à privilégier : INSEE, ministères et administrations, Banque de France, fédérations et organisations professionnelles, chambres de métiers et de commerce, observatoires sectoriels, études publiques. Évite les blogs commerciaux et les contenus sans auteur.

@@ -99,7 +99,7 @@ export const questionsIncompletes = (r) => QUESTIONS.filter((q) => requisManquan
 // Les questions du dirigeant sont celles du parcours guidé, plus celle du site internet (posée en premier, dans
 // l'étape « Vos réponses »). Le total est le même partout : parcours guidé, page du dossier, serveur.
 /** Le site a-t-il une réponse (adresse donnée, ou « pas de site ») ? */
-export const siteRepondu = (r = {}) => Boolean(r.site?.url || r.site?.aucun);
+const siteRepondu = (r = {}) => Boolean(r.site?.url || r.site?.aucun);
 export const NB_QUESTIONS = QUESTIONS.length + 1;
 /** Écrans vus (« Passer » compte comme une réponse), enregistrés dans l'étape « parcours » des réponses. */
 export const vuesDe = (r = {}) => (Array.isArray(r.parcours?.vues) ? r.parcours.vues.filter((x) => typeof x === "string") : []);

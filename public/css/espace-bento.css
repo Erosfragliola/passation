@@ -301,8 +301,7 @@
 /* ---------- Une seule direction dans tout l'espace (19/11/2026, PR « Espace : une seule direction artistique ») ----------
    Chargée par toutes les pages de public/espace/ et par public/connexion.html (test/espace-styles.test.js).
    Petits titres : phrases en minuscules, petit gras ; capitales réservées aux pastilles d'état (option B). */
-.page-espace .etiquette, .page-espace .checklist-groupe legend, .page-espace .tableau-chiffres tr.groupe th,
-.page-espace .saisie-groupe legend, .page-espace .valeur-etiquette, .page-espace .panneau-bloc h3 {
+.page-espace .etiquette, .page-espace .saisie-groupe legend, .page-espace .valeur-etiquette, .page-espace .panneau-bloc h3 {
   font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; }
 .page-espace .valeur-etiquette { color: #E9C9A4; font-size: 15px; }
 .page-espace .panneau-bloc h3 { color: #8E5530; }
@@ -321,7 +320,6 @@
 nav.etapes.onglets { display: flex; flex-wrap: nowrap; gap: 4px; margin: 14px 0 0; border-bottom: 1px solid var(--trait); overflow-x: auto; }
 nav.etapes.onglets a { border: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 10px 14px; color: var(--pierre-texte); font-weight: 500; white-space: nowrap; background: none; }
 nav.etapes.onglets a[aria-current] { color: var(--espresso); border-bottom-color: var(--cuivre); background: none; }
-nav.etapes.onglets .etape-num { display: none; }
 nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
 .page-espace .espace.parcours .panneau { padding: 16px 0 24px; }
 .page-espace .espace.parcours .panneau > .conteneur > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

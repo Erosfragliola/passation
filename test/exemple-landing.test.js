@@ -20,7 +20,9 @@ const euros = (t) => { const m = /^(-?[\d,]+)\s*(M€|k€)$/.exec(t.replace(/ 
 
 describe("exemple fictif « Projet Chêne »", () => {
   const fourchettes = chaines(contenu).filter(([, t]) => /\d,\d\s*–\s*\d,\d\s*M€/.test(t));
-  it("au moins 8 emplacements affichent la fourchette de l'exemple", () => expect(fourchettes.length).toBeGreaterThanOrEqual(8));
+  // 3 emplacements affichés (bulle du hero, illustrations du SIREN et des chiffres) ; les 5 autres copies étaient dans
+  // des clés jamais lues par la page, retirées avec le nettoyage du 19/11/2026
+  it("les 3 emplacements affichés portent la fourchette de l'exemple", () => expect(fourchettes.map(([c]) => c)).toEqual(["hero.bulles.code.valeur", "comment.illustrations.siren.valeur", "comment.illustrations.chiffres.fourchette"]));
   it.each(fourchettes)("%s : %s", (_, t) => expect(t).toBe(FOURCHETTE));
   it("plus de valeur centrale dans l'illustration des chiffres", () => {
     const c = contenu.comment.illustrations.chiffres;

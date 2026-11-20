@@ -7,20 +7,20 @@ import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { CLES_CHECKLIST } from "../../public/js/dossier-regles.js";
 
-export const PIECES = { tailleMax: 20 * 1024 * 1024, parDossier: 80 };
+const PIECES = { tailleMax: 20 * 1024 * 1024, parDossier: 80 };
 /** Types acceptés : PDF, images, bureautique (Word, Excel, OpenDocument), texte. */
-export const TYPES_PIECES = {
+const TYPES_PIECES = {
   pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", heic: "image/heic",
   doc: "application/msword", docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   xls: "application/vnd.ms-excel", xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   odt: "application/vnd.oasis.opendocument.text", ods: "application/vnd.oasis.opendocument.spreadsheet", txt: "text/plain", csv: "text/csv",
 };
 /** Nom de fichier nettoyé (affichage et téléchargement), extension conservée. */
-export function nomPropre(nom) {
+function nomPropre(nom) {
   const n = String(nom || "fichier").normalize("NFC").replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").replace(/\s+/g, " ").trim().slice(-120);
   return n || "fichier";
 }
-export const extension = (nom) => (/\.([a-z0-9]{2,5})$/i.exec(nom || "")?.[1] || "").toLowerCase();
+const extension = (nom) => (/\.([a-z0-9]{2,5})$/i.exec(nom || "")?.[1] || "").toLowerCase();
 
 const liste = async (env, id) => (await env.DB.prepare("SELECT id, item_key AS item, filename, mime, size, created_at FROM pieces WHERE dossier_id = ? ORDER BY created_at DESC").bind(id).all()).results;
 const cocher = (env, id, item, done) => env.DB.prepare("INSERT INTO checklist (dossier_id, item_key, done, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(dossier_id, item_key) DO UPDATE SET done = excluded.done, updated_at = excluded.updated_at").bind(id, item, done ? 1 : 0, maintenant()).run();

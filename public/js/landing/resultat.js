@@ -11,7 +11,7 @@ const DUREE_MIN = 2400; // le temps de voir les quatre étapes de l'analyse
 const reduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const departement = (cp) => (/^\d{5}$/.test(cp || "") ? (cp.startsWith("97") ? cp.slice(0, 3) : cp.slice(0, 2)) : null);
 
-export function creerResultat({ section, textes = {}, histoire = {} }) {
+export function creerResultat({ section, textes = {} }) {
   const R = textes.resultat || {};
   const $ = (s) => section.querySelector(s);
   const chargement = $(".resultat-chargement"), contenu = $(".resultat-contenu");

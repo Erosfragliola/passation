@@ -70,7 +70,7 @@ export function candidatsLogo(html, base) {
 }
 
 /** Photos candidates : grandes images de contenu (ni logo, ni icône, ni pictogramme). */
-export function candidatsPhotos(html, base) {
+function candidatsPhotos(html, base) {
   const res = [];
   for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
     const tag = m[0];

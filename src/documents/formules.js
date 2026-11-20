@@ -39,7 +39,7 @@ function lexer(src) {
   return t;
 }
 
-export function colonne(lettres) { let n = 0; for (const c of lettres) n = n * 26 + (c.charCodeAt(0) - 64); return n - 1; }
+function colonne(lettres) { let n = 0; for (const c of lettres) n = n * 26 + (c.charCodeAt(0) - 64); return n - 1; }
 export function lettres(n) { let s = ""; n++; while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; }
 const decoupe = (ref) => { const m = /^([A-Z]+)(\d+)$/.exec(ref); return { c: colonne(m[1]), r: Number(m[2]) - 1 }; };
 

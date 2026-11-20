@@ -23,8 +23,8 @@ export const ETIQUETTE_EXPRESS = "Valeur d'entreprise estimée";
 export const ETIQUETTE_TITRES = "Valeur de vos titres";
 export const NB_PIECES = CHECKLIST.reduce((n, g) => n + g.items.length, 0);
 /** Seuil des questions (en %) à partir duquel la rédaction peut être lancée. */
-export const SEUIL_REDACTION = 40;
-export const MAX_TACHES = 3;
+const SEUIL_REDACTION = 40;
+const MAX_TACHES = 3;
 
 const pluriel = (n, un, plusieurs) => (n > 1 ? plusieurs : un);
 /** « 2024 » ; « 2023 et 2024 » ; « 2022 à 2024 » (consécutifs) ; « 2019, 2021 et 2024 ». */
