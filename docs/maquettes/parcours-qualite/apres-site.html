@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E. Ce que nous avons retenu de votre site</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .verifier { border: 1px solid #E2C3A6; background: var(--cuivre-doux); border-radius: 16px; padding: 18px 20px; margin-bottom: 30px; }
+  .verifier h2 { font-size: 15.5px; margin: 0 0 6px; display: flex; gap: 8px; align-items: center; }
+  .verifier p { margin: 0 0 12px; font-size: 14.5px; }
+  .deux-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .deux-sources label { display: flex; gap: 10px; align-items: flex-start; background: var(--papier); border: 1px solid var(--trait-moyen); border-radius: 12px; padding: 12px 14px; cursor: pointer; font-size: 14.5px; }
+  .deux-sources label:has(input:checked) { border-color: var(--vert); box-shadow: inset 0 0 0 1px var(--vert); }
+  .deux-sources strong { display: block; font-size: 20px; font-weight: 600; }
+  .theme { margin: 0 0 22px; }
+  .theme h2 { font-size: 13.5px; font-weight: 600; color: var(--pierre-texte); margin: 0 0 8px; }
+  .faits { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .faits li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; background: var(--papier); border: 1px solid var(--trait); border-radius: 12px; font-size: 15px; }
+  .faits li span { flex: 1; }
+  .faits .x { border: 0; background: none; color: var(--pierre-texte); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 0; white-space: nowrap; }
+  .essentiel { margin-bottom: 26px; }
+  .essentiel .faits li { border-left: 2px solid var(--vert); }
+  .plus { margin: 4px 0 20px; }
+  @media (max-width: 860px) { .deux-sources { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav><a href="#">Mon dossier</a><a href="#">FR</a></nav></div></header>
+<div class="parcours">
+  <ol class="fil-etapes" aria-label="Étapes">
+    <li class="fait"><span class="p"></span>Estimation</li>
+    <li class="fait"><span class="p"></span>Vos chiffres</li>
+    <li aria-current="step"><span class="p"></span>Vos réponses</li>
+    <li><span class="p"></span>Rédaction</li>
+    <li><span class="p"></span>Relecture et envoi</li>
+  </ol>
+  <main class="colonne">
+    <div class="progression"><span>Votre site · www.menuiserie-exemple.fr · 6 pages lues</span></div>
+    <h1 class="q">Ce que nous avons retenu de votre site</h1>
+    <p class="chapo">14 faits, classés par thème. Retirez ce qui est faux ou daté : seul ce qui reste sera utilisé.</p>
+
+    <section class="verifier" aria-labelledby="v1">
+      <h2 id="v1"><span class="pastille alerte">À vérifier</span>Date de création</h2>
+      <p>Votre site et les registres ne disent pas la même chose. Ce fait n'est pas utilisé tant que vous n'avez pas tranché.</p>
+      <div class="deux-sources" role="radiogroup" aria-labelledby="v1">
+        <label><input type="radio" name="creation"><span><strong>1982</strong>Votre site : « créée en 1982 par le père de l'actuel dirigeant »</span></label>
+        <label><input type="radio" name="creation"><span><strong>1998</strong>Registre national des entreprises : immatriculation de la société actuelle</span></label>
+      </div>
+      <p class="tres-petit" style="margin:0">Les deux peuvent être vrais (activité familiale depuis 1982, société créée en 1998) : <button type="button" class="lien">garder les deux dates</button>.</p>
+    </section>
+
+    <section class="essentiel" aria-labelledby="ess">
+      <h2 id="ess" class="visuellement-cache">L'essentiel</h2>
+      <ul class="faits">
+        <li><span>Fabrique des escaliers, portes et agencements en bois massif.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Atelier de 1 800 m² équipé d'un centre d'usinage numérique.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Qualifiée RGE pour la pose de menuiseries extérieures.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Clientèle de particuliers et d'architectes, dans un rayon de 80 km.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+      </ul>
+    </section>
+
+    <button type="button" class="btn contour mini plus" aria-expanded="false" aria-controls="autres" data-deplier="Voir les 9 autres faits" data-replier="Masquer les autres faits">Voir les 9 autres faits</button>
+    <div id="autres" hidden>
+      <section class="theme"><h2>Activité</h2><ul class="faits">
+        <li><span>Escaliers sur mesure en chêne, hêtre et frêne.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Portes intérieures et placards sur mesure.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Agencements de magasins pour des commerçants.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+      </ul></section>
+      <section class="theme"><h2>Savoir-faire et équipements</h2><ul class="faits">
+        <li><span>Finitions réalisées à la main dans l'atelier.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Escaliers garantis dix ans.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+      </ul></section>
+      <section class="theme"><h2>Clients et zone</h2><ul class="faits">
+        <li><span>Présente sur les salons de l'habitat de la région.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+      </ul></section>
+      <section class="theme"><h2>Équipe et histoire</h2><ul class="faits">
+        <li><span>Douze compagnons menuisiers et deux poseurs.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Implantée dans la zone artisanale d'Exempleville.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+        <li><span>Entreprise familiale, reprise par le fils du fondateur.</span><button class="x" type="button" data-retirer>Retirer</button></li>
+      </ul></section>
+    </div>
+
+    <div class="nav-q"><a class="lien" href="apres-montant.html">Retour</a><a class="btn" href="apres-photos.html">Valider ces faits →</a></div>
+    <p class="ou-va">Ces faits nourrissent <strong>2.1 Histoire</strong>, <strong>2.2 Activité</strong>, <strong>2.3 Équipe</strong> et <strong>3.3 Clients</strong>, présentés comme des affirmations de l'entreprise.</p>
+  </main>
+</div>
+<script src="maquettes.js"></script>
+</body>
+</html>

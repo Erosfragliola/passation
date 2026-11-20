@@ -1,0 +1,127 @@
+/* Maquettes statiques « Parcours d'analyse : plus guidé, plus précis » (20/11/2026). Non servies par le Worker
+   ([assets] directory = "./public"). Données entièrement fictives : Projet Chêne, Menuiserie Exemple, chiffres inventés.
+   Même direction artistique que le site (crème, vert, cuivre, Big Shoulders, Geist), en plus doux : traits fins,
+   moins de blocs de même poids, colonne de lecture de 720 px. */
+@font-face { font-family: "Geist"; src: url("../../../public/fonts/geist-var.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Big Shoulders"; font-weight: 700; font-display: swap; src: url("../../../public/fonts/big-shoulders-bold.woff2") format("woff2"); }
+
+:root {
+  --espresso: #231E18; --creme: #FBF6EC; --sable: #EADFCB; --sable-doux: #F3EBDD; --papier: #FFFDF8; --vert: #1E3A2E;
+  --vert-doux: #E6EEE8; --cuivre: #A8653A; --cuivre-texte: #8E5530; --cuivre-doux: #F6E9DC; --pierre-texte: #696155;
+  --trait: rgba(35, 30, 24, .08); --trait-moyen: rgba(35, 30, 24, .14); --trait-fort: rgba(35, 30, 24, .24);
+  --affiche: "Big Shoulders", "Arial Narrow", sans-serif; --sans: "Geist", system-ui, sans-serif;
+  --colonne: 720px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font: 400 16px/1.5 var(--sans); color: var(--espresso); background: var(--creme); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--vert); outline-offset: 3px; border-radius: 6px; }
+.visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.affiche { font-family: var(--affiche); font-weight: 700; text-transform: uppercase; line-height: .95; margin: 0; letter-spacing: .005em; }
+.petit { font-size: 14px; color: var(--pierre-texte); }
+.tres-petit { font-size: 13px; color: var(--pierre-texte); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; padding: 13px 24px; font: 600 15.5px/1 var(--sans); background: var(--vert); color: #F6F1E6; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.btn.contour { background: transparent; color: var(--espresso); border: 1px solid var(--trait-fort); font-weight: 500; }
+.btn.mini { padding: 8px 14px; font-size: 14px; }
+.lien { background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-decoration-color: var(--trait-fort); text-underline-offset: 3px; cursor: pointer; }
+.pastille { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; padding: 3px 10px; border-radius: 999px; background: var(--vert-doux); color: var(--vert); white-space: nowrap; }
+.pastille.attente { background: var(--sable-doux); color: var(--pierre-texte); }
+.pastille.alerte { background: var(--cuivre-doux); color: var(--cuivre-texte); }
+.source { font-size: 12.5px; color: var(--pierre-texte); }
+.source::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--cuivre); margin-right: 6px; vertical-align: 1px; }
+
+/* Barre du haut */
+.barre { background: var(--creme); border-bottom: 1px solid var(--trait); }
+.barre-in { max-width: 1200px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
+.marque { font-weight: 600; font-size: 18px; text-decoration: none; }
+.barre-in nav { margin-left: auto; display: flex; gap: 18px; font-size: 14.5px; color: var(--pierre-texte); }
+.barre-in nav a { text-decoration: none; }
+.dossier-id { font-size: 14.5px; color: var(--pierre-texte); padding-left: 16px; border-left: 1px solid var(--trait-moyen); }
+.dossier-id strong { color: var(--espresso); font-weight: 600; }
+
+/* Gabarit du parcours : fil léger à gauche, colonne centrale */
+.parcours { max-width: 1200px; margin: 0 auto; padding: 40px 24px 64px; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 48px; }
+.fil-etapes { list-style: none; margin: 0; padding: 0; position: sticky; top: 24px; align-self: start; display: grid; gap: 2px; font-size: 14.5px; }
+.fil-etapes li { display: flex; align-items: center; gap: 10px; padding: 7px 0; color: var(--pierre-texte); }
+.fil-etapes .p { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--trait-fort); flex: none; }
+.fil-etapes .fait { color: var(--espresso); } .fil-etapes .fait .p { background: var(--vert); border-color: var(--vert); }
+.fil-etapes [aria-current] { color: var(--vert); font-weight: 600; } .fil-etapes [aria-current] .p { border-color: var(--cuivre); background: var(--cuivre); box-shadow: 0 0 0 4px var(--cuivre-doux); }
+.colonne { max-width: var(--colonne); width: 100%; }
+.progression { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; font-size: 13.5px; color: var(--pierre-texte); }
+.jauge { flex: 1; height: 3px; background: var(--trait-moyen); border-radius: 3px; overflow: hidden; }
+.jauge span { display: block; height: 100%; background: var(--cuivre); border-radius: 3px; }
+h1.q { font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -.02em; margin: 0 0 8px; color: var(--vert); }
+.chapo { margin: 0 0 28px; color: var(--pierre-texte); font-size: 16.5px; max-width: 600px; }
+.ou-va { margin: 28px 0 0; font-size: 13.5px; color: var(--pierre-texte); }
+.ou-va strong { color: var(--espresso); font-weight: 500; }
+.nav-q { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--trait); }
+.bloc-q { margin: 0 0 26px; }
+.bloc-q > .lib { display: block; font-weight: 600; font-size: 15.5px; margin: 0 0 4px; }
+.bloc-q > .aide { margin: 0 0 12px; font-size: 14px; color: var(--pierre-texte); }
+fieldset.bloc-q { border: 0; padding: 0; min-width: 0; }
+fieldset.bloc-q legend { font-weight: 600; font-size: 15.5px; padding: 0; margin: 0 0 4px; }
+
+/* Choix à cocher avec icône fine */
+.choix-icones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.choix-icone { position: relative; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid var(--trait-moyen); border-radius: 14px; background: var(--papier); cursor: pointer; font-size: 15px; }
+.choix-icone input { position: absolute; opacity: 0; }
+.choix-icone svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; flex: none; color: var(--pierre-texte); }
+.choix-icone .coche { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--trait-fort); display: grid; place-items: center; flex: none; }
+.choix-icone:has(input:checked) { border-color: var(--vert); background: var(--vert-doux); }
+.choix-icone:has(input:checked) svg { color: var(--vert); }
+.choix-icone:has(input:checked) .coche { background: var(--vert); border-color: var(--vert); }
+.choix-icone:has(input:checked) .coche::after { content: ""; width: 8px; height: 4px; border: solid #fff; border-width: 0 0 1.6px 1.6px; transform: rotate(-45deg) translate(1px, -1px); }
+.choix-icone:has(input:disabled) { opacity: .45; cursor: not-allowed; }
+.choix-icone:has(input:focus-visible) { outline: 2px solid var(--vert); outline-offset: 2px; }
+.compte-choix { font-size: 13.5px; color: var(--pierre-texte); margin-top: 10px; }
+
+/* Puces (choix simples et multiples sans icône) */
+.puces { display: flex; flex-wrap: wrap; gap: 8px; }
+.puce { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--trait-moyen); border-radius: 999px; background: var(--papier); font-size: 14.5px; cursor: pointer; }
+.puce input { position: absolute; opacity: 0; }
+.puce:has(input:checked) { background: var(--vert); color: #F6F1E6; border-color: var(--vert); }
+.puce:has(input:focus-visible) { outline: 2px solid var(--vert); outline-offset: 2px; }
+.puce .src { width: 6px; height: 6px; border-radius: 50%; background: var(--cuivre); }
+.puce:has(input:checked) .src { background: #E9C9A4; }
+.puce.ajouter { border-style: dashed; color: var(--pierre-texte); }
+
+/* Montants : champ formaté + curseur */
+.montant { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; align-items: center; }
+.champ-montant { display: flex; align-items: center; border: 1px solid var(--trait-fort); border-radius: 12px; background: var(--papier); padding: 0 14px; }
+.champ-montant input { border: 0; background: transparent; font: 500 18px var(--sans); padding: 12px 0; width: 100%; text-align: right; font-variant-numeric: tabular-nums; outline: none; }
+.champ-montant .u { color: var(--pierre-texte); margin-left: 6px; }
+.champ-montant:focus-within { border-color: var(--vert); box-shadow: 0 0 0 3px var(--vert-doux); }
+.curseur { display: grid; gap: 6px; }
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; margin: 0; }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(to right, var(--vert) var(--p, 50%), var(--trait-moyen) var(--p, 50%)); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--papier); border: 2px solid var(--vert); margin-top: -8px; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 4px; background: var(--trait-moyen); }
+input[type="range"]::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--vert); }
+input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--papier); border: 2px solid var(--vert); }
+.bornes { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--pierre-texte); font-variant-numeric: tabular-nums; }
+.repere { font-size: 13.5px; color: var(--pierre-texte); margin-top: 8px; }
+.repere.propose { color: var(--cuivre-texte); }
+
+/* Cartes légères */
+.carte { background: var(--papier); border: 1px solid var(--trait); border-radius: 18px; padding: 22px; }
+.carte.sable { background: var(--sable-doux); border-color: transparent; }
+.carte.verte { background: var(--vert); color: #F6F1E6; border-color: transparent; }
+
+/* Champs texte */
+.texte-court { width: 100%; padding: 11px 14px; border: 1px solid var(--trait-fort); border-radius: 12px; background: var(--papier); font: 400 15.5px var(--sans); }
+select.texte-court { width: auto; }
+textarea.texte-court { min-height: 80px; resize: vertical; }
+
+@media (max-width: 860px) {
+  .parcours { grid-template-columns: 1fr; gap: 20px; padding: 20px 16px 48px; }
+  .fil-etapes { position: static; display: flex; gap: 6px; overflow: hidden; font-size: 0; }
+  .fil-etapes li { padding: 0; } .fil-etapes .p { width: 26px; height: 4px; border-radius: 4px; border: 0; background: var(--trait-moyen); }
+  .fil-etapes .fait .p { background: var(--vert); } .fil-etapes [aria-current] .p { background: var(--cuivre); box-shadow: none; }
+  .fil-etapes [aria-current] { font-size: 13.5px; } .fil-etapes [aria-current] .p { margin-right: 4px; }
+  .barre-in { padding: 12px 16px; } .barre-in nav { gap: 12px; } .dossier-id { display: none; }
+  h1.q { font-size: 24px; } .chapo { font-size: 15.5px; margin-bottom: 22px; }
+  .choix-icones { grid-template-columns: 1fr 1fr; }
+  .montant { grid-template-columns: 1fr; gap: 12px; }
+  .nav-q { flex-direction: column-reverse; align-items: stretch; } .nav-q .btn { width: 100%; } .nav-q .lien { text-align: center; }
+}

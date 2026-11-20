@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>H. Écran final du parcours</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .une { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; align-items: center; padding: 22px; margin-bottom: 24px; }
+  .couverture { aspect-ratio: 210 / 297; border-radius: 6px; background: var(--vert); color: #F6F1E6; padding: 14px; display: flex; flex-direction: column; box-shadow: 0 10px 24px rgba(35,30,24,.16); overflow: hidden; }
+  .couverture .ph { height: 46%; margin: -14px -14px 12px; background: repeating-linear-gradient(100deg, #8A6A4A 0 10px, #947351 10px 16px); }
+  .couverture .logo { font: 700 8px var(--sans); letter-spacing: .12em; background: #fff; color: var(--vert); align-self: flex-start; padding: 3px 6px; border-radius: 3px; margin-bottom: 8px; }
+  .couverture .t { font-family: var(--affiche); font-size: 22px; line-height: .95; text-transform: uppercase; }
+  .couverture .s { font-size: 8.5px; color: #E9C9A4; margin-top: 4px; }
+  .couverture .pied { margin-top: auto; font-size: 7px; opacity: .7; }
+  .une h2 { font-size: 22px; font-weight: 600; letter-spacing: -.01em; margin: 6px 0 6px; }
+  .une p { margin: 0 0 16px; color: var(--pierre-texte); font-size: 15px; }
+  .une .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .autres { list-style: none; margin: 0 0 28px; padding: 0; border-top: 1px solid var(--trait); }
+  .autres li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--trait); }
+  .type { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font: 600 10.5px var(--sans); letter-spacing: .04em; }
+  .type.xls { background: #E3EDE6; color: var(--vert); } .type.pdf { background: var(--cuivre-doux); color: var(--cuivre-texte); } .type.web { background: var(--sable-doux); color: var(--pierre-texte); }
+  .autres strong { display: block; font-weight: 600; font-size: 15px; } .autres span.d { font-size: 13.5px; color: var(--pierre-texte); }
+  .autres a.ouv { font-size: 14px; white-space: nowrap; }
+  .facultatif { font-size: 14px; color: var(--pierre-texte); padding: 14px 0 0; }
+  .facultatif ul { margin: 6px 0 0; padding-left: 18px; } .facultatif li { margin: 4px 0; }
+  .valeur-ligne { display: flex; align-items: baseline; gap: 12px; margin: 0 0 26px; font-size: 15px; color: var(--pierre-texte); flex-wrap: wrap; }
+  .valeur-ligne b { font-family: var(--affiche); font-size: 32px; color: var(--vert); font-weight: 700; }
+  @media (max-width: 860px) {
+    .une { grid-template-columns: 1fr; } .couverture { width: 160px; }
+    .autres li { grid-template-columns: 40px minmax(0, 1fr) auto; } .autres li .pastille { grid-column: 2; justify-self: start; grid-row: 2; }
+  }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav><a href="#">Mon dossier</a><a href="#">FR</a></nav></div></header>
+<div class="parcours">
+  <ol class="fil-etapes" aria-label="Étapes">
+    <li class="fait"><span class="p"></span>Estimation</li>
+    <li class="fait"><span class="p"></span>Vos chiffres</li>
+    <li class="fait"><span class="p"></span>Vos réponses</li>
+    <li class="fait"><span class="p"></span>Rédaction</li>
+    <li aria-current="step"><span class="p"></span>Relecture et envoi</li>
+  </ol>
+  <main class="colonne">
+    <h1 class="q">Votre dossier est rédigé</h1>
+    <p class="chapo">Il reste 4 points à compléter dans le mémorandum avant de l'envoyer. Le reste est prêt.</p>
+    <p class="valeur-ligne">Valeur de vos titres <b>1,4 – 2,4 M€</b><a href="#" class="tres-petit">voir le détail</a></p>
+
+    <section class="carte une" aria-labelledby="memo">
+      <div class="couverture" aria-hidden="true"><div class="ph"></div><span class="logo">ME MENUISERIE</span><span class="t">Projet<br>Chêne</span><span class="s">Mémorandum d'information · novembre 2026</span><span class="pied">Strictement confidentiel</span></div>
+      <div>
+        <span class="pastille alerte">4 points à compléter</span>
+        <h2 id="memo">Mémorandum d'information</h2>
+        <p>24 pages, avec votre logo et 3 photos. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre.</p>
+        <div class="actions"><a class="btn" href="#">Relire le mémorandum →</a><a class="btn contour" href="#">Compléter les 4 points</a></div>
+      </div>
+    </section>
+
+    <ul class="autres">
+      <li><span class="type pdf">PDF</span><div><strong>Teaser anonyme</strong><span class="d">Une page, sans nom ni chiffre identifiant</span></div><span class="pastille">Prêt</span><a class="ouv" href="#">Ouvrir</a></li>
+      <li><span class="type xls">XLSX</span><div><strong>Datapack</strong><span class="d">Excel, 9 onglets, formules vivantes</span></div><span class="pastille">Prêt</span><a class="ouv" href="#">Télécharger</a></li>
+      <li><span class="type web">WEB</span><div><strong>Valorisation détaillée</strong><span class="d">Multiples, DCF, actif net : hypothèses et sources</span></div><span class="pastille">Prêt</span><a class="ouv" href="#">Ouvrir</a></li>
+    </ul>
+
+    <div class="facultatif">
+      Pour aller plus loin (facultatif)
+      <ul><li><a href="#">Ajouter l'exercice 2023</a> pour fiabiliser la fourchette</li><li><a href="#">Déposer vos premières pièces</a> : 0 sur 21</li></ul>
+    </div>
+  </main>
+</div>
+</body>
+</html>

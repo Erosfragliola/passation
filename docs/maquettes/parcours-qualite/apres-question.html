@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C. Activité en choix à cocher</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .phrase { margin-top: 6px; padding: 16px 18px; border-left: 2px solid var(--cuivre); background: var(--papier); border-radius: 0 12px 12px 0; }
+  .phrase p { margin: 4px 0 0; font-size: 15.5px; }
+  .legende-src { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--pierre-texte); margin: 10px 0 0; }
+  .legende-src i { width: 6px; height: 6px; border-radius: 50%; background: var(--cuivre); display: inline-block; }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav><a href="#">Mon dossier</a><a href="#">FR</a></nav></div></header>
+<div class="parcours">
+  <ol class="fil-etapes" aria-label="Étapes">
+    <li class="fait"><span class="p"></span>Estimation</li>
+    <li class="fait"><span class="p"></span>Vos chiffres</li>
+    <li aria-current="step"><span class="p"></span>Vos réponses</li>
+    <li><span class="p"></span>Rédaction</li>
+    <li><span class="p"></span>Relecture et envoi</li>
+  </ol>
+  <main class="colonne">
+    <div class="progression"><span>Question 2 sur 10</span><span class="jauge" aria-hidden="true"><span style="width:20%"></span></span></div>
+    <h1 class="q">Que fait votre entreprise ?</h1>
+    <p class="chapo">Cochez vos métiers et vos clients. Nous en tirons la phrase d'ouverture du mémorandum ; vous la relisez juste en dessous.</p>
+
+    <fieldset class="bloc-q">
+      <legend>Vos métiers et prestations</legend>
+      <p class="aide">Pré-cochés d'après votre site et votre code d'activité. Décochez ce qui est faux.</p>
+      <div class="puces">
+        <label class="puce"><input type="checkbox" checked><span class="src" title="Lu sur votre site"></span>Escaliers sur mesure</label>
+        <label class="puce"><input type="checkbox" checked><span class="src"></span>Portes intérieures</label>
+        <label class="puce"><input type="checkbox" checked><span class="src"></span>Placards et dressings</label>
+        <label class="puce"><input type="checkbox" checked><span class="src"></span>Agencement de magasins</label>
+        <label class="puce"><input type="checkbox">Menuiseries extérieures</label>
+        <label class="puce"><input type="checkbox">Parquets</label>
+        <label class="puce"><input type="checkbox">Mobilier</label>
+        <label class="puce"><input type="checkbox">Pose et rénovation</label>
+        <button type="button" class="puce ajouter">+ Autre métier</button>
+      </div>
+      <p class="legende-src"><i></i>lu sur www.menuiserie-exemple.fr</p>
+    </fieldset>
+
+    <fieldset class="bloc-q">
+      <legend>Vos clients sont surtout</legend>
+      <div class="puces">
+        <label class="puce"><input type="checkbox" checked><span class="src"></span>Particuliers</label>
+        <label class="puce"><input type="checkbox" checked><span class="src"></span>Architectes et maîtres d'œuvre</label>
+        <label class="puce"><input type="checkbox" checked><span class="src"></span>Commerçants</label>
+        <label class="puce"><input type="checkbox">Entreprises du bâtiment</label>
+        <label class="puce"><input type="checkbox">Collectivités</label>
+      </div>
+    </fieldset>
+
+    <div class="bloc-q">
+      <span class="lib">La phrase proposée pour le mémorandum</span>
+      <div class="phrase">
+        <span class="tres-petit">Rédigée à partir de vos choix · modifiable</span>
+        <p>Menuiserie Exemple conçoit et fabrique dans son atelier des escaliers sur mesure, des portes intérieures, des placards et des agencements de magasins, pour des particuliers, des architectes et des commerçants.</p>
+      </div>
+      <p class="tres-petit" style="margin-top:10px"><button type="button" class="lien">Modifier la phrase</button> · <button type="button" class="lien">Ajouter une précision</button> (facultatif)</p>
+    </div>
+
+    <div class="nav-q"><button type="button" class="lien">Retour</button><a class="btn" href="apres-distinctions.html">Continuer →</a></div>
+    <p class="ou-va">Votre réponse nourrit <strong>2.2 Activité et savoir-faire</strong> et <strong>3.3 Clients</strong>.</p>
+  </main>
+</div>
+<script src="maquettes.js"></script>
+</body>
+</html>
