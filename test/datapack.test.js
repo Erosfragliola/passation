@@ -1,4 +1,4 @@
-// Datapack : les formules du classeur doivent redonner exactement les résultats du moteur (cas d'essai).
+// Datapack: the workbook's formulas must give back exactly the engine's results (test case).
 import { describe, it, expect } from "vitest";
 import { unzipSync, strFromU8 } from "fflate";
 import { construireDatapack } from "../src/documents/datapack.js";
@@ -11,7 +11,7 @@ const exercices = [
   { annee: 2024, chiffre_affaires: 2_200_000, autres_produits: 0, achats_consommes: 880_000, charges_externes: 320_000, impots_taxes: 40_000, charges_personnel: 640_000, dotations_amortissements: 66_000, stocks: 180_000, creances_clients: 370_000, dettes_fournisseurs: 230_000, dettes_fiscales_sociales: 140_000 },
   { annee: 2025, chiffre_affaires: 2_400_000, autres_produits: 0, achats_consommes: 960_000, charges_externes: 340_000, impots_taxes: 40_000, charges_personnel: 680_000, dotations_amortissements: 72_000, stocks: 200_000, creances_clients: 400_000, dettes_fournisseurs: 250_000, dettes_fiscales_sociales: 150_000, tresorerie: 250_000, placements: 50_000, emprunts: 300_000, provisions_risques: 20_000, capitaux_propres: 900_000 },
 ];
-// DCF activé à 40 % (option) : les formules du classeur couvrent les deux méthodes et la pondération
+// DCF enabled at 40% (option): the workbook's formulas cover both methods and the weighting
 const base = {
   secteur: "industrie", exercices, ponderation: { multiples: 0.6, dcf: 0.4 },
   retraitements: { remuneration_dirigeant_reelle: 150_000, remuneration_normative: 100_000, loyer_paye: 60_000, loyer_marche: 48_000, exceptionnels: [{ annee: 2024, libelle: "Litige", montant: 20_000, justification: "Non récurrent" }] },
@@ -28,9 +28,9 @@ function classeur(entree) {
 }
 const proche = (a, b, tol = 0.01) => { expect(typeof a).toBe("number"); expect(Math.abs(a - b)).toBeLessThan(tol); };
 
-describe("évaluateur de formules", () => {
+describe("formula evaluator", () => {
   const lire = () => null;
-  it("priorités, puissances, comparaisons, IF paresseux", () => {
+  it("precedence, powers, comparisons, lazy IF", () => {
     expect(evaluer("1+2*3^2", "F", lire)).toBe(19);
     expect(evaluer('IF(1>2,1/0,"ok")', "F", lire)).toBe("ok");
     expect(evaluer("AVERAGE(1,2,6)", "F", lire)).toBe(3);
@@ -38,18 +38,18 @@ describe("évaluateur de formules", () => {
   });
 });
 
-describe("datapack : formules = moteur", () => {
-  it("9 onglets dans l'ordre du sommaire (présentation puis sections numérotées)", () => {
+describe("datapack: formulas = engine", () => {
+  it("9 tabs in the order of the contents (overview then numbered sections)", () => {
     expect(classeur(base).wb.feuilles.map((f) => f.nom)).toEqual(["Présentation", "1.1 Comptes", "1.2 Retraitements", "1.3 Hypothèses", "2.1 Passage aux titres", "2.2 Multiples", "2.3 DCF", "2.4 ANCC", "2.5 Synthèse"]);
   });
-  it("EBE normatif, dette nette, écart de BFR", () => {
+  it("normalized EBITDA, net debt, working capital gap", () => {
     const { calc, resultat } = classeur(base);
     const ebeN = calc.lire("1.2 Retraitements", ...(() => { for (let r = 0; r < 40; r++) if (calc.lire("1.2 Retraitements", r, 0) === "EBE normatif") return [r, 1]; })());
     proche(ebeN, resultat.ebe_normatif.valeur);
     proche(calc.valeur("2.1 Passage aux titres", "B12"), 70_000);
     proche(calc.valeur("2.1 Passage aux titres", "B18"), resultat.bfr.ecart);
   });
-  it("multiples, DCF (dont CMPC ± 1 pt et g ± 0,5 pt), ANCC, synthèse et sensibilités", () => {
+  it("multiples, DCF (including WACC ± 1 pt and g ± 0.5 pt), ANCC, summary and sensitivities", () => {
     const { calc, resultat: r } = classeur(base);
     proche(calc.valeur("2.2 Multiples", "C8"), r.multiples.titres.central);
     proche(calc.valeur("2.2 Multiples", "B8"), r.multiples.titres.bas);
@@ -61,23 +61,23 @@ describe("datapack : formules = moteur", () => {
     proche(calc.valeur("2.3 DCF", "D34"), r.sensibilites.croissance_terminale.plus_05pt, 0.01);
     proche(calc.valeur("2.4 ANCC", "B8"), 890_000);
     proche(calc.valeur("2.5 Synthèse", "C11"), r.synthese.central, 0.01);
-    proche(calc.valeur("2.5 Synthèse", "C11"), 2_244_253.18, 0.05); // référence indépendante (docs/valorisation-calculs.md)
+    proche(calc.valeur("2.5 Synthèse", "C11"), 2_244_253.18, 0.05); // independent reference (docs/valorisation-calculs.md)
     proche(calc.valeur("2.5 Synthèse", "B11"), r.synthese.bas, 0.01);
     proche(calc.valeur("2.5 Synthèse", "D11"), r.synthese.haut, 0.01);
     proche(calc.valeur("2.5 Synthèse", "B14"), r.sensibilites.multiple.moins);
   });
-  it("taux réduit d'IS et EBE « dernier » : formules et moteur restent d'accord", () => {
+  it('reduced corporate tax rate and "latest" EBITDA: formulas and engine still agree', () => {
     const { calc, resultat: r } = classeur({ ...base, tauxReduit: true, modeEbe: "dernier" });
     proche(calc.valeur("2.3 DCF", "B27"), r.dcf.ve.central, 0.01);
     proche(calc.valeur("2.5 Synthèse", "C11"), r.synthese.central, 0.01);
   });
-  it("sans prime de taille : DCF « À compléter », synthèse sur les multiples seuls", () => {
+  it('without a size premium: DCF "À compléter", summary on the multiples only', () => {
     const { calc, resultat: r } = classeur({ ...base, primeTaille: null });
     expect(calc.valeur("2.3 DCF", "B8")).toBe("À compléter");
     expect(calc.valeur("2.5 Synthèse", "B9")).toBe(0);
     proche(calc.valeur("2.5 Synthèse", "C11"), r.synthese.central);
   });
-  it("fichier .xlsx valide : archive avec classeur, styles, 9 feuilles, formules et valeurs en cache", () => {
+  it("valid .xlsx file: archive with workbook, styles, 9 sheets, formulas and cached values", () => {
     const { wb } = classeur(base);
     const zip = unzipSync(wb.octets());
     expect(Object.keys(zip)).toEqual(expect.arrayContaining(["[Content_Types].xml", "xl/workbook.xml", "xl/styles.xml", "xl/worksheets/sheet9.xml"]));
@@ -87,12 +87,12 @@ describe("datapack : formules = moteur", () => {
   });
 });
 
-// Présentation façon datapack de banque d'affaires (charte Passation) : logo, sommaire avec liens, retours.
-describe("datapack : présentation", () => {
+// Presentation in the style of an investment-bank datapack (Passation branding): logo, contents with links, links back.
+describe("datapack: presentation", () => {
   const { wb } = classeur(base);
   const zip = unzipSync(wb.octets());
   const txt = (f) => strFromU8(zip[f]);
-  it("le logo Passation est une image PNG ancrée sur la page de présentation", () => {
+  it("the Passation logo is a PNG image anchored on the overview page", () => {
     const png = zip["xl/media/image1.png"];
     expect([...png.slice(0, 8)]).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
     expect(txt("xl/worksheets/sheet1.xml")).toContain('<drawing r:id="rId1"/>');
@@ -101,28 +101,28 @@ describe("datapack : présentation", () => {
     expect(txt("[Content_Types].xml")).toContain('Extension="png"');
     expect(txt("xl/drawings/drawing1.xml")).toContain('name="Logo Passation"');
   });
-  it("le sommaire renvoie vers chacun des 8 onglets, et chaque onglet renvoie à la présentation", () => {
+  it("the contents link to each of the 8 tabs, and each tab links back to the overview", () => {
     const sommaire = [...txt("xl/worksheets/sheet1.xml").matchAll(/<hyperlink [^>]*location="'([^']+)'!A1"/g)].map((m) => m[1]);
     expect(sommaire).toEqual(wb.feuilles.slice(1).map((f) => f.nom));
     for (let i = 2; i <= 9; i++) expect(txt(`xl/worksheets/sheet${i}.xml`)).toMatch(/<hyperlink ref="[A-Z]+1" location="'Présentation'!A1"/);
   });
-  it("aucun onglet de graphiques ; couleurs d'onglet de la charte (cuivre section 1, vert section 2)", () => {
+  it("no chart tab; tab colors from the branding (copper section 1, green section 2)", () => {
     expect(wb.feuilles.some((f) => /graph/i.test(f.nom))).toBe(false);
     expect(txt("xl/worksheets/sheet2.xml")).toContain('<tabColor rgb="FFA8653A"/>');
     expect(txt("xl/worksheets/sheet9.xml")).toContain('<tabColor rgb="FF1E3A2E"/>');
   });
-  it("titre « Projet … | Datapack » quand le dossier a un nom de code, sans doubler « Projet »", () => {
+  it('title "Projet … | Datapack" when the file has a code name, without doubling "Projet"', () => {
     const resultat = valorisationApprofondie(base, HYP);
     const avecCode = construireDatapack({ entreprise, entree: base, H: HYP, resultat, nomDeCode: "Projet Cèdre" });
     expect(avecCode.feuilles[0].cellules.get("3,1").v).toBe("Projet Cèdre | Datapack");
   });
-  it("contrôle de la synthèse : poids des méthodes = 100 % → « OK »", () => {
+  it('summary check: weights of the methods = 100% → "OK"', () => {
     expect(wb.calculer().valeur("2.5 Synthèse", "B17")).toBe("OK");
   });
-  it("montants : négatifs entre parenthèses, zéro « – » ; saisies en cuivre sur fond crème", () => {
+  it('amounts: negatives in parentheses, zero "–"; inputs in copper on a cream background', () => {
     const styles = txt("xl/styles.xml");
     expect(styles).toContain('numFmtId="164" formatCode="#,##0;\\(#,##0\\);&quot;–&quot;"');
     expect(styles).toContain('<fgColor rgb="FFFBF6EC"/>');
-    expect(styles).not.toContain("FFF4D6"); // ancien jaune
+    expect(styles).not.toContain("FFF4D6"); // former yellow
   });
 });

@@ -1,5 +1,5 @@
-// Parcours de valorisation par l'API : droits d'accès, chiffres pré-remplis puis validés, liasse (Claude simulé),
-// questionnaire, calcul. Le calcul complet reprend le cas d'essai de approfondie.test.js (valeurs de référence).
+// Valuation flow through the API: access rights, figures prefilled then approved, tax return (simulated Claude),
+// questionnaire, calculation. The full calculation reuses the test case of approfondie.test.js (reference values).
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 
@@ -21,7 +21,7 @@ import { normaliserAnnonces } from "../src/sources/bodacc.js";
 import { assembler, CLE_MAQUETTE } from "../src/maquette/donnees.js";
 
 const BASE = "http://127.0.0.1:8787";
-const SIREN = "319252813"; // industrie (section C)
+const SIREN = "319252813"; // manufacturing (section C)
 let env;
 
 function appel(chemin, { methode = "GET", corps, cookie, brut } = {}) {
@@ -54,7 +54,7 @@ beforeEach(async () => {
   await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(CLE_MAQUETTE(SIREN), JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
 });
 
-describe("droits d'accès du parcours", () => {
+describe("access rights of the flow", () => {
   it.each([["GET", "financials"], ["POST", "uploads"], ["GET", "answers"], ["POST", "valuation"]])("%s %s : 401 sans session, 404 pour le dossier d'un autre", async (methode, sous) => {
     const a = await seConnecter("a@exemple.fr");
     const b = await seConnecter("b@exemple.fr");
@@ -63,8 +63,8 @@ describe("droits d'accès du parcours", () => {
   });
 });
 
-describe("chiffres", () => {
-  it("pré-remplis avec les comptes publics, à valider", async () => {
+describe("figures", () => {
+  it("prefilled with the public accounts, to approve", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     const v = await (await appel(`/api/dossiers/${id}/financials`, { cookie })).json();
     const annees = Object.keys(v.exercices);
@@ -73,15 +73,15 @@ describe("chiffres", () => {
     expect(l.chiffre_affaires).toMatchObject({ source: "inpi", valide: false });
     expect(v.manquants[annees.at(-1)]).toContain("chiffre_affaires");
   });
-  it("validation ligne par ligne : la valeur validée passe en « dirigeant » si elle change", async () => {
+  it('line-by-line approval: the approved value switches to "dirigeant" if it changes', async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/financials`, { cookie });
     const v = await (await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2025, valeurs: { stocks: 200000 }, valider: true } })).json();
     expect(v.exercices["2025"].stocks).toEqual({ valeur: 200000, source: "dirigeant", valide: true });
   });
-  // Audit du 19/11/2026 : l'INPI publiait 2019, 2021 et 2024 ; la page valorisation réclamait 2019 et 2021
-  it("comptes publics non consécutifs : seul le dernier est repris ; dernier exercice indispensable, deux précédents facultatifs", async () => {
-    // Montants fictifs : seules les années comptent ici
+  // Audit of 19/11/2026: the INPI published 2019, 2021 and 2024; the valuation page requested 2019 and 2021
+  it("non-consecutive public accounts: only the latest is reused; latest fiscal year required, two previous ones optional", async () => {
+    // Fictitious amounts: only the years matter here
     const d = JSON.parse(env.DB.sqlite.prepare("SELECT payload_json FROM api_cache").get().payload_json);
     d.ca = [{ annee: 2019, valeur: 900_000 }, { annee: 2021, valeur: 1_000_000 }, { annee: 2024, valeur: 1_200_000 }];
     d.ebe = [{ annee: 2019, valeur: 90_000 }, { annee: 2021, valeur: 100_000 }, { annee: 2024, valeur: 120_000 }];
@@ -91,38 +91,38 @@ describe("chiffres", () => {
     expect(Object.keys(v.exercices)).toEqual(["2024"]);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
     expect(detail.parcours.exercices).toEqual({ dernier: 2024, dernier_complet: false, recommandes: [2023, 2022], recommandes_manquants: [2023, 2022], anciens: [] });
-    // Les questions du parcours guidé (13) et celle du site : 14, aucune faite
+    // The questions of the guided steps (13) and the website one: 14, none done
     expect(detail.parcours.questions).toEqual({ faits: 0, total: 14, pct: 0 });
-    // 15 (dossier) + 10 (estimation express) = 25
+    // 15 (file) + 10 (quick estimate) = 25
     expect(detail.avancement.global).toBe(25);
   });
-  it("écrans vus du parcours guidé enregistrés : « Passer » compte comme une réponse, côté serveur aussi", async () => {
+  it('screens of the guided steps seen are saved: "Skip" counts as an answer, on the server side too', async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { aucun: true } } });
     expect((await appel(`/api/dossiers/${id}/answers/parcours`, { methode: "PUT", cookie, corps: { data: { vues: ["remuneration", "histoire"] } } })).status).toBe(200);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
-    // site + 2 écrans passés = 3 sur 14 ; 3 / 14 = 21,4 % → 21
+    // website + 2 skipped screens = 3 of 14; 3 / 14 = 21.4% → 21
     expect(detail.parcours.questions).toEqual({ faits: 3, total: 14, pct: 21 });
   });
-  it("refuse une année absurde", async () => {
+  it("refuses an absurd year", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 1800, valeurs: {} } })).status).toBe(400);
   });
 });
 
-describe("liasse PDF", () => {
-  it("sans clé Claude configurée : 503 explicite, rien n'est lu", async () => {
+describe("PDF tax return", () => {
+  it("without a configured Claude key: explicit 503, nothing is read", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     const r = await appel(`/api/dossiers/${id}/uploads`, { methode: "POST", cookie, brut: pdf() });
     expect(r.status).toBe(503);
     expect(lireLiasse).not.toHaveBeenCalled();
   });
-  it("refuse un fichier qui n'est pas un PDF", async () => {
+  it("refuses a file that is not a PDF", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/uploads`, { methode: "POST", cookie, brut: pdf("pas un pdf") })).status).toBe(415);
   });
-  it("montants lus = propositions à valider ; une valeur déjà validée n'est jamais écrasée ; fichier rangé dans le dossier", async () => {
+  it("amounts read = proposals to approve; an already approved value is never overwritten; file stored in the file folder", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2025, valeurs: { stocks: 111 }, valider: true } });
@@ -138,7 +138,7 @@ describe("liasse PDF", () => {
     expect([...env.FILES.objets.keys()][0]).toMatch(new RegExp(`^dossiers/${id}/liasses/`));
     expect(v.lectures_restantes).toBe(5);
   });
-  it("plafond de lectures par dossier", async () => {
+  it("cap on readings per file", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     const { cookie, id } = await seConnecter("a@exemple.fr");
     lireLiasse.mockResolvedValue({ exercices: [], remarques: "" });
@@ -147,8 +147,8 @@ describe("liasse PDF", () => {
   });
 });
 
-describe("questionnaire et calcul", () => {
-  it("étape inconnue refusée ; réponses relues", async () => {
+describe("questionnaire and calculation", () => {
+  it("unknown step refused; answers read back", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/answers/pirate`, { methode: "PUT", cookie, corps: { data: {} } })).status).toBe(404);
     await appel(`/api/dossiers/${id}/answers/clients`, { methode: "PUT", cookie, corps: { data: { part_premier_client: 0.2 } } });
@@ -156,7 +156,7 @@ describe("questionnaire et calcul", () => {
     expect(r.reponses.clients.part_premier_client).toBe(0.2);
   });
 
-  it("réglages hors bornes refusés à l'enregistrement (400, message explicite), rien n'est enregistré (FIN-04)", async () => {
+  it("out-of-range settings refused on saving (400, explicit message), nothing is saved (FIN-04)", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     const r = await appel(`/api/dossiers/${id}/answers/reglages`, { methode: "PUT", cookie, corps: { data: { decotes: [{ cle: "taille", pct: -1.5 }], poids_multiples: 3 } } });
     expect(r.status).toBe(400);
@@ -167,10 +167,10 @@ describe("questionnaire et calcul", () => {
     expect((await appel(`/api/dossiers/${id}/answers/reglages`, { methode: "PUT", cookie, corps: { data: { poids_multiples: 0.5 } } })).status).toBe(200);
   });
 
-  it("calcul complet par l'API : multiples identiques à la référence (2 001 585,45), DCF calculé, avancement à jour", async () => {
+  it("full calculation through the API: multiples identical to the reference (2,001,585.45), DCF calculated, progress up to date", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/financials`, { cookie });
-    for (const a of [2020, 2021, 2022, 2023, 2024]) await appel(`/api/dossiers/${id}/financials/${a}`, { methode: "DELETE", cookie }); // on retire les comptes publics
+    for (const a of [2020, 2021, 2022, 2023, 2024]) await appel(`/api/dossiers/${id}/financials/${a}`, { methode: "DELETE", cookie }); // remove the public accounts
     const ex = {
       2023: { chiffre_affaires: 2000000, autres_produits: 0, achats_consommes: 800000, charges_externes: 300000, impots_taxes: 40000, charges_personnel: 600000, dotations_amortissements: 60000, stocks: 160000, creances_clients: 340000, dettes_fournisseurs: 210000, dettes_fiscales_sociales: 130000, tresorerie: 180000, emprunts: 380000, capitaux_propres: 700000 },
       2024: { chiffre_affaires: 2200000, autres_produits: 0, achats_consommes: 880000, charges_externes: 320000, impots_taxes: 40000, charges_personnel: 640000, dotations_amortissements: 66000, stocks: 180000, creances_clients: 370000, dettes_fournisseurs: 230000, dettes_fiscales_sociales: 140000, tresorerie: 210000, emprunts: 340000, capitaux_propres: 800000 },
@@ -185,8 +185,8 @@ describe("questionnaire et calcul", () => {
       reglages: { prime_taille: 0.03, decotes: [{ cle: "dependance_dirigeant", pct: -0.1, justification: "Seul commercial" }, { cle: "recurrence", pct: 0.05, justification: "Contrats annuels" }] },
     };
     for (const [etape, data] of Object.entries(etapes)) expect((await appel(`/api/dossiers/${id}/answers/${etape}`, { methode: "PUT", cookie, corps: { data } })).status).toBe(200);
-    // Le DCF du cas d'essai prend amortissements 3 % et BFR 30 jours : ici, issus de l'historique validé
-    // (moyenne dotations / CA = 3 % exactement ; BFR normatif 29,83 j), d'où un DCF légèrement différent.
+    // The test case's DCF uses depreciation 3% and working capital 30 days: here, drawn from the approved history
+    // (average depreciation / revenue = exactly 3%; normalized working capital 29.83 days), hence a slightly different DCF.
     const v = await (await appel(`/api/dossiers/${id}/valuation`, { methode: "POST", cookie })).json();
     expect(v.resultat.multiples.titres.central).toBeCloseTo(2_001_585.45, 1);
     expect(v.resultat.dcf.statut).toBe("ok");
@@ -200,7 +200,7 @@ describe("questionnaire et calcul", () => {
 });
 
 describe("datapack", () => {
-  it("409 tant qu'aucun exercice n'est validé ; ensuite fichier Excel versionné, rangé dans le dossier, compté dans l'avancement", async () => {
+  it("409 as long as no fiscal year is approved; then versioned Excel file, stored in the file folder, counted in progress", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/datapack`, { cookie })).status).toBe(409);
     await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2025, valeurs: { chiffre_affaires: 1_000_000, achats_consommes: 400_000, charges_externes: 200_000, charges_personnel: 250_000, stocks: 50_000, creances_clients: 100_000, tresorerie: 80_000, capitaux_propres: 300_000, emprunts: 50_000, dettes_fournisseurs: 60_000, dettes_fiscales_sociales: 40_000 }, valider: true } });
@@ -209,7 +209,7 @@ describe("datapack", () => {
     expect(r.headers.get("content-type")).toContain("spreadsheetml");
     expect(r.headers.get("content-disposition")).toMatch(/datapack-.*-v1\.xlsx/);
     const octets = new Uint8Array(await r.arrayBuffer());
-    expect([octets[0], octets[1]]).toEqual([0x50, 0x4b]); // signature zip « PK »
+    expect([octets[0], octets[1]]).toEqual([0x50, 0x4b]); // zip signature "PK"
     expect([...env.FILES.objets.keys()]).toContain(`dossiers/${id}/documents/datapack-v1.xlsx`);
     const d = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
     expect(d.documents.datapack.version).toBe(1);
@@ -219,7 +219,7 @@ describe("datapack", () => {
   });
 });
 
-describe("teaser anonymisé", () => {
+describe("anonymized teaser", () => {
   const propre = { accroche: "PME industrielle familiale à transmettre", activite: "Fabrication alimentaire artisanale.", chiffres: "Chiffre d'affaires entre 2 M€ et 5 M€.", atouts: ["Savoir-faire reconnu", "Clientèle fidèle"], operation: "Cession de 100 % du capital." };
   async function prepare() {
     env.ANTHROPIC_API_KEY = "cle-de-test";
@@ -227,13 +227,13 @@ describe("teaser anonymisé", () => {
     await appel(`/api/dossiers/${s.id}/answers/activite`, { methode: "PUT", cookie: s.cookie, corps: { data: { description: "Nous fabriquons des confitures." } } });
     return s;
   }
-  it("503 sans clé, 409 tant que l'activité n'est pas décrite", async () => {
+  it("503 without a key, 409 as long as the business is not described", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie })).status).toBe(503);
     env.ANTHROPIC_API_KEY = "cle-de-test";
     expect((await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie })).status).toBe(409);
   });
-  it("faits envoyés à Claude sans nom, ville, SIREN ni montant exact ; teaser enregistré avec un nom de code", async () => {
+  it("facts sent to Claude without name, city, SIREN or exact amount; teaser saved with a code name", async () => {
     const { cookie, id } = await prepare();
     redigerTeaser.mockResolvedValue(propre);
     const r = await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie });
@@ -243,10 +243,10 @@ describe("teaser anonymisé", () => {
     expect(d.teaser.sections.map((x) => x.cle)).toEqual(["accroche", "activite", "chiffres", "atouts", "operation"]);
     const faits = JSON.stringify(redigerTeaser.mock.calls[0][1]);
     expect(faits).not.toMatch(/FRAISERAIE|319252813/i);
-    expect(faits).toContain("Industries alimentaires"); // division NAF 10, libellé unique du secteur (audit, point 9)
+    expect(faits).toContain("Industries alimentaires"); // NAF division 10, single industry label (audit, point 9)
     expect((await (await appel(`/api/dossiers/${id}/documents/teaser`, { cookie })).json()).teaser.version).toBe(1);
   });
-  it("première version identifiante → seconde tentative avec consigne ; si encore identifiante → 422, rien d'enregistré", async () => {
+  it("first identifying version → second attempt with an instruction; if still identifying → 422, nothing saved", async () => {
     const { cookie, id } = await prepare();
     redigerTeaser.mockResolvedValueOnce({ ...propre, accroche: "La Fraiseraie à vendre" }).mockResolvedValueOnce(propre);
     expect((await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie })).status).toBe(200);
@@ -261,7 +261,7 @@ describe("teaser anonymisé", () => {
     expect((await r.json()).problemes[0].type).toBe("identifiant");
     expect((await (await appel(`/api/dossiers/${id}/documents/teaser`, { cookie })).json()).teaser.version).toBe(1);
   });
-  it("modification d'une section : contrôlée, marquée « modifiée » ; dossier d'un autre : 404", async () => {
+  it(`edit of a section: checked, marked "modified"; someone else's file: 404`, async () => {
     const { cookie, id } = await prepare();
     redigerTeaser.mockResolvedValue(propre);
     await appel(`/api/dossiers/${id}/documents/teaser`, { methode: "POST", cookie });
@@ -273,7 +273,7 @@ describe("teaser anonymisé", () => {
   });
 });
 
-describe("mémorandum", () => {
+describe("memorandum", () => {
   const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0]);
   function webSimule() {
     vi.stubGlobal("fetch", vi.fn(async (u) => {
@@ -284,7 +284,7 @@ describe("mémorandum", () => {
       return new Response(`<html><title>Accueil</title><body><img src="/logo.png" alt="logo"><p>Confitures depuis 1980.</p><a href="/a-propos">À propos</a></body></html>`, { headers: { "content-type": "text/html" } });
     }));
   }
-  it("site lu : faits à valider (jamais validés d'office), termes ajoutés aux interdits du teaser, candidats logo", async () => {
+  it("website read: facts to approve (never approved by default), terms added to the teaser's exclusions, logo candidates", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     webSimule();
     const { cookie, id } = await seConnecter("a@exemple.fr");
@@ -298,7 +298,7 @@ describe("mémorandum", () => {
     expect(t.status).toBe(422);
     expect((await t.json()).problemes[0].terme).toBe("confiture maison");
   });
-  it("logo : PNG accepté et servi au seul propriétaire ; SVG refusé ; adresse privée refusée", async () => {
+  it("logo: PNG accepted and served to the owner only; SVG refused; private address refused", async () => {
     webSimule();
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/logo`, { methode: "POST", cookie, corps: { url: "https://atelier.fr/logo.svg" } })).status).toBe(415);
@@ -311,7 +311,7 @@ describe("mémorandum", () => {
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/logo`, { cookie: b.cookie })).status).toBe(404);
   });
-  it("section : 409 tant que l'activité et l'opération manquent ; ensuite rédigée avec les seuls faits validés ; modifiable", async () => {
+  it("section: 409 as long as the business and the deal are missing; then drafted with the approved facts only; editable", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).status).toBe(409);
@@ -330,7 +330,7 @@ describe("mémorandum", () => {
     const e = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "PUT", cookie, corps: { contenu: "Texte revu." } })).json();
     expect(e.sections.find((x) => x.cle === "histoire")).toMatchObject({ contenu: "Texte revu.", modifie: true });
   });
-  it("titre affirmatif et accroche enregistrés (point final retiré, titre trop long écarté) ; gardés quand le texte est modifié", async () => {
+  it("assertive title and hook saved (final period removed, title too long left out); kept when the text is edited", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     const { cookie, id } = await seConnecter("titres@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
@@ -349,10 +349,10 @@ describe("mémorandum", () => {
   });
 });
 
-describe("photos du mémorandum", () => {
+describe("memorandum photos", () => {
   const JPG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0, 0, 0]);
   const photo = (attestation) => { const f = new FormData(); f.append("fichier", new File([JPG], "atelier.jpg", { type: "image/jpeg" })); if (attestation) f.append("attestation", "oui"); f.append("legende", "L'atelier"); return f; };
-  it("attestation obligatoire ; photo servie au seul propriétaire ; retrait efface le fichier", async () => {
+  it("statement required; photo served to the owner only; removal erases the file", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(false) })).status).toBe(400);
     const m = await (await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(true) })).json();
@@ -366,8 +366,8 @@ describe("photos du mémorandum", () => {
   });
 });
 
-describe("validation d'un exercice en bloc", () => {
-  it("valide toutes les lignes remplies sauf celles en alerte ; contrôles renvoyés", async () => {
+describe("approval of a fiscal year as a block", () => {
+  it("approves all filled lines except those with an alert; checks returned", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/financials`, { cookie });
     await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2030, valeurs: { chiffre_affaires: 1_000_000, achats_consommes: 400_000, charges_externes: 200_000, charges_personnel: 250_000, stocks: -10, creances_clients: 100_000, tresorerie: 80_000, capitaux_propres: 300_000, emprunts: 50_000, dettes_fournisseurs: 60_000, dettes_fiscales_sociales: 40_000 }, valider: false } });
@@ -375,21 +375,21 @@ describe("validation d'un exercice en bloc", () => {
     expect(avant.controles["2030"].some((c) => c.code === "negatif")).toBe(true);
     const v = await (await appel(`/api/dossiers/${id}/financials/2030/valider`, { methode: "POST", cookie })).json();
     expect(v.exercices["2030"].chiffre_affaires.valide).toBe(true);
-    expect(v.exercices["2030"].stocks.valide).toBe(false); // en alerte : à valider à part
+    expect(v.exercices["2030"].stocks.valide).toBe(false); // with an alert: to approve separately
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/financials/2030/valider`, { methode: "POST", cookie: b.cookie })).status).toBe(404);
   });
 });
 
 import { dossiersARelancer, relancer, DELAI_RAPPEL } from "../src/routes/suivi.js";
-describe("suivi : dossier prêt et rappel unique", () => {
+describe("follow-up: file ready and single reminder", () => {
   async function completer(id, cookie) {
     const t = Math.floor(Date.now() / 1000), doc = "doc-memo-" + id;
     env.DB.sqlite.exec(`INSERT INTO valuations (id, dossier_id, kind, inputs_json, result_json, created_at) VALUES ('v-${id}', '${id}', 'approfondie', '{}', '{}', ${t});
       INSERT INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES ('d-${id}', '${id}', 'datapack', 1, '', ${t}), ('t-${id}', '${id}', 'teaser', 1, '', ${t}), ('${doc}', '${id}', 'memo', 1, '', ${t});`);
     for (const k of ["synthese", "histoire", "activite", "organisation", "marche", "clients", "finances", "perspectives", "operation"]) env.DB.sqlite.exec(`INSERT INTO document_sections (document_id, section_key, content_md, edited_by_user, updated_at) VALUES ('${doc}', '${k}', '{}', 0, ${t});`);
   }
-  it("« dossier prêt » : 409 tant que tout n'est pas généré, puis un seul envoi", async () => {
+  it('"file ready": 409 as long as everything is not generated, then a single sending', async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/termine`, { methode: "POST", cookie })).status).toBe(409);
     await completer(id);
@@ -399,9 +399,9 @@ describe("suivi : dossier prêt et rappel unique", () => {
     expect(espion.mock.calls.flat().join(" ").match(/est prêt/g)).toHaveLength(1);
     espion.mockRestore();
   });
-  it("rappel : seulement les dossiers inactifs depuis 3 jours et incomplets, une seule fois", async () => {
+  it("reminder: only files inactive for 3 days and incomplete, only once", async () => {
     const a = await seConnecter("a@exemple.fr");
-    expect(await dossiersARelancer(env)).toHaveLength(0); // actif à l'instant
+    expect(await dossiersARelancer(env)).toHaveLength(0); // active just now
     env.DB.sqlite.exec(`UPDATE dossiers SET updated_at = ${Math.floor(Date.now() / 1000) - DELAI_RAPPEL - 60}`);
     expect((await dossiersARelancer(env)).map((d) => d.id)).toEqual([a.id]);
     const espion = vi.spyOn(console, "log").mockImplementation(() => {});
@@ -411,8 +411,8 @@ describe("suivi : dossier prêt et rappel unique", () => {
   });
 });
 
-describe("mémorandum : rédactions en parallèle", () => {
-  it("8 sections lancées en même temps → un seul document, 8 sections ; le dossier peut être déclaré complet", async () => {
+describe("memorandum: drafts in parallel", () => {
+  it("8 sections launched at the same time → a single document, 8 sections; the file can be declared complete", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
@@ -425,8 +425,8 @@ describe("mémorandum : rédactions en parallèle", () => {
   });
 });
 
-describe("clé de l'API Claude refusée", () => {
-  it("message explicite (503 « clé refusée ») au lieu de « document illisible »", async () => {
+describe("Claude API key refused", () => {
+  it('explicit message (503 "key refused") instead of "unreadable document"', async () => {
     env.ANTHROPIC_API_KEY = "cle-invalide";
     const { cookie, id } = await seConnecter("a@exemple.fr");
     lireLiasse.mockRejectedValue(Object.assign(new Error("401 authentication_error"), { status: 401 }));
@@ -437,9 +437,9 @@ describe("clé de l'API Claude refusée", () => {
   });
 });
 
-describe("pièces du dossier (dépôt)", () => {
+describe("documents of the file (upload)", () => {
   const fichier = (nom, contenu = "contenu", item = "statuts") => { const f = new FormData(); f.append("fichier", new File([contenu], nom)); f.append("item", item); return f; };
-  it("dépôt, liste, téléchargement, suppression ; l'élément de la liste est coché puis décoché", async () => {
+  it("upload, list, download, deletion; the list item is ticked then unticked", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     const r = await appel(`/api/dossiers/${id}/pieces`, { methode: "POST", cookie, brut: fichier("Statuts 2021.pdf", "%PDF statuts") });
     expect(r.status).toBe(201);
@@ -455,7 +455,7 @@ describe("pièces du dossier (dépôt)", () => {
     expect(env.FILES.objets.size).toBe(0);
     expect((await (await appel(`/api/dossiers/${id}`, { cookie })).json()).checklist).not.toContain("statuts");
   });
-  it("refuse un type inconnu, une pièce hors liste et l'accès au dossier d'un autre", async () => {
+  it("refuses an unknown type, a document outside the list and access to someone else's file", async () => {
     const a = await seConnecter("a@exemple.fr");
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${a.id}/pieces`, { methode: "POST", cookie: a.cookie, brut: fichier("virus.exe") })).status).toBe(415);
@@ -464,7 +464,7 @@ describe("pièces du dossier (dépôt)", () => {
     expect((await appel(`/api/dossiers/${a.id}/pieces/${pieces[0].id}`, { cookie: b.cookie })).status).toBe(404);
     expect((await appel(`/api/dossiers/${a.id}/pieces`)).status).toBe(401);
   });
-  it("la suppression du dossier efface aussi les pièces (base et fichiers)", async () => {
+  it("deleting the file also erases the uploaded documents (database and files)", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/pieces`, { methode: "POST", cookie, brut: fichier("kbis.pdf", "k", "kbis") });
     await appel(`/api/dossiers/${id}`, { methode: "DELETE", cookie });
@@ -473,12 +473,12 @@ describe("pièces du dossier (dépôt)", () => {
   });
 });
 
-describe("quotas des traitements par Claude (SEC-01)", () => {
+describe("quotas of Claude processing (SEC-01)", () => {
   const preparer = async (cookie, id) => {
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
   };
-  it("quota quotidien par utilisateur : au-delà, 429 sans appel à Claude ; un autre utilisateur n'est pas touché", async () => {
+  it("daily quota per user: beyond it, 429 without calling Claude; another user is not affected", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     redigerSectionMemo.mockResolvedValue({ contenu: "Texte.", a_completer: [] });
     const { CLAUDE_QUOTAS } = await import("../src/config.js");
@@ -490,28 +490,28 @@ describe("quotas des traitements par Claude (SEC-01)", () => {
     expect(refus.status).toBe(429);
     expect((await refus.json()).erreur).toBe("quota_atteint");
     expect(redigerSectionMemo).toHaveBeenCalledTimes(max);
-    // le quota suit l'utilisateur, pas le dossier : le teaser du même compte est refusé aussi
+    // the quota follows the user, not the file: the same account's teaser is refused too
     expect((await appel(`/api/dossiers/${a.id}/documents/teaser`, { methode: "POST", cookie: a.cookie })).status).toBe(429);
     const b = await seConnecter("b@exemple.fr");
     await preparer(b.cookie, b.id);
     expect((await appel(`/api/dossiers/${b.id}/documents/memo/sections/histoire`, { methode: "POST", cookie: b.cookie })).status).toBe(200);
   });
-  it("une requête invalide (questionnaire incomplet) ne consomme pas le quota", async () => {
+  it("an invalid request (incomplete questionnaire) does not consume the quota", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";
     const a = await seConnecter("a@exemple.fr");
     for (let i = 0; i < 3; i++) expect((await appel(`/api/dossiers/${a.id}/documents/memo/sections/histoire`, { methode: "POST", cookie: a.cookie })).status).toBe(409);
     expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE bucket LIKE 'jour-claude:%'").get().n).toBe(0);
   });
-  it("base indisponible pour le compteur : traitement refusé (le coût n'est jamais laissé sans limite)", async () => {
+  it("database unavailable for the counter: processing refused (cost is never left unlimited)", async () => {
     const { quotaClaude } = await import("../src/lib/ratelimit.js");
     const panne = { DB: { prepare: () => ({ bind: () => ({ first: async () => { throw new Error("D1"); } }) }) } };
     vi.spyOn(console, "warn").mockImplementation(() => {});
     expect(await quotaClaude(panne, "u1", 60)).toMatchObject({ message: expect.stringMatching(/limite/) });
     vi.restoreAllMocks();
   });
-  it("nombre de dossiers par compte plafonné (chaque dossier ouvre ses propres lectures de liasse)", async () => {
+  it("number of files per account capped (each file opens its own tax-return readings)", async () => {
     const { CLAUDE_QUOTAS } = await import("../src/config.js");
-    const a = await seConnecter("a@exemple.fr"); // 1 dossier
+    const a = await seConnecter("a@exemple.fr"); // 1 file
     const u = env.DB.sqlite.prepare("SELECT user_id FROM dossiers WHERE id = ?").get(a.id).user_id;
     for (let i = 1; i < CLAUDE_QUOTAS.dossiersParUtilisateur; i++) {
       env.DB.sqlite.prepare("INSERT INTO dossiers (id, user_id, siren, company_json, status, created_at, updated_at) VALUES (?, ?, ?, '{}', 'en_cours', 0, 0)").run(crypto.randomUUID(), u, String(100000000 + i));
@@ -519,7 +519,7 @@ describe("quotas des traitements par Claude (SEC-01)", () => {
     const r = await appel("/api/dossiers", { methode: "POST", cookie: a.cookie, corps: { siren: "552100554" } });
     expect(r.status).toBe(429);
     expect((await r.json()).erreur).toBe("limite_dossiers");
-    // le dossier déjà ouvert pour ce SIREN reste accessible
+    // the file already open for this SIREN stays accessible
     expect((await appel("/api/dossiers", { methode: "POST", cookie: a.cookie, corps: { siren: SIREN } })).status).toBe(201);
   });
 });

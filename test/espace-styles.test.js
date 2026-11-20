@@ -1,6 +1,6 @@
-// Une seule direction artistique dans l'espace du dirigeant (PR « Espace : une seule direction artistique, un écran par
-// étape, sans jargon », 19/11/2026) : chaque page charge la feuille commune, le nom de code est écrit en Geist demi-gras
-// partout (accueil compris), et le jargon remplacé ne revient pas à l'écran.
+// A single art direction in the owner's space (PR "Owner's space: a single art direction, one screen per
+// step, without jargon", 19/11/2026): each page loads the shared stylesheet, the code name is written in Geist semibold
+// everywhere (home page included), and the replaced jargon does not come back on screen.
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -16,8 +16,8 @@ function pagesHtml(dossier) {
 const PAGES = [...pagesHtml(join(racine, "espace")), join(racine, "connexion.html")];
 const css = (f) => readFileSync(join(racine, "css", f), "utf8");
 
-describe("feuille de style commune de l'espace", () => {
-  it("l'espace compte au moins six pages (dossier, parcours, valorisation, teaser, mémorandum, connexion)", () => {
+describe("shared stylesheet of the owner's space", () => {
+  it("the space has at least six pages (file, guided steps, valuation, teaser, memorandum, sign-in)", () => {
     expect(PAGES.length).toBeGreaterThanOrEqual(6);
   });
   it.each(PAGES.map((p) => [p.replace(racine, "public/"), p]))("%s charge styles.css puis espace-bento.css", (_, p) => {
@@ -29,13 +29,13 @@ describe("feuille de style commune de l'espace", () => {
   });
 });
 
-describe("nom de code : Geist demi-gras partout", () => {
-  it("espace-bento.css ne charge plus Instrument Serif et n'écrit plus le nom de code en italique", () => {
+describe("code name: Geist semibold everywhere", () => {
+  it("espace-bento.css no longer loads Instrument Serif and no longer writes the code name in italics", () => {
     const s = css("espace-bento.css");
     expect(s).not.toMatch(/Instrument Serif/);
     expect(s).not.toMatch(/font-style:\s*italic/);
   });
-  it("accueil : aucun sélecteur de nom de code en italique", () => {
+  it("home page: no italic code-name selector", () => {
     const s = css("landing-bento.css");
     for (const sel of [".carte-estimation-code", ".confid-apres", ".resultat-code", ".bulle-code", ".dossier-cta-code"]) {
       for (const regle of s.split("}").filter((r) => r.includes(sel))) expect(regle, sel).not.toMatch(/font-style:\s*italic/);
@@ -43,14 +43,14 @@ describe("nom de code : Geist demi-gras partout", () => {
   });
 });
 
-describe("jargon : libellés montrés au dirigeant", () => {
-  it("« EBE publié » devient « EBE des comptes publics » à l'écran ; le libellé de l'Excel ne change pas", () => {
+describe("jargon: labels shown to the owner", () => {
+  it('"EBE publié" becomes "EBE des comptes publics" on screen; the Excel label does not change', () => {
     const ebe = CHAMPS.find((c) => c.cle === "ebe");
     expect(libelleEcran(ebe)).toBe("EBE des comptes publics");
     expect(aideEcran(ebe)).toMatch(/comptes publics \(registre national des entreprises\)/);
-    expect(ebe.libelle).toBe("EBE publié"); // datapack Excel (document des repreneurs) inchangé
+    expect(ebe.libelle).toBe("EBE publié"); // Excel datapack (document for buyers) unchanged
   });
-  it("les autres champs gardent leur libellé à l'écran", () => {
+  it("the other fields keep their on-screen label", () => {
     expect(libelleEcran(CHAMPS.find((c) => c.cle === "chiffre_affaires"))).toBe("Chiffre d'affaires");
   });
 });

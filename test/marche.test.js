@@ -1,14 +1,14 @@
-// Étude de marché : structure du secteur (registres publics) et garde-fou sur les sources web. Valeurs calculées à la main.
+// Market research: industry structure (public registries) and safeguard on web sources. Values calculated by hand.
 import { describe, it, expect } from "vitest";
 import { structureSecteur, bandeDe, CODES_REGIONS } from "../src/sources/secteur.js";
 import { faitsSourcesVerifies, dernierJson } from "../src/lib/claude.js";
 
-// Comptes réels relevés le 17/11/2026 (menuiserie 43.32A, Pays de la Loire, entreprises actives)
+// Real counts recorded on 17/11/2026 (joinery 43.32A, Pays de la Loire, active companies)
 const comptes = { region: { sans: 3210, "1_9": 1236, "10_49": 243, "50_plus": 19 }, france: { "10_49": 2317, "50_plus": 78 } };
 
-describe("structure du secteur", () => {
+describe("industry structure", () => {
   const s = structureSecteur(comptes, { naf: "43.32A", region: "Pays de la Loire", trancheEntreprise: "12", date: "17/11/2026" });
-  it("total régional, part des moins de 10 salariés, rang de taille de l'entreprise", () => {
+  it("regional total, share of companies with fewer than 10 employees, the company's size rank", () => {
     expect(s.region_total).toBe(4708);                          // 3 210 + 1 236 + 243 + 19
     expect(s.part_moins_10).toBeCloseTo(0.94435, 5);            // 4 446 / 4 708 = 0,944350
     expect(s.bande_entreprise).toBe("10_49");
@@ -18,7 +18,7 @@ describe("structure du secteur", () => {
     expect(s.france_10_plus_plafonne).toBe(false);
     expect(s.source).toMatch(/INSEE Sirene.*43\.32A.*17\/11\/2026/);
   });
-  it("entreprise sans salarié : pas de rang ; compte plafonné signalé ; région inconnue sans résultat", () => {
+  it("company without employees: no rank; capped count flagged; unknown region without a result", () => {
     expect(structureSecteur(comptes, { naf: "43.32A", region: "Pays de la Loire", trancheEntreprise: "NN" }).part_meme_taille_ou_plus).toBeNull();
     expect(structureSecteur({ region: { ...comptes.region, sans: 10000 }, france: { "10_49": 10000, "50_plus": 5 } }, { naf: "x", region: "y", trancheEntreprise: "01" }))
       .toMatchObject({ region_plafonne: true, france_10_plus_plafonne: true });
@@ -28,8 +28,8 @@ describe("structure du secteur", () => {
   });
 });
 
-describe("faits de marché : garde-fou des sources", () => {
-  it("ne garde que les faits dont l'adresse a été renvoyée par la recherche, bien formés et d'un thème connu", () => {
+describe("market facts: safeguard on sources", () => {
+  it("keeps only facts whose address was returned by the search, well formed and of a known theme", () => {
     const faits = [
       { theme: "taille", fait: "Le marché pèse 4 Md€.", chiffre: "4 Md€", annee: 2024, source: "INSEE", url: "https://www.insee.fr/fr/statistiques/1/" },
       { theme: "taille", fait: "Chiffre inventé.", url: "https://inconnu.fr/page" },
@@ -41,7 +41,7 @@ describe("faits de marché : garde-fou des sources", () => {
     expect(r).toEqual([{ theme: "taille", fait: "Le marché pèse 4 Md€.", chiffre: "4 Md€", annee: "2024", source: "INSEE", url: "https://www.insee.fr/fr/statistiques/1/" }]);
     expect(faitsSourcesVerifies(null, [])).toEqual([]);
   });
-  it("lit le dernier bloc JSON de la réponse", () => {
+  it("reads the last JSON block of the response", () => {
     expect(dernierJson("Texte\n```json\n{\"faits\":[]}\n```")).toEqual({ faits: [] });
     expect(dernierJson("pas de json")).toBeNull();
   });

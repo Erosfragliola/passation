@@ -7,34 +7,34 @@ const ACCUEIL = `<html><head><title>Atelier Exemple</title><meta property="og:im
 <a href="/a-propos">Qui sommes-nous</a><a href="/contact">Contact</a><a href="https://facebook.com/x">FB</a>
 <a href="/nos-produits">Produits</a><a href="/blog/article-1">Article</a><a href="/catalogue.pdf">PDF</a><a href="https://autre.fr/page">Ailleurs</a></body></html>`;
 
-describe("lecture du site : règles", () => {
-  it("adresse publique uniquement", () => {
+describe("website reading: rules", () => {
+  it("public address only", () => {
     expect(adressePublique("atelier-exemple.fr")?.href).toBe("https://atelier-exemple.fr/");
     for (const a of ["http://127.0.0.1", "localhost", "ftp://x.fr", "https://www.facebook.com/atelier", "http://[::1]/", "intranet"]) expect(adressePublique(a)).toBeNull();
   });
-  it("liens internes utiles d'abord ; contact, PDF, autres domaines exclus", () => {
+  it("useful internal links first; contact, PDF, other domains excluded", () => {
     const l = liensInternes(ACCUEIL, new URL("https://atelier-exemple.fr/"));
     expect(l.slice(0, 2)).toEqual(expect.arrayContaining(["https://atelier-exemple.fr/a-propos", "https://atelier-exemple.fr/nos-produits"]));
     expect(l.join(" ")).not.toMatch(/contact|\.pdf|facebook|autre\.fr/);
   });
-  it("texte sans scripts ni menus, entités décodées", () => {
+  it("text without scripts or menus, entities decoded", () => {
     const t = texteDepuisHtml(ACCUEIL);
     expect(t.titre).toBe("Atelier Exemple");
     expect(t.texte).toContain("Fabricant de meubles depuis 1980 & artisans.");
     expect(t.texte).not.toMatch(/alert|Accueil/);
   });
-  it("candidats logo : image « logo », image de partage, icône", () => {
+  it('logo candidates: "logo" image, share image, icon', () => {
     expect(candidatsLogo(ACCUEIL, new URL("https://atelier-exemple.fr/")).map((c) => c.url)).toEqual([
       "https://atelier-exemple.fr/img/logo-atelier.png", "https://atelier-exemple.fr/img/partage.jpg", "https://atelier-exemple.fr/favicon.png"]);
   });
-  it("robots.txt respecté (règle la plus précise)", () => {
+  it("robots.txt respected (most specific rule)", () => {
     const r = "User-agent: Googlebot\nDisallow: /\n\nUser-agent: *\nDisallow: /prive\nAllow: /prive/public";
     expect(robotsAutorise(r, "/a-propos")).toBe(true);
     expect(robotsAutorise(r, "/prive/x")).toBe(false);
     expect(robotsAutorise(r, "/prive/public/y")).toBe(true);
     expect(robotsAutorise("User-agent: *\nDisallow: /", "/")).toBe(false);
   });
-  it(`lecture : ${PAGES_MAX} pages au plus, pages interdites par robots.txt ignorées`, async () => {
+  it(`reading: ${PAGES_MAX} pages at most, pages disallowed by robots.txt ignored`, async () => {
     const liens = Array.from({ length: 12 }, (_, i) => `<a href="/page-produit-${i}">P${i}</a>`).join("");
     const f = vi.fn(async (u) => {
       const url = String(u);
@@ -45,7 +45,7 @@ describe("lecture du site : règles", () => {
     expect(r.pages).toHaveLength(PAGES_MAX);
     expect(r.pages.map((p) => p.url)).not.toContain("https://atelier-exemple.fr/page-produit-1");
   });
-  it("site entièrement interdit aux robots : refus", async () => {
+  it("website entirely disallowed for robots: refusal", async () => {
     const f = async (u) => (String(u).endsWith("robots.txt") ? new Response("User-agent: *\nDisallow: /") : new Response("<p>x</p>", { headers: { "content-type": "text/html" } }));
     await expect(lireSite("atelier-exemple.fr", { fetch: f })).rejects.toThrow("robots_refuse");
   });

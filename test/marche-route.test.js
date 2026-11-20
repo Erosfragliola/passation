@@ -1,5 +1,5 @@
-// Étude de marché par l'API : jamais deux études à la fois pour un dossier (409 pendant l'exécution), une demande en
-// double ne consomme pas de quota, et un échec libère le verrou. Claude et l'annuaire sont simulés.
+// Market research through the API: never two studies at once for a file (409 while running), a duplicate
+// request does not consume quota, and a failure releases the lock. Claude and the directory are simulated.
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 
@@ -42,7 +42,7 @@ async function seConnecter(email) {
 }
 const etat = async (id) => JSON.parse((await env.DB.prepare("SELECT data_json FROM answers WHERE dossier_id = ? AND step = 'marche'").bind(id).first())?.data_json ?? "{}");
 const quotaUtilise = async () => (await env.DB.prepare("SELECT COALESCE(SUM(count), 0) AS n FROM rate_limits WHERE bucket LIKE 'jour-claude:%'").first()).n;
-/** Promesse réglable de l'extérieur : l'étude « tourne » tant qu'on ne la termine pas. */
+/** Promise that can be settled from outside: the study "runs" until it is finished. */
 const enAttente = () => { let fin; const p = new Promise((ok, ko) => { fin = { ok, ko }; }); return { p, fin }; };
 
 beforeEach(async () => {
@@ -54,8 +54,8 @@ beforeEach(async () => {
   await env.DB.prepare("INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?)").bind(CLE_MAQUETTE(SIREN), JSON.stringify(d), Math.floor(Date.now() / 1000)).run();
 });
 
-describe("étude de marché : une seule à la fois", () => {
-  it("une deuxième demande pendant l'exécution reçoit 409, sans relancer de recherche ni consommer de quota", async () => {
+describe("market research: only one at a time", () => {
+  it("a second request while running receives 409, without restarting a search or consuming quota", async () => {
     const { cookie, id } = await seConnecter("marche@exemple.fr");
     const url = `/api/dossiers/${id}/documents/memo/marche`;
     const etude = enAttente();
@@ -71,7 +71,7 @@ describe("étude de marché : une seule à la fois", () => {
     expect(seconde.status).toBe(409);
     expect((await seconde.json()).erreur).toBe("en_cours");
     expect(rechercherMarche).toHaveBeenCalledTimes(1);
-    expect(await quotaUtilise()).toBe(1); // le 409 est répondu avant le décompte du quota
+    expect(await quotaUtilise()).toBe(1); // the 409 is answered before the quota is counted
 
     etude.fin.ok({ faits: [], urls: [] });
     expect((await premiere).status).toBe(200);
@@ -81,7 +81,7 @@ describe("étude de marché : une seule à la fois", () => {
     expect(fin.date).toBeGreaterThan(0);
   });
 
-  it("un échec (durée dépassée) libère le verrou, compte un essai et répond 502 ; une nouvelle demande est acceptée", async () => {
+  it("a failure (time exceeded) releases the lock, counts an attempt and answers 502; a new request is accepted", async () => {
     const { cookie, id } = await seConnecter("marche2@exemple.fr");
     const url = `/api/dossiers/${id}/documents/memo/marche`;
     vi.spyOn(console, "log").mockImplementation(() => {});
@@ -98,7 +98,7 @@ describe("étude de marché : une seule à la fois", () => {
     expect((await etat(id)).essais).toBe(2);
   });
 
-  it("un verrou de plus de 180 s (traitement interrompu) n'empêche pas une nouvelle étude", async () => {
+  it("a lock older than 180 s (interrupted processing) does not prevent a new study", async () => {
     const { cookie, id } = await seConnecter("marche3@exemple.fr");
     const t = Math.floor(Date.now() / 1000);
     await env.DB.prepare("INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'marche', ?, ?)").bind(id, JSON.stringify({ en_cours: t - 181, essais: 0 }), t).run();
