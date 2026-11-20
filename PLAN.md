@@ -274,6 +274,13 @@ Chaque étape : commit en français, contrôle anti-secret (`git grep`), push, d
   Non publiés : `marque.html`, `img/source/`, `CREDITS.md` (`public/.assetsignore`). Secrets ANTHROPIC/BREVO non
   requis à ce stade (étapes 3 et suivantes).
 - **10/11/2026, typographie** : Geist partout (titres 500, interlettrage serré, mots clés en italique ; chiffres en 300), Geist Mono pour les étiquettes ; remplace Instrument Serif, Inter Tight et IBM Plex Mono (y compris maquette 3D et image téléchargeable).
+- **20/11/2026, parcours d'analyse plus guidé (PR #29, options recommandées A1 à F1 retenues)** : écran d'accueil ;
+  10 écrans au lieu de 14 (9 questions + le site), chaque réponse rattachée à une section du mémorandum ; montants
+  en champ formaté + curseur (`public/js/montants.js`), proposition jamais enregistrée sans confirmation ; métiers en
+  puces (site, puis intitulé NAF le plus fin : `src/data/naf-sous-classes.json` INSEE, `naf-classes-en.json`
+  Eurostat) ; distinctions et axes : 3 au plus ; dates clés en lignes ; faits du site par thème, contradictions avec
+  les registres à trancher (`public/js/faits-site.js`) ; logo et photos choisis juste après la lecture du site,
+  visibles sur la couverture, l'activité et l'équipe du mémorandum ; photos filtrées à la lecture (`site.js`).
 
 ## 11. Parcours après le SIREN et livrables (décisions du 10/11/2026)
 

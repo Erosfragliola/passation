@@ -1,8 +1,9 @@
 // Réponses proposées au dirigeant pour le parcours guidé (« Passation prépare, le dirigeant valide »).
 // Chaque proposition dit d'où elle vient : registres publics, comptes, site validé, ou « choix le plus fréquent »
 // (alors à confirmer). Rien n'est enregistré tant que le dirigeant n'a pas validé l'écran. Module pur, testé.
-import { regionDe, secteurDe } from "./anonymat.js";
-import { libelleEffectif } from "../../public/js/regles.js";
+import { regionDe } from "./anonymat.js";
+import { activiteFine } from "./naf.js";
+import { faitsUtilisables } from "../../public/js/faits-site.js";
 import { t as tr } from "../../public/js/i18n.js";
 
 export const SOURCES_PROPOSITION = Object.fromEntries(["registres", "comptes", "site", "secteur", "frequent"].map((k) => [k, null]));
@@ -11,11 +12,10 @@ for (const k of Object.keys(SOURCES_PROPOSITION)) Object.defineProperty(SOURCES_
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 const annee = (d) => (d ? Number(String(d).slice(0, 4)) || null : null);
 
-/** Croissance proposée : l'option la plus proche de la croissance annuelle moyenne passée. */
+/** Croissance proposée (curseur) : la croissance annuelle moyenne passée, arrondie au point, bornée à −20 % / +30 %. */
 export function croissanceProposee(tcam) {
   if (!ok(tcam)) return null;
-  const options = [-0.05, 0, 0.05, 0.1, 0.15];
-  return options.reduce((m, o) => (Math.abs(o - tcam) < Math.abs(m - tcam) ? o : m), options[0]);
+  return Math.min(0.3, Math.max(-0.2, Math.round(tcam * 100) / 100));
 }
 
 /** Type de clientèle d'après la section NAF (commerce de détail, hébergement, services aux personnes : particuliers). */
@@ -32,19 +32,31 @@ const DISTINCTIONS = [
   ["Certifications", /certif|qualibat|rge|iso\s?\d|label|agr[ée]ment/i], ["Relation client", /conseil|accompagn|service client|sav|proximit/i],
 ];
 
-/** Dates clés : création, puis événements publics (transferts, dénomination, reprise de fonds). */
+const CERTIFS = /\b(RGE|Qualibat|Qualifelec|Qualit['’]?EnR|QualiPAC|QualiBois|Qualisol|ISO\s?\d{4,5}|MASE|EPV|Entreprise du Patrimoine Vivant|Origine France Garantie|Ma[iî]tre artisan|Artisan d['’]art|Imprim['’]Vert|Ecocert|Label Rouge|NF\s?[A-Z]?\d{2,5})\b/gi;
+/** Certifications nommées dans les faits du site (« qualifiée RGE », « certifiée ISO 9001 ») : noms courts, sans doublon. */
+export function certificationsCitees(faits = []) {
+  const vus = new Map();
+  for (const f of faits) for (const m of String(f.fait || "").matchAll(CERTIFS)) { const n = m[1].replace(/\s+/g, " ").replace(/^iso ?/i, "ISO "); if (!vus.has(n.toLowerCase())) vus.set(n.toLowerCase(), n); }
+  return [...vus.values()];
+}
+
+/** Dates clés : création, puis événements publics (transferts, dénomination, reprise de fonds), en lignes
+ *  { date, type, precision, source } ; la source est toujours « registres publics ». */
 export function datesCles(entreprise) {
   const lignes = [];
+  const source = SOURCES_PROPOSITION.registres;
   const c = annee(entreprise.date_creation);
-  if (c) lignes.push(entreprise.ville ? tr("serveur.propositions.dates.creation_ville", { annee: c, ville: entreprise.ville }) : tr("serveur.propositions.dates.creation", { annee: c }));
+  if (c) lignes.push({ date: String(c), type: "creation", precision: entreprise.ville ? tr("serveur.propositions.precisions.creation_ville", { ville: entreprise.ville }) : "", source });
   for (const e of entreprise.evenements || []) {
     const a = annee(e.date);
     if (!a) continue;
-    if (e.type === "transfert_siege") lignes.push(e.detail ? tr("serveur.propositions.dates.transfert_ville", { annee: a, ville: e.detail }) : tr("serveur.propositions.dates.transfert", { annee: a }));
-    else if (e.type === "denomination") lignes.push(tr("serveur.propositions.dates.denomination", { annee: a }));
-    else if (e.type === "reprise_fonds") lignes.push(e.detail ? tr("serveur.propositions.dates.reprise_ville", { annee: a, ville: e.detail }) : tr("serveur.propositions.dates.reprise", { annee: a }));
+    const mois = /^\d{4}-(\d{2})/.exec(String(e.date))?.[1];
+    const date = mois ? `${mois}/${a}` : String(a);
+    if (e.type === "transfert_siege") lignes.push({ date, type: "transfert_siege", precision: e.detail ? tr("serveur.propositions.precisions.ville", { ville: e.detail }) : "", source });
+    else if (e.type === "denomination") lignes.push({ date, type: "autre", precision: tr("serveur.propositions.precisions.denomination"), source });
+    else if (e.type === "reprise_fonds") lignes.push({ date, type: "reprise", precision: e.detail ? tr("serveur.propositions.precisions.reprise_ville", { ville: e.detail }) : tr("serveur.propositions.precisions.reprise"), source });
   }
-  return lignes.slice(0, 6);
+  return lignes.slice(0, 8);
 }
 
 /**
@@ -55,44 +67,41 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   const p = {};
   const ajouter = (id, valeurs, source) => {
     const v = Object.fromEntries(Object.entries(valeurs).filter(([, x]) => x != null && x !== "" && !(Array.isArray(x) && !x.length)));
-    if (Object.keys(v).length) p[id] = { valeurs: v, source };
+    if (Object.keys(v).length) p[id] = { ...(p[id] || {}), valeurs: { ...(p[id]?.valeurs || {}), ...v }, source: p[id]?.source || source };
   };
-  const faits = (reponses.site?.faits || []).filter((f) => f.valide !== false);
+  const site = reponses.site || {};
+  // Faits du site : ceux que le dirigeant n'a pas retirés, sans contradiction non tranchée avec les registres
+  const faits = faitsUtilisables(site.faits || [], entreprise);
   const texteSite = faits.map((f) => f.fait).join(" ");
-  const secteur = secteurDe(entreprise.naf);
-  const effectif = libelleEffectif(entreprise.tranche_effectif?.code);
   const codeEff = String(entreprise.tranche_effectif?.code || "NN");
 
-  // Activité : faits du site, sinon une phrase tirée des registres (à compléter par le dirigeant)
-  const activiteSite = faits.filter((f) => ["activite", "produits", "clients", "qualite"].includes(f.categorie)).slice(0, 5).map((f) => f.fait).join(" ");
-  if (activiteSite) ajouter("activite", { "activite.description": activiteSite }, SOURCES_PROPOSITION.site);
-  else if (secteur) ajouter("activite", { "activite.description": [tr("serveur.propositions.activite.secteur", { secteur }), annee(entreprise.date_creation) ? tr("regles.suggestion.creee", { annee: annee(entreprise.date_creation) }) : null, entreprise.ville ? tr("serveur.propositions.activite.ville", { ville: entreprise.ville }) : null, effectif ? `(${effectif})` : null].filter(Boolean).join(" ") + tr("serveur.propositions.activite.precisez") }, SOURCES_PROPOSITION.registres);
-  // Simple amorce tirée des registres : à compléter par le dirigeant, jamais validée d'un clic dans le récapitulatif
-  if (p.activite?.source === SOURCES_PROPOSITION.registres) p.activite.a_completer = true;
+  // Activité : métiers lus sur le site, puis l'intitulé NAF le plus fin (sous-classe) ; type de clientèle d'après le
+  // secteur. La phrase du mémorandum est rédigée à l'écran à partir des choix du dirigeant (activite.description).
+  // Le libellé NAF n'est pré-coché que s'il n'y a pas de métier lu sur le site ; sinon il est proposé, décoché.
+  const lus = (Array.isArray(site.metiers) ? site.metiers : []).slice(0, 8), naf = activiteFine(entreprise.naf);
+  ajouter("activite", { "activite.metiers": lus.length ? lus : [naf] }, lus.length ? SOURCES_PROPOSITION.site : SOURCES_PROPOSITION.registres);
+  if (lus.length && naf && p.activite && !lus.includes(naf)) p.activite.autres = { "activite.metiers": [naf] };
+  ajouter("activite", { "clients.type_clientele": clienteleDuSecteur(entreprise.naf, entreprise.section_naf) }, SOURCES_PROPOSITION.secteur);
 
-  ajouter("operation", { "operation.part_cedee": "100 %", "operation.calendrier": "6 à 12 mois" }, SOURCES_PROPOSITION.frequent);
-
-  // Ce qui distingue l'entreprise : repéré dans les faits du site
+  // Ce qui distingue l'entreprise : repéré dans les faits du site (trois au plus) ; certifications nommées
   const distinctions = DISTINCTIONS.filter(([, re]) => re.test(texteSite)).map(([n]) => n).slice(0, 3);
-  const certifs = faits.filter((f) => DISTINCTIONS[4][1].test(f.fait)).map((f) => f.fait).join(" ");
-  ajouter("distinctions", { "activite.distinctions": distinctions, "activite.certifications": certifs }, SOURCES_PROPOSITION.site);
+  ajouter("distinctions", { "activite.distinctions": distinctions, "activite.certifications": certificationsCitees(faits) }, SOURCES_PROPOSITION.site);
 
-  // Équipe : encadrement estimé d'après l'effectif (à confirmer)
+  ajouter("histoire", { "activite.dates_cles": datesCles(entreprise) }, SOURCES_PROPOSITION.registres);
+
+  // Équipe : encadrement estimé d'après l'effectif (à confirmer). Aucun choix multiple pré-coché sans source.
   const encadrement = codeEff >= "11" && codeEff !== "NN" ? "Oui, un ou plusieurs responsables" : ["01", "02", "03"].includes(codeEff) ? "En partie" : null;
-  ajouter("equipe", { "dirigeant.encadrement": encadrement, "dirigeant.role_dirigeant": ["Commercial", "Gestion"] }, encadrement ? tr("serveur.propositions.sources.effectif") : SOURCES_PROPOSITION.frequent);
-
-  ajouter("histoire", { "activite.dates_cles": datesCles(entreprise).join("\n") }, SOURCES_PROPOSITION.registres);
-
-  ajouter("detention", { "operation.detention": "En direct, à titre personnel" }, SOURCES_PROPOSITION.frequent);
-  ajouter("exceptionnel", { "retraitements.exceptionnel_signale": "Non" }, SOURCES_PROPOSITION.frequent);
+  ajouter("equipe", { "dirigeant.encadrement": encadrement }, tr("serveur.propositions.sources.effectif"));
 
   const region = regionDe(entreprise.code_postal);
   const locale = /^47|^56|^96/.test(entreprise.naf || "");
-  ajouter("clients", { "activite.zone": locale ? "Locale" : "Régionale", "clients.regions": region ? [region] : null, "clients.type_clientele": clienteleDuSecteur(entreprise.naf, entreprise.section_naf) }, SOURCES_PROPOSITION.secteur);
+  ajouter("clients", { "activite.zone": locale ? "Locale" : "Régionale", "clients.regions": region ? [region] : null }, SOURCES_PROPOSITION.secteur);
+
+  ajouter("remuneration", { "retraitements.exceptionnel_signale": "Non" }, SOURCES_PROPOSITION.frequent);
+  ajouter("detention", { "operation.detention": "En direct, à titre personnel" }, SOURCES_PROPOSITION.frequent);
+  ajouter("operation", { "operation.part_cedee": "100 %", "operation.calendrier": "6 à 12 mois", "operation.accompagnement": "6 mois" }, SOURCES_PROPOSITION.frequent);
 
   const c = croissanceProposee(tcam);
   if (c != null) ajouter("perspectives", { "perspectives.croissance": c }, SOURCES_PROPOSITION.comptes);
-
-  ajouter("cession", { "operation.accompagnement": "6 mois", "operation.repreneur": ["Indifférent"] }, SOURCES_PROPOSITION.frequent);
   return p;
 }

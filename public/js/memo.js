@@ -1,7 +1,7 @@
 // Page du mémorandum : site et logo (faits validés un par un), sections rédigées à la demande, impression.
 const $ = (s) => document.querySelector(s);
 import { CARTE } from "/js/carte-france.js";
-import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices } from "/js/memo-format.js";
+import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices, rangPhoto } from "/js/memo-format.js";
 import { lien, t as tr, langue } from "/js/i18n.js";
 import { libelleOption } from "/js/questionnaire.js";
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -66,11 +66,12 @@ function dessinerPhotos() {
   fichier.addEventListener("change", () => { const f = fichier.files[0]; if (!f) return; const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", atteste.checked ? "oui" : "non"); ajouter(fd); fichier.value = ""; });
   remplacer($("#photos"), el("div", { class: "photos-panneau" },
     el("p", { class: "petit", text: tr("memo.js.photos.titre", { n: (etat.photos || []).length }) }),
+    (s.photos_candidates || []).length ? el("p", { class: "guide-lib", text: tr("memo.js.photos.cliquez") }) : null,
     el("label", { class: "fait", for: "attestation-photo" }, atteste, el("span", { text: tr("memo.js.photos.attestation") })),
     el("div", { class: "logos-liste" },
       ...(etat.photos || []).map((ph) => el("div", { class: "photo-choisie" }, el("img", { src: `${base}/photos/${ph.n}?v=${etat.versionPhotos}`, alt: ph.legende || tr("memo.js.photos.photo_n", { n: ph.n + 1 }) }),
         el("button", { type: "button", class: "lien-simple", onclick: async () => { try { etat = await api(`${base}/photos/${ph.n}`, { method: "DELETE" }); etat.versionPhotos = Date.now(); tout(); } catch (e) { message(e.message, true); } } }, tr("espace.js.retirer")))),
-      ...(s.photos_candidates || []).slice(0, 12).map((u) => el("button", { type: "button", class: "logo-choix photo-choix", title: tr("memo.js.photos.ajouter_site"), onclick: () => ajouter(JSON.stringify({ url: u, attestation: atteste.checked })) }, el("img", { src: u, alt: tr("memo.js.photos.candidate"), loading: "lazy", referrerpolicy: "no-referrer" })))),
+      ...(s.photos_candidates || []).slice(0, 12).filter((u) => !(etat.photos || []).some((ph) => ph.origine === u)).map((u) => el("button", { type: "button", class: "logo-choix photo-choix", title: tr("memo.js.photos.ajouter_site"), onclick: () => ajouter(JSON.stringify({ url: u, attestation: atteste.checked })) }, el("img", { src: u, alt: tr("memo.js.photos.candidate"), loading: "lazy", referrerpolicy: "no-referrer" })))),
     el("label", { class: "btn btn-contour btn-mini", for: "fichier-photo" }, tr("memo.js.photos.deposer")), fichier));
 }
 
@@ -152,6 +153,9 @@ const icone = (nom, classe = "dp-picto") => svg("svg", { viewBox: "0 0 24 24", c
 const logoPassation = (clair = false) => el("span", { class: `dp-logo-passation${clair ? " clair" : ""}` },
   svg("svg", { viewBox: "0 0 32 32", "aria-hidden": "true" }, svg("path", { d: "M9 27V15a7 7 0 0 1 14 0v12", fill: "none", stroke: "currentColor", "stroke-width": "2.4" }), svg("path", { d: "M5 27h22", stroke: "currentColor", "stroke-width": "2.4" }), svg("circle", { cx: "16", cy: "21", r: "2.8", fill: "#A8653A" })),
   "Passation");
+
+/** Logo de l'entreprise choisi par le dirigeant (couverture et pied de page), ou rien. */
+const logoEntreprise = (classe = "im-logo-entreprise") => (etat.logo ? el("img", { class: classe, src: `${base}/logo?v=${etat.versionPhotos || 0}`, alt: tr("memo.js.logo_entreprise", { nom: etat.entreprise || "" }).trim() }) : null);
 
 /** Texte avec **gras** → nœuds texte et <strong> (jamais de HTML injecté). */
 function enrichi(texte) {
@@ -276,7 +280,7 @@ function page({ s = null, titre, message = null, contenu = [], conclusion = null
     el("div", { class: "im-zone" }, ...contenu.flat().filter(Boolean)),
     messageCle(conclusion),
     el("footer", { class: "im-pied" },
-      logoPassation(),
+      el("span", { class: "im-pied-logos" }, logoEntreprise(), logoPassation()),
       el("div", { class: "im-pied-sources" },
         src.length ? el("span", { class: "im-sources", text: tr("memo.js.pied.sources", { n: src.length, liste: majuscule(src.join(", ")) }) }) : null,
         notes.length ? el("span", { class: "im-notes", text: tr("memo.js.pied.notes", { n: notes.length, liste: notes.map((n, k) => `(${k + 1}) ${n}`).join(" ") }) }) : null),
@@ -464,9 +468,11 @@ function organigramme() {
     el("ul", { class: "im-org-legende" }, el("li", { class: "personne", text: tr("memo.js.org.personne_physique") }), pe.holding ? el("li", { class: "holding", text: tr("memo.js.org.holding_court") }) : null, el("li", { class: "societe", text: tr("memo.js.org.societe") })));
 }
 
-const photoUrl = (n) => (etat.photos?.[n] ? `${base}/photos/${n}?v=${etat.versionPhotos}` : null);
+const photoUrl = (n) => (n != null && etat.photos?.[n] ? `${base}/photos/${n}?v=${etat.versionPhotos}` : null);
+const photoPour = (usage) => photoUrl(rangPhoto(usage, etat.photos?.length || 0));
 function photo(n, attendu = tr("memo.js.photos.photo_n", { n: "" }).trim()) {
   const u = photoUrl(n);
+  if (n == null) return el("div", { class: "im-photo-vide" }, el("span", { text: tr("memo.js.photos.a_ajouter", { quoi: attendu }) }), el("span", { class: "petit", text: tr("memo.js.photos.ou") }));
   return u ? el("figure", { class: "im-photo" }, el("img", { src: u, alt: etat.photos[n].legende || tr("memo.js.photos.entreprise") }), etat.photos[n].legende ? el("figcaption", { text: etat.photos[n].legende }) : null)
     : el("div", { class: "im-photo-vide" }, el("span", { text: tr("memo.js.photos.a_ajouter", { quoi: attendu }) }), el("span", { class: "petit", text: tr("memo.js.photos.ou") }));
 }
@@ -516,11 +522,13 @@ function cerclesSecteur(sct) {
 // ------------------------------------------------------------------ Pages fixes
 function couverture() {
   const q = p();
+  const u = photoPour("couverture");
   return el("div", { class: "diapo im-couverture" },
-    el("div", { class: "im-couv-cadre" }, motif(),
+    el("div", { class: "im-couv-cadre" }, u ? el("div", { class: "im-couv-photo", style: `background-image:url('${u}')` }) : motif(),
       el("div", { class: "im-couv-titre" }, el("p", { class: "im-couv-etiquette", text: tr("memo.memorandum_information") }), el("h2", { text: q.nom_de_code || tr("teaser.js.projet") }),
         q.secteur || q.region ? el("p", { class: "im-couv-sous", text: [q.secteur, q.region].filter(Boolean).join(" · ") }) : null)),
     el("div", { class: "im-encoche-carte im-couv-encoche" },
+      logoEntreprise("im-couv-logo"),
       el("span", { class: "im-pilule", text: tr("teaser.js.confidentiel") }), el("strong", { text: majuscule(moisAnnee()) }), logoPassation()));
 }
 function pageOuverture(partie, k) {
@@ -601,11 +609,11 @@ function pagesChapitre(s) {
     }
     case "activite":
       return [chapitre(s, { contenu: [el("div", { class: "im-grille im-g-texte-encadre" }, el("div", { class: "im-col-texte" }, corpsTexte(s)),
-        el("div", { class: "im-pile" }, encadre(tr("memo.js.activite.donnees_cles"), tableCles([[tr("teaser.js.tuiles.secteur"), q.secteur], [tr("memo.js.activite.zone"), q.zone ? libelleOption("zone", q.zone) : q.zone], [tr("memo.js.kpi.salaries"), effectifCourt()], [tr("memo.js.kpi.ca", { annee: an ?? "" }).trim(), ok(ca) ? montant(ca) : null], [tr("memo.js.histoire.region_siege"), q.region]])), encadre(tr("memo.js.activite.en_images"), photo(0, tr("memo.js.activite.photo_atelier")))))],
+        el("div", { class: "im-pile" }, encadre(tr("memo.js.activite.donnees_cles"), tableCles([[tr("teaser.js.tuiles.secteur"), q.secteur], [tr("memo.js.activite.zone"), q.zone ? libelleOption("zone", q.zone) : q.zone], [tr("memo.js.kpi.salaries"), effectifCourt()], [tr("memo.js.kpi.ca", { annee: an ?? "" }).trim(), ok(ca) ? montant(ca) : null], [tr("memo.js.histoire.region_siege"), q.region]])), encadre(tr("memo.js.activite.en_images"), photo(rangPhoto("activite", etat.photos?.length || 0), tr("memo.js.activite.photo_atelier")))))],
         sources: [SOURCES.publiques, SOURCES.dirigeant, faitsSite("activite", "produits", "qualite") ? SOURCES.site : null] })];
     case "organisation":
       return [chapitre(s, { contenu: [el("div", { class: "im-grille im-g-texte-encadre" }, el("div", { class: "im-col-texte" }, corpsTexte(s)),
-        el("div", { class: "im-pile" }, encadre(tr("memo.js.organisation.effectifs"), bandeChiffres([[effectifCourt(), tr("memo.js.kpi.salaries")], [q.ville || tr("dossier.formats.nd"), tr("memo.js.organisation.site_principal")]]), tableCles([[tr("memo.js.organisation.creation"), q.creation ? String(q.creation) : null], [tr("memo.js.organisation.region"), q.region]])), encadre(tr("memo.js.organisation.equipe"), photo(1, tr("memo.js.organisation.photo_equipe")))))],
+        el("div", { class: "im-pile" }, encadre(tr("memo.js.organisation.effectifs"), bandeChiffres([[effectifCourt(), tr("memo.js.kpi.salaries")], [q.ville || tr("dossier.formats.nd"), tr("memo.js.organisation.site_principal")]]), tableCles([[tr("memo.js.organisation.creation"), q.creation ? String(q.creation) : null], [tr("memo.js.organisation.region"), q.region]])), encadre(tr("memo.js.organisation.equipe"), photo(rangPhoto("equipe", etat.photos?.length || 0), tr("memo.js.organisation.photo_equipe")))))],
         sources: [SOURCES.publiques, SOURCES.dirigeant, faitsSite("equipe") ? SOURCES.site : null] })];
     case "marche": {
       const sct = etat.marche?.secteur, faits = faitsMarche();
@@ -816,8 +824,8 @@ function panneau(d) {
   if (s) {
     if (!s.redigee) reco(tr("memo.js.recos.non_redige"));
     for (const t of s.a_completer || []) reco(t);
-    if (s.cle === "activite" && !photoUrl(0)) reco(tr("memo.js.recos.photo_activite"), vers("#photos", tr("memo.js.recos.ajouter_photos")));
-    if (s.cle === "organisation" && !photoUrl(1)) reco(tr("memo.js.recos.photo_equipe"), vers("#photos", tr("memo.js.recos.ajouter_photos")));
+    if (s.cle === "activite" && !photoPour("activite")) reco(tr("memo.js.recos.photo_activite"), vers("#photos", tr("memo.js.recos.ajouter_photos")));
+    if (s.cle === "organisation" && !photoPour("equipe")) reco(tr("memo.js.recos.photo_equipe"), vers("#photos", tr("memo.js.recos.ajouter_photos")));
     if (s.cle === "marche" && !faitsMarche().length) reco(tr("memo.js.recos.marche_aucun"), vers("#marche", tr("memo.js.recos.voir_marche")));
     if (s.cle === "marche" && faitsMarche().length) reco(tr("memo.js.recos.marche_retenus", { n: faitsMarche().length }), vers("#marche", tr("memo.js.recos.verifier")));
     if (d.classList.contains("serre") || d.dataset.suite) reco(tr("memo.js.recos.long"));

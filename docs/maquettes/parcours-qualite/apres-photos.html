@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F. Votre logo et vos photos</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .logo-ligne { display: flex; align-items: center; gap: 18px; padding: 14px 16px; background: var(--papier); border: 1px solid var(--trait); border-radius: 16px; margin-bottom: 32px; }
+  .logo-ligne .logo { width: 132px; height: 64px; border-radius: 10px; background: #fff; border: 1px solid var(--trait); display: grid; place-items: center; font: 700 15px var(--sans); letter-spacing: .08em; color: var(--vert); }
+  .logo-ligne .logo i { font-style: normal; font-family: var(--affiche); font-size: 22px; }
+  .logo-ligne div { flex: 1 1 220px; font-size: 14.5px; }
+  .photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .photo { position: relative; aspect-ratio: 3 / 2; border-radius: 12px; overflow: hidden; cursor: pointer; border: 2px solid transparent; }
+  .photo input { position: absolute; opacity: 0; }
+  .photo .img { position: absolute; inset: 0; }
+  .photo .lg { position: absolute; left: 10px; bottom: 8px; color: #fff; font-size: 12.5px; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  .photo .coche { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.85); border: 1px solid rgba(0,0,0,.15); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .photo:has(input:checked) { border-color: var(--vert); }
+  .photo:has(input:checked) .coche { background: var(--vert); color: #fff; border-color: var(--vert); }
+  .photo:has(input:checked) .coche::after { content: "✓"; }
+  .photo:has(input:disabled) { opacity: .5; cursor: not-allowed; }
+  .photo:has(input:focus-visible) { outline: 2px solid var(--vert); outline-offset: 2px; }
+  /* Photos fictives dessinées en CSS (aucune image réelle) */
+  .i1 { background: repeating-linear-gradient(100deg, #8A6A4A 0 14px, #94735190 14px 22px), linear-gradient(#7B5E42, #5A4430); }
+  .i2 { background: linear-gradient(160deg, transparent 55%, rgba(0,0,0,.18) 55%), repeating-linear-gradient(-35deg, #B08A60 0 18px, #9C7650 18px 22px); }
+  .i3 { background: radial-gradient(circle at 30% 45%, #D9B48C 0 12%, transparent 13%), radial-gradient(circle at 55% 40%, #CFA67C 0 11%, transparent 12%), radial-gradient(circle at 78% 48%, #DDB892 0 12%, transparent 13%), linear-gradient(#6E5A46, #4C3E30); }
+  .i4 { background: linear-gradient(90deg, #5B6670 0 30%, #7C8790 30% 34%, #5B6670 34%), linear-gradient(#444, #222); background-blend-mode: multiply; }
+  .i5 { background: linear-gradient(90deg, #C8A27A 0 20%, #B28C64 20% 22%, #C8A27A 22% 78%, #B28C64 78% 80%, #C8A27A 80%); }
+  .i6 { background: linear-gradient(180deg, #A9C4CF 0 45%, #7B6450 45%); }
+  .i7 { background: repeating-linear-gradient(0deg, #9B7B58 0 10px, #A88864 10px 20px); }
+  .i8 { background: linear-gradient(135deg, #D8C3A5, #9E8566); }
+  .i9 { background: linear-gradient(200deg, #6D5A44 0 50%, #8C735A 50%); }
+  .barre-choix { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 12px 0 0; flex-wrap: wrap; }
+  .droits { display: flex; gap: 12px; align-items: flex-start; margin-top: 22px; padding: 14px 16px; background: var(--sable-doux); border-radius: 12px; font-size: 14.5px; }
+  .droits input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--vert); }
+  .usage { font-size: 13.5px; color: var(--pierre-texte); margin: 0 0 12px; }
+  @media (max-width: 860px) { .photos { grid-template-columns: 1fr 1fr; } .logo-ligne { flex-wrap: wrap; } }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav><a href="#">Mon dossier</a><a href="#">FR</a></nav></div></header>
+<div class="parcours">
+  <ol class="fil-etapes" aria-label="Étapes">
+    <li class="fait"><span class="p"></span>Estimation</li>
+    <li class="fait"><span class="p"></span>Vos chiffres</li>
+    <li aria-current="step"><span class="p"></span>Vos réponses</li>
+    <li><span class="p"></span>Rédaction</li>
+    <li><span class="p"></span>Relecture et envoi</li>
+  </ol>
+  <main class="colonne">
+    <div class="progression"><span>Votre site · www.menuiserie-exemple.fr</span></div>
+    <h1 class="q">Votre logo et vos photos</h1>
+    <p class="chapo">Un mémorandum illustré se lit mieux. Voici ce que nous avons trouvé sur votre site.</p>
+
+    <div class="logo-ligne">
+      <span class="logo" aria-hidden="true"><i>ME</i>&nbsp;MENUISERIE</span>
+      <div><strong>Votre logo</strong><br><span class="petit">Trouvé dans l'en-tête de votre site. Il figurera sur la couverture et en pied de page.</span></div>
+      <button type="button" class="btn contour mini">Changer</button>
+    </div>
+
+    <fieldset class="bloc-q">
+      <legend>Cliquez sur les photos à utiliser</legend>
+      <p class="usage">Six au plus. La première sert de couverture ; les suivantes illustrent l'activité et l'équipe.</p>
+      <div class="photos" data-photos="6" data-compte="compte-photos">
+        <label class="photo"><input type="checkbox" checked aria-label="Photo : l'atelier"><span class="img i1"></span><span class="lg">Atelier</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" checked aria-label="Photo : escalier en chêne"><span class="img i2"></span><span class="lg">Escalier en chêne</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" checked aria-label="Photo : l'équipe"><span class="img i3"></span><span class="lg">L'équipe</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" aria-label="Photo : centre d'usinage"><span class="img i4"></span><span class="lg">Centre d'usinage</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" aria-label="Photo : porte intérieure"><span class="img i5"></span><span class="lg">Porte intérieure</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" aria-label="Photo : agencement de magasin"><span class="img i6"></span><span class="lg">Agencement de magasin</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" aria-label="Photo : parquet"><span class="img i7"></span><span class="lg">Parquet</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" aria-label="Photo : placard"><span class="img i8"></span><span class="lg">Placard</span><span class="coche"></span></label>
+        <label class="photo"><input type="checkbox" aria-label="Photo : pose sur chantier"><span class="img i9"></span><span class="lg">Pose sur chantier</span><span class="coche"></span></label>
+      </div>
+      <div class="barre-choix"><span id="compte-photos" class="petit" aria-live="polite"></span><span class="tres-petit">12 images trouvées · 3 écartées (icônes, bandeaux, trop petites)</span></div>
+    </fieldset>
+
+    <label class="droits"><input type="checkbox"><span>Ces photos appartiennent à l'entreprise, ou j'ai le droit de les utiliser.</span></label>
+    <p class="tres-petit" style="margin-top:14px"><button type="button" class="lien">Déposer mes propres photos</button> (PNG, JPEG ou WebP, 3 Mo au plus)</p>
+
+    <div class="nav-q"><a class="lien" href="apres-site.html">Retour</a><a class="btn" href="apres-final.html">Utiliser ces 3 photos →</a></div>
+    <p class="ou-va">Le logo va sur <strong>la couverture et le pied de page</strong> ; les photos sur <strong>la couverture</strong>, <strong>2.2 Activité</strong> et <strong>2.3 Équipe</strong>.</p>
+  </main>
+</div>
+<script src="maquettes.js"></script>
+</body>
+</html>

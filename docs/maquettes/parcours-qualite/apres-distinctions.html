@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C. Ce qui vous distingue</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .choix-icone small { display: block; font-size: 12.5px; color: var(--pierre-texte); }
+  .choix-icone .src-txt { position: absolute; top: -9px; left: 12px; font-size: 11.5px; background: var(--cuivre-doux); color: var(--cuivre-texte); padding: 1px 8px; border-radius: 999px; }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav><a href="#">Mon dossier</a><a href="#">FR</a></nav></div></header>
+<div class="parcours">
+  <ol class="fil-etapes" aria-label="Étapes">
+    <li class="fait"><span class="p"></span>Estimation</li>
+    <li class="fait"><span class="p"></span>Vos chiffres</li>
+    <li aria-current="step"><span class="p"></span>Vos réponses</li>
+    <li><span class="p"></span>Rédaction</li>
+    <li><span class="p"></span>Relecture et envoi</li>
+  </ol>
+  <main class="colonne">
+    <div class="progression"><span>Question 3 sur 10</span><span class="jauge" aria-hidden="true"><span style="width:30%"></span></span></div>
+    <h1 class="q">Qu'est-ce qui vous distingue de vos concurrents ?</h1>
+    <p class="chapo">Une à trois réponses. Un repreneur cherche ce qui rend l'entreprise difficile à copier.</p>
+
+    <fieldset class="bloc-q">
+      <legend class="visuellement-cache">Ce qui vous distingue, trois au plus</legend>
+      <div class="choix-icones" data-max="3">
+        <label class="choix-icone"><input type="checkbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.9 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><span>Qualité<small>finitions, matériaux</small></span><span class="coche"></span></label>
+        <label class="choix-icone"><input type="checkbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 0-2-2zM5 21l2-2"/></svg><span>Sur mesure<small>chaque projet est unique</small></span><span class="coche"></span></label>
+        <label class="choix-icone"><input type="checkbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zm0-13v5l3 2"/></svg><span>Délais<small>réactivité, plannings tenus</small></span><span class="coche"></span></label>
+        <label class="choix-icone"><input type="checkbox" checked><span class="src-txt">lu sur votre site</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V10l6 4V10l6 4V6l6 3v12zM3 21h18"/></svg><span>Équipements<small>centre d'usinage numérique</small></span><span class="coche"></span></label>
+        <label class="choix-icone"><input type="checkbox" checked><span class="src-txt">lu sur votre site</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg><span>Certifications<small>qualification RGE</small></span><span class="coche"></span></label>
+        <label class="choix-icone"><input type="checkbox"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l4-4 5 3 4-3 5 4-5 5-4-3-4 3z"/></svg><span>Relation client<small>conseil, suivi, SAV</small></span><span class="coche"></span></label>
+      </div>
+      <p class="compte-choix" aria-live="polite"></p>
+    </fieldset>
+
+    <fieldset class="bloc-q">
+      <legend>Vos certifications et qualifications</legend>
+      <p class="aide">Facultatif. Cité tel quel dans le mémorandum.</p>
+      <div class="puces">
+        <label class="puce"><input type="checkbox" checked><span class="src"></span>RGE</label>
+        <button type="button" class="puce ajouter">+ Ajouter (Qualibat, ISO 9001, label…)</button>
+      </div>
+    </fieldset>
+
+    <div class="nav-q"><a class="lien" href="apres-question.html">Retour</a><a class="btn" href="apres-dates.html">Continuer →</a></div>
+    <p class="ou-va">Votre réponse nourrit <strong>2.2 Activité et savoir-faire</strong> et les points forts de la synthèse.</p>
+  </main>
+</div>
+<script src="maquettes.js"></script>
+</body>
+</html>

@@ -41,7 +41,8 @@
       "deposer": "Déposer une photo (3 Mo au plus)",
       "entreprise": "Photo de l'entreprise",
       "a_ajouter": "{quoi} : à ajouter",
-      "ou": "Page Mémorandum, étape 1 (photos de l'entreprise)"
+      "ou": "Page Mémorandum, étape 1 (photos de l'entreprise)",
+      "cliquez": "Cliquez sur les photos à utiliser (la case ci-dessus d'abord) :"
     },
     "themes": {
       "taille": "Taille du marché",
@@ -440,6 +441,7 @@
     "redaction": {
       "en_cours": "Rédaction de la section en cours… (20 secondes environ)",
       "fait": "Chapitre rédigé. Relisez-le avant toute diffusion."
-    }
+    },
+    "logo_entreprise": "Logo de {nom}"
   }
 }

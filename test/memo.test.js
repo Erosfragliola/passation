@@ -153,10 +153,13 @@ describe("structure du mémorandum", () => {
     expect(titreValide("x".repeat(111))).toBeNull();
     expect(titreValide("")).toBeNull();
   });
+  // 20/11/2026 : détention et murs sur un même écran (« Le périmètre de la cession »), cinq premiers clients repliés
+  // dans l'écran « Vos clients »
   it("parcours : détention des titres, murs (avec la cession s'ils appartiennent au dirigeant), cinq premiers clients", () => {
-    const ids = QUESTIONS.map((q) => q.id);
-    expect(ids).toEqual(expect.arrayContaining(["detention", "locaux", "principaux_clients"]));
-    const locaux = QUESTIONS.find((q) => q.id === "locaux");
+    const champs = (id) => QUESTIONS.find((q) => q.id === id).champs.map((c) => `${c.etape}.${c.cle}`);
+    expect(champs("detention")).toEqual(["operation.detention", "retraitements.murs"]);
+    expect(champs("clients")).toContain("clients.principaux");
+    const locaux = QUESTIONS.find((q) => q.id === "detention");
     expect(locaux.suite.si({ retraitements: { murs: MURS.dirigeant } })).toBe(true);
     expect(locaux.suite.si({ retraitements: { murs: MURS.tiers } })).toBe(false);
     expect(locaux.suite.champs.map((c) => c.cle)).toEqual(["murs_cession", "loyer_paye", "loyer_marche"]);

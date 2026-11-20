@@ -130,7 +130,12 @@
       "titre_premiere": "Add a photo of the workshop or the products",
       "detail_premiere": "Memorandum recommendation: it brings the “Know-how” page to life",
       "titre_seconde": "Add a photo of the team or the site",
-      "detail_seconde": "Memorandum recommendation, “Team” page"
+      "detail_seconde": "Memorandum recommendation, “Team” page",
+      "titre_choisir": {
+        "one": "Choose your photo: 1 found on your website",
+        "other": "Choose your photos: {n} found on your website"
+      },
+      "detail_choisir": "They illustrate the memorandum’s cover, business and team pages."
     },
     "a_completer": {
       "titre": {
@@ -161,7 +166,8 @@
     "completer": "Complete",
     "deposer": "Upload",
     "ouvrir": "Open",
-    "excel": "Download Excel"
+    "excel": "Download Excel",
+    "choisir": "Choose"
   },
   "relire_envoyer": "Review and send your file",
   "documents": {

@@ -41,7 +41,8 @@
       "deposer": "Upload a photo (3 MB max)",
       "entreprise": "Company photo",
       "a_ajouter": "{quoi}: to be added",
-      "ou": "Memorandum page, step 1 (company photos)"
+      "ou": "Memorandum page, step 1 (company photos)",
+      "cliquez": "Click the photos to use (tick the box above first):"
     },
     "themes": {
       "taille": "Market size",
@@ -440,6 +441,7 @@
     "redaction": {
       "en_cours": "Drafting the section… (about 20 seconds)",
       "fait": "Chapter drafted. Review it before sharing it."
-    }
+    },
+    "logo_entreprise": "{nom} logo"
   }
 }

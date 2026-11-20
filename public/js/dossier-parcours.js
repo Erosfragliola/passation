@@ -17,7 +17,7 @@ export const ETAPES_PARCOURS = [["estimation"], ["chiffres"], ["reponses"], ["re
 // Libellés : src/contenu/<langue>/dossier.json, lus à chaque accès (élément 1 de chaque paire).
 for (const e of ETAPES_PARCOURS) Object.defineProperty(e, 1, { get: () => t(`dossier.etapes.${e[0]}`), enumerable: true, configurable: true });
 /** Écran du parcours guidé → étape du fil. Le site est une question de « Vos réponses ». */
-export const ETAPE_DE_L_ECRAN = { comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", questions: "reponses", site: "reponses", redaction: "redaction", pret: "relecture" };
+export const ETAPE_DE_L_ECRAN = { accueil: "chiffres", photos: "reponses", comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", questions: "reponses", site: "reponses", redaction: "redaction", pret: "relecture" };
 /** Étiquettes de la valeur, identiques partout (fiche de l'accueil, page du dossier, parcours guidé, valorisation). */
 export const etiquetteExpress = () => t("dossier.etiquette_express");
 export const etiquetteTitres = () => t("dossier.etiquette_titres");
@@ -64,6 +64,7 @@ export function lectureMemo(memo) {
     aCompleter,
     nbACompleter: pointsACompleter(memo).length,
     photos: (memo.photos || []).length,
+    photosTrouvees: (memo.site?.photos_candidates || []).length,
   };
 }
 
@@ -195,7 +196,10 @@ export function etatParcours(d, memo = null, teaser = null) {
     taches.push({ cle: "exercices", facultatif: true, titre: t("dossier.taches.exercices.titre", { annees: annees.length > 1 ? t("dossier.annees.liste", { debut: annees.slice(0, -1).join(", "), fin: annees.at(-1) }) : annees[0] }),
       detail: t("dossier.taches.exercices.detail", { annee: ex.dernier }), action: t("dossier.actions.ajouter"), href: `${liens.demarrer}&etape=exercice` });
   }
-  if (m && m.photos < 2) {
+  if (m && m.photos === 0 && m.photosTrouvees > 0) {
+    // Photos trouvées sur le site : on propose de les choisir (écran « Votre logo et vos photos » du parcours)
+    taches.push({ cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_choisir", { n: m.photosTrouvees }), detail: t("dossier.taches.photo.detail_choisir"), action: t("dossier.actions.choisir"), href: `${liens.demarrer}&etape=photos` });
+  } else if (m && m.photos < 2) {
     taches.push(m.photos === 0
       ? { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_premiere"), detail: t("dossier.taches.photo.detail_premiere"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` }
       : { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_seconde"), detail: t("dossier.taches.photo.detail_seconde"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` });
