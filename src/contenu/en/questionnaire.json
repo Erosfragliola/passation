@@ -1,0 +1,268 @@
+{
+  "_lisez_moi": "Text of the full questionnaire (public/js/questionnaire.js): steps, questions, and labels of multiple-choice answers (« options »: the key is the saved value, in French; the value is the label shown). Same keys as src/contenu/fr/questionnaire.json.",
+  "etapes": {
+    "activite": {
+      "titre": "Your business",
+      "intro": "These answers feed the teaser (anonymized) and the memorandum. Write simply, as you would to a buyer: nothing is made up for you.",
+      "questions": {
+        "description": {
+          "libelle": "What the company does, in a few sentences",
+          "aide": "Trade, know-how, what sets it apart."
+        },
+        "produits_services": {
+          "libelle": "Main products or services"
+        },
+        "clientele": {
+          "libelle": "Your customers: who are they? (consumers, businesses, industries)"
+        },
+        "zone": {
+          "libelle": "Main sales area"
+        },
+        "equipe": {
+          "libelle": "The team: key roles, management, length of service"
+        }
+      }
+    },
+    "atouts": {
+      "titre": "Your strengths",
+      "intro": "What makes the company valuable in a buyer’s eyes.",
+      "questions": {
+        "forces": {
+          "libelle": "The company’s three main strengths"
+        },
+        "developpement": {
+          "libelle": "Growth opportunities a buyer could pursue"
+        }
+      }
+    },
+    "operation": {
+      "titre": "The planned deal",
+      "intro": "What you are looking for: these details appear in the teaser and the memorandum.",
+      "questions": {
+        "part_cedee": {
+          "libelle": "Share of the capital to sell"
+        },
+        "motif": {
+          "libelle": "Reason for the sale",
+          "aide": "For example: retirement, a new project."
+        },
+        "accompagnement": {
+          "libelle": "Transition support offered to the buyer",
+          "aide": "Length and form of the handover."
+        },
+        "calendrier": {
+          "libelle": "Preferred timeline"
+        }
+      }
+    },
+    "dirigeant": {
+      "titre": "You and your pay",
+      "intro": "To compare the company with an equivalent one run by a salaried manager, we bring your pay back to a “normal” level.",
+      "questions": {
+        "remuneration_dirigeant_reelle": {
+          "libelle": "Your actual annual pay, including payroll taxes",
+          "aide": "Salary + payroll taxes + benefits paid by the company."
+        },
+        "remuneration_normative": {
+          "libelle": "What a salaried manager replacing you would cost, including payroll taxes",
+          "aide": "Your estimate; your accountant can help. Leave blank if you don’t know."
+        },
+        "role_dirigeant": {
+          "libelle": "What you alone handle today (customers, production, management)",
+          "aide": "Used to assess how much the company depends on you personally."
+        }
+      }
+    },
+    "retraitements": {
+      "titre": "Rent and one-off items",
+      "intro": "Some amounts in the accounts won’t recur for a buyer. Every adjustment must be justified.",
+      "questions": {
+        "loyer_paye": {
+          "libelle": "Annual rent paid, if you own the premises (or a family property company does)",
+          "aide": "Leave blank if the premises belong to a third party."
+        },
+        "loyer_marche": {
+          "libelle": "Annual market rent for equivalent premises"
+        },
+        "exceptionnels": {
+          "libelle": "One-off expenses or income included in EBITDA",
+          "aide": "Positive amount: an expense to add back (EBITDA goes up). Negative: income to remove."
+        }
+      }
+    },
+    "clients": {
+      "titre": "Your customers",
+      "intro": "Revenue concentration and recurrence weigh on the value.",
+      "questions": {
+        "part_premier_client": {
+          "libelle": "Share of revenue from your largest customer"
+        },
+        "part_cinq_clients": {
+          "libelle": "Share from your top five customers"
+        },
+        "part_recurrente": {
+          "libelle": "Share of recurring revenue (contracts, subscriptions, loyal customers)"
+        },
+        "regions": {
+          "libelle": "Regions where your main customers are",
+          "aide": "They will be marked on the memorandum map."
+        }
+      }
+    },
+    "perspectives": {
+      "titre": "Your 5-year outlook",
+      "intro": "Your estimate, presented as such in the memorandum. Without an answer, nothing is shown in its place.",
+      "questions": {
+        "croissance": {
+          "libelle": "Expected average annual revenue growth"
+        },
+        "marge_ebe": {
+          "libelle": "Target EBITDA margin (EBITDA / revenue)"
+        },
+        "investissements_pct": {
+          "libelle": "Planned annual capital expenditure, as a % of revenue"
+        }
+      }
+    },
+    "bilan": {
+      "titre": "Debts and assets to specify",
+      "intro": "These items can’t always be read from the tax return; they are used to go from enterprise value to the value of your shares.",
+      "questions": {
+        "comptes_courants_remboursables": {
+          "libelle": "Shareholder loans to be repaid"
+        },
+        "credit_bail_restant": {
+          "libelle": "Lease financing: remaining payments due"
+        },
+        "dividendes_a_verser": {
+          "libelle": "Dividends declared but not yet paid"
+        },
+        "plus_values_latentes": {
+          "libelle": "Unrealized gains (real estate, goodwill) that you can justify"
+        },
+        "frais_etablissement": {
+          "libelle": "Start-up costs still on the balance sheet"
+        },
+        "creances_douteuses": {
+          "libelle": "Doubtful receivables not provided for"
+        },
+        "actifs_hors_exploitation": {
+          "libelle": "Non-operating assets (excess cash, unused property)"
+        },
+        "capital_personnes_physiques": {
+          "libelle": "Is at least 75% of the capital held by individuals?",
+          "aide": "A condition for the reduced 15% corporate income tax rate (with revenue ≤ €10M)."
+        }
+      }
+    }
+  },
+  "options": {
+    "zone": {
+      "Locale": "Local",
+      "Régionale": "Regional",
+      "Nationale": "National",
+      "Internationale": "International"
+    },
+    "part_cedee": {
+      "100 %": "100%",
+      "Majoritaire": "Majority",
+      "Minoritaire": "Minority",
+      "À définir": "To be decided"
+    },
+    "distinctions": {
+      "Qualité": "Quality",
+      "Sur mesure": "Custom work",
+      "Délais": "Lead times",
+      "Équipements": "Equipment",
+      "Certifications": "Certifications",
+      "Relation client": "Customer relationship"
+    },
+    "encadrement": {
+      "Oui, un ou plusieurs responsables": "Yes, one or more managers",
+      "En partie": "Partly",
+      "Non, tout passe par moi": "No, everything goes through me"
+    },
+    "role_dirigeant": {
+      "Commercial": "Sales",
+      "Production": "Production",
+      "Gestion": "Administration",
+      "Achats": "Purchasing",
+      "Encadrement": "Management"
+    },
+    "anciennete_equipe": {
+      "Moins de 3 ans": "Less than 3 years",
+      "3 à 10 ans": "3 to 10 years",
+      "Plus de 10 ans": "More than 10 years"
+    },
+    "motif": {
+      "Départ à la retraite": "Retirement",
+      "Nouveau projet": "New project",
+      "Raisons personnelles": "Personal reasons",
+      "Autre": "Other"
+    },
+    "calendrier": {
+      "Moins de 6 mois": "Less than 6 months",
+      "6 à 12 mois": "6 to 12 months",
+      "1 à 2 ans": "1 to 2 years",
+      "Plus de 2 ans": "More than 2 years"
+    },
+    "detention": {
+      "En direct, à titre personnel": "Directly, in my own name",
+      "Par une société holding": "Through a holding company",
+      "Avec d'autres associés": "With other shareholders"
+    },
+    "murs": {
+      "À l'entreprise elle-même": "The company itself",
+      "À vous ou à votre famille (souvent une SCI)": "You or your family (often through a property company)",
+      "À un propriétaire extérieur": "An outside landlord",
+      "Pas de locaux en propre": "No premises of its own"
+    },
+    "murs_cession": {
+      "Oui, avec l'entreprise": "Yes, with the company",
+      "Non, un bail sera proposé au repreneur": "No, a lease will be offered to the buyer",
+      "À discuter": "To be discussed"
+    },
+    "exceptionnel_signale": {
+      "Oui": "Yes",
+      "Non": "No"
+    },
+    "type_clientele": {
+      "Particuliers": "Consumers",
+      "Entreprises": "Businesses",
+      "Collectivités": "Public bodies",
+      "Autres professionnels": "Other professionals"
+    },
+    "croissance": {},
+    "axes": {
+      "Nouveaux produits": "New products",
+      "Nouvelles zones": "New areas",
+      "Nouveaux clients": "New customers",
+      "Plus de capacité": "More capacity",
+      "Vente en ligne": "Online sales",
+      "Rachat d'un concurrent": "Buying a competitor"
+    },
+    "accompagnement": {
+      "3 mois": "3 months",
+      "6 mois": "6 months",
+      "12 mois": "12 months",
+      "Plus de 12 mois": "More than 12 months"
+    },
+    "repreneur": {
+      "Dirigeant indépendant": "Independent manager",
+      "Entreprise du secteur": "Company in the industry",
+      "Fonds d'investissement": "Investment fund",
+      "Salariés": "Employees",
+      "Indifférent": "No preference"
+    }
+  },
+  "details": {
+    "distinctions": {
+      "Qualité": "finishes, materials",
+      "Sur mesure": "every project is unique",
+      "Délais": "responsiveness, schedules kept",
+      "Équipements": "modern production tools",
+      "Certifications": "qualifications, labels",
+      "Relation client": "advice, follow-up, after-sales"
+    }
+  }
+}

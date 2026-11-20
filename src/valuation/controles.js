@@ -3,6 +3,7 @@
 //   niveau « alerte »    : la ligne doit être vérifiée et validée à part
 //   niveau « attention » : signal à lire, n'empêche pas la validation de l'exercice
 import { CHAMPS, libelleEcran } from "../../public/js/champs-financiers.js";
+import { t as tr, langue, locale } from "../../public/js/i18n.js";
 
 const v = (l, k) => (Number.isFinite(l?.[k]?.valeur) ? l[k].valeur : null);
 const ecart = (a, b) => Math.abs(a - b) / Math.max(Math.abs(a), Math.abs(b), 1);
@@ -10,7 +11,7 @@ const ACTIF = ["immobilisations_nettes", "stocks", "creances_clients", "autres_c
 const PASSIF = ["capitaux_propres", "provisions_risques", "emprunts", "dettes_fournisseurs", "dettes_fiscales_sociales", "autres_dettes"];
 const NON_NEGATIFS = ["chiffre_affaires", "stocks", "creances_clients", "tresorerie", "placements", "emprunts", "dettes_fournisseurs", "dettes_fiscales_sociales", "charges_personnel", "achats_consommes", "charges_externes"];
 const libelle = (k) => libelleEcran(CHAMPS.find((c) => c.cle === k)) || k;
-const fmt = (x) => `${Math.round(x).toLocaleString("fr-FR")} €`;
+const fmt = (x) => { const n = Math.round(x).toLocaleString(locale()); return langue() === "fr" ? `${n} €` : `€${n}`; };
 
 /**
  * @param lignes { [cle]: { valeur, source, valide } } de l'exercice
@@ -25,15 +26,15 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
   // Lignes obligatoires vides
   const vides = CHAMPS.filter((c) => c.obligatoire && v(lignes, c.cle) === null)
     .filter((c) => !(["achats_consommes", "charges_externes", "charges_personnel"].includes(c.cle) && v(lignes, "ebe") !== null));
-  if (vides.length) ajoute("manquant", "alerte", vides.map((c) => c.cle), `${vides.length} ligne${vides.length > 1 ? "s" : ""} à compléter : ${vides.map((c) => libelleEcran(c)).join(", ")}.`);
+  if (vides.length) ajoute("manquant", "alerte", vides.map((c) => c.cle), tr("serveur.controles.lignes_a_completer", { n: vides.length, liste: vides.map((c) => libelleEcran(c)).join(", ") }));
 
   // Valeurs impossibles
-  for (const k of NON_NEGATIFS) if (v(lignes, k) !== null && v(lignes, k) < 0) ajoute("negatif", "alerte", [k], `${libelle(k)} ne peut pas être négatif (${fmt(v(lignes, k))}).`);
+  for (const k of NON_NEGATIFS) if (v(lignes, k) !== null && v(lignes, k) < 0) ajoute("negatif", "alerte", [k], tr("serveur.controles.negatif", { libelle: libelle(k), montant: fmt(v(lignes, k)) }));
 
   // Chiffre d'affaires différent des comptes publics
   const ca = v(lignes, "chiffre_affaires");
   if (ca !== null && Number.isFinite(caPublic) && caPublic > 0 && ecart(ca, caPublic) > 0.01) {
-    ajoute("ca_public", "alerte", ["chiffre_affaires"], `Le chiffre d'affaires saisi (${fmt(ca)}) diffère des comptes publiés (${fmt(caPublic)}). Vérifiez l'exercice et l'unité.`);
+    ajoute("ca_public", "alerte", ["chiffre_affaires"], tr("serveur.controles.ca_public", { saisi: fmt(ca), publie: fmt(caPublic) }));
   }
 
   // Bilan : actif ≈ passif (tolérance 3 % : comptes de régularisation non détaillés ici)
@@ -41,7 +42,7 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
   const nA = a.filter((x) => x !== null).length, nP = p.filter((x) => x !== null).length;
   if (nA >= 4 && nP >= 4) {
     const tA = a.reduce((s, x) => s + (x ?? 0), 0), tP = p.reduce((s, x) => s + (x ?? 0), 0);
-    if (ecart(tA, tP) > 0.03) ajoute("bilan", "attention", [...ACTIF, ...PASSIF].filter((k) => v(lignes, k) !== null), `Le bilan ne s'équilibre pas : actif ${fmt(tA)}, passif ${fmt(tP)}. Une ligne manque peut-être (charges constatées d'avance, comptes courants…).`);
+    if (ecart(tA, tP) > 0.03) ajoute("bilan", "attention", [...ACTIF, ...PASSIF].filter((k) => v(lignes, k) !== null), tr("serveur.controles.bilan", { actif: fmt(tA), passif: fmt(tP) }));
   }
 
   // EBE ≈ résultat d'exploitation + dotations (tolérance 20 % : provisions et autres charges non détaillées)
@@ -50,14 +51,14 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
   if (ca !== null && det.every((x) => x !== null) && rex !== null && dot !== null) {
     const ebe = ca + (v(lignes, "autres_produits") ?? 0) - det.reduce((s, x) => s + x, 0);
     if (Math.abs(ebe - (rex + dot)) > Math.max(0.2 * Math.abs(ebe), 0.02 * ca)) {
-      ajoute("ebe", "attention", ["resultat_exploitation", "dotations_amortissements", "charges_externes", "charges_personnel"], `L'EBE calculé (${fmt(ebe)}) s'éloigne du résultat d'exploitation augmenté des dotations (${fmt(rex + dot)}). Vérifiez les charges.`);
+      ajoute("ebe", "attention", ["resultat_exploitation", "dotations_amortissements", "charges_externes", "charges_personnel"], tr("serveur.controles.ebe", { ebe: fmt(ebe), rex: fmt(rex + dot) }));
     }
   }
 
   // Variation suspecte du chiffre d'affaires d'une année sur l'autre (unité en milliers ?)
   const caPrec = v(precedent, "chiffre_affaires");
   if (ca !== null && caPrec !== null && caPrec > 0 && ca > 0 && (ca / caPrec > 3 || caPrec / ca > 3)) {
-    ajoute("variation", "alerte", ["chiffre_affaires"], `Le chiffre d'affaires varie fortement par rapport à l'exercice précédent (${fmt(caPrec)} → ${fmt(ca)}). Vérifiez l'unité (euros ou milliers d'euros).`);
+    ajoute("variation", "alerte", ["chiffre_affaires"], tr("serveur.controles.variation", { avant: fmt(caPrec), apres: fmt(ca) }));
   }
   return res;
 }

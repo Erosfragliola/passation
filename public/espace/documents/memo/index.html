@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mémorandum · Passation</title>
+  <title data-t-html="memorandum_passation"></title>
   <meta name="theme-color" content="#FBF6EC">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -12,24 +12,24 @@
   <link rel="stylesheet" href="/css/espace-bento.css">
 </head>
 <body class="page-document page-espace">
-<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<a class="lien-evitement" href="#contenu" data-t-html="commun.nav.evitement"></a>
 <header class="nav-zone pas-imprime">
-  <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button></div>
+  <nav class="nav" data-t-attr="aria-label=commun.nav.principale">
+    <a class="logo" href="/" data-t-attr="aria-label=commun.nav.accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/" data-t-html="commun.nav.mon_dossier"></a><button class="btn btn-contour" type="button" id="btn-deconnexion" data-t-html="commun.nav.deconnexion"></button><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
   </nav>
 </header>
 <main id="contenu" class="document-zone memo-studio" aria-busy="true">
-  <nav class="ariane conteneur pas-imprime" aria-label="Fil d'Ariane"><a id="ariane-dossier" href="/espace/"><span aria-hidden="true">← </span>Mon dossier</a><span class="ariane-sep" aria-hidden="true">›</span><span aria-current="page">Mémorandum</span></nav>
+  <nav class="ariane conteneur pas-imprime" data-t-html="mon_dossier_memorandum" data-t-attr="aria-label=commun.nav.ariane"></nav>
   <div class="conteneur studio-conteneur">
     <div class="studio-tete pas-imprime">
       <div>
-        <h1 class="affiche">Mémorandum d'information</h1>
+        <h1 class="affiche" data-t-html="memorandum_information"></h1>
       </div>
       <div class="document-actions">
-        <button class="btn btn-contour" type="button" id="btn-tout">Rédiger les chapitres manquants</button>
-        <button class="btn btn-noir" type="button" id="btn-imprimer" aria-describedby="aide-pdf">Télécharger en PDF</button>
-        <p class="aide-pdf" id="aide-pdf">Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».</p>
+        <button class="btn btn-contour" type="button" id="btn-tout" data-t-html="rediger_chapitres_manquants"></button>
+        <button class="btn btn-noir" type="button" id="btn-imprimer" aria-describedby="aide-pdf" data-t-html="commun.documents.pdf"></button>
+        <p class="aide-pdf" id="aide-pdf" data-t-html="commun.documents.pdf_aide"></p>
       </div>
     </div>
     <div id="verrou" class="pas-imprime"></div>
@@ -38,35 +38,35 @@
     <!-- Présentation : une page à la fois, panneau de recommandations et d'actions à droite (memo.js, presentation()) -->
     <div class="studio" id="studio">
       <div class="studio-scene">
-        <nav class="studio-nav pas-imprime" aria-label="Pages du mémorandum">
-          <button class="btn btn-contour btn-mini" type="button" id="page-prec" aria-label="Page précédente">←</button>
+        <nav class="studio-nav pas-imprime" data-t-attr="aria-label=pages_memorandum">
+          <button class="btn btn-contour btn-mini" type="button" id="page-prec" data-t-attr="aria-label=page_precedente">←</button>
           <span class="studio-compteur" id="page-compteur" aria-live="polite"></span>
-          <button class="btn btn-contour btn-mini" type="button" id="page-suiv" aria-label="Page suivante">→</button>
-          <button class="lien-simple" type="button" id="tout-afficher" aria-pressed="false">Voir toutes les pages</button>
+          <button class="btn btn-contour btn-mini" type="button" id="page-suiv" data-t-attr="aria-label=page_suivante">→</button>
+          <button class="lien-simple" type="button" id="tout-afficher" aria-pressed="false" data-t-html="voir_toutes_pages"></button>
         </nav>
-        <article class="feuille-document memo" id="memo" aria-label="Mémorandum"></article>
-        <ol class="studio-vignettes pas-imprime" id="vignettes" aria-label="Aller à la page"></ol>
+        <article class="feuille-document memo" id="memo" data-t-attr="aria-label=memorandum"></article>
+        <ol class="studio-vignettes pas-imprime" id="vignettes" data-t-attr="aria-label=aller_page"></ol>
       </div>
       <aside class="studio-panneau pas-imprime" id="panneau" aria-live="polite"></aside>
     </div>
 
     <details class="studio-donnees pas-imprime" id="donnees">
-      <summary>Les sources du mémorandum : site, logo, photos et marché</summary>
+      <summary data-t-html="sources_memorandum_site_logo_photos"></summary>
       <section class="carte site-panneau" aria-labelledby="titre-site">
-        <h2 id="titre-site" class="h-petit">Votre site, votre logo et vos photos</h2>
+        <h2 id="titre-site" class="h-petit" data-t-html="votre_site_votre_logo_vos"></h2>
         <form id="form-site" class="ligne-form" novalidate>
-          <label for="url-site">Adresse du site</label>
-          <input id="url-site" type="text" inputmode="url" placeholder="www.mon-entreprise.fr" autocomplete="url">
-          <button class="btn btn-noir" type="submit">Lire le site</button>
+          <label for="url-site" data-t-html="adresse_site"></label>
+          <input id="url-site" type="text" inputmode="url" autocomplete="url" data-t-attr="placeholder=www_mon_entreprise_fr">
+          <button class="btn btn-noir" type="submit" data-t-html="lire_site"></button>
         </form>
-        <p class="petit">8 pages au plus, du même site, dans le respect de ses règles (robots.txt). Ni réseaux sociaux, ni avis en ligne.</p>
+        <p class="petit" data-t-html="8_pages_plus_meme_site"></p>
         <div id="faits"></div>
         <div id="logos"></div>
         <div id="photos"></div>
       </section>
       <section class="carte site-panneau" aria-labelledby="titre-marche">
-        <h2 id="titre-marche" class="h-petit">Le marché de votre entreprise</h2>
-        <p class="petit">Passation compte les entreprises de votre secteur dans les registres publics, puis cherche sur le web des chiffres de marché récents, chacun avec sa source. Gardez seulement ce qui vous paraît juste.</p>
+        <h2 id="titre-marche" class="h-petit" data-t-html="marche_votre_entreprise"></h2>
+        <p class="petit" data-t-html="passation_compte_entreprises_votre_secteur"></p>
         <div id="marche"></div>
       </section>
     </details>

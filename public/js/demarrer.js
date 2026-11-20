@@ -8,11 +8,12 @@
 //   Rédaction : valorisation, datapack, teaser et mémorandum générés d'un coup
 //   Relecture et envoi : « prêt » seulement si tout l'indispensable est fait, sinon ce qui reste (même décompte que
 //      la page du dossier)
-import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, AIDE_EBE } from "/js/champs-financiers.js";
-import { REGIONS } from "/js/questionnaire.js";
+import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe as texteAideEbe } from "/js/champs-financiers.js";
+import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
-import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
+import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -25,18 +26,20 @@ const el = (tag, attrs = {}, ...enfants) => {
 };
 /** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
-const fmt = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 });
-const court = (v) => (v == null || !Number.isFinite(v) ? "–" : Math.abs(v) >= 1e6 ? `${(v / 1e6).toLocaleString("fr-FR", { maximumFractionDigits: 2 })} M€` : `${Math.round(v / 1e3).toLocaleString("fr-FR")} k€`);
-const lireNombre = (s) => { const t = String(s ?? "").replace(/[\s  €%]/g, "").replace(",", "."); if (t === "" || t === "-") return null; const n = Number(t); return Number.isFinite(n) ? n : NaN; };
+const fmt = new Intl.NumberFormat(locale(), { maximumFractionDigits: 0 });
+const court = (v) => (v == null || !Number.isFinite(v) ? "–" : Math.abs(v) >= 1e6 ? euros((v / 1e6).toLocaleString(locale(), { maximumFractionDigits: 2 }), "M") : euros(Math.round(v / 1e3).toLocaleString(locale()), "k"));
+/** « 1,2 M€ » en français, « €1.2M » en anglais. */
+const euros = (n, unite) => (langue() === "fr" ? `${n} ${unite}€` : `€${n}${unite === "k" ? "K" : unite}`);
+const lireNombre = (s) => lireNombreSaisi(s);
 /** Remplit l'écran en ignorant les emplacements vides (jamais de « null » affiché). */
 const remplir = (...enfants) => remplacer($("#ecran"), ...enfants);
-function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
+function message(texte, erreur = false) { const m = $("#message"); m.textContent = texte; m.hidden = !texte; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
   const r = await fetch(chemin, { ...options, headers: enJson ? { "content-type": "application/json" } : {} });
-  if (r.status === 401) { location.replace("/connexion"); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non_connecte"); }
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw Object.assign(new Error(d.message || "Une erreur est survenue."), { statut: r.status });
+  if (!r.ok) throw Object.assign(new Error(d.message || t("teaser.js.erreur")), { statut: r.status });
   return d;
 }
 
@@ -87,8 +90,8 @@ const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
 function dessinerEtapes() {
   const ici = ETAPE_DE_L_ECRAN[S.etape];
   const etats = Object.fromEntries((S.etat?.etapes || []).map((x) => [x.cle, x.etat]));
-  remplacer($("#guide-etapes"), ...ETAPES_PARCOURS.map(([k, t], j) => el("li", { class: k === ici ? "actif" : etats[k] === "fait" ? "fait" : null, "aria-current": k === ici ? "step" : null },
-    el("span", { text: etats[k] === "fait" && k !== ici ? "✓" : String(j + 1) }), t, el("span", { class: "visuellement-cache", text: etats[k] === "fait" ? " : faite" : "" }))));
+  remplacer($("#guide-etapes"), ...ETAPES_PARCOURS.map(([k, libelle], j) => el("li", { class: k === ici ? "actif" : etats[k] === "fait" ? "fait" : null, "aria-current": k === ici ? "step" : null },
+    el("span", { text: etats[k] === "fait" && k !== ici ? "✓" : String(j + 1) }), libelle, el("span", { class: "visuellement-cache", text: etats[k] === "fait" ? t("demarrer.js.faite") : "" }))));
   const pct = S.etat?.avancement ?? 0;
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
@@ -112,7 +115,7 @@ function aller(etape) {
   S.etape = etape; dessinerEtapes(); rafraichirEtat();
   ({ comptes, saisie, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
 }
-const titre = (t, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: t }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
+const titre = (texte, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: texte }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
 /** Propositions recalculées quand de nouvelles données arrivent (comptes confirmés, site lu). */
 function rafraichirPropositions() {
@@ -130,12 +133,12 @@ function dejaFait() {
   const publics = Object.entries(S.chiffres?.exercices || {})
     .filter(([, l]) => Object.values(l).some((x) => x.source === "inpi" && x.valeur != null)).map(([a]) => a).sort();
   const faits = [
-    `Entreprise identifiée : ${e.nom || "votre société"}`,
-    publics.length ? `Comptes publics récupérés : ${publics.join(", ")}` : null,
-    est?.statut === "ok" ? `${ETIQUETTE_EXPRESS}${est.exercice ? ` (comptes ${est.exercice})` : ""} : ${fourchette(est.bas, est.haut)}` : null,
+    t("demarrer.js.deja.entreprise", { nom: e.nom || t("demarrer.js.deja.votre_societe") }),
+    publics.length ? t("demarrer.js.deja.comptes", { annees: publics.join(", ") }) : null,
+    est?.statut === "ok" ? t("demarrer.js.deja.estimation", { etiquette: `${etiquetteExpress()}${est.exercice ? ` (${t("dossier.valeur.comptes", { annee: est.exercice })})` : ""}`, fourchette: fourchette(est.bas, est.haut) }) : null,
   ].filter(Boolean);
-  return el("div", { class: "carte guide-deja" }, el("p", { class: "etiquette", text: "Déjà fait" }),
-    el("ul", {}, ...faits.map((t) => el("li", { text: t }))));
+  return el("div", { class: "carte guide-deja" }, el("p", { class: "etiquette", text: t("demarrer.js.deja.titre") }),
+    el("ul", {}, ...faits.map((x) => el("li", { text: x }))));
 }
 function comptes() {
   const lecture = S.chiffres?.lecture_automatique !== false;
@@ -143,25 +146,25 @@ function comptes() {
   fichier.addEventListener("change", async () => {
     const f = fichier.files[0]; if (!f) return;
     const fd = new FormData(); fd.append("fichier", f);
-    message("Lecture de votre liasse… (30 secondes environ)");
+    message(t("demarrer.js.comptes.lecture"));
     $("#zone-depot").setAttribute("aria-busy", "true");
     try { S.chiffres = await api(`${base}/uploads`, { method: "POST", body: fd }); message(""); aller("chiffres"); }
     catch (e) { message(e.message, true); }
     finally { $("#zone-depot")?.removeAttribute("aria-busy"); }
   });
   const versSaisie = (texte, classe = "lien-simple") => el("button", { type: "button", class: classe, onclick: () => { S.saisie = null; aller("saisie"); } }, texte);
-  const suite = dernierConfirme() || aDesChiffresAValider() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller("chiffres") }, "Continuer") : null;
+  const suite = dernierConfirme() || aDesChiffresAValider() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller("chiffres") }, t("espace.continuer")) : null;
   if (!lecture) {
-    remplir(dejaFait(), ...titre("Saisissez l'essentiel de vos comptes", "Une dizaine de montants, à recopier de votre liasse fiscale ou de vos comptes annuels. C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre."),
-      el("p", { class: "petit", text: "La lecture automatique des liasses n'est pas disponible pour le moment." }),
-      versSaisie("Saisir mes chiffres", "btn btn-noir"), suite);
+    remplir(dejaFait(), ...titre(t("demarrer.js.comptes.saisir_titre"), t("demarrer.js.comptes.saisir_aide")),
+      el("p", { class: "petit", text: t("demarrer.js.comptes.lecture_indisponible") }),
+      versSaisie(t("demarrer.js.comptes.saisir_mes_chiffres"), "btn btn-noir"), suite);
     return;
   }
-  remplir(dejaFait(), ...titre("Déposez votre dernière liasse fiscale", "C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre. Nous lisons les chiffres ; vous n'aurez qu'à les confirmer."),
+  remplir(dejaFait(), ...titre(t("demarrer.js.comptes.deposer_titre"), t("demarrer.js.comptes.deposer_aide")),
     el("div", { class: "depot depot-grand", id: "zone-depot" },
-      el("div", { class: "depot-texte" }, el("strong", { text: "Liasse fiscale en PDF" }), el("span", { class: "petit", text: "Formulaires 2033 ou 2050 à 2059, 10 Mo au plus. Elle contient en général deux exercices." })),
-      el("label", { class: "btn btn-noir", for: "liasse" }, "Choisir le PDF"), fichier),
-    el("p", { class: "petit" }, "Pas de liasse sous la main ? ", versSaisie("Saisir l'essentiel à la main"), " : une dizaine de montants."),
+      el("div", { class: "depot-texte" }, el("strong", { text: t("demarrer.js.comptes.liasse_pdf") }), el("span", { class: "petit", text: t("demarrer.js.comptes.formulaires") })),
+      el("label", { class: "btn btn-noir", for: "liasse" }, t("demarrer.js.comptes.choisir_pdf")), fichier),
+    el("p", { class: "petit" }, t("demarrer.js.comptes.pas_de_liasse"), versSaisie(t("demarrer.js.comptes.saisir_main")), t("demarrer.js.comptes.dizaine")),
     suite);
 }
 
@@ -190,15 +193,15 @@ function saisie() {
   const detail = S.saisie.detail ?? !ebePublie;
   const cles1 = ["chiffre_affaires", ...(detail ? DETAIL_CHARGES : ["ebe"]), "resultat_net"];
   const brut = (cle) => S.saisie.valeurs[cle] ?? (l[cle]?.valeur != null ? fmt.format(l[cle].valeur) : "");
-  const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-saisie", "aria-label": "Qu'est-ce que l'EBE ?" }, "?"),
-    el("span", { role: "tooltip", id: "aide-ebe-saisie", text: AIDE_EBE }));
+  const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-saisie", "aria-label": t("demarrer.js.saisie.quest_ce_ebe") }, "?"),
+    el("span", { role: "tooltip", id: "aide-ebe-saisie", text: texteAideEbe() }));
   const champ = (cle) => {
     const c = CHAMPS.find((x) => x.cle === cle), cell = l[cle];
     const input = el("input", { type: "text", inputmode: "decimal", id: `s-${cle}`, "data-cle": cle, value: brut(cle), autocomplete: "off" });
     input.addEventListener("input", () => { S.saisie.valeurs[cle] = input.value; });
-    const aide = cell?.source === "inpi" ? "Repris des comptes publics (registre national des entreprises) : vérifiez-le avec vos comptes." : aideEcran(c);
+    const aide = cell?.source === "inpi" ? t("demarrer.js.saisie.repris_inpi") : aideEcran(c);
     return el("div", { class: "guide-champ saisie-champ" },
-      el("label", { class: "guide-lib", for: `s-${cle}` }, cle === "ebe" ? ["EBE ", aideEbe()] : libelleEcran(c), FACULTATIFS.has(cle) ? el("span", { class: "facultatif", text: " · facultatif" }) : null),
+      el("label", { class: "guide-lib", for: `s-${cle}` }, cle === "ebe" ? [t("demarrer.js.saisie.ebe"), aideEbe()] : libelleEcran(c), FACULTATIFS.has(cle) ? el("span", { class: "facultatif", text: t("demarrer.js.saisie.facultatif") }) : null),
       el("p", { class: "petit", text: aide }),
       el("div", { class: "champ-unite" }, input, el("span", { class: "unite", text: "€" })));
   };
@@ -208,35 +211,35 @@ function saisie() {
     for (const cle of cles) {
       const v = lireNombre(brut(cle));
       const lib = cle === "ebe" ? "EBE" : libelleEcran(CHAMPS.find((x) => x.cle === cle));
-      if (Number.isNaN(v)) return { erreur: `Montant illisible : ${lib}.`, cle };
+      if (Number.isNaN(v)) return { erreur: t("demarrer.js.saisie.illisible", { libelle: lib }), cle };
       if (v === null) { if (!FACULTATIFS.has(cle)) manque.push(lib); continue; }
       valeurs[cle] = v;
     }
-    return manque.length ? { erreur: `Il manque : ${manque.join(", ")}. Indiquez 0 si le poste n'existe pas.`, cle: null } : { valeurs };
+    return manque.length ? { erreur: t("demarrer.js.saisie.il_manque", { liste: manque.join(", ") }), cle: null } : { valeurs };
   };
   const choixAnnee = el("select", { id: "s-annee" }, ...toutes.map((a) => el("option", { value: String(a), selected: a === annee }, String(a))));
   choixAnnee.addEventListener("change", () => { S.saisie = { annee: Number(choixAnnee.value), valeurs: {}, ecran: 1 }; saisie(); });
   const basculer = ebePublie ? el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie.detail = !detail; saisie(); } },
-    detail ? "Reprendre l'EBE des comptes publics" : "Je préfère détailler mes charges") : null;
+    detail ? t("demarrer.js.saisie.reprendre_ebe") : t("demarrer.js.saisie.detailler")) : null;
   const erreur = (r) => { message(r.erreur, true); if (r.cle && ecran === 1) $(`#s-${r.cle}`)?.focus(); return false; };
 
   if (ecran === 1) {
-    remplir(...titre("L'essentiel de vos comptes", "Écran 1 sur 2 : ce que l'entreprise gagne. À recopier de vos comptes annuels ; indiquez 0 si un poste n'existe pas."),
-      el("div", { class: "guide-champ saisie-annee" }, el("label", { class: "guide-lib", for: "s-annee", text: "Exercice clos en" }), choixAnnee),
-      el("fieldset", { class: "saisie-groupe saisie-deux" }, el("legend", { text: "Ce que l'entreprise gagne" }), ...cles1.map(champ), basculer),
+    remplir(...titre(t("demarrer.js.saisie.titre"), t("demarrer.js.saisie.ecran1")),
+      el("div", { class: "guide-champ saisie-annee" }, el("label", { class: "guide-lib", for: "s-annee", text: t("demarrer.js.saisie.clos_en") }), choixAnnee),
+      el("fieldset", { class: "saisie-groupe saisie-deux" }, el("legend", { text: t("demarrer.js.saisie.gagne") }), ...cles1.map(champ), basculer),
       el("div", { class: "q-nav" },
-        el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; message(""); aller(exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes"); } }, "Retour"),
+        el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; message(""); aller(exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes"); } }, t("demarrer.js.retour")),
         el("button", { type: "button", class: "btn btn-noir", onclick: () => {
           const r = lire(cles1);
           if (r.erreur) return erreur(r);
           message(""); S.saisie.ecran = 2; saisie();
-        } }, "Suivant : ce qu'elle possède et doit ", fleche())));
+        } }, t("demarrer.js.saisie.suivant_bilan"), fleche())));
     return;
   }
-  remplir(...titre("L'essentiel de vos comptes", `Écran 2 sur 2 : ce que l'entreprise possède et doit, à la clôture ${annee}. Indiquez 0 si un poste n'existe pas.`),
-    el("fieldset", { class: "saisie-groupe saisie-deux" }, el("legend", { text: "Ce qu'elle possède et doit" }), ...BILAN_ESSENTIEL.map(champ)),
+  remplir(...titre(t("demarrer.js.saisie.titre"), t("demarrer.js.saisie.ecran2", { annee })),
+    el("fieldset", { class: "saisie-groupe saisie-deux" }, el("legend", { text: t("demarrer.js.saisie.possede") }), ...BILAN_ESSENTIEL.map(champ)),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => { message(""); S.saisie.ecran = 1; saisie(); } }, "← Ce que l'entreprise gagne"),
+      el("button", { type: "button", class: "lien-simple", onclick: () => { message(""); S.saisie.ecran = 1; saisie(); } }, t("demarrer.js.saisie.retour_gagne")),
       el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
         const bouton = ev.currentTarget;
         const r1 = lire(cles1);
@@ -253,9 +256,9 @@ function saisie() {
           if (!alerte && !(S.chiffres.manquants?.[annee] || []).length) S.chiffres = await api(`${base}/financials/${annee}/valider`, { method: "POST" });
           S.saisie = null;
           if (alerte || !dernierConfirme()) { message(""); aller("chiffres"); }
-          else { message(`Exercice ${annee} enregistré.`); aller(etapeCourante()); }
+          else { message(t("demarrer.js.saisie.enregistre", { annee })); aller(etapeCourante()); }
         } catch (e) { message(e.message, true); bouton.disabled = false; }
-      } }, "Enregistrer cet exercice ", fleche())));
+      } }, t("demarrer.js.saisie.enregistrer"), fleche())));
 }
 
 // ================================================================== 2. Vos chiffres
@@ -278,10 +281,10 @@ function chiffres() {
     const alertes = ctl.filter((c) => c.niveau === "alerte"), attentions = ctl.filter((c) => c.niveau === "attention");
     const bloquees = [...new Set(alertes.flatMap((c) => c.lignes))].filter((k) => k !== "manquant");
     return el("article", { class: `carte guide-exercice${valide ? " valide" : ""}` },
-      el("header", {}, el("h2", { text: `Exercice ${a}` }), valide ? el("span", { class: "pastille-ok", text: "✓ Confirmé" }) : a !== annees[0] ? el("span", { class: "petit", text: "Facultatif" }) : null),
+      el("header", {}, el("h2", { text: t("demarrer.js.chiffres.exercice", { annee: a }) }), valide ? el("span", { class: "pastille-ok", text: t("demarrer.js.chiffres.confirme") }) : a !== annees[0] ? el("span", { class: "petit", text: t("demarrer.js.chiffres.facultatif") }) : null),
       el("dl", { class: "guide-resume" },
-        ...[["Chiffre d'affaires", val("chiffre_affaires")], ["EBE", ebe], ["Résultat net", val("resultat_net")], ["Capitaux propres", val("capitaux_propres")]]
-          .map(([t, x]) => el("div", {}, el("dt", { text: t }), el("dd", { text: court(x) })))),
+        ...[[t("demarrer.js.chiffres.ca"), val("chiffre_affaires")], [t("demarrer.js.chiffres.ebe"), ebe], [t("demarrer.js.chiffres.rn"), val("resultat_net")], [t("demarrer.js.chiffres.cp"), val("capitaux_propres")]]
+          .map(([lib, x]) => el("div", {}, el("dt", { text: lib }), el("dd", { text: court(x) })))),
       ...alertes.map((c) => el("p", { class: "controle alerte", text: c.message })),
       ...attentions.map((c) => el("p", { class: "controle attention", text: c.message })),
       bloquees.length ? el("div", { class: "guide-lignes" }, ...bloquees.map((k) => ligneAVerifier(a, k, l[k]))) : null,
@@ -289,15 +292,15 @@ function chiffres() {
         ev.currentTarget.disabled = true;
         try { S.chiffres = await api(`${base}/financials/${a}/valider`, { method: "POST" }); chiffres(); }
         catch (e) { message(e.message, true); }
-      } }, alertes.length ? "Confirmer les autres lignes" : "Ces chiffres sont justes"));
+      } }, alertes.length ? t("demarrer.js.chiffres.confirmer_autres") : t("demarrer.js.chiffres.justes")));
   });
-  remplir(...titre("Vos chiffres sont-ils justes ?", "Comparez avec votre liasse. Nos contrôles automatiques signalent ce qui mérite votre attention ; le reste se confirme d'un clic."),
+  remplir(...titre(t("demarrer.js.chiffres.titre"), t("demarrer.js.chiffres.aide")),
     ...cartes,
     el("p", { class: "petit" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; aller("saisie"); } }, "Saisir un autre exercice"), " · ",
-      el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, "Déposer une autre liasse"), " · ",
-      el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Mode détaillé (toutes les lignes)" })),
-    dernierConfirme() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller(etapeCourante()) }, "Continuer ", fleche()) : null);
+      el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; aller("saisie"); } }, t("demarrer.js.chiffres.autre_exercice")), " · ",
+      el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, t("demarrer.js.chiffres.autre_liasse")), " · ",
+      el("a", { href: lien(`/espace/valorisation/?dossier=${id}#chiffres`), text: t("demarrer.js.chiffres.mode_detaille") })),
+    dernierConfirme() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller(etapeCourante()) }, t("demarrer.js.continuer"), fleche()) : null);
 }
 function ligneAVerifier(annee, cle, cellule) {
   const c = CHAMPS.find((x) => x.cle === cle);
@@ -305,7 +308,7 @@ function ligneAVerifier(annee, cle, cellule) {
   return el("div", { class: "guide-ligne" }, el("label", { text: libelleEcran(c) || cle }), input,
     el("button", { type: "button", class: "btn btn-mini", onclick: async () => {
       const v = lireNombre(input.value);
-      if (v === null || Number.isNaN(v)) { message("Indiquez un montant lisible.", true); input.focus(); return; }
+      if (v === null || Number.isNaN(v)) { message(t("demarrer.js.chiffres.montant_lisible"), true); input.focus(); return; }
       try { S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs: { [cle]: v }, valider: true }) }); message(""); chiffres(); }
       catch (e) { message(e.message, true); }
     } }, "Valider"));
@@ -338,26 +341,26 @@ function champ(c, q) {
     // Plusieurs réponses : tuiles à pictogramme, enregistrées à la validation de l'écran
     const choisies = new Set(Array.isArray(v) ? v : []);
     const zone = el("div", { class: "tuiles-choix", role: "group", "aria-label": c.libelle || q.titre, "data-etape": c.etape, "data-cle": c.cle, "data-type": "multi" },
-      ...c.options.map(([t, ic, d]) => el("button", { type: "button", class: "tuile-choix", "aria-pressed": String(choisies.has(t)), "data-valeur": t, onclick: (ev) => {
+      ...c.options.map(([val, ic]) => el("button", { type: "button", class: "tuile-choix", "aria-pressed": String(choisies.has(val)), "data-valeur": val, onclick: (ev) => {
         const b = ev.currentTarget, on = b.getAttribute("aria-pressed") !== "true";
         b.setAttribute("aria-pressed", String(on));
-      } }, picto(ic), el("strong", { text: t }), d ? el("span", { text: d }) : null)));
+      } }, picto(ic), el("strong", { text: libelleOption(c.cle, val) }), detailOption(c.cle, val) ? el("span", { text: detailOption(c.cle, val) }) : null)));
     return el("div", { class: "guide-champ" }, lib, zone);
   }
   if (c.type === "euros" || c.type === "curseur") {
     if (c.type === "curseur") {
       const r = el("input", { type: "range", min: "0", max: "100", step: "5", value: String(Math.round((v ?? 0.1) * 100)), "aria-label": c.libelle, "data-etape": c.etape, "data-cle": c.cle, "data-type": "curseur" });
-      const out = el("output", { text: `${r.value} %` });
-      r.addEventListener("input", () => { out.textContent = `${r.value} %`; });
+      const out = el("output", { text: t("espace.js.pct", { n: r.value }) });
+      r.addEventListener("input", () => { out.textContent = t("espace.js.pct", { n: r.value }); });
       return el("div", { class: "guide-champ" }, lib, el("div", { class: "guide-curseur" }, r, out));
     }
     const i = el("input", { type: "text", inputmode: "decimal", value: v != null ? fmt.format(v) : "", "aria-label": c.libelle, "data-etape": c.etape, "data-cle": c.cle, "data-type": "euros" });
     return el("div", { class: "guide-champ" }, lib, el("div", { class: "champ-unite" }, i, el("span", { class: "unite", text: "€" })));
   }
   if (c.type === "choix" || c.type === "valeurs") {
-    const opts = c.type === "choix" ? c.options.map((o) => [o, o]) : c.options;
+    const opts = c.type === "choix" ? c.options.map((o) => [libelleOption(c.cle, o), o]) : c.options.map(([lib, val]) => [langue() === "fr" ? lib : lib.replace(/\s%/, "%"), val]);
     return el("div", { class: "guide-champ" }, lib, el("div", { class: "puces-choix", role: "group", "aria-label": c.libelle || q.titre },
-      ...opts.map(([t, val]) => el("button", { type: "button", class: `puce${v === val ? " choisie" : ""}`, "aria-pressed": String(v === val), "data-propose": proposition(q, c) === val ? "1" : null, onclick: async (ev) => {
+      ...opts.map(([lib, val]) => el("button", { type: "button", class: `puce${v === val ? " choisie" : ""}`, "aria-pressed": String(v === val), "data-propose": proposition(q, c) === val ? "1" : null, onclick: async (ev) => {
         const bouton = ev.currentTarget; // ev.currentTarget est vidé après le premier « await »
         try {
           await enregistrer(c.etape, c.cle, val);
@@ -366,7 +369,7 @@ function champ(c, q) {
           if (q.champs.length === 1 && !q.suite?.si(S.reponses) && !S.propositions[q.id]) suivante(q);
           else if (q.suite) questions();
         } catch (e) { message(e.message, true); }
-      } }, t))));
+      } }, lib))));
   }
   if (c.type === "regions") {
     const choisies = new Set(Array.isArray(v) ? v : []);
@@ -377,14 +380,14 @@ function champ(c, q) {
     // Cinq lignes anonymes : part du chiffre d'affaires (%), ancienneté de la relation (ans), activité du client
     const lignes = Array.isArray(v) ? v : [];
     const zone = el("div", { class: "guide-champ top-clients", "data-etape": c.etape, "data-cle": c.cle, "data-type": "top_clients" },
-      el("div", { class: "top-clients-tete", "aria-hidden": "true" }, el("span"), el("span", { text: "Part du CA" }), el("span", { text: "Client depuis" }), el("span", { text: "Activité du client (facultatif)" })),
+      el("div", { class: "top-clients-tete", "aria-hidden": "true" }, el("span"), el("span", { text: t("demarrer.js.clients.part") }), el("span", { text: t("demarrer.js.clients.depuis") }), el("span", { text: t("demarrer.js.clients.activite") })),
       ...[0, 1, 2, 3, 4].map((k) => {
         const x = lignes[k] || {};
         return el("div", { class: "top-clients-ligne" },
-          el("span", { class: "top-clients-rang", text: `Client ${k + 1}` }),
-          el("div", { class: "champ-unite" }, el("input", { type: "text", inputmode: "decimal", "data-col": "part", placeholder: "part", "aria-label": `Client ${k + 1} : part du chiffre d'affaires en %`, value: Number.isFinite(x.part) ? fmt.format(Math.round(x.part * 1000) / 10) : "" }), el("span", { class: "unite", text: "%" })),
-          el("div", { class: "champ-unite" }, el("input", { type: "text", inputmode: "numeric", "data-col": "anciennete", placeholder: "depuis", "aria-label": `Client ${k + 1} : nombre d'années de relation`, value: Number.isFinite(x.anciennete) ? String(x.anciennete) : "" }), el("span", { class: "unite", text: "ans" })),
-          el("input", { type: "text", "data-col": "secteur", maxlength: "40", "aria-label": `Client ${k + 1} : activité du client`, placeholder: "ex. industrie", value: x.secteur || "" }));
+          el("span", { class: "top-clients-rang", text: t("demarrer.js.clients.client", { n: k + 1 }) }),
+          el("div", { class: "champ-unite" }, el("input", { type: "text", inputmode: "decimal", "data-col": "part", placeholder: t("demarrer.js.clients.part_court"), "aria-label": t("demarrer.js.clients.part_aria", { n: k + 1 }), value: Number.isFinite(x.part) ? fmt.format(Math.round(x.part * 1000) / 10) : "" }), el("span", { class: "unite", text: "%" })),
+          el("div", { class: "champ-unite" }, el("input", { type: "text", inputmode: "numeric", "data-col": "anciennete", placeholder: t("demarrer.js.clients.depuis_court"), "aria-label": t("demarrer.js.clients.depuis_aria", { n: k + 1 }), value: Number.isFinite(x.anciennete) ? String(x.anciennete) : "" }), el("span", { class: "unite", text: t("demarrer.js.clients.ans") })),
+          el("input", { type: "text", "data-col": "secteur", maxlength: "40", "aria-label": t("demarrer.js.clients.activite_aria", { n: k + 1 }), placeholder: t("demarrer.js.clients.activite_exemple"), value: x.secteur || "" }));
       }));
     return zone;
   }
@@ -392,12 +395,12 @@ function champ(c, q) {
     const liste = Array.isArray(v) && v.length ? v : [{ annee: Number(Object.keys(S.chiffres?.exercices || {}).sort().at(-1)) || null, libelle: "", montant: null, justification: "" }];
     const zone = el("div", { class: "guide-champ exceptionnels" });
     const dessiner = () => remplacer(zone, ...liste.map((x, k) => el("div", { class: "exc" },
-      el("input", { type: "text", value: x.annee ?? "", "aria-label": "Exercice", inputmode: "numeric", onchange: (e) => { x.annee = Number(e.target.value); } }),
-      el("input", { type: "text", value: x.libelle, placeholder: "Libellé", "aria-label": "Libellé", onchange: (e) => { x.libelle = e.target.value; } }),
-      el("input", { type: "text", inputmode: "decimal", value: x.montant != null ? fmt.format(x.montant) : "", placeholder: "Montant (€)", "aria-label": "Montant", onchange: (e) => { x.montant = lireNombre(e.target.value); } }),
-      el("input", { type: "text", value: x.justification, placeholder: "Pourquoi ne se répétera-t-il pas ?", "aria-label": "Justification", onchange: (e) => { x.justification = e.target.value; } }),
-      el("button", { type: "button", class: "lien-simple", onclick: () => { liste.splice(k, 1); dessiner(); } }, "Retirer"))),
-      el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => { liste.push({ annee: liste.at(-1)?.annee ?? null, libelle: "", montant: null, justification: "" }); dessiner(); } }, "Ajouter un élément"));
+      el("input", { type: "text", value: x.annee ?? "", "aria-label": t("demarrer.js.exc.exercice"), inputmode: "numeric", onchange: (e) => { x.annee = Number(e.target.value); } }),
+      el("input", { type: "text", value: x.libelle, placeholder: t("demarrer.js.exc.libelle"), "aria-label": t("demarrer.js.exc.libelle"), onchange: (e) => { x.libelle = e.target.value; } }),
+      el("input", { type: "text", inputmode: "decimal", value: x.montant != null ? fmt.format(x.montant) : "", placeholder: t("demarrer.js.exc.montant_euros"), "aria-label": t("demarrer.js.exc.montant"), onchange: (e) => { x.montant = lireNombre(e.target.value); } }),
+      el("input", { type: "text", value: x.justification, placeholder: t("demarrer.js.exc.pourquoi"), "aria-label": t("demarrer.js.exc.justification"), onchange: (e) => { x.justification = e.target.value; } }),
+      el("button", { type: "button", class: "lien-simple", onclick: () => { liste.splice(k, 1); dessiner(); } }, t("espace.js.retirer")))),
+      el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => { liste.push({ annee: liste.at(-1)?.annee ?? null, libelle: "", montant: null, justification: "" }); dessiner(); } }, t("demarrer.js.exc.ajouter")));
     zone.dataset.etape = c.etape; zone.dataset.cle = c.cle; zone.dataset.type = "exceptionnels"; zone._liste = liste;
     dessiner();
     return zone;
@@ -417,19 +420,19 @@ async function enregistrerEcran() {
     const { etape, cle, type } = n.dataset;
     if (n.tagName === "TEXTAREA" || type === "ligne") { if (n.value.trim()) await enregistrer(etape, cle, n.value.trim()); }
     else if (type === "multi") await enregistrer(etape, cle, [...n.querySelectorAll('[aria-pressed="true"]')].map((b) => b.dataset.valeur));
-    else if (type === "euros") { const x = lireNombre(n.value); if (Number.isNaN(x)) throw new Error("Un montant est illisible."); await enregistrer(etape, cle, x); }
+    else if (type === "euros") { const x = lireNombre(n.value); if (Number.isNaN(x)) throw new Error(t("demarrer.js.erreurs.montant_illisible")); await enregistrer(etape, cle, x); }
     else if (type === "curseur") await enregistrer(etape, cle, Number(n.value) / 100);
     else if (type === "exceptionnels") await enregistrer(etape, cle, n._liste.filter((x) => Number.isFinite(x.montant) && x.montant !== 0));
     else if (type === "top_clients") {
       const lignes = [];
       for (const l of n.querySelectorAll(".top-clients-ligne")) {
         const part = lireNombre(l.querySelector('[data-col="part"]').value), anc = lireNombre(l.querySelector('[data-col="anciennete"]').value);
-        if (Number.isNaN(part) || Number.isNaN(anc)) throw new Error("Une part ou une ancienneté est illisible.");
+        if (Number.isNaN(part) || Number.isNaN(anc)) throw new Error(t("demarrer.js.erreurs.part_illisible"));
         if (part == null) continue;
-        if (part <= 0 || part > 100) throw new Error("Chaque part doit être comprise entre 0 et 100 %.");
+        if (part <= 0 || part > 100) throw new Error(t("demarrer.js.erreurs.part_bornes"));
         lignes.push({ part: part / 100, anciennete: anc == null ? null : Math.round(anc), secteur: l.querySelector('[data-col="secteur"]').value.trim().slice(0, 40) || null });
       }
-      if (lignes.reduce((a, x) => a + x.part, 0) > 1.0001) throw new Error("Les cinq parts additionnées dépassent 100 % du chiffre d'affaires.");
+      if (lignes.reduce((a, x) => a + x.part, 0) > 1.0001) throw new Error(t("demarrer.js.erreurs.parts_total"));
       await enregistrer(etape, cle, lignes);
     }
   }
@@ -449,7 +452,7 @@ function compteur() {
   const cle = cleEcran();
   if (cle && !S.aPoser.includes(cle)) S.aPoser = [...S.aPoser, cle].sort((a, b) => ordre(a) - ordre(b)); // revenue d'elle-même (« Retour »)
   const n = S.aPoser.indexOf(cle) + 1, total = S.aPoser.length;
-  return el("div", { class: "q-tete" }, el("p", { class: "etiquette", text: `Question ${n} sur ${total}` }),
+  return el("div", { class: "q-tete" }, el("p", { class: "etiquette", text: t("demarrer.js.question_n", { n, total }) }),
     el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round((n / total) * 100)}%` })));
 }
 const ordre = (cle) => (cle === "site" ? -1 : QUESTIONS.findIndex((q) => q.id === cle));
@@ -476,27 +479,27 @@ function suivante(q) {
 /** Première question : le site internet. Sa lecture se poursuit pendant les questions suivantes. */
 function questionSite() {
   const proposition = S.reponses.site?.url || siteDepuisEmail(S.email) || "";
-  const input = el("input", { type: "text", id: "site-url", inputmode: "url", value: proposition, placeholder: "www.votre-entreprise.fr", autocomplete: "url" });
+  const input = el("input", { type: "text", id: "site-url", inputmode: "url", value: proposition, placeholder: t("memo.www_mon_entreprise_fr"), autocomplete: "url" });
   // Question suivante encore sans réponse (le site n'est plus à poser)
   const suivanteQ = () => { message(""); const j = QUESTIONS.findIndex((x) => !questionRepondue(x, S.reponses, S.vues)); if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante()); };
   remplir(
     compteur(),
-    ...titre(proposition ? "Est-ce bien le site de votre entreprise ?" : "Votre entreprise a-t-elle un site internet ?",
-      "Nous y relevons votre activité et votre logo pour le mémorandum, pendant que vous répondez aux questions suivantes. Vous validerez chaque élément."),
-    el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: "site-url", text: "Adresse du site" }), input),
+    ...titre(proposition ? t("demarrer.js.site.est_ce") : t("demarrer.js.site.a_t_elle"),
+      t("demarrer.js.site.aide")),
+    el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: "site-url", text: t("demarrer.js.site.adresse") }), input),
     el("p", { class: "petit" }, el("button", { type: "button", class: "lien-simple", onclick: async () => {
       try { S.reponses.site = { aucun: true }; await api(`${base}/answers/site`, { method: "PUT", body: JSON.stringify({ data: S.reponses.site }) }); rafraichirEtat(); suivanteQ(); }
       catch (e) { message(e.message, true); }
-    } }, "Nous n'avons pas de site")),
+    } }, t("demarrer.js.site.aucun"))),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, "Retour"),
+      el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, t("demarrer.js.retour")),
       el("button", { type: "button", class: "btn btn-noir", onclick: () => {
         const url = input.value.trim();
-        if (!url) { message("Indiquez l'adresse du site, ou choisissez « Nous n'avons pas de site ».", true); input.focus(); return; }
+        if (!url) { message(t("demarrer.js.site.indiquez"), true); input.focus(); return; }
         lancerLectureSite(url);
         S.reponses.site = { ...(S.reponses.site || {}), url, aucun: undefined };
         suivanteQ();
-      } }, proposition ? "Oui, lire ce site " : "Lire ce site ", fleche())));
+      } }, proposition ? t("demarrer.js.site.oui_lire") : t("demarrer.js.site.lire"), fleche())));
 }
 // ---- Récapitulatif : toutes les réponses préparées sur un écran, validées d'un clic (le reste se pose ensuite)
 const cleRecap = `passation-recap-${id}`;
@@ -507,16 +510,17 @@ const questionsPreparees = () => QUESTIONS.filter((q) => clesEnAttente(q).length
 /** Valeur proposée en clair (libellé du choix, pourcentage, liste, texte abrégé). */
 function libelleValeur(q, cle, v) {
   const c = [...q.champs, ...(q.suite?.champs || [])].find((x) => `${x.etape}.${x.cle}` === cle);
-  if (c?.type === "valeurs") return c.options.find(([, val]) => val === v)?.[0] ?? String(v);
-  if (Array.isArray(v)) return v.join(", ");
-  const t = String(v).replace(/\s+/g, " ");
-  return t.length > 170 ? `${t.slice(0, 168).replace(/\s+\S*$/, "")}…` : t;
+  if (c?.type === "valeurs") { const lib = c.options.find(([, val]) => val === v)?.[0]; return lib == null ? String(v) : langue() === "fr" ? lib : lib.replace(/\s%/, "%"); }
+  if (c?.type === "choix") return libelleOption(c.cle, v);
+  if (Array.isArray(v)) return (c ? v.map((x) => libelleOption(c.cle, x)) : v).join(", ");
+  const x = String(v).replace(/\s+/g, " ");
+  return x.length > 170 ? `${x.slice(0, 168).replace(/\s+\S*$/, "")}…` : x;
 }
 function recapitulatif() {
   const liste = questionsPreparees();
   const coches = new Map(liste.map((q) => [q.id, true]));
   const bouton = el("button", { type: "button", class: "btn btn-vert" });
-  const majBouton = () => { const n = [...coches.values()].filter(Boolean).length; bouton.textContent = n ? `Valider ${n} réponse${n > 1 ? "s" : ""} ` : "Continuer "; bouton.append(fleche()); };
+  const majBouton = () => { const n = [...coches.values()].filter(Boolean).length; bouton.textContent = n ? t("demarrer.js.recap.valider", { n }) : t("demarrer.js.continuer"); bouton.append(fleche()); };
   majBouton();
   bouton.addEventListener("click", async () => {
     bouton.disabled = true;
@@ -528,8 +532,8 @@ function recapitulatif() {
     } catch (e) { message(e.message, true); bouton.disabled = false; }
   });
   remplir(
-    el("p", { class: "etiquette", text: `${liste.length} réponses préparées` }),
-    ...titre("Nous avons préparé vos réponses", "Vérifiez-les d'un coup d'œil. Décochez ce qui est inexact : vous le corrigerez juste après, avec les quelques questions qui restent."),
+    el("p", { class: "etiquette", text: t("demarrer.js.recap.preparees", { n: liste.length }) }),
+    ...titre(t("demarrer.js.recap.titre"), t("demarrer.js.recap.aide")),
     el("ul", { class: "recap-liste" }, ...liste.map((q) => {
       const cb = el("input", { type: "checkbox", id: `recap-${q.id}`, checked: true });
       cb.addEventListener("change", () => { coches.set(q.id, cb.checked); cb.closest("li").classList.toggle("decoche", !cb.checked); majBouton(); });
@@ -539,7 +543,7 @@ function recapitulatif() {
           el("span", { class: "recap-valeurs" }, ...clesEnAttente(q).map((k) => el("span", { text: libelleValeur(q, k, p.valeurs[k]) }))),
           el("small", { text: p.source }))));
     })),
-    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { marquerRecap(); S.aPoser = null; questions(); } }, "Répondre question par question"), bouton));
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { marquerRecap(); S.aPoser = null; questions(); } }, t("demarrer.js.recap.une_par_une")), bouton));
 }
 
 function questions() {
@@ -554,13 +558,13 @@ function questions() {
   const seulChoix = !aValider && q.champs.length === 1 && ["choix", "valeurs"].includes(q.champs[0].type) && !q.suite?.si(S.reponses);
   remplir(
     compteur(),
-    aValider ? el("p", { class: "proposition-bandeau" }, el("strong", { text: "Réponse préparée par Passation" }), ` · ${prop.source}. Vérifiez, corrigez si besoin, puis validez.`) : null,
+    aValider ? el("p", { class: "proposition-bandeau" }, el("strong", { text: t("demarrer.js.question.preparee") }), t("demarrer.js.question.preparee_suite", { source: prop.source })) : null,
     ...titre(q.titre, q.aide),
-    q.champs.some((c) => c.requis) ? el("p", { class: "petit requis-note", text: `Indispensable pour rédiger le mémorandum : ${q.champs.filter((c) => c.requis).map((c) => c.requis).join(", ")}.` }) : null,
+    q.champs.some((c) => c.requis) ? el("p", { class: "petit requis-note", text: t("demarrer.js.question.indispensable", { liste: q.champs.filter((c) => c.requis).map((c) => c.requis).join(", ") }) }) : null,
     ...champs.map((c) => champ(c, q)),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, "Retour"),
-      seulChoix ? el("button", { type: "button", class: "lien-simple", onclick: () => suivante(q) }, "Passer")
+      el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, t("demarrer.js.retour")),
+      seulChoix ? el("button", { type: "button", class: "lien-simple", onclick: () => suivante(q) }, t("demarrer.js.question.passer"))
         : el("button", { type: "button", class: `btn ${aValider ? "btn-vert" : "btn-noir"}`, onclick: async (ev) => {
           const bouton = ev.currentTarget;
           bouton.disabled = true;
@@ -568,29 +572,29 @@ function questions() {
             if (aValider) await validerPropositions(q);
             await enregistrerEcran();
             const manque = requisManquants(q, S.reponses);
-            if (manque.length) { message(`Il manque ${manque.join(" et ")} : c'est indispensable pour rédiger le mémorandum.`, true); bouton.disabled = false; $("#ecran").querySelector("textarea, .puces-choix .puce")?.focus(); return; }
+            if (manque.length) { message(t("demarrer.js.question.il_manque", { liste: manque.length > 1 ? t("dossier.annees.liste", { debut: manque.slice(0, -1).join(", "), fin: manque.at(-1) }) : manque[0] }), true); bouton.disabled = false; $("#ecran").querySelector("textarea, .puces-choix .puce")?.focus(); return; }
             message(""); suivante(q);
           } catch (e) { message(e.message, true); bouton.disabled = false; }
-        } }, aValider ? "C'est exact, continuer " : "Continuer ", fleche())),
-    q.chapitre ? el("aside", { class: "q-usage" }, el("p", { class: "etiquette", text: "Où va votre réponse" }), el("strong", { text: q.chapitre }), q.pourquoi ? el("p", { class: "petit", text: q.pourquoi }) : null) : null);
+        } }, aValider ? t("demarrer.js.question.exact_continuer") : t("demarrer.js.continuer"), fleche())),
+    q.chapitre ? el("aside", { class: "q-usage" }, el("p", { class: "etiquette", text: t("demarrer.js.question.ou_va") }), el("strong", { text: q.chapitre }), q.pourquoi ? el("p", { class: "petit", text: q.pourquoi }) : null) : null);
 }
 
 // ================================================================== 4. Votre site
 async function site() {
-  if (S.lectureSite) { message("Lecture de votre site en cours…"); await S.lectureSite; message(""); }
+  if (S.lectureSite) { message(t("demarrer.js.site.lecture")); await S.lectureSite; message(""); }
   const s = S.reponses.site || {};
   if (!s.url || !((s.faits || []).length || (s.logos || []).length)) { aller(etapeCourante() === "site" ? "redaction" : etapeCourante()); return; }
   const faits = (s.faits || []).map((f) => ({ ...f, valide: f.valide || !s.confirme }));
   let logo = s.logos?.[0]?.url ?? null;
-  remplir(...titre("Ce que nous avons retenu de votre site", "Tout est coché : décochez ce qui est inexact. Seuls les faits cochés seront utilisés dans le mémorandum."),
-    el("fieldset", { class: "faits" }, el("legend", { class: "visuellement-cache", text: "Faits relevés" }),
+  remplir(...titre(t("demarrer.js.site.retenu_titre"), t("demarrer.js.site.retenu_aide")),
+    el("fieldset", { class: "faits" }, el("legend", { class: "visuellement-cache", text: t("demarrer.js.site.faits") }),
       ...faits.map((f) => { const cb = el("input", { type: "checkbox", id: `f-${f.id}`, checked: f.valide }); cb.addEventListener("change", () => { f.valide = cb.checked; }); return el("label", { class: "fait", for: `f-${f.id}` }, cb, el("span", { text: f.fait })); })),
-    (s.logos || []).length ? el("div", {}, el("p", { class: "guide-lib", text: "Votre logo" }),
-      el("div", { class: "logos-liste", role: "radiogroup", "aria-label": "Choix du logo" }, ...s.logos.map((l, k) => {
+    (s.logos || []).length ? el("div", {}, el("p", { class: "guide-lib", text: t("demarrer.js.site.votre_logo") }),
+      el("div", { class: "logos-liste", role: "radiogroup", "aria-label": t("demarrer.js.site.choix_logo") }, ...s.logos.map((l, k) => {
         const r = el("input", { type: "radio", name: "logo", id: `logo-${k}`, checked: k === 0, class: "visuellement-cache" });
         r.addEventListener("change", () => { logo = l.url; });
         return el("label", { class: "logo-choix", for: `logo-${k}` }, r, el("img", { src: l.url, alt: l.origine, referrerpolicy: "no-referrer" }));
-      }), el("label", { class: "logo-choix logo-aucun", for: "logo-aucun" }, (() => { const r = el("input", { type: "radio", name: "logo", id: "logo-aucun", class: "visuellement-cache" }); r.addEventListener("change", () => { logo = null; }); return r; })(), "Aucun"))) : null,
+      }), el("label", { class: "logo-choix logo-aucun", for: "logo-aucun" }, (() => { const r = el("input", { type: "radio", name: "logo", id: "logo-aucun", class: "visuellement-cache" }); r.addEventListener("change", () => { logo = null; }); return r; })(), t("demarrer.js.site.aucun_logo")))) : null,
     el("button", { type: "button", class: "btn btn-vert", onclick: async (ev) => {
       const bouton = ev.currentTarget;
       bouton.disabled = true;
@@ -601,7 +605,7 @@ async function site() {
         S.reponses.site = site;
         aller("redaction");
       } catch (e) { message(e.message, true); bouton.disabled = false; }
-    } }, "C'est exact, continuer"));
+    } }, t("demarrer.js.question.exact_continuer").trim()));
 }
 
 // ================================================================== 5. Rédaction (tout d'un coup)
@@ -624,10 +628,10 @@ async function enParallele(taches, n, f) {
 }
 
 async function redaction() {
-  const SECTIONS = [["synthese", "synthèse"], ["histoire", "histoire"], ["activite", "savoir-faire"], ["organisation", "équipe"], ["marche", "marché"], ["clients", "clients"], ["finances", "finances"], ["perspectives", "perspectives"], ["operation", "opération"]];
+  const SECTIONS = ["synthese", "histoire", "activite", "organisation", "marche", "clients", "finances", "perspectives", "operation"].map((k) => [k, t(`demarrer.js.redaction.sections.${k}`)]);
   const taches = [
-    ["valorisation", "Valorisation (multiples d'EBE du secteur)", () => api(`${base}/valuation`, { method: "POST" })],
-    ["etude-marche", "Étude de marché sur le web (deux minutes au plus)", async () => {
+    ["valorisation", t("demarrer.js.redaction.valorisation"), () => api(`${base}/valuation`, { method: "POST" })],
+    ["etude-marche", t("demarrer.js.redaction.marche"), async () => {
       const m = await (S.marche || null);
       if (m?.marche?.date) return;
       if (m?.echec && m.echec.statut !== 409) throw m.echec; // déjà tentée pendant les questions : pas de seconde recherche
@@ -638,11 +642,11 @@ async function redaction() {
         for (let k = 0; k < 24; k++) { await new Promise((r) => setTimeout(r, 5000)); const x = await api(`${base}/documents/memo`).catch(() => null); if (x?.marche?.date || !x?.marche?.en_cours) return; }
       }
     }],
-    ["datapack", "Datapack Excel", () => api(`${base}/documents/datapack`, { method: "POST" })],
-    ["teaser", "Teaser anonyme", () => api(`${base}/documents/teaser`, { method: "POST" })],
-    ...SECTIONS.map(([k, t]) => [`memo-${k}`, `Mémorandum : ${t}`, () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
+    ["datapack", t("dossier.documents.datapack"), () => api(`${base}/documents/datapack`, { method: "POST" })],
+    ["teaser", t("dossier.documents.teaser"), () => api(`${base}/documents/teaser`, { method: "POST" })],
+    ...SECTIONS.map(([k, nom]) => [`memo-${k}`, t("demarrer.js.redaction.memo_section", { section: nom }), () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
   ];
-  const libelle = Object.fromEntries(taches.map(([k, t]) => [k, t]));
+  const libelle = Object.fromEntries(taches.map(([k, lib]) => [k, lib]));
   // Réponses indispensables au mémorandum : vérifiées avant de lancer quoi que ce soit (sinon 9 échecs sans issue)
   const incompletes = questionsIncompletes(S.reponses);
   // Ce qui est déjà rédigé n'est pas refait (reprise après une interruption)
@@ -655,11 +659,11 @@ async function redaction() {
     for (const x of m.sections || []) if (x.redigee) deja.add(`memo-${x.cle}`);
     if (m.marche?.date) deja.add("etude-marche");
   } catch { /* on refait tout */ }
-  const lignes = Object.fromEntries(taches.map(([k, t]) => [k, el("li", { class: deja.has(k) ? "fait" : incompletes.length && k.startsWith("memo-") ? "attente" : null }, el("span", { class: "etat", "aria-hidden": "true" }), t)]));
+  const lignes = Object.fromEntries(taches.map(([k, lib]) => [k, el("li", { class: deja.has(k) ? "fait" : incompletes.length && k.startsWith("memo-") ? "attente" : null }, el("span", { class: "etat", "aria-hidden": "true" }), lib)]));
   const chrono = el("span", { class: "petit guide-chrono", "aria-hidden": "true" });
-  remplir(...titre("Nous rédigeons votre dossier", "Une à deux minutes. Si vous quittez cette page, la rédaction reprendra à votre retour, sans refaire ce qui est fini."),
+  remplir(...titre(t("demarrer.js.redaction.titre"), t("demarrer.js.redaction.aide")),
     chrono, el("ul", { class: "guide-taches" }, ...Object.values(lignes)), el("div", { id: "redaction-suite" }));
-  const debut = Date.now(), minuterie = setInterval(() => { const s = Math.round((Date.now() - debut) / 1000); chrono.textContent = `${s} s · ${$("#ecran .guide-taches")?.querySelectorAll("li.fait").length ?? 0} sur ${taches.length}`; }, 1000);
+  const debut = Date.now(), minuterie = setInterval(() => { const s = Math.round((Date.now() - debut) / 1000); chrono.textContent = t("demarrer.js.redaction.chrono", { s, n: $("#ecran .guide-taches")?.querySelectorAll("li.fait").length ?? 0, total: taches.length }); }, 1000);
   const erreurs = [];
   const executer = async ([k, , f]) => {
     if (deja.has(k) || (incompletes.length && k.startsWith("memo-"))) return;
@@ -688,9 +692,9 @@ async function redaction() {
   }
   if (manquantes.length) {
     remplacer(suite, el("div", { class: "carte guide-todo" },
-      el("h2", { text: "Une réponse manque pour rédiger le mémorandum" }),
-      el("p", { class: "petit", text: "La valorisation, le datapack et le teaser sont prêts. Répondez ci-dessous : la rédaction du mémorandum reprendra aussitôt." }),
-      ...manquantes.map((q) => el("button", { type: "button", class: "btn btn-noir", onclick: () => { S.retour = "redaction"; S.q = QUESTIONS.indexOf(q); aller("questions"); } }, `Répondre : ${q.titre} `, fleche()))));
+      el("h2", { text: t("demarrer.js.redaction.manque_titre") }),
+      el("p", { class: "petit", text: t("demarrer.js.redaction.manque_aide") }),
+      ...manquantes.map((q) => el("button", { type: "button", class: "btn btn-noir", onclick: () => { S.retour = "redaction"; S.q = QUESTIONS.indexOf(q); aller("questions"); } }, t("demarrer.js.redaction.repondre", { question: q.titre }), fleche()))));
     $("#ecran").querySelector("#redaction-suite button")?.focus();
     return;
   }
@@ -701,13 +705,13 @@ async function redaction() {
     const causes = new Map();
     for (const e of bloquantes) causes.set(e.message, [...(causes.get(e.message) || []), libelle[e.k]]);
     remplacer(suite, el("div", { class: "carte guide-todo" },
-      el("h2", { text: `${bloquantes.length} rédaction${bloquantes.length > 1 ? "s n'ont" : " n'a"} pas abouti` }),
-      el("ul", {}, ...[...causes].map(([m, l]) => el("li", {}, el("strong", { text: `${l.join(", ")} : ` }), m))),
-      el("p", { class: "petit", text: "Ce qui est terminé est conservé : seules ces rédactions seront relancées." }),
-      el("button", { type: "button", class: "btn btn-noir", onclick: () => redaction() }, "Relancer ces rédactions")));
+      el("h2", { text: t("demarrer.js.redaction.echecs", { n: bloquantes.length }) }),
+      el("ul", {}, ...[...causes].map(([m, l]) => el("li", {}, el("strong", { text: t("demarrer.js.redaction.cause", { liste: l.join(", ") }) }), m))),
+      el("p", { class: "petit", text: t("demarrer.js.redaction.conserve") }),
+      el("button", { type: "button", class: "btn btn-noir", onclick: () => redaction() }, t("demarrer.js.redaction.relancer"))));
     return;
   }
-  if (erreurs.some((e) => e.k === "teaser")) message("Le teaser n'a pas passé le contrôle d'anonymat : reprenez-le depuis sa page (une réponse contient sans doute un nom ou une marque).", true);
+  if (erreurs.some((e) => e.k === "teaser")) message(t("demarrer.js.redaction.teaser_anonymat"), true);
   await api(`${base}/termine`, { method: "POST" }).catch(() => null);
   S.complet = true;
   aller("pret");
@@ -723,28 +727,28 @@ async function pret() {
     v.bas != null && v.haut != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: v.etiquette }),
       el("p", { class: "valeur-centrale chiffre", text: fourchette(v.bas, v.haut) }), el("p", { class: "petit", text: v.base }), v.ecart ? el("p", { class: "petit", text: v.ecart }) : null) : null,
     f.reste.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: f.resteTitre }),
-      el("ul", {}, ...f.reste.map((t) => el("li", {}, t.pieces
-        ? el("a", { href: `/espace/?dossier=${id}#checklist`, text: t.titre })
-        : el("a", { href: t.href.startsWith("#") ? `/espace/?dossier=${id}${t.href}` : t.href, text: t.titre }), el("span", { class: "petit", text: ` · ${t.detail}` }))))) : null,
+      el("ul", {}, ...f.reste.map((x) => el("li", {}, x.pieces
+        ? el("a", { href: lien(`/espace/?dossier=${id}#checklist`), text: x.titre })
+        : el("a", { href: x.href.startsWith("#") ? lien(`/espace/?dossier=${id}${x.href}`) : x.href, text: x.titre }), el("span", { class: "petit", text: ` · ${x.detail}` }))))) : null,
     el("div", { class: "guide-docs" },
-      ...[["Valorisation détaillée", "Multiples du secteur, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
-        ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],
-        ["Teaser anonyme", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
-        ["Mémorandum d'information", "La présentation complète, en diapositives", `/espace/documents/memo/?dossier=${id}`]]
-        .map(([t, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: t }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
-    el("p", { class: "petit" }, "Pour affiner (décotes et primes, EBE retenu) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), ". Pour modifier une réponse : ", el("a", { href: `/espace/demarrer/?dossier=${id}&etape=questions`, text: "revoir vos réponses" }), "."));
+      ...[[t("demarrer.js.pret.valo_titre"), t("demarrer.js.pret.valo_detail"), lien(`/espace/valorisation/?dossier=${id}#valorisation`)],
+        [t("dossier.documents.datapack"), t("demarrer.js.pret.datapack_detail"), `${base}/documents/datapack`, true],
+        [t("dossier.documents.teaser"), t("demarrer.js.pret.teaser_detail"), lien(`/espace/documents/teaser/?dossier=${id}`)],
+        [t("memo.memorandum_information"), t("demarrer.js.pret.memo_detail"), lien(`/espace/documents/memo/?dossier=${id}`)]]
+        .map(([titre, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: titre }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
+    el("p", { class: "petit" }, t("demarrer.js.pret.affiner"), el("a", { href: lien(`/espace/valorisation/?dossier=${id}#valorisation`), text: t("demarrer.js.pret.reglages") }), t("demarrer.js.pret.photos"), el("a", { href: lien(`/espace/documents/memo/?dossier=${id}`), text: t("demarrer.js.pret.page_memo") }), t("demarrer.js.pret.modifier"), el("a", { href: lien(`/espace/demarrer/?dossier=${id}&etape=questions`), text: t("demarrer.js.pret.revoir") }), "."));
 }
 
 // ================================================================== Chargement
 (async () => {
-  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
-  $("#lien-dossier").href = `/espace/?dossier=${id}`;
+  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
+  $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
   try {
     const [moi, dossier, ch, rep, props] = await Promise.all([api("/api/me"), api(base), api(`${base}/financials`), api(`${base}/answers`), api(`${base}/documents/memo/propositions`).catch(() => ({}))]);
     S.propositions = props.propositions || {};
     S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {}; S.vues = vuesDe(S.reponses);
     S.etat = etatParcours(dossier, ...(await documentsPourEtat(dossier)));
-    $("#guide-entreprise").textContent = dossier.entreprise.nom || "Votre dossier";
+    $("#guide-entreprise").textContent = dossier.entreprise.nom || t("demarrer.votre_dossier");
     // Nom de code au-dessus du nom réel, comme sur la page du dossier : c'est sous ce nom que le dossier circulera
     if (dossier.nom_de_code) { $("#guide-code").textContent = dossier.nom_de_code; $("#guide-nom-code").hidden = false; }
     document.title = `${dossier.entreprise.nom} · Passation`;
@@ -753,6 +757,6 @@ async function pret() {
     // facultative laissée vide ; ?etape=… permet toujours d'y revenir (audit, point 17)
     aller(etapeDemandee() || (S.complet || S.reponses.suivi?.pret_envoye ? "pret" : etapeCourante()));
     if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // pendant les questions, pas à la fin
-  } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
+  } catch (e) { if (e.message !== "non_connecte") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();

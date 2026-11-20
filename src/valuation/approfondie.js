@@ -2,6 +2,7 @@
 // Entrées : exercices (compte de résultat + bilan simplifiés, validés par le dirigeant), retraitements, compléments
 // de bilan, prévisions, décotes/primes ; hypothèses sourcées (src/data/hypotheses.json).
 import MULTIPLES from "../data/multiples.json";
+import { t as tr, langue, locale } from "../../public/js/i18n.js";
 
 const n = (x) => (Number.isFinite(Number(x)) ? Number(x) : 0);
 const moyenne = (l) => (l.length ? l.reduce((a, b) => a + b, 0) / l.length : null);
@@ -30,13 +31,13 @@ export function pontEbe(exercices, r = {}) {
   return exercices.map((ex) => {
     const lignes = [];
     if (Number.isFinite(r.remuneration_dirigeant_reelle) && Number.isFinite(r.remuneration_normative)) {
-      lignes.push({ cle: "dirigeant", libelle: "Rémunération du dirigeant ramenée à la normale", montant: r.remuneration_dirigeant_reelle - r.remuneration_normative });
+      lignes.push({ cle: "dirigeant", libelle: tr("serveur.valorisation_moteur.retraitements.dirigeant"), montant: r.remuneration_dirigeant_reelle - r.remuneration_normative });
     }
     if (Number.isFinite(r.loyer_paye) && Number.isFinite(r.loyer_marche)) {
-      lignes.push({ cle: "loyer", libelle: "Loyer ramené au prix de marché", montant: r.loyer_paye - r.loyer_marche });
+      lignes.push({ cle: "loyer", libelle: tr("serveur.valorisation_moteur.retraitements.loyer"), montant: r.loyer_paye - r.loyer_marche });
     }
     for (const e of r.exceptionnels || []) {
-      if (e.annee === ex.annee && Number.isFinite(e.montant)) lignes.push({ cle: "exceptionnel", libelle: e.libelle || "Élément exceptionnel", montant: e.montant, justification: e.justification || "" });
+      if (e.annee === ex.annee && Number.isFinite(e.montant)) lignes.push({ cle: "exceptionnel", libelle: e.libelle || tr("serveur.valorisation_moteur.retraitements.exceptionnel"), montant: e.montant, justification: e.justification || "" });
     }
     const comptable = ebe(ex);
     return { annee: ex.annee, ebe_comptable: comptable, lignes, ebe_retraite: comptable + lignes.reduce((a, l) => a + l.montant, 0) };
@@ -69,13 +70,13 @@ export function bfrNormatif(exercices) {
  */
 export function detteNette(ex, c = {}) {
   const lignes = [
-    { cle: "emprunts", libelle: "Emprunts et dettes financières", montant: n(ex.emprunts) },
-    { cle: "credit_bail", libelle: "Crédit-bail restant dû", montant: n(c.credit_bail_restant) },
-    { cle: "comptes_courants", libelle: "Comptes courants d'associés remboursables", montant: n(c.comptes_courants_remboursables) },
-    { cle: "provisions", libelle: "Provisions pour risques", montant: n(ex.provisions_risques) },
-    { cle: "dividendes", libelle: "Dividendes votés non versés", montant: n(c.dividendes_a_verser) },
-    { cle: "tresorerie", libelle: "Trésorerie", montant: -n(ex.tresorerie) },
-    { cle: "placements", libelle: "Placements", montant: -n(ex.placements) },
+    { cle: "emprunts", libelle: tr("champs.champs.emprunts.libelle"), montant: n(ex.emprunts) },
+    { cle: "credit_bail", libelle: tr("serveur.valorisation_moteur.dette.credit_bail"), montant: n(c.credit_bail_restant) },
+    { cle: "comptes_courants", libelle: tr("serveur.valorisation_moteur.dette.comptes_courants"), montant: n(c.comptes_courants_remboursables) },
+    { cle: "provisions", libelle: tr("serveur.valorisation_moteur.dette.provisions"), montant: n(ex.provisions_risques) },
+    { cle: "dividendes", libelle: tr("serveur.valorisation_moteur.dette.dividendes"), montant: n(c.dividendes_a_verser) },
+    { cle: "tresorerie", libelle: tr("serveur.valorisation_moteur.dette.tresorerie"), montant: -n(ex.tresorerie) },
+    { cle: "placements", libelle: tr("champs.champs.placements.libelle"), montant: -n(ex.placements) },
   ];
   return { total: lignes.reduce((a, l) => a + l.montant, 0), lignes };
 }
@@ -97,9 +98,9 @@ export function impotSocietes(resultat, { tauxReduit = false } = {}, H) {
 export function cmpc({ primeTaille, secteur, detteSurCapitaux = null }, H) {
   const b = H.betas.secteurs[secteur];
   const manquant = [];
-  if (!b) manquant.push("bêta du secteur");
-  if (!Number.isFinite(primeTaille)) manquant.push("prime de taille");
-  if (!Number.isFinite(H.taux_sans_risque.valeur)) manquant.push("taux sans risque");
+  if (!b) manquant.push(tr("serveur.valorisation_moteur.manquant.beta"));
+  if (!Number.isFinite(primeTaille)) manquant.push(tr("serveur.valorisation_moteur.manquant.prime_taille"));
+  if (!Number.isFinite(H.taux_sans_risque.valeur)) manquant.push(tr("serveur.valorisation_moteur.manquant.taux"));
   if (manquant.length) return { statut: "a_completer", valeur: null, manquant };
   const t = H.impot_societes.taux_normal;
   const de = Number.isFinite(detteSurCapitaux) ? detteSurCapitaux : b.dette_sur_capitaux;
@@ -142,10 +143,10 @@ export function dcf({ ca0, croissance, marge_ebe, amortissements_pct, investisse
 /** ANCC = capitaux propres + plus-values latentes − frais d'établissement − créances douteuses (valeur des titres). */
 export function ancc(ex, c = {}) {
   const lignes = [
-    { cle: "capitaux_propres", libelle: "Capitaux propres", montant: n(ex.capitaux_propres) },
-    { cle: "plus_values", libelle: "Plus-values latentes déclarées (immobilier, fonds)", montant: n(c.plus_values_latentes) },
-    { cle: "frais_etablissement", libelle: "Frais d'établissement (sans valeur)", montant: -n(c.frais_etablissement) },
-    { cle: "creances_douteuses", libelle: "Créances douteuses", montant: -n(c.creances_douteuses) },
+    { cle: "capitaux_propres", libelle: tr("demarrer.js.chiffres.cp"), montant: n(ex.capitaux_propres) },
+    { cle: "plus_values", libelle: tr("serveur.valorisation_moteur.ancc.plus_values"), montant: n(c.plus_values_latentes) },
+    { cle: "frais_etablissement", libelle: tr("serveur.valorisation_moteur.ancc.frais_etablissement"), montant: -n(c.frais_etablissement) },
+    { cle: "creances_douteuses", libelle: tr("serveur.valorisation_moteur.ancc.creances_douteuses"), montant: -n(c.creances_douteuses) },
   ];
   return { valeur: lignes.reduce((a, l) => a + l.montant, 0), lignes };
 }
@@ -170,14 +171,14 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   if (e.erreurs?.length) return { statut: "hypotheses_invalides", annees: [], erreurs: e.erreurs, alertes: e.erreurs.map((x) => x.message) };
   const alertes = [];
   for (const x of e.exercices_exclus || []) {
-    alertes.push(`Exercice ${x.annee} écarté du calcul : ${x.manquants.length} ligne${x.manquants.length > 1 ? "s" : ""} obligatoire${x.manquants.length > 1 ? "s" : ""} à compléter ou à valider.`);
+    alertes.push(tr("serveur.valorisation_moteur.alertes.exercice_incomplet", { annee: x.annee, n: x.manquants.length }));
   }
   const tous = [...(e.exercices || [])].sort((a, b) => a.annee - b.annee);
-  for (const x of tous) if (ebe(x) === null) alertes.push(`Exercice ${x.annee} écarté du calcul : EBE non déterminable (charges ou EBE publié manquants).`);
+  for (const x of tous) if (ebe(x) === null) alertes.push(tr("serveur.valorisation_moteur.alertes.ebe_indeterminable", { annee: x.annee }));
   const exs = tous.filter((x) => ebe(x) !== null).slice(-3);
   const annees = exs.map((x) => x.annee);
-  if (annees.some((a, i) => i > 0 && a - annees[i - 1] !== 1)) alertes.push("Exercices non consécutifs : les moyennes portent sur les exercices disponibles.");
-  if (!exs.length) return { statut: "chiffres_absents", annees, alertes: [...alertes, "Aucun exercice complet et validé."] };
+  if (annees.some((a, i) => i > 0 && a - annees[i - 1] !== 1)) alertes.push(tr("serveur.valorisation_moteur.alertes.non_consecutifs"));
+  if (!exs.length) return { statut: "chiffres_absents", annees, alertes: [...alertes, tr("serveur.valorisation_moteur.alertes.aucun_exercice")] };
   const dernier = exs.at(-1);
 
   const pont = pontEbe(exs, e.retraitements || {});
@@ -195,10 +196,10 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   let multiples;
   if (!(ebeN.valeur > 0)) {
     multiples = { statut: "non_applicable" };
-    alertes.push("EBE normatif négatif ou nul : la méthode des multiples d'EBE ne s'applique pas.");
+    alertes.push(tr("serveur.valorisation_moteur.alertes.ebe_negatif"));
   } else if (![secteurM?.ebe?.bas, secteurM?.ebe?.central, secteurM?.ebe?.haut].every(Number.isFinite)) {
     multiples = { statut: "a_completer" };
-    alertes.push("Multiples du secteur à compléter.");
+    alertes.push(tr("serveur.valorisation_moteur.alertes.multiples_a_completer"));
   } else {
     const m = secteurM.ebe;
     const ve = { bas: ebeN.valeur * m.bas, central: ebeN.valeur * m.central, haut: ebeN.valeur * m.haut };
@@ -211,18 +212,18 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   const hist = croissanceHistorique(exs);
   const amortHist = moyenne(exs.filter((x) => n(x.chiffre_affaires) > 0 && Number.isFinite(x.dotations_amortissements)).map((x) => x.dotations_amortissements / x.chiffre_affaires));
   const hyp = {
-    croissance: Number.isFinite(p.croissance) ? { valeur: p.croissance, origine: "dirigeant" } : { valeur: hist == null ? 0 : Math.min(0.1, Math.max(-0.05, hist)), origine: hist == null ? "par défaut (0 %, un seul exercice)" : "historique du CA (borné entre −5 % et +10 %)" },
-    marge_ebe: Number.isFinite(p.marge_ebe) ? { valeur: p.marge_ebe, origine: "dirigeant" } : { valeur: caD > 0 ? ebeN.valeur / caD : 0, origine: "EBE normatif / dernier CA" },
-    amortissements_pct: Number.isFinite(p.amortissements_pct) ? { valeur: p.amortissements_pct, origine: "dirigeant" } : { valeur: amortHist ?? 0, origine: amortHist == null ? "à compléter (0 %)" : "moyenne historique des dotations / CA" },
-    investissements_pct: Number.isFinite(p.investissements_pct) ? { valeur: p.investissements_pct, origine: "dirigeant" } : { valeur: amortHist ?? 0, origine: "égal aux amortissements (investissement de maintien)" },
-    bfr_jours: Number.isFinite(p.bfr_jours) ? { valeur: p.bfr_jours, origine: "dirigeant" } : { valeur: bfrN.jours ?? 0, origine: "BFR normatif historique" },
-    croissance_terminale: { valeur: Number.isFinite(p.croissance_terminale) ? p.croissance_terminale : H.croissance_terminale.valeur, origine: Number.isFinite(p.croissance_terminale) ? "dirigeant" : "objectif d'inflation BCE" },
+    croissance: Number.isFinite(p.croissance) ? { valeur: p.croissance, origine: "dirigeant" } : { valeur: hist == null ? 0 : Math.min(0.1, Math.max(-0.05, hist)), origine: hist == null ? tr("serveur.valorisation_moteur.origines.defaut") : tr("serveur.valorisation_moteur.origines.historique_ca") },
+    marge_ebe: Number.isFinite(p.marge_ebe) ? { valeur: p.marge_ebe, origine: "dirigeant" } : { valeur: caD > 0 ? ebeN.valeur / caD : 0, origine: tr("serveur.valorisation_moteur.origines.ebe_sur_ca") },
+    amortissements_pct: Number.isFinite(p.amortissements_pct) ? { valeur: p.amortissements_pct, origine: "dirigeant" } : { valeur: amortHist ?? 0, origine: amortHist == null ? tr("serveur.valorisation_moteur.origines.a_completer") : tr("serveur.valorisation_moteur.origines.dotations") },
+    investissements_pct: Number.isFinite(p.investissements_pct) ? { valeur: p.investissements_pct, origine: "dirigeant" } : { valeur: amortHist ?? 0, origine: tr("serveur.valorisation_moteur.origines.maintien") },
+    bfr_jours: Number.isFinite(p.bfr_jours) ? { valeur: p.bfr_jours, origine: "dirigeant" } : { valeur: bfrN.jours ?? 0, origine: tr("serveur.valorisation_moteur.origines.bfr") },
+    croissance_terminale: { valeur: Number.isFinite(p.croissance_terminale) ? p.croissance_terminale : H.croissance_terminale.valeur, origine: Number.isFinite(p.croissance_terminale) ? "dirigeant" : tr("serveur.valorisation_moteur.origines.inflation") },
   };
   const c = cmpc({ primeTaille: e.primeTaille, secteur: e.secteur, detteSurCapitaux: e.detteSurCapitaux }, H);
   let dcfR;
   if (c.statut !== "ok") {
     dcfR = { statut: "a_completer", manquant: c.manquant, hypotheses: hyp };
-    if (!(c.manquant.length === 1 && c.manquant[0] === "prime de taille")) alertes.push(`DCF à compléter : ${c.manquant.join(", ")}.`);
+    if (!(c.manquant.length === 1 && c.manquant[0] === tr("serveur.valorisation_moteur.manquant.prime_taille"))) alertes.push(tr("serveur.valorisation_moteur.alertes.dcf_a_completer", { liste: c.manquant.join(", ") }));
   } else if (!(caD > 0)) {
     dcfR = { statut: "non_applicable", hypotheses: hyp };
   } else {
@@ -239,7 +240,7 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
         statut: "ok", cmpc: c, hypotheses: hyp, detail: central, ve: { bas: bas.ve, central: central.ve, haut: haut?.ve ?? null },
         titres: { bas: versTitres(bas.ve), central: versTitres(central.ve), haut: haut ? versTitres(haut.ve) : null },
       };
-      if (central.part_vt > 0.8) alertes.push("La valeur terminale représente plus de 80 % du DCF : résultat très sensible aux hypothèses de long terme.");
+      if (central.part_vt > 0.8) alertes.push(tr("serveur.valorisation_moteur.alertes.valeur_terminale"));
     } catch (err) {
       dcfR = { statut: "erreur", message: err.message, hypotheses: hyp, cmpc: c };
       alertes.push(err.message);
@@ -248,13 +249,13 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
 
   // Méthode 3 : ANCC (plancher, présenté à part)
   const anc = ancc(dernier, e.complements || {});
-  if (anc.valeur < 0) alertes.push("Capitaux propres corrigés négatifs.");
+  if (anc.valeur < 0) alertes.push(tr("serveur.valorisation_moteur.alertes.cp_negatifs"));
 
   // Synthèse : multiples seuls par défaut (décision du 18/11/2026), DCF en option par la pondération ; DCF seul si
   // les multiples ne s'appliquent pas
   let poids = { ...(e.ponderation || { multiples: H.ponderation.multiples, dcf: H.ponderation.dcf }) };
   const okM = multiples.statut === "ok", okD = dcfR.statut === "ok";
-  if (okM && !okD) { poids = { multiples: 1, dcf: 0 }; if (e.ponderation && e.ponderation.dcf > 0) alertes.push("Synthèse sur les multiples. Le DCF est proposé en option : renseignez la prime de taille dans « Affiner » si votre conseil le souhaite."); }
+  if (okM && !okD) { poids = { multiples: 1, dcf: 0 }; if (e.ponderation && e.ponderation.dcf > 0) alertes.push(tr("serveur.valorisation_moteur.alertes.dcf_option")); }
   if (!okM && okD) poids = { multiples: 0, dcf: 1 };
   const comb = (cle) => {
     if (!okM && !okD) return null;
@@ -265,8 +266,9 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   const synthese = { bas: comb("bas"), central: comb("central"), haut: comb("haut"), ponderation: poids, plancher_ancc: anc.valeur, alertes };
   // Information, sans sigle : toute la fourchette (son haut compris) est sous l'actif net corrigé calculé ci-dessus
   if (synthese.haut != null && Number.isFinite(anc.valeur) && synthese.haut < anc.valeur) {
-    const euros = `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(Math.round(anc.valeur))} €`;
-    alertes.push(`Votre fourchette est inférieure à l'actif net corrigé de l'entreprise (${euros}). Un repreneur paie rarement moins que cet actif : à examiner avec votre conseil.`);
+    const n = new Intl.NumberFormat(locale(), { maximumFractionDigits: 0 }).format(Math.round(anc.valeur));
+    const euros = langue() === "fr" ? `${n} €` : `€${n}`;
+    alertes.push(tr("serveur.valorisation_moteur.alertes.sous_ancc", { montant: euros }));
   }
 
   // Sensibilités : multiple ± 1x, CMPC ± 1 pt, croissance terminale ± 0,5 pt (valeur des titres)

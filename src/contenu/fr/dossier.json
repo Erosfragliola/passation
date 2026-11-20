@@ -1,0 +1,214 @@
+{
+  "_lisez_moi": "Textes du dossier (public/js/dossier-regles.js, dossier-parcours.js) : pièces à réunir, étapes du parcours, état du dossier. Mêmes clés dans src/contenu/en/dossier.json.",
+  "checklist": {
+    "juridique": {
+      "groupe": "Juridique",
+      "items": {
+        "statuts": "Statuts à jour",
+        "kbis": "Extrait Kbis récent",
+        "pv-ag": "Procès-verbaux des assemblées des 3 dernières années",
+        "capital": "Répartition du capital et pacte d'associés éventuel"
+      }
+    },
+    "financier": {
+      "groupe": "Financier",
+      "items": {
+        "liasses": "Liasses fiscales et comptes annuels des 3 derniers exercices",
+        "situation": "Situation intermédiaire de l'exercice en cours",
+        "emprunts": "Détail des emprunts, crédits-bails et garanties données",
+        "balances": "Balances âgées clients et fournisseurs"
+      }
+    },
+    "social": {
+      "groupe": "Social",
+      "items": {
+        "organigramme": "Organigramme",
+        "registre": "Registre unique du personnel",
+        "contrats-cles": "Contrats de travail des personnes clés",
+        "accords": "Accords d'entreprise et convention collective applicable"
+      }
+    },
+    "commercial": {
+      "groupe": "Commercial",
+      "items": {
+        "clients": "Chiffre d'affaires par client (principaux clients)",
+        "contrats": "Contrats clients et fournisseurs importants",
+        "cgv": "Conditions générales de vente"
+      }
+    },
+    "actifs": {
+      "groupe": "Actifs et risques",
+      "items": {
+        "baux": "Baux commerciaux et titres de propriété éventuels",
+        "equipements": "Inventaire des équipements principaux",
+        "marques": "Marques, brevets et noms de domaine",
+        "assurances": "Attestations d'assurance",
+        "litiges": "Litiges en cours ou passés récents",
+        "autorisations": "Autorisations, agréments et certifications"
+      }
+    }
+  },
+  "etapes": {
+    "estimation": "Estimation",
+    "chiffres": "Vos chiffres",
+    "reponses": "Vos réponses",
+    "redaction": "Rédaction",
+    "relecture": "Relecture et envoi"
+  },
+  "etiquette_express": "Valeur d'entreprise estimée",
+  "etiquette_titres": "Valeur de vos titres",
+  "annees": {
+    "suite": "{de} à {a}",
+    "liste": "{debut} et {fin}"
+  },
+  "point": "{chapitre} : {point}",
+  "points_a_completer": {
+    "one": "{n} point à compléter",
+    "other": "{n} points à compléter"
+  },
+  "alerte_plancher": "Une partie de la fourchette est inférieure à l'actif net corrigé : celui-ci sert de plancher de négociation.",
+  "ecart": {
+    "comptes": "comptes {annees} confirmés",
+    "sur_ebe": "calcul sur l'excédent brut d'exploitation (EBE) au lieu du chiffre d'affaires",
+    "ebe_retenu": "excédent brut d'exploitation (EBE) retenu de {ebe} au lieu de {avant}",
+    "decotes": "décotes de {pct} % appliquées",
+    "primes": "primes de {pct} % appliquées",
+    "tresorerie": "trésorerie nette de {montant} ajoutée",
+    "dettes": "dettes nettes de {montant} déduites",
+    "bfr_superieur": "besoin en fonds de roulement supérieur à la normale : {montant}",
+    "bfr_inferieur": "besoin en fonds de roulement inférieur à la normale : {montant}",
+    "hors_exploitation": "actifs hors exploitation de {montant} ajoutés",
+    "phrase": "Votre fourchette passe de {avant} à {apres}.",
+    "phrase_raisons": "Votre fourchette passe de {avant} à {apres} : {raisons}."
+  },
+  "taches": {
+    "chiffres": {
+      "titre_aucun": "Confirmer votre dernier exercice",
+      "detail_aucun": "Aucun exercice confirmé pour l'instant",
+      "titre": "Confirmer l'exercice {annee}",
+      "detail": "Le seul exercice indispensable : la valorisation repose sur lui"
+    },
+    "questions": {
+      "titre_reste": {
+        "one": "Répondre à la dernière question",
+        "other": "Répondre aux {n} dernières questions"
+      },
+      "titre": "Répondre aux {n} questions",
+      "detail_reste": "{faits} sur {total} déjà faites",
+      "detail": "Des écrans courts, la plupart en un clic"
+    },
+    "redaction": {
+      "terminer": "Terminer la rédaction",
+      "lancer": "Lancer la rédaction",
+      "detail": "Valorisation, teaser et mémorandum, d'un coup"
+    },
+    "chapitres": {
+      "titre": {
+        "one": "Rédiger {n} chapitre du mémorandum",
+        "other": "Rédiger {n} chapitres du mémorandum"
+      },
+      "detail": {
+        "one": "Chapitre : {liste}",
+        "other": "Chapitres : {liste}"
+      }
+    },
+    "teaser": {
+      "titre": {
+        "one": "Rédiger {n} partie du teaser",
+        "other": "Rédiger {n} parties du teaser"
+      },
+      "detail": {
+        "one": "Partie vide : {liste}",
+        "other": "Parties vides : {liste}"
+      }
+    },
+    "exercices": {
+      "titre": "Ajouter {annees} pour fiabiliser la fourchette (facultatif)",
+      "detail": "La fourchette repose déjà sur {annee} ; les exercices précédents la confirment"
+    },
+    "photo": {
+      "titre_premiere": "Ajouter une photo de l'atelier ou des produits",
+      "detail_premiere": "Recommandation du mémorandum : elle rend la page « Savoir-faire » vivante",
+      "titre_seconde": "Ajouter une photo de l'équipe ou du site",
+      "detail_seconde": "Recommandation du mémorandum, page « Équipe »"
+    },
+    "a_completer": {
+      "titre": {
+        "one": "Compléter {n} point du mémorandum",
+        "other": "Compléter {n} points du mémorandum"
+      },
+      "detail": "Indiqués « À compléter » : {liste}"
+    },
+    "pieces": {
+      "titre_premieres": "Déposer vos premières pièces",
+      "titre": {
+        "one": "Déposer {n} pièce manquante",
+        "other": "Déposer {n} pièces manquantes"
+      },
+      "detail": {
+        "one": "{n} pièce sur {total}",
+        "other": "{n} pièces sur {total}"
+      }
+    }
+  },
+  "guillemets": "« {texte} »",
+  "actions": {
+    "confirmer": "Confirmer",
+    "reprendre": "Reprendre",
+    "commencer": "Commencer",
+    "rediger": "Rédiger",
+    "ajouter": "Ajouter",
+    "completer": "Compléter",
+    "deposer": "Déposer",
+    "ouvrir": "Ouvrir",
+    "excel": "Télécharger l'Excel"
+  },
+  "relire_envoyer": "Relire et envoyer votre dossier",
+  "documents": {
+    "valorisation": "Valorisation",
+    "datapack": "Datapack Excel",
+    "teaser": "Teaser anonyme",
+    "memo": "Mémorandum",
+    "mise_a_jour_f": "Mise à jour le {date}",
+    "mis_a_jour": "Mis à jour le {date}",
+    "version": "version {n}",
+    "prete": "Prête",
+    "calculee_redaction": "Calculée à l'étape Rédaction, avec vos réponses.",
+    "debloque_chiffres_reponses": "Se débloque avec vos chiffres et vos réponses.",
+    "prepare_chiffres": "Préparé à partir de vos chiffres confirmés",
+    "debloque_exercice": "Se débloque dès qu'un exercice est confirmé.",
+    "parties_a_rediger": {
+      "one": "{n} partie sur {total} à rédiger",
+      "other": "{n} parties sur {total} à rédiger"
+    },
+    "redige_le": "Rédigé le {date}",
+    "redige_redaction": "Rédigé à l'étape Rédaction, après vos réponses.",
+    "chapitres_a_rediger": {
+      "one": "{n} chapitre sur {total} à rédiger",
+      "other": "{n} chapitres sur {total} à rédiger"
+    }
+  },
+  "valeur": {
+    "base_titres": "Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, après dettes et trésorerie.",
+    "voir_detail": "Voir le détail",
+    "comptes": "comptes {annee}",
+    "base_express": "Estimée sur les derniers comptes publics et les multiples du secteur, avant dettes et trésorerie ; vos chiffres la préciseront.",
+    "voir_calcul": "Voir le calcul",
+    "base_aucune": "Les comptes publics ne suffisent pas pour une première estimation : vos chiffres permettront de la calculer.",
+    "saisir": "Saisir vos chiffres"
+  },
+  "final": {
+    "pret_titre": "Votre dossier est prêt",
+    "pret_aide": "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier.",
+    "plus_loin": "Pour aller plus loin (facultatif)",
+    "redige_titre": "Votre dossier est rédigé",
+    "non_redige_titre": "Votre dossier n'est pas encore rédigé",
+    "non_pret_aide": "Il n'est pas encore prêt à être envoyé : {pct} % du parcours. Voici ce qui reste.",
+    "reste": "Ce qui reste à faire"
+  },
+  "formats": {
+    "nd": "n.d.",
+    "exercice": "exercice {annee}",
+    "exercices": "exercices {de} à {a}"
+  }
+}

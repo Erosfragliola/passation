@@ -1,0 +1,572 @@
+{
+  "_lisez_moi": "Worker messages (API errors, emails), read in the language of the page the call comes from. Same keys as src/contenu/fr/serveur.json.",
+  "index": {
+    "erreur_survenue_reessayez_dans": "Something went wrong. Please try again in a moment.",
+    "service_momentanement_indisponible": "The service is temporarily unavailable.",
+    "requete_refusee": "Request refused."
+  },
+  "auth": {
+    "connectez_vous_pour_acceder": "Sign in to access your file.",
+    "cette_adresse_e_mail": "This email address isn’t valid.",
+    "trop_demandes_code_reessayez": "Too many code requests. Please try again in an hour.",
+    "envoi_e_mails_ne": "Email sending isn’t working right now. Please try again later.",
+    "code_compte_6_chiffres": "The code has 6 digits.",
+    "trop_essais_reessayez_dans": "Too many attempts. Please try again in an hour.",
+    "code_expire_ou_deja": "This code has expired or has already been used. Request a new one.",
+    "trop_essais_faux_code": "Too many wrong attempts: this code is blocked. Request a new one.",
+    "code_incorrect": {
+      "one": "Incorrect code. {n} attempt left.",
+      "other": "Incorrect code. {n} attempts left."
+    },
+    "envoi": "If the address is valid, a 6-digit code has just been sent to you. It’s valid for 10 minutes."
+  },
+  "documents": {
+    "validez_abord_chiffres_moins": "First approve your figures (at least one complete fiscal year) to generate the datapack.",
+    "redaction_automatique_encore_activee": "Automatic drafting isn’t enabled yet.",
+    "decrivez_abord_activite_questionnaire": "First describe your business (questionnaire, “Your business” screen).",
+    "redaction_echoue_reessayez_dans": "Drafting failed. Please try again in a moment.",
+    "texte_propose_contenait_encore": "The proposed text still contained identifying details; it wasn’t saved. Check your answers (name, city, brands) and try again.",
+    "generez_abord_teaser": "Generate the teaser first.",
+    "texte_contient_elements_identifiants": "This text contains identifying details: remove them before saving.",
+    "etude_marche_encore_activee": "Market research isn’t enabled yet.",
+    "etude_marche_deja_cours": "Market research is already in progress.",
+    "recherche_chiffres_marche_abouti": "The search for market figures didn’t succeed: the chapter will rely on the public registries. You can run it again from the memorandum page.",
+    "lecture_site_encore_activee": "Website reading isn’t enabled yet.",
+    "adresse_site_invalide_exemple": "Invalid website address (example: www.my-company.com).",
+    "aucun_fichier_recu": "No file received.",
+    "logo_depasse_1_mo": "The logo is larger than 1 MB.",
+    "adresse_image_invalide": "Invalid image address.",
+    "image_introuvable_ou_trop": "Image not found or too large (1 MB max).",
+    "format_accepte_png_jpeg": "Accepted formats: PNG, JPEG or WebP.",
+    "photo_depasse_3_mo": "The photo is larger than 3 MB.",
+    "image_introuvable_ou_trop_2": "Image not found or too large (3 MB max).",
+    "confirmez_que_cette_photo": "Confirm that this photo belongs to the company (or that you have the right to use it).",
+    "titre_doit_tenir_ligne": "The title must fit on one line (110 characters max).",
+    "corrigez_reglages": "First correct your settings: {alertes}",
+    "marche_limite": "The market research has already been run {n} times for this file.",
+    "photos_max": "{n} photos at most.",
+    "avant_memo": "Before the memorandum: {liste}.",
+    "site": {
+      "robots": "This website forbids automated reading (robots.txt): we respect that.",
+      "injoignable": "The website isn’t responding or doesn’t return a readable page.",
+      "adresse": "Invalid website address.",
+      "impossible": "Couldn’t read the website. Please try again later."
+    }
+  },
+  "pieces": {
+    "envoyez_fichier": "Send a file.",
+    "aucun_fichier_recu": "No file received.",
+    "choisissez_piece_correspondante": "Choose the matching document.",
+    "formats_acceptes_pdf_images": "Accepted formats: PDF, images, Word, Excel, OpenDocument, text.",
+    "20_mo_plus_par": "20 MB max per file.",
+    "fichier_vide": "The file is empty.",
+    "max_fichiers": "{n} documents at most per file."
+  },
+  "maquette": {
+    "numero_siren_valide": "This SIREN number isn’t valid.",
+    "trop_recherches_peu_temps": "Too many searches in a short time. Please try again in an hour.",
+    "registres_publics_ne_repondent": "The public registries aren’t responding right now. Please try again in a few minutes.",
+    "nous_ne_trouvons_entreprise": "We can’t find a company with this SIREN.",
+    "cette_entreprise_plus_active": "This company is no longer active in the public registries."
+  },
+  "valorisation": {
+    "lecture_automatique_encore_activee": "Automatic reading isn’t enabled yet. Enter your figures by hand in the meantime.",
+    "envoyez_fichier_pdf": "Send a PDF file.",
+    "aucun_fichier_recu": "No file received.",
+    "fichier_depasse_10_mo": "The file is larger than 10 MB.",
+    "fichier_pdf": "This file isn’t a PDF.",
+    "nous_avons_pu_lire": "We couldn’t read this document. Check that it’s a readable French tax return (liasse fiscale), or enter your figures by hand.",
+    "exercice_ou_valeurs_invalides": "Invalid fiscal year or values.",
+    "trois_exercices_suffisent_retirez": "Three fiscal years are enough; remove one before adding another.",
+    "exercice_introuvable": "Fiscal year not found.",
+    "reponses_invalides": "Invalid answers.",
+    "lectures_max": "You’ve reached the maximum number of readings ({n}) for this file. Complete the figures by hand."
+  },
+  "estimation": {
+    "chiffres_invalides": "Invalid figures.",
+    "trop_estimations_peu_temps": "Too many estimates in a short time. Please try again in an hour."
+  },
+  "suivi": {
+    "dossier_encore_complet": "The file isn’t complete yet."
+  },
+  "validation": {
+    "elements_exceptionnels_doivent_etre": "One-off items must be a list.",
+    "decotes_doivent_etre_liste": "Discounts must be a list.",
+    "pas_un_nombre": "{libelle}: “{valeur}” is not a number.",
+    "hors_bornes_pct": "{cle}: {valeur} is outside the allowed limits ({min} to {max}). Percentages are expressed as fractions (5% = 0.05).",
+    "negatif": "{cle}: a negative amount ({valeur}) is not allowed.",
+    "decote_inconnue": "Unknown discount: “{cle}”.",
+    "hors_bornes": "{libelle}: {valeur} is outside the allowed limits ({min} to {max}).",
+    "element_n": "One-off item no. {n}"
+  },
+  "dossiers": {
+    "dossier_introuvable": "File not found.",
+    "numero_siren_valide": "This SIREN number isn’t valid.",
+    "nous_ne_trouvons_cette": "We can’t find this company.",
+    "registres_publics_ne_repondent": "The public registries aren’t responding right now. Please try again in a few minutes.",
+    "max_dossiers": "{n} files at most per account: delete one to open another."
+  },
+  "ratelimit": {
+    "limite_jour": "You’ve reached the limit of {max} automated tasks per day. Please try again tomorrow."
+  },
+  "email": {
+    "bonjour": "Hello,",
+    "code": {
+      "sujet": "{code}: your Passation sign-in code",
+      "intro": "Here is your code to open your Passation file:",
+      "validite": "It is valid for 10 minutes and can only be used once. Type it into the sign-in window you left open.",
+      "ignorer": "If you didn’t request anything, ignore this message: no one can sign in without this code.",
+      "texte": "Your Passation sign-in code: {code} (valid for 10 minutes, single use). If you didn’t request anything, ignore this message."
+    },
+    "pourquoi": "You are receiving this message because you opened a file on Passation. You can delete your file at any time from your space.",
+    "lien_texte": "{bouton}: {lien}",
+    "votre_entreprise": "your company",
+    "pret": {
+      "sujet": "Your Passation file is ready",
+      "titre": "The file for {nom} is ready.",
+      "texte": "Valuation, Excel datapack, anonymous teaser and information memorandum: everything is drafted. All that’s left is to review them.",
+      "bouton": "Review my file"
+    },
+    "rappel": {
+      "sujet": "Your Passation file is waiting for you",
+      "titre": "The file for {nom} is in progress.",
+      "texte": "You can pick up where you left off: your answers are saved.",
+      "bouton": "Resume my file"
+    }
+  },
+  "anonymat": {
+    "meur": "€{n}M",
+    "ca_moins": "less than {m}",
+    "ca_entre": "between {de} and {a}",
+    "ca_plus": "more than {m}",
+    "marge_negative": "negative",
+    "marge_inferieure": "below {n}%",
+    "marge_entre": "between {de}% and {a}%",
+    "marge_superieure": "above {n}%",
+    "moins_ans": "less than {n} years",
+    "plus_ans": "more than {n} years"
+  },
+  "memo": {
+    "parties": {
+      "1": {
+        "titre": "Summary",
+        "detail": "The opportunity at a glance and the file’s strengths"
+      },
+      "2": {
+        "titre": "The company",
+        "detail": "History, know-how and organization"
+      },
+      "3": {
+        "titre": "Market and customers",
+        "detail": "The industry, its drivers and the customer base"
+      },
+      "4": {
+        "titre": "Financial performance",
+        "detail": "Accounts, adjustments and debt"
+      },
+      "5": {
+        "titre": "Outlook and deal",
+        "detail": "Growth opportunities and planned sale"
+      }
+    },
+    "sections": {
+      "synthese": {
+        "titre": "Opportunity summary",
+        "court": "Summary"
+      },
+      "histoire": {
+        "titre": "History and identity",
+        "court": "History"
+      },
+      "activite": {
+        "titre": "Business and know-how",
+        "court": "Know-how"
+      },
+      "organisation": {
+        "titre": "Organization and team",
+        "court": "Team"
+      },
+      "marche": {
+        "titre": "Market",
+        "court": "Market"
+      },
+      "clients": {
+        "titre": "Customers",
+        "court": "Customers"
+      },
+      "finances": {
+        "titre": "Financial performance",
+        "court": "Financials"
+      },
+      "perspectives": {
+        "titre": "Growth opportunities",
+        "court": "Outlook"
+      },
+      "operation": {
+        "titre": "Planned deal",
+        "court": "Deal"
+      }
+    },
+    "cr": {
+      "croissance": "Annual growth",
+      "pct_ca": "as a % of revenue"
+    },
+    "origines": {
+      "liasse": {
+        "one": "tax return",
+        "other": "tax returns"
+      },
+      "dirigeant": {
+        "one": "figures provided by the owner",
+        "other": "figures provided by the owner"
+      },
+      "inpi": {
+        "one": "filed annual accounts (INPI)",
+        "other": "filed annual accounts (INPI)"
+      }
+    },
+    "manque": {
+      "activite": "Describe your business (questionnaire, “Your business”)",
+      "operation": "Specify the planned deal (questionnaire, “The planned deal”)"
+    }
+  },
+  "teaser": {
+    "sections": {
+      "accroche": "Hook",
+      "activite": "The business",
+      "chiffres": "Key figures",
+      "atouts": "Strengths",
+      "operation": "The deal"
+    },
+    "tendance": {
+      "hausse": "growing revenue",
+      "baisse": "declining revenue",
+      "stable": "stable revenue"
+    },
+    "recurrent": "about {n}% recurring revenue",
+    "france": "France"
+  },
+  "valorisation_moteur": {
+    "retraitements": {
+      "dirigeant": "Owner’s pay brought back to a normal level",
+      "loyer": "Rent brought back to market price",
+      "exceptionnel": "One-off item"
+    },
+    "dette": {
+      "credit_bail": "Lease financing still due",
+      "comptes_courants": "Repayable shareholder loans",
+      "provisions": "Provisions for risks",
+      "dividendes": "Dividends declared but unpaid",
+      "tresorerie": "Cash"
+    },
+    "ancc": {
+      "plus_values": "Reported unrealized gains (real estate, goodwill)",
+      "frais_etablissement": "Start-up costs (no value)",
+      "creances_douteuses": "Doubtful receivables"
+    },
+    "alertes": {
+      "exercice_incomplet": {
+        "one": "Fiscal year {annee} left out of the calculation: {n} required line to complete or approve.",
+        "other": "Fiscal year {annee} left out of the calculation: {n} required lines to complete or approve."
+      },
+      "ebe_indeterminable": "Fiscal year {annee} left out of the calculation: EBITDA can’t be determined (expenses or published EBITDA missing).",
+      "non_consecutifs": "Non-consecutive fiscal years: averages cover the available fiscal years.",
+      "aucun_exercice": "No complete, approved fiscal year.",
+      "ebe_negatif": "Normalized EBITDA is negative or zero: the EBITDA multiples method doesn’t apply.",
+      "multiples_a_completer": "Industry multiples to be completed.",
+      "dcf_a_completer": "DCF to be completed: {liste}.",
+      "valeur_terminale": "The terminal value is more than 80% of the DCF: the result is very sensitive to long-term assumptions.",
+      "cp_negatifs": "Adjusted shareholders’ equity is negative.",
+      "dcf_option": "Summary based on multiples. The DCF is offered as an option: fill in the size premium under “Fine-tune” if your advisor wants it.",
+      "sous_ancc": "Your range is below the company’s adjusted net assets ({montant}). A buyer rarely pays less than these assets: review this with your advisor."
+    },
+    "origines": {
+      "defaut": "default (0%, single fiscal year)",
+      "historique_ca": "revenue history (capped between −5% and +10%)",
+      "ebe_sur_ca": "normalized EBITDA / latest revenue",
+      "a_completer": "to be completed (0%)",
+      "dotations": "historical average of depreciation / revenue",
+      "maintien": "equal to depreciation (maintenance capex)",
+      "bfr": "historical normalized working capital",
+      "inflation": "ECB inflation target",
+      "dirigeant": "owner"
+    },
+    "manquant": {
+      "beta": "industry beta",
+      "prime_taille": "size premium",
+      "taux": "risk-free rate"
+    }
+  },
+  "controles": {
+    "lignes_a_completer": {
+      "one": "{n} line to complete: {liste}.",
+      "other": "{n} lines to complete: {liste}."
+    },
+    "negatif": "{libelle} can’t be negative ({montant}).",
+    "ca_public": "The revenue entered ({saisi}) differs from the published accounts ({publie}). Check the fiscal year and the unit.",
+    "bilan": "The balance sheet doesn’t balance: assets {actif}, liabilities {passif}. A line may be missing (prepaid expenses, shareholder loans…).",
+    "ebe": "The calculated EBITDA ({ebe}) differs from operating income plus depreciation ({rex}). Check the expenses.",
+    "variation": "Revenue changes sharply from the previous fiscal year ({avant} → {apres}). Check the unit (euros or thousands of euros)."
+  },
+  "propositions": {
+    "sources": {
+      "registres": "based on the public registries",
+      "comptes": "based on your accounts",
+      "site": "based on your website",
+      "secteur": "based on your industry",
+      "frequent": "most common choice, to be confirmed",
+      "effectif": "based on your headcount (registries), to be confirmed"
+    },
+    "dates": {
+      "creation": "{annee}: founded",
+      "creation_ville": "{annee}: company founded (current headquarters in {ville})",
+      "transfert": "{annee}: headquarters moved",
+      "transfert_ville": "{annee}: headquarters moved to {ville}",
+      "denomination": "{annee}: name change",
+      "reprise": "{annee}: acquisition of a business",
+      "reprise_ville": "{annee}: acquisition of a business in {ville}"
+    },
+    "activite": {
+      "secteur": "Company in the “{secteur}” industry",
+      "ville": "in {ville}",
+      "precisez": ". Describe your trades, your products or services and your customers."
+    }
+  },
+  "secteur": {
+    "bandes": {
+      "sans": {
+        "libelle": "No employees or not reported"
+      },
+      "1_9": {
+        "libelle": "1 to 9 employees"
+      },
+      "10_49": {
+        "libelle": "10 to 49 employees"
+      },
+      "50_plus": {
+        "libelle": "50 or more employees"
+      }
+    },
+    "source": "French business directory (INSEE Sirene), active companies with NAF code {naf}, accessed on {date}"
+  },
+  "datapack_onglets": {
+    "presentation": "Overview",
+    "comptes": "1.1 Accounts",
+    "retraitements": "1.2 Adjustments",
+    "hypotheses": "1.3 Assumptions",
+    "titres": "2.1 Bridge to equity",
+    "multiples": "2.2 Multiples",
+    "dcf": "2.3 DCF",
+    "ancc": "2.4 Adjusted net assets",
+    "synthese": "2.5 Summary"
+  },
+  "datapack": {
+    "donnees_hypotheses": "Data and assumptions",
+    "comptes_resultat_bilans_valides": "Approved income statements and balance sheets, calculated EBITDA and working capital",
+    "pont_ebe_comptable_ebe": "Bridge from reported to normalized EBITDA",
+    "parametres_sources_dates_modifiables": "Sourced, dated, editable parameters (copper cells on cream background)",
+    "valorisation": "Valuation",
+    "dette_nette_bfr_normatif": "Net debt, normalized working capital, non-operating assets",
+    "methode_1_multiples_ebe": "Method 1: EBITDA multiples",
+    "methode_2_flux_tresorerie": "Method 2: discounted cash flows over 5 years",
+    "methode_3_actif_net": "Method 3: adjusted book net assets (floor)",
+    "fourchettes_ponderation_sensibilites": "Ranges, weighting, sensitivities",
+    "presentation": ">> Overview",
+    "entreprise": "Company",
+    "strictement_confidentiel": "STRICTLY CONFIDENTIAL",
+    "sommaire": "Contents",
+    "onglet": "Tab",
+    "contenu": "Content",
+    "lien": "Link",
+    "lecture": "How to read",
+    "saisie_ou_hypothese_modifiable": "Input or editable assumption (copper on cream): flows through all tabs.",
+    "formule_se_recalcule_seule": "Formula: recalculates on its own, do not overwrite.",
+    "total_ou_resultat_methode": "Total or result of a method.",
+    "montants_euros_valides_par": "Amounts in euros approved by the owner; negatives in parentheses, zero shown as “–”.",
+    "avertissement": "Disclaimer",
+    "estimation_indicative_non_contractuelle": "Indicative, non-binding estimate. It does not replace the opinion of an accountant, a lawyer or an M&A advisor. Passation assumptions are sourced and dated in the tab “",
+    "comptes_valides": "Approved accounts",
+    "poste": "Item",
+    "ou_trouver": "Where to find it",
+    "compte_resultat": "Income statement",
+    "bilan": "Balance sheet",
+    "agregats_calcules": "Calculated aggregates",
+    "ebe_calcule": "EBITDA (calculated)",
+    "bfr_exploitation_stocks_clients": "Operating working capital (inventories + receivables − payables − tax and social liabilities)",
+    "bfr_jours_chiffre_affaires": "Working capital in days of revenue",
+    "non_determinable": "Cannot be determined",
+    "hypotheses": "Assumptions",
+    "cellules_cuivre_sur_fond": "Copper cells on cream background are editable. Passation sources are dated; “To be completed” = no verified public source.",
+    "parametre": "Parameter",
+    "valeur": "Value",
+    "source": "Source",
+    "date": "Date",
+    "cout_capital": "Cost of capital",
+    "reglage_dirigeant": "Owner’s setting",
+    "completer_aucune_source_publique": "To be completed: no verified free public source",
+    "ratio_dette_capitaux_propres": "Target debt-to-equity ratio (industry)",
+    "impot_sur_societes": "Corporate income tax",
+    "taux_normal": "Standard rate",
+    "taux_reduit_pme": "Reduced SME rate",
+    "plafond_taux_reduit": "Reduced-rate ceiling (€)",
+    "taux_reduit_applicable_1": "Reduced rate applies (1 = yes, 0 = no)",
+    "reponse_dirigeant_capital_detenu": "Owner’s answer (at least 75% of capital held by individuals)",
+    "previsions_dcf": "Forecasts (DCF)",
+    "croissance_infini": "Perpetual growth rate",
+    "croissance_annuelle_chiffre_affaires": "Annual revenue growth",
+    "marge_ebe": "EBITDA margin",
+    "amortissements_ca": "Depreciation / revenue",
+    "investissements_ca": "Capital expenditure / revenue",
+    "bfr_jours_ca": "Working capital in days of revenue",
+    "multiples_synthese": "Multiples and summary",
+    "multiple_ebe_bas": "Low EBITDA multiple",
+    "croisement_trois_sources_src": "Three sources cross-checked (src/data/multiples-sources.json)",
+    "multiple_ebe_central": "Central EBITDA multiple",
+    "multiple_ebe_haut": "High EBITDA multiple",
+    "poids_multiples_dans_synthese": "Weight of multiples in the summary (the DCF gets the remainder)",
+    "ebe_normatif_moyenne_ou": "Normalized EBITDA: “moyenne” (average) or “dernier” (latest)",
+    "decotes_primes": "Discounts and premiums",
+    "facteur": "Factor",
+    "justification": "Justification",
+    "facteur_applique_aux_valeurs": "Factor applied to enterprise values (1 + sum)",
+    "sources": "Sources",
+    "remuneration_reelle_dirigeant_charges": "Owner’s actual pay (including payroll taxes)",
+    "remuneration_normative_directeur_salarie": "Market-rate pay of a salaried manager",
+    "loyer_paye_locaux_dirigeant": "Rent paid (premises owned by the owner or a property company)",
+    "loyer_marche": "Market rent",
+    "elements_exceptionnels": "One-off items",
+    "libelle": "Description",
+    "exercice": "Fiscal year",
+    "montant": "Amount",
+    "pont": "Bridge",
+    "ebe_comptable": "Reported EBITDA",
+    "remuneration_dirigeant_ramenee_normale": "Owner’s pay brought back to a normal level",
+    "loyer_ramene_prix_marche": "Rent brought back to market price",
+    "ebe_retraite": "Adjusted EBITDA",
+    "ebe_normatif": "Normalized EBITDA",
+    "dette_nette_bfr_actifs": "Net debt, working capital and non-operating assets",
+    "dette_nette": "Net debt",
+    "emprunts_dettes_financieres": "Borrowings and financial debt",
+    "credit_bail_restant": "Lease financing still due",
+    "comptes_courants_associes_remboursables": "Repayable shareholder loans",
+    "provisions_pour_risques": "Provisions for risks",
+    "dividendes_votes_non_verses": "Dividends declared but unpaid",
+    "tresorerie_moins": "Cash (deducted)",
+    "placements_moins": "Investments (deducted)",
+    "dette_nette_negative_tresorerie": "Net debt (negative = net cash)",
+    "bfr_reel_dernier_exercice": "Actual working capital, latest fiscal year",
+    "bfr_normatif_jours_moyenne": "Normalized working capital in days (average of fiscal years)",
+    "bfr_normatif_jours_dernier": "Normalized working capital (days × latest revenue / 365)",
+    "ecart_bfr_reel_normatif": "Working capital gap (actual − normalized)",
+    "actifs_hors_exploitation": "Non-operating assets",
+    "passage_ve_titres_ve": "EV → equity bridge = EV × discount factor − net debt + working capital gap + non-operating assets",
+    "basse": "Low",
+    "centrale": "Central",
+    "haute": "High",
+    "multiple_ebe": "EBITDA multiple",
+    "valeur_entreprise": "Enterprise value",
+    "valeur_titres": "Equity value",
+    "non_applicable": "Not applicable",
+    "methode_2_dcf_sur": "Method 2: 5-year DCF (end-of-year convention)",
+    "beta_endette_beta_desendette": "Levered beta = unlevered beta × (1 + (1 − tax rate) × D/E)",
+    "cout_fonds_propres_taux": "Cost of equity = risk-free rate + beta × premium + size premium",
+    "part_dette_e_1": "Debt weight = D/E / (1 + D/E)",
+    "cout_dette_apres_impot": "After-tax cost of debt",
+    "completer": "To be completed",
+    "projection": "Projection",
+    "an_0": "Year 0",
+    "annee": "Year",
+    "chiffre_affaires": "Revenue",
+    "amortissements": "Depreciation and amortization",
+    "resultat_exploitation_ebit": "Operating income (EBIT)",
+    "impot_sur_ebit": "Tax on EBIT",
+    "investissements": "Capital expenditure",
+    "variation_bfr": "Change in working capital",
+    "flux_disponible": "Free cash flow",
+    "facteur_actualisation": "Discount factor",
+    "flux_actualise": "Discounted cash flow",
+    "valeur_terminale_gordon_shapiro": "Terminal value (Gordon growth) = year-5 cash flow × (1 + g) / (WACC − g)",
+    "cmpc_g": "WACC ≤ g",
+    "valeur_terminale_actualisee": "Discounted terminal value",
+    "somme_flux_actualises": "Sum of discounted cash flows",
+    "valeur_entreprise_dcf": "Enterprise value (DCF)",
+    "cmpc_1_pt": "WACC + 1 pt",
+    "cmpc_1_pt_2": "WACC − 1 pt",
+    "sensibilite_croissance_infini_titres": "Sensitivity to perpetual growth (equity)",
+    "g_0_5_pt": "g − 0.5 pt",
+    "g_0_5_pt_2": "g + 0.5 pt",
+    "methode_3_actif_net_2": "Method 3: adjusted book net assets",
+    "presente_part_comme_plancher": "Shown separately, as a negotiation floor.",
+    "capitaux_propres": "Shareholders’ equity",
+    "plus_values_latentes_justifiees": "Justified unrealized gains (real estate, goodwill)",
+    "frais_etablissement_sans_valeur": "Start-up costs (no value, deducted)",
+    "creances_douteuses_moins": "Doubtful receivables (deducted)",
+    "actif_net_comptable_corrige": "Adjusted book net assets",
+    "synthese_valeur_titres": "Summary: equity value",
+    "methode": "Method",
+    "multiples_ebe": "EBITDA multiples",
+    "dcf_cmpc_1_pt": "DCF (WACC ± 1 pt)",
+    "actif_net_corrige_plancher": "Adjusted net assets (floor)",
+    "poids_multiples": "Weight of multiples",
+    "poids_dcf": "Weight of DCF",
+    "valeur_titres_synthese": "Equity value (summary)",
+    "sensibilites_valeur_titres": "Sensitivities (equity value)",
+    "multiple_ebe_1x_1x": "EBITDA multiple − 1x / + 1x",
+    "cmpc_1_pt_1": "WACC + 1 pt / − 1 pt",
+    "croissance_infini_0_5": "Perpetual growth − 0.5 pt / + 0.5 pt",
+    "controle_poids_multiples_poids": "Check: weight of multiples + weight of DCF = 100%",
+    "genere_le": "Valuation datapack · generated on {date}",
+    "section_num": "Section {num} – {titre}",
+    "beta_secteur": "Unlevered industry beta ({industrie})",
+    "dernier_exercice": "Latest fiscal year: {annee}",
+    "pied_synthese": "Indicative, non-binding estimate. Calculations are reproduced with formulas: edit the copper cells in the “{onglet}” tab.",
+    "a_verifier": "To check",
+    "unite_euros": "in €",
+    "unite_euros_pct": "in € or %"
+  },
+  "hypotheses": {
+    "_lisez_moi": "Labels from src/data/hypotheses.json (values, sources and dates stay in that file); « facteurs »: discounts and premiums, by key.",
+    "taux_sans_risque": {
+      "libelle": "Euro risk-free rate: 10-year spot rate of the AAA-rated euro area government bond curve",
+      "note": "Damodaran method: euro risk-free rate (AAA government); France’s country risk is counted in the risk premium below, not in the rate."
+    },
+    "prime_risque_marche": {
+      "libelle": "Equity risk premium for France (mature market 4.23% + country premium 0.78%)"
+    },
+    "prime_taille": {
+      "libelle": "Size and specific risk premium of an unlisted SME",
+      "note": "To be completed. No verified free public source (the usual references, such as Kroll Cost of Capital Navigator, are paid). Until it is filled in, the DCF is not calculated and the summary relies on multiples alone."
+    },
+    "cout_dette_avant_impot": {
+      "libelle": "Pre-tax cost of debt: average rate on new loans to SMEs in France"
+    },
+    "impot_societes": {
+      "conditions_taux_reduit": "Revenue for the fiscal year ≤ €10,000,000; capital fully paid up and at least 75% held by individuals (or by a company itself at least 75% held by individuals)."
+    },
+    "croissance_terminale": {
+      "libelle": "Perpetual growth (terminal value): ECB medium-term inflation target, i.e. zero growth in volume"
+    },
+    "betas": {
+      "libelle": "Cash-corrected unlevered beta and industry debt-to-equity ratio (Western Europe)"
+    },
+    "decotes_primes": {
+      "note": "To be completed: no default percentage is sourced. Each factor starts at 0%; the owner (or their advisor) sets the slider and writes the justification.",
+      "facteurs": {
+        "dependance_dirigeant": "Dependence on the owner",
+        "concentration_clients": "Customer concentration",
+        "recurrence": "Revenue recurrence",
+        "croissance": "Growth momentum",
+        "taille": "Size and liquidity of the shares"
+      }
+    },
+    "ponderation": {
+      "note": "Owner’s decision of 11/18/2026 (replaces the one of 11/10): multiples only by default; the DCF is calculated and shown as an option (cross-check), enabled through the weighting; adjusted net assets are shown separately as a floor."
+    }
+  },
+  "claude": {
+    "cle_refusee": "Automatic reading and drafting are temporarily unavailable: the site’s Claude API key was refused. The site administrator needs to replace it."
+  },
+  "express": {
+    "avertissement": "EBITDA negative or missing: estimate based on revenue, less certain."
+  }
+}

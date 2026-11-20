@@ -1,0 +1,23 @@
+{
+  "_lisez_moi": "Textes du JavaScript (t() de public/js/i18n.js). Mêmes clés dans src/contenu/en/connexion_code.json.",
+  "reseau": "Connexion impossible. Vérifiez votre réseau.",
+  "erreur": "Une erreur est survenue. Réessayez.",
+  "siren": "Votre dossier sera créé pour le SIREN&nbsp;{siren}.",
+  "email_libelle": "Adresse e-mail professionnelle",
+  "email_exemple": "prenom@entreprise.fr",
+  "recevoir": "Recevoir mon code",
+  "sans_mot_de_passe": "Pas de mot de passe : un code à 6 chiffres vous est envoyé par e-mail.",
+  "code_libelle": "Code reçu par e-mail",
+  "code_aide": "Valable 10 minutes. Pensez à regarder dans vos courriers indésirables.",
+  "ouvrir": "Ouvrir mon dossier",
+  "renvoyer": "Renvoyer un code",
+  "renvoyer_attente": "Renvoyer un code ({n} s)",
+  "changer": "Changer d'adresse",
+  "envoye": "Code envoyé à {email}.",
+  "developpement": "Mode développement : le code s'affiche dans le terminal de wrangler dev.",
+  "email_invalide": "Indiquez une adresse e-mail valide.",
+  "code_six": "Le code compte 6 chiffres.",
+  "accepte": "Code accepté. Ouverture de votre dossier…",
+  "nouveau": "Un nouveau code vient d'être envoyé. L'ancien ne fonctionne plus.",
+  "fermer": "Fermer"
+}

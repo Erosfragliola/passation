@@ -22,6 +22,7 @@ import { routePieces } from "./pieces.js";
 import { projet } from "../documents/nom-de-code.js";
 import { routeDocuments } from "./documents.js";
 import { routeTermine } from "./suivi.js";
+import { t as tr } from "../../public/js/i18n.js";
 
 const resume = (row) => {
   const c = JSON.parse(row.company_json || "{}");
@@ -58,7 +59,7 @@ async function dossierDe(env, id, userId) {
   if (!/^[0-9a-f-]{36}$/.test(id)) return null;
   return env.DB.prepare("SELECT * FROM dossiers WHERE id = ? AND user_id = ?").bind(id, userId).first();
 }
-const introuvable = () => json({ erreur: "introuvable", message: "Dossier introuvable." }, 404);
+const introuvable = () => json({ erreur: "introuvable", message: tr("serveur.dossiers.dossier_introuvable") }, 404);
 
 async function detail(env, row) {
   const { results } = await env.DB.prepare("SELECT item_key FROM checklist WHERE dossier_id = ? AND done = 1").bind(row.id).all();
@@ -128,13 +129,13 @@ export async function routeDossiers(request, env, segments) {
     if (m === "POST") {
       let corps; try { corps = await request.json(); } catch { corps = {}; }
       const siren = nettoyerSiren(corps.siren);
-      if (!sirenValide(siren)) return json({ erreur: "siren_invalide", message: "Ce numéro SIREN n'est pas valide." }, 400);
+      if (!sirenValide(siren)) return json({ erreur: "siren_invalide", message: tr("serveur.dossiers.numero_siren_valide") }, 400);
       try { return json({ dossier: await creerDossierPourSiren(env, u.id, siren) }, 201); }
       catch (e) {
-        if (e.message === "introuvable") return json({ erreur: "introuvable", message: "Nous ne trouvons pas cette entreprise." }, 404);
-        if (e.message === "limite_dossiers") return json({ erreur: "limite_dossiers", message: `${CLAUDE_QUOTAS.dossiersParUtilisateur} dossiers au plus par compte : supprimez-en un pour en ouvrir un autre.` }, 429);
+        if (e.message === "introuvable") return json({ erreur: "introuvable", message: tr("serveur.dossiers.nous_ne_trouvons_cette") }, 404);
+        if (e.message === "limite_dossiers") return json({ erreur: "limite_dossiers", message: tr("serveur.dossiers.max_dossiers", { n: CLAUDE_QUOTAS.dossiersParUtilisateur }) }, 429);
         console.warn("source indisponible :", e.message);
-        return json({ erreur: "source_indisponible", message: "Les registres publics ne répondent pas pour le moment. Réessayez dans quelques minutes." }, 502);
+        return json({ erreur: "source_indisponible", message: tr("serveur.dossiers.registres_publics_ne_repondent") }, 502);
       }
     }
     return json({ erreur: "methode" }, 405);

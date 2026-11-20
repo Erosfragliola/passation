@@ -3,6 +3,7 @@
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { envoyerMessage } from "../lib/email.js";
+import { lien as lienLocal, t as tr } from "../../public/js/i18n.js";
 import { SECTIONS_MEMO } from "../documents/memo.js";
 
 export const DELAI_RAPPEL = 3 * 24 * 3600;
@@ -28,12 +29,12 @@ async function dossierComplet(env, dossierId) {
 
 /** POST /api/dossiers/:id/termine : envoie « Votre dossier est prêt » une seule fois. */
 export async function routeTermine(request, env, row, user) {
-  if (!(await dossierComplet(env, row.id))) return json({ erreur: "incomplet", message: "Le dossier n'est pas encore complet." }, 409);
+  if (!(await dossierComplet(env, row.id))) return json({ erreur: "incomplet", message: tr("serveur.suivi.dossier_encore_complet") }, 409);
   const suivi = await lireSuivi(env, row.id);
   if (suivi.pret_envoye) return json({ ok: true, deja: true });
-  const lien = new URL(`/espace/demarrer/?dossier=${row.id}`, request.url).href;
-  const nom = JSON.parse(row.company_json || "{}").nom || "votre entreprise";
-  const r = await envoyerMessage(env, user.email, { sujet: "Votre dossier Passation est prêt", titre: `Le dossier de ${nom} est prêt.`, texte: "Valorisation, datapack Excel, teaser anonyme et mémorandum d'information : tout est rédigé. Il vous reste à les relire.", lien, bouton: "Relire mon dossier" }, request.url);
+  const lien = new URL(lienLocal(`/espace/demarrer/?dossier=${row.id}`), request.url).href;
+  const nom = JSON.parse(row.company_json || "{}").nom || tr("serveur.email.votre_entreprise");
+  const r = await envoyerMessage(env, user.email, { sujet: tr("serveur.email.pret.sujet"), titre: tr("serveur.email.pret.titre", { nom }), texte: tr("serveur.email.pret.texte"), lien, bouton: tr("serveur.email.pret.bouton") }, request.url);
   if (r.envoye) await ecrireSuivi(env, row.id, { ...suivi, pret_envoye: maintenant() });
   return json({ ok: true, envoye: r.envoye });
 }
@@ -52,8 +53,8 @@ export async function dossiersARelancer(env, t = maintenant()) {
 export async function relancer(env, base = env.APP_URL || "https://passation.eros-fragliola-freedom.workers.dev") {
   let n = 0;
   for (const d of await dossiersARelancer(env)) {
-    const nom = JSON.parse(d.company_json || "{}").nom || "votre entreprise";
-    const r = await envoyerMessage(env, d.email, { sujet: "Votre dossier Passation vous attend", titre: `Le dossier de ${nom} est en cours.`, texte: "Vous pouvez reprendre là où vous vous étiez arrêté : vos réponses sont enregistrées.", lien: `${base}/espace/demarrer/?dossier=${d.id}`, bouton: "Reprendre mon dossier" }, base);
+    const nom = JSON.parse(d.company_json || "{}").nom || tr("serveur.email.votre_entreprise");
+    const r = await envoyerMessage(env, d.email, { sujet: tr("serveur.email.rappel.sujet"), titre: tr("serveur.email.rappel.titre", { nom }), texte: tr("serveur.email.rappel.texte"), lien: `${base}${lienLocal(`/espace/demarrer/?dossier=${d.id}`)}`, bouton: tr("serveur.email.rappel.bouton") }, base);
     if (r.envoye) { await ecrireSuivi(env, d.id, { ...(await lireSuivi(env, d.id)), rappel_envoye: maintenant() }); n++; }
   }
   return n;

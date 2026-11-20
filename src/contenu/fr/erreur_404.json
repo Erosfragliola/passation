@@ -1,0 +1,8 @@
+{
+  "_lisez_moi": "Textes de la page /404.html (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/erreur_404.json.",
+  "page_introuvable_passation": "Page introuvable · Passation",
+  "erreur_404": "Erreur 404",
+  "cette_page_est_introuvable": "Cette page est <em>introuvable</em>.",
+  "lien_est_peut_etre_ancien": "Le lien est peut-être ancien ou incomplet.",
+  "retour_accueil": "<a class=\"btn btn-noir\" href=\"/\">Retour à l’accueil</a>"
+}

@@ -1,0 +1,179 @@
+{
+  "_lisez_moi": "Text of the /espace/demarrer/ page (set by the Worker, src/routes/pages.js). Same keys as src/contenu/fr/demarrer.json.",
+  "nom_sous_lequel_circulera_votre": "<span class=\"guide-code\" id=\"guide-code\"></span><span class=\"guide-code-aide\">the name your file will circulate under</span>",
+  "votre_dossier": "Your file",
+  "etapes": "Steps",
+  "avancement": "Progress",
+  "js": {
+    "faite": ": done",
+    "deja": {
+      "entreprise": "Company identified: {nom}",
+      "votre_societe": "your company",
+      "comptes": "Public accounts retrieved: {annees}",
+      "estimation": "{etiquette}: {fourchette}",
+      "titre": "Already done"
+    },
+    "comptes": {
+      "lecture": "Reading your tax return… (about 30 seconds)",
+      "saisir_titre": "Enter the key figures from your accounts",
+      "saisir_aide": "About ten amounts, copied from your tax return or annual accounts. That’s what turns the first value into one you can defend.",
+      "lecture_indisponible": "Automatic tax-return reading is not available right now.",
+      "saisir_mes_chiffres": "Enter my figures",
+      "deposer_titre": "Upload your latest tax return",
+      "deposer_aide": "That’s what turns the first value into one you can defend. We read the figures; you just confirm them.",
+      "liasse_pdf": "Tax return (liasse fiscale) as a PDF",
+      "formulaires": "Forms 2033 or 2050 to 2059, 10 MB max. It usually covers two fiscal years.",
+      "choisir_pdf": "Choose the PDF",
+      "pas_de_liasse": "No tax return at hand? ",
+      "saisir_main": "Enter the key figures by hand",
+      "dizaine": ": about ten amounts."
+    },
+    "saisie": {
+      "quest_ce_ebe": "What is EBITDA?",
+      "repris_inpi": "Taken from the public accounts (French national business registry): check it against your accounts.",
+      "ebe": "EBITDA ",
+      "facultatif": " · optional",
+      "illisible": "Unreadable amount: {libelle}.",
+      "il_manque": "Missing: {liste}. Enter 0 if the item doesn’t exist.",
+      "reprendre_ebe": "Use EBITDA from the public accounts",
+      "detailler": "I’d rather break down my expenses",
+      "titre": "Your key figures",
+      "ecran1": "Screen 1 of 2: what the company earns. Copy from your annual accounts; enter 0 if an item doesn’t exist.",
+      "clos_en": "Fiscal year ending in",
+      "gagne": "What the company earns",
+      "suivant_bilan": "Next: what it owns and owes ",
+      "ecran2": "Screen 2 of 2: what the company owns and owes, at the {annee} year-end. Enter 0 if an item doesn’t exist.",
+      "possede": "What it owns and owes",
+      "retour_gagne": "← What the company earns",
+      "enregistre": "Fiscal year {annee} saved.",
+      "enregistrer": "Save this fiscal year "
+    },
+    "retour": "Back",
+    "chiffres": {
+      "exercice": "Fiscal year {annee}",
+      "confirme": "✓ Confirmed",
+      "facultatif": "Optional",
+      "ca": "Revenue",
+      "ebe": "EBITDA",
+      "rn": "Net income",
+      "cp": "Shareholders’ equity",
+      "confirmer_autres": "Confirm the other lines",
+      "justes": "These figures are correct",
+      "titre": "Are your figures correct?",
+      "aide": "Compare with your tax return. Our automatic checks flag what needs your attention; the rest is confirmed in one click.",
+      "autre_exercice": "Enter another fiscal year",
+      "autre_liasse": "Upload another tax return",
+      "mode_detaille": "Detailed mode (all lines)",
+      "montant_lisible": "Enter a readable amount."
+    },
+    "continuer": "Continue ",
+    "clients": {
+      "part": "Share of revenue",
+      "depuis": "Customer since",
+      "activite": "Customer’s business (optional)",
+      "client": "Customer {n}",
+      "part_court": "share",
+      "part_aria": "Customer {n}: share of revenue in %",
+      "depuis_court": "years",
+      "depuis_aria": "Customer {n}: number of years of relationship",
+      "ans": "yrs",
+      "activite_aria": "Customer {n}: customer’s business",
+      "activite_exemple": "e.g. manufacturing"
+    },
+    "exc": {
+      "exercice": "Fiscal year",
+      "libelle": "Description",
+      "montant_euros": "Amount (€)",
+      "montant": "Amount",
+      "pourquoi": "Why won’t it recur?",
+      "justification": "Justification",
+      "ajouter": "Add an item"
+    },
+    "erreurs": {
+      "montant_illisible": "An amount can’t be read.",
+      "part_illisible": "A share or a number of years can’t be read.",
+      "part_bornes": "Each share must be between 0 and 100%.",
+      "parts_total": "The five shares add up to more than 100% of revenue."
+    },
+    "question_n": "Question {n} of {total}",
+    "site": {
+      "est_ce": "Is this your company’s website?",
+      "a_t_elle": "Does your company have a website?",
+      "aide": "We pick up your business description and logo from it for the memorandum while you answer the next questions. You will approve each item.",
+      "adresse": "Website address",
+      "aucun": "We don’t have a website",
+      "indiquez": "Enter the website address, or choose “We don’t have a website”.",
+      "oui_lire": "Yes, read this website ",
+      "lire": "Read this website ",
+      "lecture": "Reading your website…",
+      "retenu_titre": "What we picked up from your website",
+      "retenu_aide": "Everything is ticked: untick anything inaccurate. Only ticked facts will be used in the memorandum.",
+      "faits": "Facts found",
+      "votre_logo": "Your logo",
+      "choix_logo": "Logo choice",
+      "aucun_logo": "None"
+    },
+    "recap": {
+      "valider": {
+        "one": "Approve {n} answer ",
+        "other": "Approve {n} answers "
+      },
+      "preparees": "{n} answers prepared",
+      "titre": "We’ve prepared your answers",
+      "aide": "Check them at a glance. Untick anything inaccurate: you’ll correct it right after, with the few remaining questions.",
+      "une_par_une": "Answer one question at a time"
+    },
+    "question": {
+      "preparee": "Answer prepared by Passation",
+      "preparee_suite": " · {source}. Check it, correct it if needed, then approve.",
+      "indispensable": "Required to draft the memorandum: {liste}.",
+      "passer": "Skip",
+      "il_manque": "{liste} is missing: it’s required to draft the memorandum.",
+      "exact_continuer": "That’s right, continue ",
+      "ou_va": "Where your answer goes"
+    },
+    "redaction": {
+      "sections": {
+        "synthese": "summary",
+        "histoire": "history",
+        "activite": "know-how",
+        "organisation": "team",
+        "marche": "market",
+        "clients": "customers",
+        "finances": "financials",
+        "perspectives": "outlook",
+        "operation": "deal"
+      },
+      "valorisation": "Valuation (industry EBITDA multiples)",
+      "marche": "Web market research (two minutes at most)",
+      "memo_section": "Memorandum: {section}",
+      "titre": "We’re drafting your file",
+      "aide": "One to two minutes. If you leave this page, drafting resumes when you come back, without redoing what’s finished.",
+      "chrono": "{s} s · {n} of {total}",
+      "manque_titre": "An answer is missing to draft the memorandum",
+      "manque_aide": "The valuation, datapack and teaser are ready. Answer below: drafting of the memorandum will resume right away.",
+      "repondre": "Answer: {question} ",
+      "echecs": {
+        "one": "{n} draft didn’t complete",
+        "other": "{n} drafts didn’t complete"
+      },
+      "cause": "{liste}: ",
+      "conserve": "What’s finished is kept: only these drafts will be restarted.",
+      "relancer": "Restart these drafts",
+      "teaser_anonymat": "The teaser didn’t pass the anonymity check: rework it from its page (an answer probably contains a name or a brand)."
+    },
+    "pret": {
+      "valo_titre": "Detailed valuation",
+      "valo_detail": "Industry multiples, assumptions and sources",
+      "datapack_detail": "9 tabs, live formulas",
+      "teaser_detail": "One page to spark interest",
+      "memo_detail": "The complete presentation, as slides",
+      "affiner": "To fine-tune (discounts and premiums, EBITDA used): ",
+      "reglages": "valuation settings",
+      "photos": ". To add photos to the memorandum: ",
+      "page_memo": "memorandum page",
+      "modifier": ". To change an answer: ",
+      "revoir": "review your answers"
+    }
+  }
+}

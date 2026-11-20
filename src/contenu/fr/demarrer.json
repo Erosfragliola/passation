@@ -1,0 +1,179 @@
+{
+  "_lisez_moi": "Textes de la page /espace/demarrer/ (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/demarrer.json.",
+  "nom_sous_lequel_circulera_votre": "<span class=\"guide-code\" id=\"guide-code\"></span><span class=\"guide-code-aide\">nom sous lequel circulera votre dossier</span>",
+  "votre_dossier": "Votre dossier",
+  "etapes": "Étapes",
+  "avancement": "Avancement",
+  "js": {
+    "faite": " : faite",
+    "deja": {
+      "entreprise": "Entreprise identifiée : {nom}",
+      "votre_societe": "votre société",
+      "comptes": "Comptes publics récupérés : {annees}",
+      "estimation": "{etiquette} : {fourchette}",
+      "titre": "Déjà fait"
+    },
+    "comptes": {
+      "lecture": "Lecture de votre liasse… (30 secondes environ)",
+      "saisir_titre": "Saisissez l'essentiel de vos comptes",
+      "saisir_aide": "Une dizaine de montants, à recopier de votre liasse fiscale ou de vos comptes annuels. C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre.",
+      "lecture_indisponible": "La lecture automatique des liasses n'est pas disponible pour le moment.",
+      "saisir_mes_chiffres": "Saisir mes chiffres",
+      "deposer_titre": "Déposez votre dernière liasse fiscale",
+      "deposer_aide": "C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre. Nous lisons les chiffres ; vous n'aurez qu'à les confirmer.",
+      "liasse_pdf": "Liasse fiscale en PDF",
+      "formulaires": "Formulaires 2033 ou 2050 à 2059, 10 Mo au plus. Elle contient en général deux exercices.",
+      "choisir_pdf": "Choisir le PDF",
+      "pas_de_liasse": "Pas de liasse sous la main ? ",
+      "saisir_main": "Saisir l'essentiel à la main",
+      "dizaine": " : une dizaine de montants."
+    },
+    "saisie": {
+      "quest_ce_ebe": "Qu'est-ce que l'EBE ?",
+      "repris_inpi": "Repris des comptes publics (registre national des entreprises) : vérifiez-le avec vos comptes.",
+      "ebe": "EBE ",
+      "facultatif": " · facultatif",
+      "illisible": "Montant illisible : {libelle}.",
+      "il_manque": "Il manque : {liste}. Indiquez 0 si le poste n'existe pas.",
+      "reprendre_ebe": "Reprendre l'EBE des comptes publics",
+      "detailler": "Je préfère détailler mes charges",
+      "titre": "L'essentiel de vos comptes",
+      "ecran1": "Écran 1 sur 2 : ce que l'entreprise gagne. À recopier de vos comptes annuels ; indiquez 0 si un poste n'existe pas.",
+      "clos_en": "Exercice clos en",
+      "gagne": "Ce que l'entreprise gagne",
+      "suivant_bilan": "Suivant : ce qu'elle possède et doit ",
+      "ecran2": "Écran 2 sur 2 : ce que l'entreprise possède et doit, à la clôture {annee}. Indiquez 0 si un poste n'existe pas.",
+      "possede": "Ce qu'elle possède et doit",
+      "retour_gagne": "← Ce que l'entreprise gagne",
+      "enregistre": "Exercice {annee} enregistré.",
+      "enregistrer": "Enregistrer cet exercice "
+    },
+    "retour": "Retour",
+    "chiffres": {
+      "exercice": "Exercice {annee}",
+      "confirme": "✓ Confirmé",
+      "facultatif": "Facultatif",
+      "ca": "Chiffre d'affaires",
+      "ebe": "EBE",
+      "rn": "Résultat net",
+      "cp": "Capitaux propres",
+      "confirmer_autres": "Confirmer les autres lignes",
+      "justes": "Ces chiffres sont justes",
+      "titre": "Vos chiffres sont-ils justes ?",
+      "aide": "Comparez avec votre liasse. Nos contrôles automatiques signalent ce qui mérite votre attention ; le reste se confirme d'un clic.",
+      "autre_exercice": "Saisir un autre exercice",
+      "autre_liasse": "Déposer une autre liasse",
+      "mode_detaille": "Mode détaillé (toutes les lignes)",
+      "montant_lisible": "Indiquez un montant lisible."
+    },
+    "continuer": "Continuer ",
+    "clients": {
+      "part": "Part du CA",
+      "depuis": "Client depuis",
+      "activite": "Activité du client (facultatif)",
+      "client": "Client {n}",
+      "part_court": "part",
+      "part_aria": "Client {n} : part du chiffre d'affaires en %",
+      "depuis_court": "depuis",
+      "depuis_aria": "Client {n} : nombre d'années de relation",
+      "ans": "ans",
+      "activite_aria": "Client {n} : activité du client",
+      "activite_exemple": "ex. industrie"
+    },
+    "exc": {
+      "exercice": "Exercice",
+      "libelle": "Libellé",
+      "montant_euros": "Montant (€)",
+      "montant": "Montant",
+      "pourquoi": "Pourquoi ne se répétera-t-il pas ?",
+      "justification": "Justification",
+      "ajouter": "Ajouter un élément"
+    },
+    "erreurs": {
+      "montant_illisible": "Un montant est illisible.",
+      "part_illisible": "Une part ou une ancienneté est illisible.",
+      "part_bornes": "Chaque part doit être comprise entre 0 et 100 %.",
+      "parts_total": "Les cinq parts additionnées dépassent 100 % du chiffre d'affaires."
+    },
+    "question_n": "Question {n} sur {total}",
+    "site": {
+      "est_ce": "Est-ce bien le site de votre entreprise ?",
+      "a_t_elle": "Votre entreprise a-t-elle un site internet ?",
+      "aide": "Nous y relevons votre activité et votre logo pour le mémorandum, pendant que vous répondez aux questions suivantes. Vous validerez chaque élément.",
+      "adresse": "Adresse du site",
+      "aucun": "Nous n'avons pas de site",
+      "indiquez": "Indiquez l'adresse du site, ou choisissez « Nous n'avons pas de site ».",
+      "oui_lire": "Oui, lire ce site ",
+      "lire": "Lire ce site ",
+      "lecture": "Lecture de votre site en cours…",
+      "retenu_titre": "Ce que nous avons retenu de votre site",
+      "retenu_aide": "Tout est coché : décochez ce qui est inexact. Seuls les faits cochés seront utilisés dans le mémorandum.",
+      "faits": "Faits relevés",
+      "votre_logo": "Votre logo",
+      "choix_logo": "Choix du logo",
+      "aucun_logo": "Aucun"
+    },
+    "recap": {
+      "valider": {
+        "one": "Valider {n} réponse ",
+        "other": "Valider {n} réponses "
+      },
+      "preparees": "{n} réponses préparées",
+      "titre": "Nous avons préparé vos réponses",
+      "aide": "Vérifiez-les d'un coup d'œil. Décochez ce qui est inexact : vous le corrigerez juste après, avec les quelques questions qui restent.",
+      "une_par_une": "Répondre question par question"
+    },
+    "question": {
+      "preparee": "Réponse préparée par Passation",
+      "preparee_suite": " · {source}. Vérifiez, corrigez si besoin, puis validez.",
+      "indispensable": "Indispensable pour rédiger le mémorandum : {liste}.",
+      "passer": "Passer",
+      "il_manque": "Il manque {liste} : c'est indispensable pour rédiger le mémorandum.",
+      "exact_continuer": "C'est exact, continuer ",
+      "ou_va": "Où va votre réponse"
+    },
+    "redaction": {
+      "sections": {
+        "synthese": "synthèse",
+        "histoire": "histoire",
+        "activite": "savoir-faire",
+        "organisation": "équipe",
+        "marche": "marché",
+        "clients": "clients",
+        "finances": "finances",
+        "perspectives": "perspectives",
+        "operation": "opération"
+      },
+      "valorisation": "Valorisation (multiples d'EBE du secteur)",
+      "marche": "Étude de marché sur le web (deux minutes au plus)",
+      "memo_section": "Mémorandum : {section}",
+      "titre": "Nous rédigeons votre dossier",
+      "aide": "Une à deux minutes. Si vous quittez cette page, la rédaction reprendra à votre retour, sans refaire ce qui est fini.",
+      "chrono": "{s} s · {n} sur {total}",
+      "manque_titre": "Une réponse manque pour rédiger le mémorandum",
+      "manque_aide": "La valorisation, le datapack et le teaser sont prêts. Répondez ci-dessous : la rédaction du mémorandum reprendra aussitôt.",
+      "repondre": "Répondre : {question} ",
+      "echecs": {
+        "one": "{n} rédaction n'a pas abouti",
+        "other": "{n} rédactions n'ont pas abouti"
+      },
+      "cause": "{liste} : ",
+      "conserve": "Ce qui est terminé est conservé : seules ces rédactions seront relancées.",
+      "relancer": "Relancer ces rédactions",
+      "teaser_anonymat": "Le teaser n'a pas passé le contrôle d'anonymat : reprenez-le depuis sa page (une réponse contient sans doute un nom ou une marque)."
+    },
+    "pret": {
+      "valo_titre": "Valorisation détaillée",
+      "valo_detail": "Multiples du secteur, hypothèses et sources",
+      "datapack_detail": "9 onglets, formules vivantes",
+      "teaser_detail": "Une page pour éveiller l'intérêt",
+      "memo_detail": "La présentation complète, en diapositives",
+      "affiner": "Pour affiner (décotes et primes, EBE retenu) : ",
+      "reglages": "réglages de la valorisation",
+      "photos": ". Pour ajouter des photos au mémorandum : ",
+      "page_memo": "page du mémorandum",
+      "modifier": ". Pour modifier une réponse : ",
+      "revoir": "revoir vos réponses"
+    }
+  }
+}

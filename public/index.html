@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <!-- Textes : src/contenu/landing.json, posés par le Worker (src/routes/landing.js). -->
+  <!-- Textes : src/contenu/<langue>/accueil.json, posés par le Worker (src/routes/pages.js). -->
   <title data-t="meta.titre">Passation</title>
   <meta name="description" data-t-attr="content=meta.description">
   <meta property="og:type" content="website">
@@ -47,7 +47,7 @@
   <span class="intro-nom" aria-hidden="true">Passation</span>
   <button class="intro-passer" type="button"><span data-t="intro.passer"></span> <span aria-hidden="true">›</span></button>
 </div>
-<a class="lien-evitement" href="#contenu" data-t="nav.evitement">Aller au contenu</a>
+<a class="lien-evitement" href="#contenu" data-t="nav.evitement"></a>
 
 <header class="nav-zone">
   <nav class="nav" data-t-attr="aria-label=nav.principale">
@@ -75,6 +75,7 @@
         <span data-t="cles.telephone"></span>
       </a>
       <a class="btn btn-espace" href="/connexion" data-connexion data-t="nav.espace"></a>
+      <div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div>
       <button class="nav-bouton" type="button" aria-expanded="false" aria-controls="nav-mobile" data-t-attr="aria-label=nav.menu_ouvrir">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 5h14M2 9h14M2 13h14"/></svg>
       </button>

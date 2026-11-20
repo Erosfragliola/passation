@@ -346,9 +346,9 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
   height: 44px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 2px 2px 2px 18px;
   border-radius: var(--r-pilule); background: #fff; border: 1px solid #E2D8CA; opacity: 0; visibility: hidden;
 }
-/* Largeur de la partie droite (Espace dirigeant, + icône téléphone) : le champ centré ne la recouvre pas */
-.landing .nav { --droite-entete: 175px; }
-.landing .nav:has(.nav-telephone) { --droite-entete: 235px; }
+/* Largeur de la partie droite (Espace dirigeant, sélecteur de langue, + icône téléphone) : le champ centré ne la recouvre pas */
+.landing .nav { --droite-entete: 275px; }
+.landing .nav:has(.nav-telephone) { --droite-entete: 335px; }
 .nav-champ:focus-within { box-shadow: 0 0 0 3px var(--cuivre-clair); }
 .nav-champ input { flex: 1; min-width: 0; height: 38px; border: 0; background: transparent; }
 .nav-champ .btn { position: relative; min-height: 38px; padding: 0 16px; font-size: 15px; }
@@ -424,3 +424,7 @@ html.avec-intro #intro {
 /* Hero : la carte tient dans le premier écran, tuiles comprises ; une seule ligne de preuve sous le champ */
 .landing .hero { min-height: calc(100svh - var(--haut-entete) - 16px); }
 .landing .hero-contenu { padding-top: clamp(28px, 5vh, 64px); padding-bottom: 20px; }
+
+.landing .langues a { font-size: 15px; }
+.landing .langues a:hover { background: #EFE8DD; color: var(--encre); }
+.landing .langues a[aria-current="true"] { color: var(--encre); }

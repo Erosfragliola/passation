@@ -1,0 +1,20 @@
+{
+  "_lisez_moi": "Text of the /cgu page (set by the Worker, src/routes/pages.js). Same keys as src/contenu/fr/cgu.json.",
+  "conditions_utilisation_passation": "Terms of use · Passation",
+  "conditions_generales_utilisation": "Terms <em>of use</em>",
+  "brouillon_faire_relire_par_juriste": "Draft, to be reviewed by a lawyer before any public launch.",
+  "1_objet": "1. Purpose",
+  "presentes_conditions_encadrent_utilisation_passation": "These terms govern the use of Passation, a service that helps business owners prepare the sale of their company.",
+  "2_acces_service": "2. Access to the service",
+  "valorisation_express_est_accessible_sans": "The quick valuation is available without an account. The other tools require an account, created with a sign-in code sent by email.",
+  "3_nature_resultats": "3. Nature of the results",
+  "valorisations_documents_sont_produits_automatiquement": "Valuations and documents are generated automatically, partly by artificial intelligence. They are indicative and non-binding, and must be checked by the user and their advisors.",
+  "4_responsabilites_utilisateur": "4. User responsibilities",
+  "utilisateur_garantit_qu_il_est": "The user warrants that they are authorized to share the information they enter or upload.",
+  "5_limites_usage": "5. Usage limits",
+  "limites_usage_appliquent_pour_garantir": "Usage limits apply to ensure the quality of the service. To be completed: description.",
+  "6_tarifs": "6. Pricing",
+  "completer": "To be completed.",
+  "7_droit_applicable": "7. Governing law",
+  "meta_description": "Terms of use of Passation, a service that helps business owners prepare the sale of their company."
+}

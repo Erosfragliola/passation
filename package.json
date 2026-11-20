@@ -15,7 +15,8 @@
     "deploy": "wrangler deploy",
     "images": "node scripts/images.mjs",
     "fixtures": "node scripts/fixtures.mjs",
-    "multiples": "node scripts/multiples.mjs"
+    "multiples": "node scripts/multiples.mjs",
+    "i18n:check": "node scripts/i18n-check.mjs"
   },
   "devDependencies": {
     "axe-core": "4.14.0",

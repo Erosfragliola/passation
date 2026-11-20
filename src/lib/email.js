@@ -1,5 +1,6 @@
 // Envoi du code de connexion. Brevo en production ; en local (127.0.0.1 / localhost) sans clé Brevo,
 // le code est affiché dans le terminal de développement. En production sans clé : refus explicite.
+import { t as tr } from "../../public/js/i18n.js";
 const LOCAL = new Set(["127.0.0.1", "localhost"]);
 
 /**
@@ -21,12 +22,12 @@ export async function envoyerCodeConnexion(env, email, code, urlSite, { fetch: f
     body: JSON.stringify({
       sender: { email: env.SENDER_EMAIL, name: env.SENDER_NAME || "Passation" },
       to: [{ email }],
-      subject: `${code} : votre code de connexion Passation`,
-      htmlContent: `<p>Bonjour,</p><p>Voici votre code pour ouvrir votre dossier Passation :</p>`
+      subject: tr("serveur.email.code.sujet", { code }),
+      htmlContent: `<p>${tr("serveur.email.bonjour")}</p><p>${tr("serveur.email.code.intro")}</p>`
         + `<p style="font-size:30px;font-weight:600;letter-spacing:6px;font-family:monospace">${code}</p>`
-        + `<p>Il est valable 10 minutes et ne sert qu'une fois. Tapez-le dans la fenêtre de connexion restée ouverte.</p>`
-        + `<p>Si vous n'avez rien demandé, ignorez ce message : personne ne peut se connecter sans ce code.</p>`,
-      textContent: `Votre code de connexion Passation : ${code} (valable 10 minutes, usage unique). Si vous n'avez rien demandé, ignorez ce message.`,
+        + `<p>${tr("serveur.email.code.validite")}</p>`
+        + `<p>${tr("serveur.email.code.ignorer")}</p>`,
+      textContent: tr("serveur.email.code.texte", { code }),
     }),
   });
   return res.ok ? { envoye: true, mode: "brevo" } : { envoye: false, raison: `brevo_${res.status}` };
@@ -47,8 +48,8 @@ export async function envoyerMessage(env, email, { sujet, titre, texte, lien, bo
       sender: { email: env.SENDER_EMAIL, name: env.SENDER_NAME || "Passation" },
       to: [{ email }],
       subject: sujet,
-      htmlContent: `<p>Bonjour,</p><p><strong>${echappe(titre)}</strong></p><p>${echappe(texte)}</p><p><a href="${echappe(lien)}">${echappe(bouton)}</a></p><p style="color:#696155;font-size:13px">Vous recevez ce message parce que vous avez ouvert un dossier sur Passation. Vous pouvez supprimer votre dossier à tout moment depuis votre espace.</p>`,
-      textContent: `${titre}\n\n${texte}\n\n${bouton} : ${lien}`,
+      htmlContent: `<p>${tr("serveur.email.bonjour")}</p><p><strong>${echappe(titre)}</strong></p><p>${echappe(texte)}</p><p><a href="${echappe(lien)}">${echappe(bouton)}</a></p><p style="color:#696155;font-size:13px">${tr("serveur.email.pourquoi")}</p>`,
+      textContent: `${titre}\n\n${texte}\n\n${tr("serveur.email.lien_texte", { bouton, lien })}`,
     }),
   });
   return res.ok ? { envoye: true, mode: "brevo" } : { envoye: false, raison: `brevo_${res.status}` };

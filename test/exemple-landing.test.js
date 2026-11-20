@@ -5,7 +5,11 @@
 //   bas  = 3 × 300 k€ + 900 k€ = 1 800 k€ = 1,8 M€ ;
 //   haut = 5 × 300 k€ + 900 k€ = 2 400 k€ = 2,4 M€.
 import { describe, it, expect } from "vitest";
-import contenu from "../src/contenu/landing.json";
+import accueil from "../src/contenu/fr/accueil.json";
+import CLES from "../src/contenu/cles.json";
+import commun from "../src/contenu/fr/commun.json";
+// Contenu de la page d'accueil tel que le Worker le compose : textes français et réglages communs.
+const contenu = { ...accueil, commun, cles: { ...CLES, ...accueil.cles } };
 import MULTIPLES from "../src/data/multiples.json";
 
 const FOURCHETTE = "1,8 – 2,4 M€";

@@ -1,0 +1,35 @@
+{
+  "_lisez_moi": "Textes communs à toutes les pages (en-tête, sélecteur de langue, pied de page). Mêmes clés dans src/contenu/en/commun.json.",
+  "langues": {
+    "choisir": "Choisir la langue",
+    "en": "English",
+    "fr": "Français"
+  },
+  "nav": {
+    "evitement": "Aller au contenu",
+    "retour_accueil": "Retour à l'accueil",
+    "principale": "Navigation principale",
+    "accueil": "Passation, accueil",
+    "mon_dossier": "Mon dossier",
+    "deconnexion": "Se déconnecter",
+    "ariane": "Fil d'Ariane"
+  },
+  "brouillon": "Brouillon",
+  "pied": {
+    "simple": "<span>© <span data-annee>2026</span> Passation</span>\n    <span><a href=\"/mentions-legales\">Mentions légales</a> · <a href=\"/cgu\">CGU</a> · <a href=\"/confidentialite\">Confidentialité</a></span>"
+  },
+  "chargement": "Chargement…",
+  "titres": {
+    "dossier": "Votre dossier · Passation"
+  },
+  "documents": {
+    "vos_documents": "Vos documents",
+    "pdf": "Télécharger en PDF",
+    "pdf_aide": "Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF »."
+  },
+  "site": {
+    "menu_ouvrir": "Ouvrir le menu",
+    "menu_fermer": "Fermer le menu",
+    "dossier_supprime": "Votre dossier et ses fichiers ont été supprimés."
+  }
+}

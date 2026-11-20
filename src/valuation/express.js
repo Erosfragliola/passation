@@ -2,6 +2,7 @@
 // et des multiples sectoriels de src/data/multiples.json. Calcul déterministe, aucun appel à l'IA.
 import MULTIPLES from "../data/multiples.json";
 import { dernier } from "../../public/js/regles.js";
+import { t as tr } from "../../public/js/i18n.js";
 
 const complet = (m) => m && [m.bas, m.central, m.haut].every(Number.isFinite);
 
@@ -30,7 +31,7 @@ export function estimationExpress(d, table = MULTIPLES) {
     const m = secteur.ca;
     return { statut: "ok", ...base, methode: "multiple_ca", agregat: caD.valeur,
       bas: caD.valeur * m.bas, central: caD.valeur * m.central, haut: caD.valeur * m.haut, multiples: m, source: secteur.source,
-      avertissement: "EBE négatif ou absent : estimation sur le chiffre d'affaires, plus incertaine." };
+      avertissement: tr("serveur.express.avertissement") };
   }
   if (!complet(secteur?.ebe) && !complet(secteur?.ca)) return { statut: "reference_a_completer", ...base };
   return { statut: "non_calculable", ...base };

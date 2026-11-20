@@ -88,13 +88,20 @@ Scénario reproductible, avec une liasse **entièrement fictive** et les résult
 En local : `npm run dev`, saisir un SIREN, demander un code (il s'affiche dans le terminal), déposer
 `test/fixtures/liasse-fictive.pdf` (avec une clé Anthropic) ou saisir les montants du tableau de `docs/DEMO.md`.
 
+## Langues
+
+Le site est bilingue : **anglais** (langue par défaut, adresses d'origine) et **français** (sous `/fr/`). Sélecteur
+« EN | FR » en haut à droite de chaque page. Pour modifier un texte : `src/contenu/en/<page>.json` et
+`src/contenu/fr/<page>.json` (mêmes clés), en suivant [docs/glossaire-traduction.md](docs/glossaire-traduction.md).
+Contrôle : `npm run i18n:check` (mêmes clés, aucune valeur vide, valeurs identiques, textes restés en dur).
+
 ## Tests
 
 ```bash
 npm test
 ```
 
-**466 tests Vitest** (34 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
+**485 tests Vitest** (35 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
 simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les API publiques sont simulés.
 
 - **Valorisation** : trois méthodes, passage VE → titres, cas limites (EBE négatif, comptes absents, un seul
@@ -106,6 +113,8 @@ simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les A
 - **Connexion et droits d'accès** : codes, sessions, accès refusé au dossier d'un autre, secret serveur exigé.
 - **Sources publiques** : normalisation sur réponses réelles enregistrées (`test/fixtures/`), pannes 429 et 500.
 - **Quotas** des traitements par Claude, anonymat du teaser, parcours guidé, contenus de la page d'accueil.
+- **Site bilingue** : mêmes clés dans les deux langues, aucune clé citée dans le code sans texte français, langue
+  des requêtes, adresses `/fr/`, pluriels, lecture des montants saisis (`test/i18n.test.js`, `npm run i18n:check`).
 
 Une part importante des tests porte sur la page d'accueil et son illustration (environ 140). Le nombre de tests ne
 prouve pas à lui seul la justesse d'une méthode financière : voir [docs/decisions-methode.md](docs/decisions-methode.md).
@@ -127,6 +136,8 @@ Cloudflare Worker (src/)
 | Dossier | Contenu |
 |---|---|
 | `src/index.js` | Routeur du Worker, garde de configuration, erreurs, tâche planifiée quotidienne |
+| `src/contenu/` | Textes du site, un dossier par langue (`en/`, `fr/`, mêmes clés) ; réglages communs dans `cles.json` |
+| `src/i18n.js`, `public/js/i18n.js` | Langue de la requête, adresses `/fr/`, `t()` partagé par le navigateur et le Worker |
 | `src/routes/` | Routes de l'API : connexion, recherche, estimation, dossiers, valorisation, documents, pièces, suivi |
 | `src/valuation/` | Moteurs express et approfondi, assemblage et validation des entrées, contrôles de cohérence |
 | `src/documents/` | Datapack Excel, teaser, contrôle d'anonymat, mémorandum, lecture du site de l'entreprise |

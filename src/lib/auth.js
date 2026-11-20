@@ -2,6 +2,7 @@
 // Les codes et identifiants de session ne sont jamais stockés en clair : seule leur empreinte SHA-256 l'est.
 import { DURATIONS } from "../config.js";
 import { json } from "../http.js";
+import { t as tr } from "../../public/js/i18n.js";
 
 const NOM_COOKIE = "passation_session";
 
@@ -68,7 +69,7 @@ async function utilisateurConnecte(request, env) {
 /** Garde des routes privées : renvoie [utilisateur, null] ou [null, réponse 401]. */
 export async function exigerUtilisateur(request, env) {
   const u = await utilisateurConnecte(request, env);
-  return u ? [u, null] : [null, json({ erreur: "non_connecte", message: "Connectez-vous pour accéder à votre dossier." }, 401)];
+  return u ? [u, null] : [null, json({ erreur: "non_connecte", message: tr("serveur.auth.connectez_vous_pour_acceder") }, 401)];
 }
 
 /**

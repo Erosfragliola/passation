@@ -2,31 +2,33 @@
 // à ne jamais publier. La rédaction est contrôlée par anonymat.js avant tout enregistrement.
 import { secteurDe, regionDe, fourchetteCA, fourchetteMarge, anciennete } from "./anonymat.js";
 import { libelleEffectif, dernier } from "../../public/js/regles.js";
+import { t as tr } from "../../public/js/i18n.js";
 
-export const SECTIONS_TEASER = [
-  ["accroche", "Accroche"], ["activite", "L'activité"], ["chiffres", "Chiffres clés"], ["atouts", "Atouts"], ["operation", "L'opération"],
-];
-const texte = (v) => (typeof v === "string" && v.trim() ? v.trim() : "À compléter");
+export const SECTIONS_TEASER = [["accroche"], ["activite"], ["chiffres"], ["atouts"], ["operation"]];
+// Titres : src/contenu/<langue>/serveur.json (élément 1 de chaque paire), lus dans la langue de la requête.
+for (const s of SECTIONS_TEASER) Object.defineProperty(s, 1, { get: () => tr(`serveur.teaser.sections.${s[0]}`), enumerable: true, configurable: true });
+const aCompleter = () => tr("teaser.js.a_completer");
+const texte = (v) => (typeof v === "string" && v.trim() ? v.trim() : aCompleter());
 
 export function faitsTeaser({ entreprise, resultat, entree, reponses = {} }) {
   const exs = entree?.exercices || [];
   const exD = exs.at(-1);
   const ca = exD?.chiffre_affaires ?? dernier(entreprise.ca)?.valeur ?? null;
   const ebe = resultat?.ebe_normatif?.valeur ?? dernier(entreprise.ebe)?.valeur ?? null;
-  let tendance = "À compléter";
+  let tendance = aCompleter();
   if (exs.length >= 2 && exs[0].chiffre_affaires > 0) {
     const t = Math.pow(exD.chiffre_affaires / exs[0].chiffre_affaires, 1 / (exD.annee - exs[0].annee)) - 1;
-    tendance = t > 0.03 ? "chiffre d'affaires en croissance" : t < -0.03 ? "chiffre d'affaires en baisse" : "chiffre d'affaires stable";
+    tendance = tr(t > 0.03 ? "serveur.teaser.tendance.hausse" : t < -0.03 ? "serveur.teaser.tendance.baisse" : "serveur.teaser.tendance.stable");
   }
   const a = reponses.activite || {}, f = reponses.atouts || {}, o = reponses.operation || {}, c = reponses.clients || {};
-  const recurrent = Number.isFinite(c.part_recurrente) ? `environ ${Math.round(c.part_recurrente * 10) * 10} % du chiffre d'affaires récurrent` : "À compléter";
+  const recurrent = Number.isFinite(c.part_recurrente) ? tr("serveur.teaser.recurrent", { n: Math.round(c.part_recurrente * 10) * 10 }) : aCompleter();
   return {
-    secteur: secteurDe(entreprise.naf) ?? "À compléter",
-    region: regionDe(entreprise.code_postal) ?? "France",
-    anciennete: anciennete(entreprise.date_creation) ?? "À compléter",
-    effectif: libelleEffectif(entreprise.tranche_effectif?.code) ?? "À compléter",
-    chiffre_affaires: fourchetteCA(ca) ?? "À compléter",
-    marge_ebe: ca > 0 && Number.isFinite(ebe) ? fourchetteMarge(ebe / ca) : "À compléter",
+    secteur: secteurDe(entreprise.naf) ?? aCompleter(),
+    region: regionDe(entreprise.code_postal) ?? tr("serveur.teaser.france"),
+    anciennete: anciennete(entreprise.date_creation) ?? aCompleter(),
+    effectif: libelleEffectif(entreprise.tranche_effectif?.code) ?? aCompleter(),
+    chiffre_affaires: fourchetteCA(ca) ?? aCompleter(),
+    marge_ebe: ca > 0 && Number.isFinite(ebe) ? fourchetteMarge(ebe / ca) : aCompleter(),
     tendance, recurrence: recurrent,
     activite: texte(a.description), produits_services: texte(a.produits_services), clientele: texte(a.clientele),
     zone_commerciale: texte(a.zone), equipe: texte(a.equipe),
@@ -71,7 +73,7 @@ export function visuelsTeaser({ entreprise, resultat, entree, reponses = {} }) {
   return {
     tuiles: {
       secteur: secteurDe(entreprise.naf),
-      region: regionDe(entreprise.code_postal) ?? "France",
+      region: regionDe(entreprise.code_postal) ?? tr("serveur.teaser.france"),
       anciennete: anciennete(entreprise.date_creation),
       effectif: libelleEffectif(entreprise.tranche_effectif?.code),
     },

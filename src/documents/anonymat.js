@@ -2,11 +2,15 @@
 // automatique de tout texte publié. Interdits : nom (et ses mots distinctifs), ville, code postal, SIREN, montants
 // exacts (CA, EBE, résultat, valeur), termes issus du site de l'entreprise. Module pur, testé.
 import divisions from "../data/naf-divisions.json";
+import divisionsEn from "../data/naf-divisions-en.json";
+import { t as tr, langue } from "../../public/js/i18n.js";
 
 /** Libellé du secteur affiché partout (accueil, teaser, visuels, mémorandum) : la division NAF officielle (deux
  *  premiers chiffres du code), sans la clause « à l'exception de… ». « 47.71Z » → « Commerce de détail ». */
 export function secteurDe(naf) {
-  const l = divisions.divisions[String(naf || "").slice(0, 2)];
+  const code = String(naf || "").slice(0, 2);
+  if (langue() === "en") { const e = divisionsEn.divisions[code]; return e ? e.split(", except")[0] : null; } // NACE Rév. 2, mêmes divisions
+  const l = divisions.divisions[code];
   return l ? l.split(", à l'exception")[0] : null;
 }
 
@@ -51,27 +55,27 @@ export const SECTEURS_NAF = {
 const BORNES_CA = [1e6, 2e6, 5e6, 10e6, 20e6, 50e6];
 export function fourchetteCA(ca) {
   if (!(ca > 0)) return null;
-  const m = (v) => `${v / 1e6} M€`;
-  if (ca < BORNES_CA[0]) return "moins de 1 M€";
-  for (let i = 1; i < BORNES_CA.length; i++) if (ca < BORNES_CA[i]) return `entre ${m(BORNES_CA[i - 1])} et ${m(BORNES_CA[i])}`;
-  return "plus de 50 M€";
+  const m = (v) => tr("serveur.anonymat.meur", { n: v / 1e6 });
+  if (ca < BORNES_CA[0]) return tr("serveur.anonymat.ca_moins", { m: m(BORNES_CA[0]) });
+  for (let i = 1; i < BORNES_CA.length; i++) if (ca < BORNES_CA[i]) return tr("serveur.anonymat.ca_entre", { de: m(BORNES_CA[i - 1]), a: m(BORNES_CA[i]) });
+  return tr("serveur.anonymat.ca_plus", { m: m(BORNES_CA.at(-1)) });
 }
 export function fourchetteMarge(marge) {
   if (!Number.isFinite(marge)) return null;
-  if (marge < 0) return "négative";
-  if (marge < 0.05) return "inférieure à 5 %";
-  if (marge < 0.1) return "entre 5 et 10 %";
-  if (marge < 0.15) return "entre 10 et 15 %";
-  if (marge < 0.2) return "entre 15 et 20 %";
-  return "supérieure à 20 %";
+  if (marge < 0) return tr("serveur.anonymat.marge_negative");
+  if (marge < 0.05) return tr("serveur.anonymat.marge_inferieure", { n: 5 });
+  if (marge < 0.1) return tr("serveur.anonymat.marge_entre", { de: 5, a: 10 });
+  if (marge < 0.15) return tr("serveur.anonymat.marge_entre", { de: 10, a: 15 });
+  if (marge < 0.2) return tr("serveur.anonymat.marge_entre", { de: 15, a: 20 });
+  return tr("serveur.anonymat.marge_superieure", { n: 20 });
 }
 export function anciennete(dateCreation, annee = new Date().getFullYear()) {
   const a = Number(String(dateCreation || "").slice(0, 4));
   if (!a) return null;
   const n = annee - a;
-  if (n < 5) return "moins de 5 ans";
+  if (n < 5) return tr("serveur.anonymat.moins_ans", { n: 5 });
   const palier = n >= 20 ? Math.floor(n / 10) * 10 : Math.floor(n / 5) * 5;
-  return `plus de ${palier} ans`;
+  return tr("serveur.anonymat.plus_ans", { n: palier });
 }
 
 // ---------------------------------------------------------------- Contrôle

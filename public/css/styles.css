@@ -677,3 +677,19 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 /* Aide sous « Télécharger en PDF » : le bouton ouvre la fenêtre d'impression du navigateur (audit, point 10) */
 .aide-pdf { flex-basis: 100%; margin: 4px 0 0; font-size: 13px; color: var(--pierre-texte); }
 #btn-imprimer[hidden] ~ .aide-pdf { display: none; }
+
+/* Sélecteur de langue (en-tête de toutes les pages, à droite ; sur téléphone, à côté du bouton de menu) */
+.langues { display: inline-flex; align-items: center; flex: none; font-size: 0.93rem; font-weight: 500; }
+.langues a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; border-radius: var(--r-pilule); color: var(--pierre-texte); text-decoration: none; letter-spacing: 0.04em; }
+.langues a:hover { background: var(--sable); color: var(--espresso); }
+.langues a[aria-current="true"] { color: var(--espresso); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 5px; }
+.langues-sep { color: var(--pierre); }
+/* Téléphone : le sélecteur tient dans la barre à côté du bouton ; le logo garde son symbole (nom dans aria-label) */
+.nav-actions .btn { white-space: nowrap; }
+@media (max-width: 430px) {
+  .langues a { min-width: 38px; }
+  .langues-sep { margin: 0 -2px; }
+  body:not(.landing) .nav { gap: 8px; padding-left: 14px; }
+  body:not(.landing) .nav .logo { font-size: 0; gap: 0; }
+  body:not(.landing) .nav .btn { padding: 0 14px; }
+}

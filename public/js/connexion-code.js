@@ -2,6 +2,7 @@
 //   1. l'adresse e-mail → un code est envoyé ;  2. le code → session ouverte, direction le dossier.
 // Utilisé par la fenêtre de connexion (landing) et par la page /connexion.
 // Les liens marqués data-connexion ouvrent la fenêtre ; sans JavaScript, ils mènent à /connexion.
+import { lien, t } from "/js/i18n.js";
 
 const ATTENTE_RENVOI = 30; // secondes avant de pouvoir redemander un code
 
@@ -12,10 +13,10 @@ async function poster(chemin, corps) {
   try {
     r = await fetch(chemin, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(corps) });
   } catch {
-    throw new Error("Connexion impossible. Vérifiez votre réseau.");
+    throw new Error(t("connexion_code.reseau"));
   }
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw Object.assign(new Error(d.message || "Une erreur est survenue. Réessayez."), { code: d.erreur });
+  if (!r.ok) throw Object.assign(new Error(d.message || t("connexion_code.erreur")), { code: d.erreur });
   return d;
 }
 
@@ -23,23 +24,23 @@ async function poster(chemin, corps) {
 export function monterConnexion(racine, { siren = "" } = {}) {
   const id = `cx${Math.random().toString(36).slice(2, 7)}`;
   racine.innerHTML = `
-    ${siren.length === 9 ? `<p class="petit">Votre dossier sera créé pour le SIREN&nbsp;${formatSiren(siren)}.</p>` : ""}
+    ${siren.length === 9 ? `<p class="petit">${t("connexion_code.siren", { siren: formatSiren(siren) })}</p>` : ""}
     <form class="form-carte cx-email" novalidate>
-      <label for="${id}-email">Adresse e-mail professionnelle</label>
-      <input id="${id}-email" name="email" type="email" autocomplete="email" required placeholder="prenom@entreprise.fr">
-      <button class="btn btn-noir" type="submit">Recevoir mon code <span class="fleche" aria-hidden="true">→</span></button>
-      <p class="petit">Pas de mot de passe : un code à 6 chiffres vous est envoyé par e-mail.</p>
+      <label for="${id}-email">${t("connexion_code.email_libelle")}</label>
+      <input id="${id}-email" name="email" type="email" autocomplete="email" required placeholder="${t("connexion_code.email_exemple")}">
+      <button class="btn btn-noir" type="submit">${t("connexion_code.recevoir")} <span class="fleche" aria-hidden="true">→</span></button>
+      <p class="petit">${t("connexion_code.sans_mot_de_passe")}</p>
     </form>
     <form class="form-carte cx-code" novalidate hidden>
       <p class="cx-envoye"></p>
-      <label for="${id}-code">Code reçu par e-mail</label>
+      <label for="${id}-code">${t("connexion_code.code_libelle")}</label>
       <input id="${id}-code" class="champ-code chiffre" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
         pattern="[0-9]{6}" maxlength="6" required placeholder="000000" aria-describedby="${id}-aide">
-      <p class="petit" id="${id}-aide">Valable 10 minutes. Pensez à regarder dans vos courriers indésirables.</p>
-      <button class="btn btn-noir" type="submit">Ouvrir mon dossier <span class="fleche" aria-hidden="true">→</span></button>
+      <p class="petit" id="${id}-aide">${t("connexion_code.code_aide")}</p>
+      <button class="btn btn-noir" type="submit">${t("connexion_code.ouvrir")} <span class="fleche" aria-hidden="true">→</span></button>
       <p class="cx-liens petit">
-        <button class="lien-simple cx-renvoyer" type="button">Renvoyer un code</button> ·
-        <button class="lien-simple cx-changer" type="button">Changer d'adresse</button>
+        <button class="lien-simple cx-renvoyer" type="button">${t("connexion_code.renvoyer")}</button> ·
+        <button class="lien-simple cx-changer" type="button">${t("connexion_code.changer")}</button>
       </p>
     </form>
     <div class="message-carte cx-message" role="status" aria-live="polite" hidden></div>`;
@@ -59,7 +60,7 @@ export function monterConnexion(racine, { siren = "" } = {}) {
     renvoyer.disabled = true;
     clearInterval(minuterie);
     const maj = () => {
-      renvoyer.textContent = reste > 0 ? `Renvoyer un code (${reste} s)` : "Renvoyer un code";
+      renvoyer.textContent = reste > 0 ? t("connexion_code.renvoyer_attente", { n: reste }) : t("connexion_code.renvoyer");
       if (reste-- <= 0) { clearInterval(minuterie); renvoyer.disabled = false; }
     };
     maj(); minuterie = setInterval(maj, 1000);
@@ -68,9 +69,9 @@ export function monterConnexion(racine, { siren = "" } = {}) {
   async function envoyer() {
     const d = await poster("/api/auth/request", { email });
     formEmail.hidden = true; formCode.hidden = false;
-    $(".cx-envoye").textContent = `Code envoyé à ${email}.`;
+    $(".cx-envoye").textContent = t("connexion_code.envoye", { email });
     const local = ["127.0.0.1", "localhost"].includes(location.hostname);
-    afficher(local ? "Mode développement : le code s'affiche dans le terminal de wrangler dev." : "");
+    afficher(local ? t("connexion_code.developpement") : "");
     champCode.value = ""; champCode.focus();
     decompte();
     return d;
@@ -78,7 +79,7 @@ export function monterConnexion(racine, { siren = "" } = {}) {
 
   formEmail.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!formEmail.email.checkValidity()) return afficher("Indiquez une adresse e-mail valide.", true);
+    if (!formEmail.email.checkValidity()) return afficher(t("connexion_code.email_invalide"), true);
     email = formEmail.email.value.trim();
     occupe(formEmail, true);
     try { await envoyer(); } catch (err) { afficher(err.message, true); } finally { occupe(formEmail, false); }
@@ -87,11 +88,11 @@ export function monterConnexion(racine, { siren = "" } = {}) {
   formCode.addEventListener("submit", async (e) => {
     e.preventDefault();
     const code = champCode.value.replace(/\D/g, "");
-    if (code.length !== 6) return afficher("Le code compte 6 chiffres.", true);
+    if (code.length !== 6) return afficher(t("connexion_code.code_six"), true);
     occupe(formCode, true);
     try {
       const d = await poster("/api/auth/code", { email, code, siren });
-      afficher("Code accepté. Ouverture de votre dossier…");
+      afficher(t("connexion_code.accepte"));
       location.assign(d.destination);
     } catch (err) {
       afficher(err.message, true);
@@ -109,7 +110,7 @@ export function monterConnexion(racine, { siren = "" } = {}) {
 
   renvoyer.addEventListener("click", async () => {
     renvoyer.disabled = true;
-    try { await envoyer(); afficher("Un nouveau code vient d'être envoyé. L'ancien ne fonctionne plus."); }
+    try { await envoyer(); afficher(t("connexion_code.nouveau")); }
     catch (err) { afficher(err.message, true); renvoyer.disabled = false; }
   });
   $(".cx-changer").addEventListener("click", () => {
@@ -126,7 +127,7 @@ export async function ouvrirConnexion({ siren = "" } = {}) {
   try {
     const r = await fetch("/api/me");
     await r.text();
-    if (r.ok) { location.assign(siren ? `/espace/?siren=${siren}` : "/espace/"); return; }
+    if (r.ok) { location.assign(lien(siren ? `/espace/?siren=${siren}` : "/espace/")); return; }
   } catch { /* réseau : on tente quand même la fenêtre */ }
 
   document.getElementById("dialog-connexion")?.remove();
@@ -135,9 +136,9 @@ export async function ouvrirConnexion({ siren = "" } = {}) {
   d.className = "dialog-connexion";
   d.setAttribute("aria-labelledby", "titre-dialog-connexion");
   d.innerHTML = `
-    <button class="dialog-fermer" type="button" aria-label="Fermer">×</button>
-    <p class="etiquette">Mon dossier</p>
-    <h2 class="affiche" id="titre-dialog-connexion">Ouvrir mon dossier</h2>
+    <button class="dialog-fermer" type="button" aria-label="${t("connexion_code.fermer")}">×</button>
+    <p class="etiquette">${t("commun.nav.mon_dossier")}</p>
+    <h2 class="affiche" id="titre-dialog-connexion">${t("connexion_code.ouvrir")}</h2>
     <div class="cx-zone"></div>`;
   document.body.append(d);
   const f = monterConnexion(d.querySelector(".cx-zone"), { siren });

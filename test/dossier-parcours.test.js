@@ -2,10 +2,10 @@ import { describe, it, expect } from "vitest";
 import {
   etatParcours, ecranFinal, explicationEcart, alertesDirigeant, resumeValorisation, lectureMemo, listeAnnees, dateCourte,
   pointsACompleter, libellePoints, partiesTeaserVides,
-  NB_PIECES, ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, ETIQUETTE_TITRES,
+  NB_PIECES, ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etiquetteTitres,
 } from "../public/js/dossier-parcours.js";
 import { NB_QUESTIONS } from "../public/js/parcours.js";
-import LANDING from "../src/contenu/landing.json";
+import LANDING from "../src/contenu/fr/accueil.json";
 
 // Dossiers entièrement fictifs. Les valeurs attendues sont comptées à la main à partir de ces données, pas tirées du code.
 const ID = "00000000-0000-4000-8000-000000000001";
@@ -40,9 +40,9 @@ describe("constantes : une seule liste d'étapes", () => {
     expect(ETAPE_DE_L_ECRAN.pret).toBe("relecture");
   });
   it("même étiquette pour l'estimation express sur la fiche de l'accueil et dans le dossier", () => {
-    expect(findCle(LANDING, "fourchette_titre")).toBe(ETIQUETTE_EXPRESS);
-    expect(ETIQUETTE_EXPRESS).toBe("Valeur d'entreprise estimée");
-    expect(ETIQUETTE_TITRES).toBe("Valeur de vos titres");
+    expect(findCle(LANDING, "fourchette_titre")).toBe(etiquetteExpress());
+    expect(etiquetteExpress()).toBe("Valeur d'entreprise estimée");
+    expect(etiquetteTitres()).toBe("Valeur de vos titres");
   });
   it("date en heure de Paris", () => {
     expect(dateCourte(LE)).toBe("18/11/2026");

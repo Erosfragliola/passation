@@ -1,6 +1,7 @@
 // Limites de débit et quotas (table rate_limits). La clé (IP, e-mail, utilisateur) n'est jamais stockée en clair :
 // seule une empreinte salée (secret serveur) l'est. Le compteur est incrémenté avant l'action, de façon atomique.
 import { empreinte } from "./auth.js";
+import { t as tr } from "../../public/js/i18n.js";
 
 /** Limite par adresse IP (empreinte), par heure. Retourne { autorise, restant }. */
 export async function verifierDebit(db, request, env, nom, maxParHeure) {
@@ -45,5 +46,5 @@ export async function verifierDebitCle(db, env, nom, cle, max, { parJour = false
  */
 export async function quotaClaude(env, userId, max) {
   const q = await verifierDebitCle(env.DB, env, "claude", userId, max, { parJour: true, siIndisponible: "refuser" });
-  return q.autorise ? null : { message: `Vous avez atteint la limite de ${max} traitements automatiques par jour. Réessayez demain.` };
+  return q.autorise ? null : { message: tr("serveur.ratelimit.limite_jour", { max }) };
 }

@@ -1,0 +1,23 @@
+{
+  "_lisez_moi": "JavaScript text (t() from public/js/i18n.js). Same keys as src/contenu/fr/connexion_code.json.",
+  "reseau": "Can’t connect. Check your network.",
+  "erreur": "Something went wrong. Please try again.",
+  "siren": "Your file will be created for SIREN&nbsp;{siren}.",
+  "email_libelle": "Work email address",
+  "email_exemple": "firstname@company.com",
+  "recevoir": "Send me a code",
+  "sans_mot_de_passe": "No password: we email you a 6-digit code.",
+  "code_libelle": "Code from the email",
+  "code_aide": "Valid for 10 minutes. Remember to check your spam folder.",
+  "ouvrir": "Open my file",
+  "renvoyer": "Send a new code",
+  "renvoyer_attente": "Send a new code ({n} s)",
+  "changer": "Use another address",
+  "envoye": "Code sent to {email}.",
+  "developpement": "Development mode: the code appears in the wrangler dev terminal.",
+  "email_invalide": "Enter a valid email address.",
+  "code_six": "The code has 6 digits.",
+  "accepte": "Code accepted. Opening your file…",
+  "nouveau": "A new code has just been sent. The previous one no longer works.",
+  "fermer": "Close"
+}

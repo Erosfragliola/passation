@@ -1,0 +1,8 @@
+{
+  "_lisez_moi": "Textes de la page /estimation.html (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/estimation.json.",
+  "estimation_passation": "Estimation · Passation",
+  "valorisation_express": "Valorisation express",
+  "bientot_disponible": "Bientôt <em>disponible</em>.",
+  "recherche_societe_estimation_arrivent_prochaine": "La recherche de société et l’estimation arrivent à la prochaine étape du projet.",
+  "retour_accueil": "<a class=\"btn btn-noir\" href=\"/\">Retour à l’accueil</a>"
+}

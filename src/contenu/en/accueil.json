@@ -1,0 +1,403 @@
+{
+  "_lisez_moi": "Home page text. *word*: keyword in italics. {key}: value from « cles » (src/contenu/cles.json, or « cles » below for settings that are text). An empty value removes the element from the page. Typographic apostrophes are added automatically. In « cles »: prices and durations with their unit (« €490 », « Free », « 20 minutes »); temoignages: list of { texte, prenom, metier, ville } objects, at least two to show the testimonials; guides: list of { titre, url, image } objects, at least three to show the section; legal: footer identity. Same keys as src/contenu/fr/accueil.json.",
+  "cles": {
+    "duree_etape2": "",
+    "fondateur_titre": "",
+    "fondateur_texte": "",
+    "temoignages": [],
+    "guides": [],
+    "faq_prix": "",
+    "faq_duree": "",
+    "faq_qui": "",
+    "faq_repreneur": "",
+    "hebergement": "",
+    "partenaires": ""
+  },
+  "meta": {
+    "titre": "Passation · Prepare to sell your business",
+    "description": "A first valuation of your company from its SIREN number, then the complete sale file: detailed valuation, Excel datapack, anonymous teaser and information memorandum.",
+    "partage_titre": "You built it. Now plan your handover.",
+    "partage_image_alt": "A craftsman at his workbench, under his lamp. Passation: preparing to sell your business."
+  },
+  "nav": {
+    "evitement": "Skip to content",
+    "accueil": "Passation, home",
+    "principale": "Main navigation",
+    "comment": "How it works",
+    "livrables": "Sample file",
+    "confidentialite": "Confidentiality",
+    "guides": "Guides",
+    "questions": "FAQ",
+    "espace": "My file",
+    "menu_ouvrir": "Open menu",
+    "telephone": "Call us at {telephone}"
+  },
+  "intro": {
+    "passer": "Skip intro"
+  },
+  "champ": {
+    "libelle": "Your company's SIREN or name",
+    "bouton": "Value my company",
+    "bouton_court": "Get a value",
+    "suggestions": "Matching companies",
+    "zone": "Value your company"
+  },
+  "hero": {
+    "surtitre": "Preparing to sell your business",
+    "titre": "You built it. Now plan your *handover*.",
+    "sous_titre": "A first valuation of your company in seconds. Then a complete file, ready for your advisors and potential buyers.",
+    "note_comptes": "",
+    "preuves": {
+      "dirigeants": "*{nb_dirigeants}* business owners supported",
+      "avis": "*{note_avis}/5* · {nb_avis} reviews",
+      "registres": ""
+    },
+    "coches": [
+      "Free estimate, no sign-up",
+      "No one is notified",
+      "Official registries"
+    ],
+    "bulles": {
+      "delai": {
+        "chiffre": "30 s",
+        "texte": "for a first value range"
+      },
+      "methodes": {
+        "chiffre": "3 sources",
+        "texte": "of cross-checked multiples, for a range you can defend"
+      },
+      "code": {
+        "titre": "Your code name",
+        "code": "Projet Chêne",
+        "valeur": "€1.8–2.4M",
+        "fictif": "fictitious example"
+      },
+      "docs": [
+        "Valuation",
+        "Teaser",
+        "Memorandum",
+        "Datapack"
+      ]
+    }
+  },
+  "comment": {
+    "titre": "Three steps, no surprises.",
+    "etapes": [
+      {
+        "chiffre": "30 seconds",
+        "titre": "A first value range",
+        "texte": "Type your company's name or SIREN: the range appears right away, based on public registries. No sign-up, and no one is notified.",
+        "obtenez": "You get a value range and the code name of your file.",
+        "pastilles": [
+          "Free",
+          "No sign-up"
+        ]
+      },
+      {
+        "chiffre": "Industry multiples",
+        "titre": "A sourced range",
+        "texte": "You fill in a few key figures. Passation applies your industry's EBITDA (EBE) multiples, with dated sources, and checks the result against net assets.",
+        "obtenez": "You get a range, with the full calculation and its sources.",
+        "pastilles": [
+          "{duree_etape2}",
+          "{prix_etape2}"
+        ]
+      },
+      {
+        "chiffre": "9 chapters",
+        "titre": "Teaser, memo and datapack",
+        "texte": "The teaser, anonymous, to draw in buyers. The memo to tell your company's full story. The datapack, the Excel file with the numbers. You review, you share.",
+        "obtenez": "You get the teaser, the memorandum and the Excel datapack, all editable.",
+        "pastilles": [
+          "At your own pace",
+          "{prix_dossier}"
+        ]
+      }
+    ],
+    "illustrations": {
+      "fictif": "fictitious example",
+      "siren": {
+        "saisie": "Menuiserie Durand & Fils",
+        "libelle": "Estimated enterprise value",
+        "valeur": "€1.8–2.4M"
+      },
+      "chiffres": {
+        "lignes": [
+          {
+            "poste": "Revenue",
+            "montant": "€2.4M"
+          },
+          {
+            "poste": "EBITDA",
+            "montant": "€300K"
+          },
+          {
+            "poste": "Net cash",
+            "montant": "€900K"
+          }
+        ],
+        "libelle": "Value of your shares",
+        "fourchette": "€1.8–2.4M",
+        "bas": "€1.8M",
+        "haut": "€2.4M"
+      },
+      "documents": [
+        "Teaser",
+        "Memorandum",
+        "Datapack"
+      ]
+    }
+  },
+  "pourquoi": {
+    "sources": "Data from official public registries"
+  },
+  "confidentialite": {
+    "titre": "No one will know. Except the people you choose.",
+    "texte": "Preparing a sale takes discretion. Just like in large deals, your file gets a code name.",
+    "garanties": [
+      {
+        "titre": "Restricted access",
+        "texte": "Sign in with a one-time code sent by email. Only you can see your file."
+      },
+      {
+        "titre": "Anonymous teaser, under a code name",
+        "texte": "No name, no city, no identifying figure. You choose when to reveal yourself."
+      },
+      {
+        "titre": "Your data is never sold",
+        "texte": "Your data is used only for the tasks you request."
+      },
+      {
+        "titre": "One-click deletion",
+        "texte": "File, figures and documents: you erase everything whenever you decide."
+      }
+    ],
+    "politique": "Read our privacy policy",
+    "fictif": "Fictitious example",
+    "fiche": "Information memorandum",
+    "avant": "Menuiserie Durand & Fils",
+    "apres": "Projet Chêne",
+    "exemple_alt": "Fictitious example: the company name becomes Projet Chêne"
+  },
+  "equipe": {
+    "surtitre": "Who is behind Passation",
+    "titre": "People, not a robot.",
+    "texte": "{fondateur_texte}",
+    "citation": "A company isn't sold. It's handed on.",
+    "nom": "{fondateur_nom}",
+    "fonction": "{fondateur_titre}",
+    "photo_alt": "{fondateur_nom}, founder of Passation",
+    "rappel": "Request a call back",
+    "rappel_lien": "mailto:{email_contact}?subject=Call%20back%20request",
+    "telephone": "{telephone}",
+    "telephone_aria": "Call us at {telephone}"
+  },
+  "preuves": {
+    "surtitre": "They did it",
+    "titre": "They prepared their sale.",
+    "entreprises": "{chiffres.entreprises_estimees}",
+    "entreprises_libelle": "companies valued",
+    "note": "{note_avis}/5",
+    "note_libelle": "from {nb_avis} reviews",
+    "dossiers": "{chiffres.dossiers_prepares}",
+    "dossiers_libelle": "files prepared",
+    "methodes": "3",
+    "methodes_libelle": "cross-checked, dated sources of multiples",
+    "legendes": []
+  },
+  "guides": {
+    "surtitre": "Understand it all",
+    "titre": "Guides to selling your business.",
+    "etiquette": "Guide"
+  },
+  "questions": {
+    "surtitre": "Frequently asked questions",
+    "titre": "What business owners ask us.",
+    "liste": [
+      {
+        "q": "How much does it cost?",
+        "r": [
+          "{faq_prix}"
+        ]
+      },
+      {
+        "q": "Is the quick estimate reliable?",
+        "r": [
+          "It's a first order of magnitude. It applies industry multiples to your company's latest published accounts.",
+          "It ignores your adjustments, your debt and what makes your company unique. The detailed valuation takes them into account."
+        ]
+      },
+      {
+        "q": "Where do my company's figures come from?",
+        "r": [
+          "From public registries: the French government's business directory, filed annual accounts and the BODACC. We always state which fiscal year is used."
+        ]
+      },
+      {
+        "q": "How long does it take?",
+        "r": [
+          "{faq_duree}"
+        ]
+      },
+      {
+        "q": "My accounts are confidential. Will it still work?",
+        "r": [
+          "We'll let you know. You then enter your revenue and EBITDA, or upload your French tax return (liasse fiscale)."
+        ]
+      },
+      {
+        "q": "Is anyone notified?",
+        "r": [
+          "No. The quick estimate only reads public registries: no one is told about your search, not your company, not your accountant. No account is required."
+        ]
+      },
+      {
+        "q": "Who is behind Passation?",
+        "r": [
+          "{faq_qui}"
+        ]
+      },
+      {
+        "q": "Can my accountant access it?",
+        "r": [
+          "Not directly: only you can see your file. You can send them the Excel datapack, the teaser or the memorandum yourself."
+        ]
+      },
+      {
+        "q": "Does it replace my accountant or my lawyer?",
+        "r": [
+          "No. Passation saves you time and prepares the ground. For legal and tax decisions, get support from a professional."
+        ]
+      },
+      {
+        "q": "What about finding a buyer?",
+        "r": [
+          "{faq_repreneur}"
+        ]
+      },
+      {
+        "q": "What happens to my data if I stop?",
+        "r": [
+          "It stays in your space, visible only to you, until you delete it. The “Delete my file” button erases the file, the figures and the documents in one go."
+        ]
+      }
+    ]
+  },
+  "relance": {
+    "titre": "Shall we take a look at *your company*?",
+    "texte": "The estimate is free and needs no sign-up: in 30 seconds, a first idea of its value.",
+    "telephone": "Prefer to talk to someone? Call us at",
+    "livrables_titre": "What your file contains",
+    "livrables": [
+      "An anonymous page, under a code name, to draw in buyers.",
+      "The complete presentation of your company, in nine chapters.",
+      "The Excel file with your figures and the valuation, built with formulas."
+    ],
+    "garanties_titre": "Our commitments"
+  },
+  "pied": {
+    "identite": "",
+    "avertissement": "Estimates are indicative and non-binding. This is not legal, tax or financial advice.",
+    "liens": "Legal links",
+    "mentions": "Legal notice",
+    "confidentialite": "Privacy",
+    "cgu": "Terms of use",
+    "joindre": "Contact us",
+    "documents_titre": "Your file",
+    "utiles_titre": "Useful links",
+    "sources_note": "Registries read at every estimate (cached for 24 hours). Industry multiples are sourced and dated.",
+    "telephone_lien": "tel:{telephone}",
+    "email_lien": "mailto:{email_contact}",
+    "marque": "Passation"
+  },
+  "js": {
+    "chargement": "Reading the public registries...",
+    "erreurs": {
+      "siren_invalide": "This SIREN doesn't look valid. Check the 9 digits or type your company's name.",
+      "introuvable": "We can't find this company. Try its SIREN, or its exact name.",
+      "source_indisponible": "The registry isn't responding right now. Please try again in a moment.",
+      "inactive": "This company is no longer active in the public registries.",
+      "trop_de_requetes": "Too many searches in a short time. Please try again in an hour.",
+      "reseau": "Can't connect. Check your network and try again.",
+      "saisie_vide": "Type your company's name or its 9-digit SIREN."
+    },
+    "resultat": {
+      "code_intro": "Your file will circulate under this name",
+      "fourchette_titre": "Estimated enterprise value",
+      "methode": "Based on {annee} EBITDA ({ebe}), between {bas} and {haut} times EBITDA according to industry benchmarks.",
+      "note": "Indicative estimate, based on the {exercice} public accounts. It gets sharper with your own figures.",
+      "note_saisie": "Indicative estimate, based on the two figures you entered. The detailed valuation refines it with your full accounts.",
+      "sur_mesure": "Tailored",
+      "sur_mesure_note": "The quick method relies on EBITDA from the latest fiscal year; it doesn't apply here. The detailed valuation takes your adjustments and outlook into account.",
+      "a_completer": "To be refined with your figures",
+      "a_completer_note": "We don't show a range without a reliable industry benchmark for your business. The detailed valuation relies on your own figures.",
+      "confidentiels": "Your accounts are confidential. Two figures are enough for a first range.",
+      "ca": "Revenue, latest fiscal year (€K)",
+      "ebe": "EBITDA, latest fiscal year (€K)",
+      "voir": "See my range",
+      "saisie_note": "These figures aren't saved until you create an account.",
+      "saisie_erreur": "Enter your revenue and EBITDA, in thousands of euros.",
+      "sources": "Sources: {exercice} public accounts (INPI), Sirene registry (INSEE), BODACC notices; industry multiples from {mois}.",
+      "sources_saisie": "Sources: the revenue and EBITDA you entered; industry multiples from {mois}.",
+      "dossier_bouton": "Open my file",
+      "dossier_note": "Your file: free, a code by email, no password",
+      "tampon": "Confidential",
+      "profil": {
+        "secteur": "Industry",
+        "region": "Region",
+        "anciennete": "Age",
+        "effectif": "Headcount"
+      },
+      "profil_note": "No name, no city, no identifying figure: this is what a buyer will see.",
+      "prive": "Visible only to you",
+      "methode_saisie": "Based on the EBITDA you entered ({ebe}), between {bas} and {haut} times EBITDA according to industry benchmarks."
+    },
+    "video": {
+      "pause": "Pause the video",
+      "lecture": "Play the video"
+    },
+    "analyse": [
+      "Company found in the registries",
+      "Public accounts retrieved",
+      "Industry multiples applied",
+      "Code name assigned"
+    ]
+  },
+  "sources": {
+    "libelle": "Data from",
+    "liste": [
+      "INSEE",
+      "INPI",
+      "BODACC"
+    ]
+  },
+  "dossier": {
+    "titre": "The file of a major deal, for your business.",
+    "texte": "What investment banks prepare for large companies, Passation prepares for yours.",
+    "documents": {
+      "titre": "Three documents, drafted in one go",
+      "texte": "In investment-bank format, from your figures. You review, you correct, you send.",
+      "pilules": [
+        "Anonymous teaser",
+        "Memorandum",
+        "Excel datapack"
+      ],
+      "photo_alt": "Illustrative photo: a craftswoman at her workbench"
+    },
+    "methodes": {
+      "chiffre": "3",
+      "titre": "cross-checked sources of multiples",
+      "texte": "Your industry's EBITDA (EBE) multiples, cross-checked across three dated benchmarks, then tested against net assets. Every assumption is sourced: a range you can defend."
+    },
+    "liste": {
+      "etapes": [
+        "Valuation",
+        "Anonymous teaser",
+        "Memorandum",
+        "Excel datapack"
+      ],
+      "legende": "Drafted by AI, checked by you",
+      "alt": "Sample file in progress: valuation, teaser and memorandum ready, datapack in progress"
+    }
+  }
+}

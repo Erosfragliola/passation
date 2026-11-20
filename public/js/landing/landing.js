@@ -1,5 +1,5 @@
 // Page d'accueil : champ SIREN partagé (hero, en-tête, relance) branché sur l'estimation express et l'écran de
-// résultat ; vidéo. Textes : src/contenu/landing.json, posés par le Worker dans <script id="textes"> (sous-arbre
+// résultat ; vidéo. Textes : src/contenu/<langue>/accueil.json, posés par le Worker dans <script id="textes"> (sous-arbre
 // « js »).
 import { creerChampPartage } from "/js/landing/champ-siren.js";
 import { surveillerChamps } from "/js/landing/barres.js";

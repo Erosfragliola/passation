@@ -10,46 +10,45 @@
 // Aucune donnée n'est inventée : tout vient des deux réponses de l'API.
 import { CHECKLIST, avancement } from "./dossier-regles.js";
 import { fourchette, montant } from "./landing/estimation.js";
+import { lien, t, locale } from "./i18n.js";
 
 /** Liste unique des étapes, pour la page du dossier et le parcours guidé (mêmes libellés, même ordre). */
-export const ETAPES_PARCOURS = [
-  ["estimation", "Estimation"], ["chiffres", "Vos chiffres"], ["reponses", "Vos réponses"],
-  ["redaction", "Rédaction"], ["relecture", "Relecture et envoi"],
-];
+export const ETAPES_PARCOURS = [["estimation"], ["chiffres"], ["reponses"], ["redaction"], ["relecture"]];
+// Libellés : src/contenu/<langue>/dossier.json, lus à chaque accès (élément 1 de chaque paire).
+for (const e of ETAPES_PARCOURS) Object.defineProperty(e, 1, { get: () => t(`dossier.etapes.${e[0]}`), enumerable: true, configurable: true });
 /** Écran du parcours guidé → étape du fil. Le site est une question de « Vos réponses ». */
 export const ETAPE_DE_L_ECRAN = { comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", questions: "reponses", site: "reponses", redaction: "redaction", pret: "relecture" };
 /** Étiquettes de la valeur, identiques partout (fiche de l'accueil, page du dossier, parcours guidé, valorisation). */
-export const ETIQUETTE_EXPRESS = "Valeur d'entreprise estimée";
-export const ETIQUETTE_TITRES = "Valeur de vos titres";
+export const etiquetteExpress = () => t("dossier.etiquette_express");
+export const etiquetteTitres = () => t("dossier.etiquette_titres");
 export const NB_PIECES = CHECKLIST.reduce((n, g) => n + g.items.length, 0);
 /** Seuil des questions (en %) à partir duquel la rédaction peut être lancée. */
 const SEUIL_REDACTION = 40;
 const MAX_TACHES = 3;
 
-const pluriel = (n, un, plusieurs) => (n > 1 ? plusieurs : un);
 /** « 2024 » ; « 2023 et 2024 » ; « 2022 à 2024 » (consécutifs) ; « 2019, 2021 et 2024 ». */
 export function listeAnnees(annees = []) {
   const l = [...annees].sort((a, b) => a - b);
   if (l.length <= 1) return l.join("");
-  if (l.length > 2 && l.every((a, i) => !i || a - l[i - 1] === 1)) return `${l[0]} à ${l.at(-1)}`;
-  return `${l.slice(0, -1).join(", ")} et ${l.at(-1)}`;
+  if (l.length > 2 && l.every((a, i) => !i || a - l[i - 1] === 1)) return t("dossier.annees.suite", { de: l[0], a: l.at(-1) });
+  return t("dossier.annees.liste", { debut: l.slice(0, -1).join(", "), fin: l.at(-1) });
 }
 /** Horodatage en secondes (format de la base) → « 18/11/2026 », heure de Paris. */
 export function dateCourte(secondes) {
   if (!Number.isFinite(secondes)) return null;
-  return new Date(secondes * 1000).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric" });
+  return new Date(secondes * 1000).toLocaleDateString(locale(), { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 /** Points « À compléter » du mémorandum, un par élément signalé dans un chapitre : « Équipe : Nombre de salariés ».
  *  Seul décompte du travail restant (page du dossier, tâches et écran final du parcours guidé). */
 export function pointsACompleter(memo) {
-  return (memo?.sections || []).flatMap((s) => (s.a_completer || []).map((t) => `${s.titre} : ${t}`));
+  return (memo?.sections || []).flatMap((s) => (s.a_completer || []).map((x) => t("dossier.point", { chapitre: s.titre, point: x })));
 }
 /** « 1 point à compléter », « 4 points à compléter ». */
-export const libellePoints = (n) => `${n} ${pluriel(n, "point", "points")} à compléter`;
+export const libellePoints = (n) => t("dossier.points_a_completer", { n });
 
 /** Une partie du teaser compte comme rédigée si elle a un vrai texte (ni vide, ni « À compléter »). */
-const partieRedigee = (contenu) => { const t = String(contenu ?? "").trim(); return t !== "" && !/^à compléter\.?$/i.test(t); };
+const partieRedigee = (contenu) => { const x = String(contenu ?? "").trim(); return x !== "" && !/^(à compléter|to be completed)\.?$/i.test(x); };
 /** Parties du teaser encore vides (GET …/documents/teaser). Toutes sont indispensables : la page est courte. */
 export function partiesTeaserVides(teaser) {
   return (teaser?.teaser?.sections || []).filter((s) => !partieRedigee(s.contenu));
@@ -82,9 +81,9 @@ export function resumeValorisation(r) {
  *  retirées ; celle qui compare la valeur centrale à l'actif net est reformulée sur la fourchette. */
 export function alertesDirigeant(alertes = []) {
   return alertes
-    .filter((a) => !/DCF|valeur terminale|flux actualis/i.test(a))
-    .map((a) => (/valeur centrale est inférieure à l'actif net/i.test(a)
-      ? "Une partie de la fourchette est inférieure à l'actif net corrigé : celui-ci sert de plancher de négociation."
+    .filter((a) => !/DCF|valeur terminale|flux actualis|terminal value|discounted cash/i.test(a))
+    .map((a) => (/valeur centrale est inférieure à l'actif net|central value is below .*net assets/i.test(a)
+      ? t("dossier.alerte_plancher")
       : a));
 }
 
@@ -103,18 +102,18 @@ export function explicationEcart(est, v) {
   const visible = (x) => Number.isFinite(x) && Math.round(Math.abs(x) / 1e4) > 0; // 5 k€ au moins (arrondi à la dizaine de k€)
   const raisons = [];
   const an = (v.annees || []).filter(Number.isInteger);
-  if (an.length) raisons.push(`comptes ${listeAnnees(an)} confirmés`);
-  if (est.methode === "multiple_ca") raisons.push("calcul sur l'excédent brut d'exploitation (EBE) au lieu du chiffre d'affaires");
+  if (an.length) raisons.push(t("dossier.ecart.comptes", { annees: listeAnnees(an) }));
+  if (est.methode === "multiple_ca") raisons.push(t("dossier.ecart.sur_ebe"));
   else if (Number.isFinite(v.ebe_normatif) && Number.isFinite(est.agregat) && m(v.ebe_normatif) !== m(est.agregat)) {
-    raisons.push(`excédent brut d'exploitation (EBE) retenu de ${m(v.ebe_normatif)} au lieu de ${m(est.agregat)}`);
+    raisons.push(t("dossier.ecart.ebe_retenu", { ebe: m(v.ebe_normatif), avant: m(est.agregat) }));
   }
   const f = Number.isFinite(v.facteur_decotes) ? v.facteur_decotes : 1, pts = Math.round((f - 1) * 100);
-  if (pts) raisons.push(`${pts < 0 ? "décotes" : "primes"} de ${Math.abs(pts)} % appliquées`);
-  if (visible(v.dette_nette)) raisons.push(v.dette_nette < 0 ? `trésorerie nette de ${m(v.dette_nette)} ajoutée` : `dettes nettes de ${m(v.dette_nette)} déduites`);
-  if (visible(v.ecart_bfr)) raisons.push(`besoin en fonds de roulement ${v.ecart_bfr > 0 ? "supérieur" : "inférieur"} à la normale : ${v.ecart_bfr > 0 ? "+" : "−"}${m(v.ecart_bfr)}`);
-  if (visible(v.hors_exploitation) && v.hors_exploitation > 0) raisons.push(`actifs hors exploitation de ${m(v.hors_exploitation)} ajoutés`);
-  const liste = raisons.length > 1 ? `${raisons.slice(0, -1).join(", ")} et ${raisons.at(-1)}` : raisons[0];
-  return `Votre fourchette passe de ${avant} à ${apres}${liste ? ` : ${liste}` : ""}.`;
+  if (pts) raisons.push(t(pts < 0 ? "dossier.ecart.decotes" : "dossier.ecart.primes", { pct: Math.abs(pts) }));
+  if (visible(v.dette_nette)) raisons.push(t(v.dette_nette < 0 ? "dossier.ecart.tresorerie" : "dossier.ecart.dettes", { montant: m(v.dette_nette) }));
+  if (visible(v.ecart_bfr)) raisons.push(t(v.ecart_bfr > 0 ? "dossier.ecart.bfr_superieur" : "dossier.ecart.bfr_inferieur", { montant: `${v.ecart_bfr > 0 ? "+" : "−"}${m(v.ecart_bfr)}` }));
+  if (visible(v.hors_exploitation) && v.hors_exploitation > 0) raisons.push(t("dossier.ecart.hors_exploitation", { montant: m(v.hors_exploitation) }));
+  const liste = raisons.length > 1 ? t("dossier.annees.liste", { debut: raisons.slice(0, -1).join(", "), fin: raisons.at(-1) }) : raisons[0];
+  return liste ? t("dossier.ecart.phrase_raisons", { avant, apres, raisons: liste }) : t("dossier.ecart.phrase", { avant, apres });
 }
 
 /**
@@ -137,10 +136,10 @@ export function etatParcours(d, memo = null, teaser = null) {
   const manquantes = NB_PIECES - fournies;
 
   const liens = {
-    demarrer: `/espace/demarrer/?dossier=${id}`,
-    valorisation: `/espace/valorisation/?dossier=${id}`,
-    memo: `/espace/documents/memo/?dossier=${id}`,
-    teaser: `/espace/documents/teaser/?dossier=${id}`,
+    demarrer: lien(`/espace/demarrer/?dossier=${id}`),
+    valorisation: lien(`/espace/valorisation/?dossier=${id}`),
+    memo: lien(`/espace/documents/memo/?dossier=${id}`),
+    teaser: lien(`/espace/documents/teaser/?dossier=${id}`),
     datapack: `/api/dossiers/${id}/documents/datapack`,
   };
 
@@ -169,51 +168,51 @@ export function etatParcours(d, memo = null, teaser = null) {
   const taches = [];
   if (!fait.chiffres) {
     taches.push(ex.dernier == null
-      ? { cle: "chiffres", titre: "Confirmer votre dernier exercice", detail: "Aucun exercice confirmé pour l'instant", action: "Confirmer", href: liens.demarrer }
-      : { cle: "chiffres", titre: `Confirmer l'exercice ${ex.dernier}`, detail: "Le seul exercice indispensable : la valorisation repose sur lui", action: "Confirmer", href: `${liens.demarrer}&etape=chiffres` });
+      ? { cle: "chiffres", titre: t("dossier.taches.chiffres.titre_aucun"), detail: t("dossier.taches.chiffres.detail_aucun"), action: t("dossier.actions.confirmer"), href: liens.demarrer }
+      : { cle: "chiffres", titre: t("dossier.taches.chiffres.titre", { annee: ex.dernier }), detail: t("dossier.taches.chiffres.detail"), action: t("dossier.actions.confirmer"), href: `${liens.demarrer}&etape=chiffres` });
   }
   if (restantes > 0) {
     taches.push({
       cle: "questions",
-      titre: q.faits ? (restantes === 1 ? "Répondre à la dernière question" : `Répondre aux ${restantes} dernières questions`) : `Répondre aux ${q.total} questions`,
-      detail: q.faits ? `${q.faits} sur ${q.total} déjà faites` : "Des écrans courts, la plupart en un clic",
-      action: q.faits ? "Reprendre" : "Commencer", href: `${liens.demarrer}&etape=questions`,
+      titre: q.faits ? t("dossier.taches.questions.titre_reste", { n: restantes }) : t("dossier.taches.questions.titre", { n: q.total }),
+      detail: q.faits ? t("dossier.taches.questions.detail_reste", { faits: q.faits, total: q.total }) : t("dossier.taches.questions.detail"),
+      action: q.faits ? t("dossier.actions.reprendre") : t("dossier.actions.commencer"), href: `${liens.demarrer}&etape=questions`,
     });
   }
   if (fait.chiffres && !fait.redaction && !m?.nonRedigees.length && !teaserVides.length && (restantes === 0 || (q.pct || 0) >= SEUIL_REDACTION)) {
-    taches.push({ cle: "redaction", titre: v || docs.memo || docs.teaser ? "Terminer la rédaction" : "Lancer la rédaction", detail: "Valorisation, teaser et mémorandum, d'un coup", action: "Rédiger", href: `${liens.demarrer}&etape=redaction` });
+    taches.push({ cle: "redaction", titre: v || docs.memo || docs.teaser ? t("dossier.taches.redaction.terminer") : t("dossier.taches.redaction.lancer"), detail: t("dossier.taches.redaction.detail"), action: t("dossier.actions.rediger"), href: `${liens.demarrer}&etape=redaction` });
   }
   if (m?.nonRedigees.length) {
     const n = m.nonRedigees.length;
-    taches.push({ cle: "chapitres", titre: `Rédiger ${n} ${pluriel(n, "chapitre", "chapitres")} du mémorandum`, detail: `${pluriel(n, "Chapitre", "Chapitres")} : ${m.nonRedigees.map((s) => s.court || s.titre).join(", ")}`, action: "Rédiger", href: liens.memo });
+    taches.push({ cle: "chapitres", titre: t("dossier.taches.chapitres.titre", { n }), detail: t("dossier.taches.chapitres.detail", { n, liste: m.nonRedigees.map((s) => s.court || s.titre).join(", ") }), action: t("dossier.actions.rediger"), href: liens.memo });
   }
   if (teaserVides.length) {
     const n = teaserVides.length;
-    taches.push({ cle: "teaser", titre: `Rédiger ${n} ${pluriel(n, "partie", "parties")} du teaser`, detail: `${pluriel(n, "Partie vide", "Parties vides")} : ${teaserVides.map((x) => x.titre).join(", ")}`, action: "Rédiger", href: liens.teaser });
+    taches.push({ cle: "teaser", titre: t("dossier.taches.teaser.titre", { n }), detail: t("dossier.taches.teaser.detail", { n, liste: teaserVides.map((x) => x.titre).join(", ") }), action: t("dossier.actions.rediger"), href: liens.teaser });
   }
   if (fait.chiffres && ex.recommandes_manquants?.length) {
     const annees = [...ex.recommandes_manquants].sort((a, b) => b - a);
-    taches.push({ cle: "exercices", facultatif: true, titre: `Ajouter ${annees.join(" et ")} pour fiabiliser la fourchette (facultatif)`,
-      detail: `La fourchette repose déjà sur ${ex.dernier} ; les exercices précédents la confirment`, action: "Ajouter", href: `${liens.demarrer}&etape=exercice` });
+    taches.push({ cle: "exercices", facultatif: true, titre: t("dossier.taches.exercices.titre", { annees: annees.length > 1 ? t("dossier.annees.liste", { debut: annees.slice(0, -1).join(", "), fin: annees.at(-1) }) : annees[0] }),
+      detail: t("dossier.taches.exercices.detail", { annee: ex.dernier }), action: t("dossier.actions.ajouter"), href: `${liens.demarrer}&etape=exercice` });
   }
   if (m && m.photos < 2) {
     taches.push(m.photos === 0
-      ? { cle: "photo", facultatif: true, titre: "Ajouter une photo de l'atelier ou des produits", detail: "Recommandation du mémorandum : elle rend la page « Savoir-faire » vivante", action: "Ajouter", href: `${liens.memo}#donnees` }
-      : { cle: "photo", facultatif: true, titre: "Ajouter une photo de l'équipe ou du site", detail: "Recommandation du mémorandum, page « Équipe »", action: "Ajouter", href: `${liens.memo}#donnees` });
+      ? { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_premiere"), detail: t("dossier.taches.photo.detail_premiere"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` }
+      : { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_seconde"), detail: t("dossier.taches.photo.detail_seconde"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` });
   }
   if (m?.nbACompleter) {
-    const n = m.nbACompleter, chap = m.aCompleter.map((s) => `« ${s.court || s.titre} »`);
-    taches.push({ cle: "a-completer", facultatif: true, titre: `Compléter ${n} ${pluriel(n, "point", "points")} du mémorandum`, detail: `Indiqués « À compléter » : ${chap.slice(0, 3).join(", ")}${chap.length > 3 ? "…" : ""}`, action: "Compléter", href: `${liens.memo}#section-${m.aCompleter[0].cle}` });
+    const n = m.nbACompleter, chap = m.aCompleter.map((s) => t("dossier.guillemets", { texte: s.court || s.titre }));
+    taches.push({ cle: "a-completer", facultatif: true, titre: t("dossier.taches.a_completer.titre", { n }), detail: t("dossier.taches.a_completer.detail", { liste: `${chap.slice(0, 3).join(", ")}${chap.length > 3 ? "…" : ""}` }), action: t("dossier.actions.completer"), href: `${liens.memo}#section-${m.aCompleter[0].cle}` });
   }
   if (manquantes > 0) {
-    taches.push({ cle: "pieces", facultatif: true, titre: fournies === 0 ? "Déposer vos premières pièces" : `Déposer ${manquantes} ${pluriel(manquantes, "pièce manquante", "pièces manquantes")}`, detail: `${fournies} ${pluriel(fournies, "pièce", "pièces")} sur ${NB_PIECES}`, action: "Déposer", href: "#checklist", pieces: true });
+    taches.push({ cle: "pieces", facultatif: true, titre: fournies === 0 ? t("dossier.taches.pieces.titre_premieres") : t("dossier.taches.pieces.titre", { n: manquantes }), detail: t("dossier.taches.pieces.detail", { n: fournies, total: NB_PIECES }), action: t("dossier.actions.deposer"), href: "#checklist", pieces: true });
   }
   const affichees = taches.slice(0, MAX_TACHES);
 
   // ---------- Action principale : exactement la première tâche (même libellé, même lien)
   const action = affichees.length
     ? { texte: affichees[0].titre, href: affichees[0].href, cle: affichees[0].cle, pieces: Boolean(affichees[0].pieces) }
-    : { texte: "Relire et envoyer votre dossier", href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
+    : { texte: t("dossier.relire_envoyer"), href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
 
   // ---------- Avancement : 100 % si et seulement si tout l'indispensable est fait
   const brut = avancement({
@@ -225,40 +224,40 @@ export function etatParcours(d, memo = null, teaser = null) {
   // ---------- Documents
   const venir = (detail) => ({ etat: "a-venir", detail, actions: [] });
   const documents = [
-    { cle: "valorisation", titre: "Valorisation", ...(v
-      ? { etat: "pret", detail: p.valorisation_le ? `Mise à jour le ${dateCourte(p.valorisation_le)}` : "Prête", actions: [{ libelle: "Ouvrir", href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: "Télécharger l'Excel", href: liens.datapack, telecharger: true }] }
-      : venir(fait.chiffres ? "Calculée à l'étape Rédaction, avec vos réponses." : "Se débloque avec vos chiffres et vos réponses.")) },
-    { cle: "datapack", titre: "Datapack Excel", ...(p.exercices_complets
-      ? { etat: "pret", detail: docs.datapack ? `Mis à jour le ${dateCourte(docs.datapack.le)}${docs.datapack.version > 1 ? ` · version ${docs.datapack.version}` : ""}` : "Préparé à partir de vos chiffres confirmés", actions: [{ libelle: "Télécharger l'Excel", href: liens.datapack, principal: true, telecharger: true }] }
-      : venir("Se débloque dès qu'un exercice est confirmé.")) },
-    { cle: "teaser", titre: "Teaser anonyme", ...(docs.teaser
+    { cle: "valorisation", titre: t("dossier.documents.valorisation"), ...(v
+      ? { etat: "pret", detail: p.valorisation_le ? t("dossier.documents.mise_a_jour_f", { date: dateCourte(p.valorisation_le) }) : t("dossier.documents.prete"), actions: [{ libelle: t("dossier.actions.ouvrir"), href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: t("dossier.actions.excel"), href: liens.datapack, telecharger: true }] }
+      : venir(fait.chiffres ? t("dossier.documents.calculee_redaction") : t("dossier.documents.debloque_chiffres_reponses"))) },
+    { cle: "datapack", titre: t("dossier.documents.datapack"), ...(p.exercices_complets
+      ? { etat: "pret", detail: docs.datapack ? `${t("dossier.documents.mis_a_jour", { date: dateCourte(docs.datapack.le) })}${docs.datapack.version > 1 ? ` · ${t("dossier.documents.version", { n: docs.datapack.version })}` : ""}` : t("dossier.documents.prepare_chiffres"), actions: [{ libelle: t("dossier.actions.excel"), href: liens.datapack, principal: true, telecharger: true }] }
+      : venir(t("dossier.documents.debloque_exercice"))) },
+    { cle: "teaser", titre: t("dossier.documents.teaser"), ...(docs.teaser
       ? teaserVides.length
-        ? { etat: "incomplet", detail: `${teaserVides.length} ${pluriel(teaserVides.length, "partie", "parties")} sur ${nbPartiesTeaser} à rédiger`, actions: [{ libelle: "Rédiger", href: liens.teaser, principal: true }] }
-        : { etat: "pret", detail: `Rédigé le ${dateCourte(docs.teaser.le)}`, actions: [{ libelle: "Ouvrir", href: liens.teaser, principal: true }, { libelle: "Télécharger en PDF", href: `${liens.teaser}&imprimer=1` }] }
-      : venir("Rédigé à l'étape Rédaction, après vos réponses.")) },
-    { cle: "memo", titre: "Mémorandum", ...(docs.memo
+        ? { etat: "incomplet", detail: t("dossier.documents.parties_a_rediger", { n: teaserVides.length, total: nbPartiesTeaser }), actions: [{ libelle: t("dossier.actions.rediger"), href: liens.teaser, principal: true }] }
+        : { etat: "pret", detail: t("dossier.documents.redige_le", { date: dateCourte(docs.teaser.le) }), actions: [{ libelle: t("dossier.actions.ouvrir"), href: liens.teaser, principal: true }, { libelle: t("commun.documents.pdf"), href: `${liens.teaser}&imprimer=1` }] }
+      : venir(t("dossier.documents.redige_redaction"))) },
+    { cle: "memo", titre: t("dossier.documents.memo"), ...(docs.memo
       ? m?.nonRedigees.length
-        ? { etat: "incomplet", detail: `${m.nonRedigees.length} ${pluriel(m.nonRedigees.length, "chapitre", "chapitres")} sur ${(memo?.sections || []).length} à rédiger`, actions: [{ libelle: "Rédiger", href: liens.memo, principal: true }] }
-        : { etat: memoARelire ? "a-relire" : "pret", detail: `Rédigé le ${dateCourte(docs.memo.le)}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: "Ouvrir", href: liens.memo, principal: true }, { libelle: "Télécharger en PDF", href: `${liens.memo}&imprimer=1` }] }
-      : venir("Rédigé à l'étape Rédaction, après vos réponses.")) },
+        ? { etat: "incomplet", detail: t("dossier.documents.chapitres_a_rediger", { n: m.nonRedigees.length, total: (memo?.sections || []).length }), actions: [{ libelle: t("dossier.actions.rediger"), href: liens.memo, principal: true }] }
+        : { etat: memoARelire ? "a-relire" : "pret", detail: `${t("dossier.documents.redige_le", { date: dateCourte(docs.memo.le) })}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: t("dossier.actions.ouvrir"), href: liens.memo, principal: true }, { libelle: t("commun.documents.pdf"), href: `${liens.memo}&imprimer=1` }] }
+      : venir(t("dossier.documents.redige_redaction"))) },
   ];
 
   // ---------- Fourchette affichée (jamais de valeur centrale), ce sur quoi elle repose, et pourquoi elle a changé
   const est = d.estimation;
   let valeur;
   if (v) {
-    valeur = { etiquette: ETIQUETTE_TITRES, bas: v.bas, haut: v.haut,
-      base: "Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, après dettes et trésorerie.",
+    valeur = { etiquette: etiquetteTitres(), bas: v.bas, haut: v.haut,
+      base: t("dossier.valeur.base_titres"),
       ecart: explicationEcart(est, v),
-      lien: { texte: "Voir le détail", href: `${liens.valorisation}#valorisation` } };
+      lien: { texte: t("dossier.valeur.voir_detail"), href: `${liens.valorisation}#valorisation` } };
   } else if (est?.statut === "ok") {
-    valeur = { etiquette: `${ETIQUETTE_EXPRESS}${est.exercice ? ` · comptes ${est.exercice}` : ""}`, bas: est.bas, haut: est.haut,
-      base: "Estimée sur les derniers comptes publics et les multiples du secteur, avant dettes et trésorerie ; vos chiffres la préciseront.",
-      ecart: null, lien: { texte: "Voir le calcul", href: `${liens.valorisation}#chiffres` } };
+    valeur = { etiquette: `${etiquetteExpress()}${est.exercice ? ` · ${t("dossier.valeur.comptes", { annee: est.exercice })}` : ""}`, bas: est.bas, haut: est.haut,
+      base: t("dossier.valeur.base_express"),
+      ecart: null, lien: { texte: t("dossier.valeur.voir_calcul"), href: `${liens.valorisation}#chiffres` } };
   } else {
-    valeur = { etiquette: "Valorisation", bas: null, haut: null,
-      base: "Les comptes publics ne suffisent pas pour une première estimation : vos chiffres permettront de la calculer.",
-      ecart: null, lien: { texte: "Saisir vos chiffres", href: liens.demarrer } };
+    valeur = { etiquette: t("dossier.documents.valorisation"), bas: null, haut: null,
+      base: t("dossier.valeur.base_aucune"),
+      ecart: null, lien: { texte: t("dossier.valeur.saisir"), href: liens.demarrer } };
   }
 
   return {
@@ -272,10 +271,10 @@ export function etatParcours(d, memo = null, teaser = null) {
  *  encore), avec exactement les mêmes tâches que « À faire maintenant » sur la page du dossier. */
 export function ecranFinal(e) {
   if (e.pret) {
-    return { titre: "Votre dossier est prêt", aide: "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier.",
-      resteTitre: e.taches.length ? "Pour aller plus loin (facultatif)" : null, reste: e.taches };
+    return { titre: t("dossier.final.pret_titre"), aide: t("dossier.final.pret_aide"),
+      resteTitre: e.taches.length ? t("dossier.final.plus_loin") : null, reste: e.taches };
   }
-  return { titre: e.redige ? "Votre dossier est rédigé" : "Votre dossier n'est pas encore rédigé",
-    aide: `Il n'est pas encore prêt à être envoyé : ${e.avancement} % du parcours. Voici ce qui reste.`,
-    resteTitre: "Ce qui reste à faire", reste: e.taches };
+  return { titre: e.redige ? t("dossier.final.redige_titre") : t("dossier.final.non_redige_titre"),
+    aide: t("dossier.final.non_pret_aide", { pct: e.avancement }),
+    resteTitre: t("dossier.final.reste"), reste: e.taches };
 }

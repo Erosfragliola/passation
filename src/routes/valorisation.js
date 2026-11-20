@@ -18,7 +18,21 @@ import { assemblerEntree } from "../valuation/entree.js";
 import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
 import { erreursEtape } from "../valuation/validation.js";
-import HYPOTHESES from "../data/hypotheses.json";
+import HYPOTHESES_FR from "../data/hypotheses.json";
+import { t as tr, langue, valeur } from "../../public/js/i18n.js";
+
+/** Hypothèses avec leurs libellés dans la langue de la requête (valeurs, sources et dates inchangées) :
+ *  traductions dans serveur.json (« hypotheses »). En français, le fichier tel quel. */
+function hypotheses() {
+  if (langue() === "fr") return HYPOTHESES_FR;
+  const H = structuredClone(HYPOTHESES_FR), T = valeur("serveur.hypotheses");
+  for (const [k, champs] of Object.entries(T || {})) {
+    if (!H[k] || typeof champs !== "object") continue;
+    for (const [x, v] of Object.entries(champs)) if (x !== "facteurs" && typeof v === "string") H[k][x] = v;
+  }
+  for (const f of H.decotes_primes?.facteurs || []) f.libelle = T?.decotes_primes?.facteurs?.[f.cle] ?? f.libelle;
+  return H;
+}
 
 // « parcours » : écrans du parcours guidé déjà vus (« Passer » compte comme une réponse), pour un décompte identique partout
 const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche", "parcours"]);
@@ -97,19 +111,19 @@ function enBase64(octets) {
 
 async function deposerLiasse(request, env, row) {
   if (!claudeDisponible(env)) {
-    return json({ erreur: "lecture_indisponible", message: "La lecture automatique n'est pas encore activée. Saisissez vos chiffres à la main en attendant." }, 503);
+    return json({ erreur: "lecture_indisponible", message: tr("serveur.valorisation.lecture_automatique_encore_activee") }, 503);
   }
   const deja = await env.DB.prepare("SELECT COUNT(*) AS n FROM uploads WHERE dossier_id = ?").bind(row.id).first();
   if ((deja?.n ?? 0) >= LIASSE.lecturesMaxParDossier) {
-    return json({ erreur: "plafond_atteint", message: `Vous avez atteint le nombre maximal de lectures (${LIASSE.lecturesMaxParDossier}) pour ce dossier. Complétez les chiffres à la main.` }, 429);
+    return json({ erreur: "plafond_atteint", message: tr("serveur.valorisation.lectures_max", { n: LIASSE.lecturesMaxParDossier }) }, 429);
   }
   let form;
-  try { form = await request.formData(); } catch { return json({ erreur: "requete_invalide", message: "Envoyez un fichier PDF." }, 400); }
+  try { form = await request.formData(); } catch { return json({ erreur: "requete_invalide", message: tr("serveur.valorisation.envoyez_fichier_pdf") }, 400); }
   const fichier = form.get("fichier");
-  if (!fichier || typeof fichier === "string") return json({ erreur: "fichier_absent", message: "Aucun fichier reçu." }, 400);
-  if (fichier.size > LIASSE.tailleMax) return json({ erreur: "trop_lourd", message: "Le fichier dépasse 10 Mo." }, 413);
+  if (!fichier || typeof fichier === "string") return json({ erreur: "fichier_absent", message: tr("serveur.valorisation.aucun_fichier_recu") }, 400);
+  if (fichier.size > LIASSE.tailleMax) return json({ erreur: "trop_lourd", message: tr("serveur.valorisation.fichier_depasse_10_mo") }, 413);
   const octets = new Uint8Array(await fichier.arrayBuffer());
-  if (!estPdf(octets)) return json({ erreur: "pas_un_pdf", message: "Ce fichier n'est pas un PDF." }, 415);
+  if (!estPdf(octets)) return json({ erreur: "pas_un_pdf", message: tr("serveur.valorisation.fichier_pdf") }, 415);
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
   if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
 
@@ -124,7 +138,7 @@ async function deposerLiasse(request, env, row) {
     await env.DB.prepare("INSERT INTO uploads (id, dossier_id, r2_key, filename, mime, size, extracted_json, created_at) VALUES (?, ?, ?, ?, 'application/pdf', ?, ?, ?)")
       .bind(id, row.id, cle, String(fichier.name || "liasse.pdf").slice(0, 200), octets.length, JSON.stringify({ erreur: e.message }), maintenant()).run();
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
-    return json({ erreur: "lecture_echouee", message: "Nous n'avons pas pu lire ce document. Vérifiez qu'il s'agit bien d'une liasse fiscale lisible, ou saisissez vos chiffres à la main." }, 502);
+    return json({ erreur: "lecture_echouee", message: tr("serveur.valorisation.nous_avons_pu_lire") }, 502);
   }
   await env.DB.prepare("INSERT INTO uploads (id, dossier_id, r2_key, filename, mime, size, extracted_json, created_at) VALUES (?, ?, ?, ?, 'application/pdf', ?, ?, ?)")
     .bind(id, row.id, cle, String(fichier.name || "liasse.pdf").slice(0, 200), octets.length, JSON.stringify(lecture), maintenant()).run();
@@ -150,7 +164,7 @@ export async function lireReponses(env, dossierId) {
 // ---------------------------------------------------------------- Calcul
 export async function calculer(env, row) {
   const entreprise = JSON.parse(row.company_json || "{}");
-  const { entree, H } = assemblerEntree(entreprise, await lireChiffres(env, row.id), await lireReponses(env, row.id), HYPOTHESES);
+  const { entree, H } = assemblerEntree(entreprise, await lireChiffres(env, row.id), await lireReponses(env, row.id), hypotheses());
   const resultat = valorisationApprofondie(entree, H);
   return { resultat, entree, hypotheses: H };
 }
@@ -164,9 +178,9 @@ export async function routeValorisation(request, env, row, sous, item) {
     if (m === "PUT" && !item) {
       const c = await corpsJson(request);
       const annee = Number(c?.annee);
-      if (!Number.isInteger(annee) || annee < 1990 || annee > 2100 || typeof c?.valeurs !== "object") return json({ erreur: "requete_invalide", message: "Exercice ou valeurs invalides." }, 400);
+      if (!Number.isInteger(annee) || annee < 1990 || annee > 2100 || typeof c?.valeurs !== "object") return json({ erreur: "requete_invalide", message: tr("serveur.valorisation.exercice_ou_valeurs_invalides") }, 400);
       const lignes = await lireChiffres(env, row.id);
-      if (!lignes[annee] && Object.keys(lignes).length >= EXERCICES_MAX + 1) return json({ erreur: "trop_d_exercices", message: "Trois exercices suffisent ; retirez-en un avant d'en ajouter." }, 400);
+      if (!lignes[annee] && Object.keys(lignes).length >= EXERCICES_MAX + 1) return json({ erreur: "trop_d_exercices", message: tr("serveur.valorisation.trois_exercices_suffisent_retirez") }, 400);
       await enregistrerLignes(env, row.id, annee, c.valeurs, { valider: Boolean(c.valider), source: "dirigeant" });
       await toucher();
       return json(await vueChiffres(env, row));
@@ -175,7 +189,7 @@ export async function routeValorisation(request, env, row, sous, item) {
       // Validation de l'exercice en bloc : toutes les lignes remplies, sauf celles en alerte (à valider une par une)
       const annee = Number(item.slice(0, 4));
       const lignes = await lireChiffres(env, row.id);
-      if (!lignes[annee]) return json({ erreur: "introuvable", message: "Exercice introuvable." }, 404);
+      if (!lignes[annee]) return json({ erreur: "introuvable", message: tr("serveur.valorisation.exercice_introuvable") }, 404);
       const bloquees = lignesBloquees(controles(row, lignes)[annee]);
       const stmts = Object.entries(lignes[annee]).filter(([k, x]) => x.valeur !== null && !bloquees.has(k))
         .map(([k]) => env.DB.prepare("UPDATE financials SET validated = 1 WHERE dossier_id = ? AND year = ? AND field = ?").bind(row.id, annee, k));
@@ -195,8 +209,8 @@ export async function routeValorisation(request, env, row, sous, item) {
     if (m === "PUT" && ETAPES_VALIDES.has(item)) {
       const c = await corpsJson(request);
       const donnees = c?.data;
-      if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 60_000) return json({ erreur: "requete_invalide", message: "Réponses invalides." }, 400);
-      const erreurs = erreursEtape(item, donnees, HYPOTHESES);
+      if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 60_000) return json({ erreur: "requete_invalide", message: tr("serveur.valorisation.reponses_invalides") }, 400);
+      const erreurs = erreursEtape(item, donnees, hypotheses());
       if (erreurs.length) return json({ erreur: "hypothese_invalide", message: erreurs.map((x) => x.message).join(" "), erreurs }, 400);
       await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, ?, ?, ?)
         ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)

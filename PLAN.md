@@ -637,3 +637,11 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   classe ou un id absent de toutes les sources servies), 116 clés de `landing.json` jamais lues, exports inutilisés.
   Preuve : tests verts et captures pixel à pixel (19 pages, 1440 et 390 px, animations normales et réduites), aucune
   différence hors bruit. Tests : 466 (dont « aucune clé orpheline » dans landing.json).
+- **20/11/2026, branche `feat/site-bilingue`** (non fusionnée, non déployée) : site bilingue, anglais par défaut aux
+  adresses actuelles, français sous `/fr/`, sélecteur « EN | FR ». Textes dans `src/contenu/<langue>/*.json`
+  (`landing.json` devient `fr/accueil.json`, réglages communs dans `cles.json`), posés par le Worker pour toutes les
+  pages (`src/routes/pages.js`, ex-`landing.js`) et lus par `t()` dans le JavaScript et le Worker. Réponses à choix
+  enregistrées en français, libellés traduits ; documents rédigés dans la langue de l'interface ; rappel quotidien en
+  français. Référencement : `hreflang`, `canonical`, `og:locale`, `sitemap.xml`, `robots.txt`. Pages françaises
+  comparées au pixel près à chaque étape. Tests : 485.
+

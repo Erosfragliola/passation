@@ -1,0 +1,8 @@
+{
+  "_lisez_moi": "Text of the /connexion page (set by the Worker, src/routes/pages.js). Same keys as src/contenu/fr/connexion.json.",
+  "connexion_passation": "Sign in · Passation",
+  "ouvrir_mon_dossier": "Open my file",
+  "indiquez_votre_adresse_e_mail": "Enter your email address: we’ll send you a 6-digit code, valid for 10 minutes. No password.",
+  "connexion_necessite_javascript": "Signing in requires JavaScript.",
+  "meta_description": "Open your Passation file with a 6-digit code sent by email, no password."
+}

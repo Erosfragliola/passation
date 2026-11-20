@@ -1,0 +1,26 @@
+{
+  "_lisez_moi": "Réglages de la page d’accueil communs aux deux langues (chiffres, prix, téléphone, e-mail, photos, identité légale). Une valeur vide retire l’élément de la page. Les réglages qui sont du texte (témoignages, guides, FAQ, fondateur…) sont dans src/contenu/<langue>/accueil.json, sous « cles ».",
+  "nb_dirigeants": "",
+  "note_avis": "",
+  "nb_avis": "",
+  "prix_etape2": "",
+  "prix_dossier": "",
+  "telephone": "",
+  "email_contact": "",
+  "rappel": false,
+  "fondateur_nom": "",
+  "fondateur_photo": "",
+  "photo_dirigeant": "",
+  "chiffres": {
+    "entreprises_estimees": "",
+    "dossiers_prepares": ""
+  },
+  "legal": {
+    "raison_sociale": "",
+    "forme": "",
+    "capital": "",
+    "rcs": "",
+    "adresse": ""
+  },
+  "videos_metiers": []
+}
