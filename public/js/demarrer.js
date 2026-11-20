@@ -1,13 +1,13 @@
-// Parcours guidé : une étape à la fois, une seule action principale par écran, reprise là où l'on s'est arrêté.
-// Les étapes sont celles de la page du dossier (liste unique ETAPES_PARCOURS, état calculé par etatParcours) :
-//   Estimation (faite : le dossier vient de la fiche de l'accueil)
-//   Vos chiffres : ce que Passation sait déjà, puis la liasse PDF ; à défaut, saisie de l'essentiel du dernier
-//      exercice (le seul indispensable) ; puis un clic de confirmation, seules les lignes signalées demandent attention
-//   Vos réponses : une question par écran, la première sur le site internet (proposé depuis l'adresse e-mail), lu
-//      pendant les questions suivantes ; puis les faits relevés sur le site (décochez ce qui est faux) et le logo
-//   Rédaction : valorisation, datapack, teaser et mémorandum générés d'un coup
-//   Relecture et envoi : « prêt » seulement si tout l'indispensable est fait, sinon ce qui reste (même décompte que
-//      la page du dossier)
+// Guided steps: one step at a time, a single main action per screen, resumed where the owner stopped.
+// The steps are those of the file page (single list ETAPES_PARCOURS, state calculated by etatParcours):
+//   Estimate (done: the file comes from the home page card)
+//   Your figures: what Passation already knows, then the PDF tax return; failing that, entry of the essentials of the
+//      latest fiscal year (the only required one); then one confirmation click, only flagged lines need attention
+//   Your answers: one question per screen, the first about the website (suggested from the email address), read
+//      during the following questions; then the facts found on the website (untick what is wrong) and the logo
+//   Drafting: valuation, datapack, teaser and memorandum generated in one go
+//   Review and sending: "ready" only if everything required is done, otherwise what is left (same count as
+//      the file page)
 import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe as texteAideEbe } from "/js/champs-financiers.js";
 import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
@@ -24,14 +24,14 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
-/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+/** Replaces the content of a node, ignoring null, undefined and false (otherwise the browser writes "null"). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const fmt = new Intl.NumberFormat(locale(), { maximumFractionDigits: 0 });
 const court = (v) => (v == null || !Number.isFinite(v) ? "–" : Math.abs(v) >= 1e6 ? euros((v / 1e6).toLocaleString(locale(), { maximumFractionDigits: 2 }), "M") : euros(Math.round(v / 1e3).toLocaleString(locale()), "k"));
-/** « 1,2 M€ » en français, « €1.2M » en anglais. */
+/** "1,2 M€" in French, "€1.2M" in English. */
 const euros = (n, unite) => (langue() === "fr" ? `${n} ${unite}€` : `€${n}${unite === "k" ? "K" : unite}`);
 const lireNombre = (s) => lireNombreSaisi(s);
-/** Remplit l'écran en ignorant les emplacements vides (jamais de « null » affiché). */
+/** Fills the screen, ignoring empty slots ("null" is never displayed). */
 const remplir = (...enfants) => remplacer($("#ecran"), ...enfants);
 function message(texte, erreur = false) { const m = $("#message"); m.textContent = texte; m.hidden = !texte; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
@@ -55,9 +55,9 @@ const PICTOS = {
 const picto = (nom) => { const NS = "http://www.w3.org/2000/svg", g = document.createElementNS(NS, "svg"); g.setAttribute("viewBox", "0 0 24 24"); g.setAttribute("aria-hidden", "true"); g.setAttribute("class", "picto"); const pa = document.createElementNS(NS, "path"); pa.setAttribute("d", PICTOS[nom] || PICTOS.valide); g.append(pa); return g; };
 const fleche = () => el("span", { class: "fleche", "aria-hidden": "true", text: "→" });
 
-// ================================================================== Où en est-on ?
+// ================================================================== Where are we?
 const exercicesComplets = () => Object.entries(S.chiffres?.manquants || {}).filter(([, l]) => !l.length).length;
-/** Le dernier exercice (le seul indispensable, règle partagée exercicesAttendus) est-il confirmé ? */
+/** Is the latest fiscal year (the only required one, shared rule exercicesAttendus) confirmed? */
 const dernierConfirme = () => exercicesAttendus(S.chiffres?.exercices).dernier_complet;
 const aDesChiffresAValider = () => Object.values(S.chiffres?.exercices || {}).some((l) => Object.values(l).some((x) => x.valeur != null && x.source !== "inpi"));
 function etapeCourante() {
@@ -70,12 +70,12 @@ function etapeCourante() {
   if (!S.reponses.suivi?.pret_envoye && !S.complet) return "redaction";
   return "pret";
 }
-/** Étape demandée par la page du dossier (?etape=…) : pour revoir une étape faite ou aller droit au but. Sans
- *  chiffres, « chiffres » mène à l'envoi des comptes ; « questions » reprend à la première question sans réponse. */
+/** Step requested by the file page (?etape=…): to review a completed step or go straight to the point. Without
+ *  figures, "chiffres" leads to uploading the accounts; "questions" resumes at the first unanswered question. */
 function etapeDemandee() {
   const e = new URLSearchParams(location.search).get("etape");
   if (e === "chiffres") return exercicesComplets() || aDesChiffresAValider() ? "chiffres" : "comptes";
-  // Exercices précédents (facultatifs) : saisie directe du premier qui manque
+  // Previous fiscal years (optional): direct entry of the first one missing
   if (e === "exercice") { const x = exercicesAttendus(S.chiffres?.exercices); S.saisie = { annee: x.recommandes_manquants?.[0] ?? anneesSaisie().defaut, valeurs: {} }; return "saisie"; }
   if (e === "questions") {
     if (siteARepondre()) { S.q = -1; return "questions"; }
@@ -85,8 +85,8 @@ function etapeDemandee() {
   return null;
 }
 const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
-/** Fil des étapes : la liste et l'état fait / à venir sont ceux de la page du dossier (etatParcours) ; l'étape de
- *  l'écran affiché est mise en avant. Le pourcentage est le même que celui de la page du dossier. */
+/** Step line: the list and the done / upcoming state are those of the file page (etatParcours); the step of
+ *  the displayed screen is highlighted. The percentage is the same as on the file page. */
 function dessinerEtapes() {
   const ici = ETAPE_DE_L_ECRAN[S.etape];
   const etats = Object.fromEntries((S.etat?.etapes || []).map((x) => [x.cle, x.etat]));
@@ -96,8 +96,8 @@ function dessinerEtapes() {
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
 }
-/** État du dossier relu au serveur (même calcul que la page du dossier), puis fil redessiné. */
-/** Mémorandum et teaser lus comme sur la page du dossier : même état, mêmes tâches (un teaser vide n'est pas « prêt »). */
+/** State of the file reread from the server (same calculation as the file page), then step line redrawn. */
+/** Memorandum and teaser read as on the file page: same state, same tasks (an empty teaser is not "ready"). */
 const documentsPourEtat = (d) => Promise.all([
   d.documents?.memo ? api(`${base}/documents/memo`).catch(() => null) : null,
   d.documents?.teaser ? api(`${base}/documents/teaser`).catch(() => null) : null,
@@ -117,17 +117,17 @@ function aller(etape) {
 }
 const titre = (texte, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: texte }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
-/** Propositions recalculées quand de nouvelles données arrivent (comptes confirmés, site lu). */
+/** Proposals recalculated when new data arrives (confirmed accounts, website read). */
 function rafraichirPropositions() {
   return api(`${base}/documents/memo/propositions`).then((p) => { S.propositions = p.propositions || {}; }).catch(() => null);
 }
-// ================================================================== 1. Vos comptes
+// ================================================================== 1. Your accounts
 function lancerLectureSite(url) {
   S.lectureSite = api(`${base}/documents/memo/site`, { method: "POST", body: JSON.stringify({ url }) })
     .then((m) => { S.memo = m; S.reponses.site = m.site; rafraichirPropositions(); return m; })
     .catch((e) => { S.erreurSite = e.message; return null; });
 }
-/** Ce que Passation sait déjà : le dirigeant ne part pas de zéro. */
+/** What Passation already knows: the owner does not start from zero. */
 function dejaFait() {
   const e = S.dossier?.entreprise || {}, est = S.dossier?.estimation;
   const publics = Object.entries(S.chiffres?.exercices || {})
@@ -168,12 +168,12 @@ function comptes() {
     suite);
 }
 
-// ================================================================== 1 bis. Saisie de l'essentiel (sans liasse)
+// ================================================================== 1a. Entry of the essentials (without a tax return)
 const DETAIL_CHARGES = ["achats_consommes", "charges_externes", "impots_taxes", "charges_personnel"];
 const BILAN_ESSENTIEL = ["stocks", "creances_clients", "tresorerie", "capitaux_propres", "emprunts", "dettes_fournisseurs", "dettes_fiscales_sociales"];
 const FACULTATIFS = new Set(["impots_taxes", "resultat_net"]);
-/** Exercice proposé : le dernier exercice connu s'il n'est pas confirmé (le seul indispensable), sinon le premier
- *  des deux précédents qui manque, sinon le dernier exercice clos. Jamais une année isolée plus ancienne. */
+/** Proposed fiscal year: the latest known fiscal year if it is not confirmed (the only required one), otherwise the
+ *  first missing of the two previous ones, otherwise the latest closed fiscal year. Never an isolated older year. */
 function anneesSaisie() {
   const y = new Date().getFullYear();
   const x = exercicesAttendus(S.chiffres?.exercices);
@@ -181,8 +181,8 @@ function anneesSaisie() {
   const defaut = x.dernier == null ? y - 1 : !x.dernier_complet ? x.dernier : x.recommandes_manquants[0] ?? x.dernier;
   return { toutes, defaut };
 }
-/** « L'essentiel de vos comptes » en deux écrans (19/11/2026) : ce que l'entreprise gagne, puis ce qu'elle possède et
- *  doit. Les montants tapés sont gardés d'un écran à l'autre ; l'exercice est enregistré en une fois, au second écran. */
+/** "The essentials of your accounts" in two screens (19/11/2026): what the company earns, then what it owns and
+ *  owes. The amounts typed are kept from one screen to the next; the fiscal year is saved in one go, on the second screen. */
 function saisie() {
   const { toutes, defaut } = anneesSaisie();
   if (!S.saisie) S.saisie = { annee: defaut, valeurs: {}, ecran: 1 };
@@ -205,7 +205,7 @@ function saisie() {
       el("p", { class: "petit", text: aide }),
       el("div", { class: "champ-unite" }, input, el("span", { class: "unite", text: "€" })));
   };
-  /** Lit les montants des clés données : { valeurs } ou un message d'erreur (champ illisible ou obligatoire vide). */
+  /** Reads the amounts of the given keys: { valeurs } or an error message (unreadable field or empty required field). */
   const lire = (cles) => {
     const valeurs = {}, manque = [];
     for (const cle of cles) {
@@ -250,8 +250,8 @@ function saisie() {
         bouton.disabled = true;
         try {
           S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs, valider: false }) });
-          // Ce que le dirigeant vient de taper n'a pas à être reconfirmé sur l'écran suivant : on confirme d'office,
-          // sauf si un contrôle automatique signale une incohérence (l'écran « Vos chiffres » l'affiche alors)
+          // What the owner has just typed does not need to be confirmed again on the next screen: it is confirmed by default,
+          // unless an automatic check flags an inconsistency (the "Your figures" screen then shows it)
           const alerte = (S.chiffres.controles?.[annee] || []).some((c) => c.niveau === "alerte");
           if (!alerte && !(S.chiffres.manquants?.[annee] || []).length) S.chiffres = await api(`${base}/financials/${annee}/valider`, { method: "POST" });
           S.saisie = null;
@@ -261,9 +261,9 @@ function saisie() {
       } }, t("demarrer.js.saisie.enregistrer"), fleche())));
 }
 
-// ================================================================== 2. Vos chiffres
-/** Exercices à confirmer : le dernier (indispensable) et, s'ils ont été saisis ou lus dans la liasse, les deux qui le
- *  précèdent (facultatifs). Une année plus ancienne publiée isolément n'est pas présentée. */
+// ================================================================== 2. Your figures
+/** Fiscal years to confirm: the latest (required) and, if they were entered or read from the tax return, the two
+ *  before it (optional). An older year published on its own is not shown. */
 function anneesUtiles() {
   const x = exercicesAttendus(S.chiffres.exercices);
   if (x.dernier == null) return [];
@@ -314,7 +314,7 @@ function ligneAVerifier(annee, cle, cellule) {
     } }, "Valider"));
 }
 
-// ================================================================== 3. Questions (une par écran)
+// ================================================================== 3. Questions (one per screen)
 async function enregistrer(etape, cle, valeur) {
   S.reponses[etape] = { ...(S.reponses[etape] || {}), [cle]: valeur };
   await api(`${base}/answers/${etape}`, { method: "PUT", body: JSON.stringify({ data: S.reponses[etape] }) });
@@ -323,7 +323,7 @@ function brouillonActivite() {
   const f = (S.reponses.site?.faits || []).filter((x) => ["activite", "produits", "clients", "qualite"].includes(x.categorie)).slice(0, 5).map((x) => x.fait);
   return f.length ? f.join(" ") : "";
 }
-/** Proposition de Passation pour ce champ, tant que le dirigeant n'a rien enregistré. */
+/** Passation's proposal for this field, as long as the owner has saved nothing. */
 const proposition = (q, c) => (S.reponses[c.etape]?.[c.cle] == null ? S.propositions[q.id]?.valeurs?.[`${c.etape}.${c.cle}`] : undefined);
 function champ(c, q) {
   const v = S.reponses[c.etape]?.[c.cle] ?? proposition(q, c);
@@ -338,7 +338,7 @@ function champ(c, q) {
     return el("div", { class: "guide-champ" }, lib, i);
   }
   if (c.type === "multi") {
-    // Plusieurs réponses : tuiles à pictogramme, enregistrées à la validation de l'écran
+    // Several answers: tiles with pictograms, saved when the screen is approved
     const choisies = new Set(Array.isArray(v) ? v : []);
     const zone = el("div", { class: "tuiles-choix", role: "group", "aria-label": c.libelle || q.titre, "data-etape": c.etape, "data-cle": c.cle, "data-type": "multi" },
       ...c.options.map(([val, ic]) => el("button", { type: "button", class: "tuile-choix", "aria-pressed": String(choisies.has(val)), "data-valeur": val, onclick: (ev) => {
@@ -361,11 +361,11 @@ function champ(c, q) {
     const opts = c.type === "choix" ? c.options.map((o) => [libelleOption(c.cle, o), o]) : c.options.map(([lib, val]) => [langue() === "fr" ? lib : lib.replace(/\s%/, "%"), val]);
     return el("div", { class: "guide-champ" }, lib, el("div", { class: "puces-choix", role: "group", "aria-label": c.libelle || q.titre },
       ...opts.map(([lib, val]) => el("button", { type: "button", class: `puce${v === val ? " choisie" : ""}`, "aria-pressed": String(v === val), "data-propose": proposition(q, c) === val ? "1" : null, onclick: async (ev) => {
-        const bouton = ev.currentTarget; // ev.currentTarget est vidé après le premier « await »
+        const bouton = ev.currentTarget; // ev.currentTarget is emptied after the first "await"
         try {
           await enregistrer(c.etape, c.cle, val);
           bouton.parentElement.querySelectorAll(".puce").forEach((b) => { b.classList.toggle("choisie", b === bouton); b.setAttribute("aria-pressed", String(b === bouton)); });
-          // Écran à un seul choix : on avance tout de suite ; sinon on affiche la suite éventuelle
+          // Single-choice screen: move on immediately; otherwise show the follow-up, if any
           if (q.champs.length === 1 && !q.suite?.si(S.reponses) && !S.propositions[q.id]) suivante(q);
           else if (q.suite) questions();
         } catch (e) { message(e.message, true); }
@@ -377,7 +377,7 @@ function champ(c, q) {
       ...REGIONS.map((r, k) => { const cb = el("input", { type: "checkbox", id: `reg-${k}`, checked: choisies.has(r) }); cb.addEventListener("change", () => { if (cb.checked) choisies.add(r); else choisies.delete(r); enregistrer(c.etape, c.cle, [...choisies]).catch((e) => message(e.message, true)); }); return el("label", { class: "choix", for: `reg-${k}` }, cb, ` ${r}`); }));
   }
   if (c.type === "top_clients") {
-    // Cinq lignes anonymes : part du chiffre d'affaires (%), ancienneté de la relation (ans), activité du client
+    // Five anonymous lines: share of revenue (%), length of the relationship (years), customer's business
     const lignes = Array.isArray(v) ? v : [];
     const zone = el("div", { class: "guide-champ top-clients", "data-etape": c.etape, "data-cle": c.cle, "data-type": "top_clients" },
       el("div", { class: "top-clients-tete", "aria-hidden": "true" }, el("span"), el("span", { text: t("demarrer.js.clients.part") }), el("span", { text: t("demarrer.js.clients.depuis") }), el("span", { text: t("demarrer.js.clients.activite") })),
@@ -407,7 +407,7 @@ function champ(c, q) {
   }
   return null;
 }
-/** Valide l'écran : les choix proposés que le dirigeant a gardés tels quels sont enregistrés. */
+/** Approves the screen: the proposed choices that the owner kept as they are get saved. */
 async function validerPropositions(q) {
   for (const c of [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])]) {
     if (!["choix", "valeurs", "regions"].includes(c.type)) continue;
@@ -437,26 +437,26 @@ async function enregistrerEcran() {
     }
   }
 }
-/** Écran vu : enregistré (« Passer » compte comme une réponse), pour que la page du dossier compte pareil. */
+/** Screen seen: saved ("Skip" counts as an answer), so that the file page counts the same way. */
 function marquerVue(qid) {
   if (S.vues.includes(qid)) return;
   S.vues.push(qid);
   S.reponses.parcours = { ...(S.reponses.parcours || {}), vues: [...S.vues] };
   api(`${base}/answers/parcours`, { method: "PUT", body: JSON.stringify({ data: S.reponses.parcours }) }).then(() => rafraichirEtat()).catch(() => null);
 }
-/** Compteur « Question N sur M » : M = questions qui restaient à montrer en arrivant sur les questions (celles déjà
- *  répondues, validées dans le récapitulatif ou passées n'y sont pas) ; il ne bouge pas d'un écran à l'autre. */
+/** "Question N of M" counter: M = questions still to show when arriving at the questions (those already
+ *  answered, approved in the summary or skipped are not included); it does not change from one screen to the next. */
 const cleEcran = () => (S.q < 0 ? "site" : QUESTIONS[S.q]?.id);
 function compteur() {
   if (!S.aPoser) S.aPoser = questionsAPoser(S.reponses, S.vues);
   const cle = cleEcran();
-  if (cle && !S.aPoser.includes(cle)) S.aPoser = [...S.aPoser, cle].sort((a, b) => ordre(a) - ordre(b)); // revenue d'elle-même (« Retour »)
+  if (cle && !S.aPoser.includes(cle)) S.aPoser = [...S.aPoser, cle].sort((a, b) => ordre(a) - ordre(b)); // came back by itself ("Back")
   const n = S.aPoser.indexOf(cle) + 1, total = S.aPoser.length;
   return el("div", { class: "q-tete" }, el("p", { class: "etiquette", text: t("demarrer.js.question_n", { n, total }) }),
     el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round((n / total) * 100)}%` })));
 }
 const ordre = (cle) => (cle === "site" ? -1 : QUESTIONS.findIndex((q) => q.id === cle));
-/** « Retour » : l'écran précédent dans la liste des questions montrées ; avant la première, les chiffres. */
+/** "Back": the previous screen in the list of questions shown; before the first one, the figures. */
 function precedente() {
   const i = (S.aPoser || []).indexOf(cleEcran());
   const prec = i > 0 ? S.aPoser[i - 1] : null;
@@ -465,22 +465,22 @@ function precedente() {
 }
 function suivante(q) {
   marquerVue(q.id);
-  // Venu de la rédaction pour compléter une réponse indispensable : on y retourne dès que tout est rempli
+  // Came from drafting to complete a required answer: go back there as soon as everything is filled in
   if (S.retour === "redaction") {
     const reste = questionsIncompletes(S.reponses);
     if (reste.length) { S.q = QUESTIONS.indexOf(reste[0]); questions(); } else { S.retour = null; aller("redaction"); }
     return;
   }
-  // Question suivante encore sans réponse (celles validées dans le récapitulatif sont sautées)
+  // Next question still unanswered (those approved in the summary are skipped)
   const i = QUESTIONS.indexOf(q);
   const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
   if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante());
 }
-/** Première question : le site internet. Sa lecture se poursuit pendant les questions suivantes. */
+/** First question: the website. Its reading continues during the following questions. */
 function questionSite() {
   const proposition = S.reponses.site?.url || siteDepuisEmail(S.email) || "";
   const input = el("input", { type: "text", id: "site-url", inputmode: "url", value: proposition, placeholder: t("memo.www_mon_entreprise_fr"), autocomplete: "url" });
-  // Question suivante encore sans réponse (le site n'est plus à poser)
+  // Next question still unanswered (the website no longer needs asking)
   const suivanteQ = () => { message(""); const j = QUESTIONS.findIndex((x) => !questionRepondue(x, S.reponses, S.vues)); if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante()); };
   remplir(
     compteur(),
@@ -501,13 +501,13 @@ function questionSite() {
         suivanteQ();
       } }, proposition ? t("demarrer.js.site.oui_lire") : t("demarrer.js.site.lire"), fleche())));
 }
-// ---- Récapitulatif : toutes les réponses préparées sur un écran, validées d'un clic (le reste se pose ensuite)
+// ---- Summary: all the prepared answers on one screen, approved in one click (the rest is asked afterwards)
 const cleRecap = `passation-recap-${id}`;
 const recapVu = () => { try { return Boolean(sessionStorage.getItem(cleRecap)); } catch { return S.recapVu; } };
-const marquerRecap = () => { S.recapVu = true; try { sessionStorage.setItem(cleRecap, "1"); } catch { /* sans stockage */ } };
+const marquerRecap = () => { S.recapVu = true; try { sessionStorage.setItem(cleRecap, "1"); } catch { /* without storage */ } };
 const clesEnAttente = (q) => Object.keys(S.propositions[q.id]?.valeurs || {}).filter((k) => { const [e, c] = k.split("."); return S.reponses[e]?.[c] == null; });
 const questionsPreparees = () => QUESTIONS.filter((q) => clesEnAttente(q).length && !S.propositions[q.id]?.a_completer && !questionRepondue(q, S.reponses, S.vues));
-/** Valeur proposée en clair (libellé du choix, pourcentage, liste, texte abrégé). */
+/** Proposed value in plain words (choice label, percentage, list, shortened text). */
 function libelleValeur(q, cle, v) {
   const c = [...q.champs, ...(q.suite?.champs || [])].find((x) => `${x.etape}.${x.cle}` === cle);
   if (c?.type === "valeurs") { const lib = c.options.find(([, val]) => val === v)?.[0]; return lib == null ? String(v) : langue() === "fr" ? lib : lib.replace(/\s%/, "%"); }
@@ -526,7 +526,7 @@ function recapitulatif() {
     bouton.disabled = true;
     try {
       for (const q of liste) if (coches.get(q.id)) for (const k of clesEnAttente(q)) { const [e, c] = k.split("."); await enregistrer(e, c, S.propositions[q.id].valeurs[k]); }
-      marquerRecap(); message(""); S.aPoser = null; // le compteur ne compte plus les réponses qui viennent d'être validées
+      marquerRecap(); message(""); S.aPoser = null; // the counter no longer counts the answers that have just been approved
       rafraichirEtat();
       aller(etapeCourante());
     } catch (e) { message(e.message, true); bouton.disabled = false; }
@@ -547,8 +547,8 @@ function recapitulatif() {
 }
 
 function questions() {
-  // Le récapitulatif des réponses préparées vient avant la première question : le compteur « Question N sur M » est
-  // fixé ensuite, une fois pour toutes (il ne repart pas de 1 après la validation des réponses préparées)
+  // The summary of prepared answers comes before the first question: the "Question N of M" counter is
+  // set afterwards, once and for all (it does not restart from 1 after the prepared answers are approved)
   if (!recapVu() && questionsPreparees().length >= 3) return recapitulatif();
   if (S.q < 0) return questionSite();
   const q = QUESTIONS[S.q];
@@ -579,7 +579,7 @@ function questions() {
     q.chapitre ? el("aside", { class: "q-usage" }, el("p", { class: "etiquette", text: t("demarrer.js.question.ou_va") }), el("strong", { text: q.chapitre }), q.pourquoi ? el("p", { class: "petit", text: q.pourquoi }) : null) : null);
 }
 
-// ================================================================== 4. Votre site
+// ================================================================== 4. Your website
 async function site() {
   if (S.lectureSite) { message(t("demarrer.js.site.lecture")); await S.lectureSite; message(""); }
   const s = S.reponses.site || {};
@@ -608,20 +608,20 @@ async function site() {
     } }, t("demarrer.js.question.exact_continuer").trim()));
 }
 
-// ================================================================== 5. Rédaction (tout d'un coup)
-/** Étude de marché lancée dès l'ouverture du parcours (registres + recherche web, une à deux minutes) : elle ne dépend
- *  que de l'entreprise, et se fait pendant que le dirigeant répond aux questions. Une seule fois par dossier. */
+// ================================================================== 5. Drafting (all in one go)
+/** Market research launched as soon as the flow opens (registries + web search, one to two minutes): it depends
+ *  only on the company, and runs while the owner answers the questions. Only once per file. */
 function lancerEtudeMarche() {
   if (S.marche) return S.marche;
   const cle = `passation-marche-${id}`;
-  try { const t = Number(localStorage.getItem(cle)); if (t && Date.now() - t < 10 * 60 * 1000) return null; localStorage.setItem(cle, String(Date.now())); } catch { /* stockage indisponible */ }
-  // En cas d'échec, l'erreur est gardée : la rédaction ne relance pas une deuxième recherche (deux minutes de plus et
-  // un essai consommé), sauf si l'étude était déjà en cours (409), auquel cas elle attend son résultat
+  try { const t = Number(localStorage.getItem(cle)); if (t && Date.now() - t < 10 * 60 * 1000) return null; localStorage.setItem(cle, String(Date.now())); } catch { /* storage unavailable */ }
+  // On failure, the error is kept: drafting does not launch a second search (two more minutes and
+  // an attempt used up), unless the study was already in progress (409), in which case it waits for its result
   S.marche = api(`${base}/documents/memo`).then((m) => (m.marche?.date ? m : api(`${base}/documents/memo/marche`, { method: "POST" }))).catch((e) => ({ echec: e }));
   return S.marche;
 }
 
-/** Exécute des tâches avec au plus n en parallèle (file continue : une tâche démarre dès qu'une autre finit). */
+/** Runs tasks with at most n in parallel (continuous queue: a task starts as soon as another one finishes). */
 async function enParallele(taches, n, f) {
   const file = [...taches];
   await Promise.all(Array.from({ length: Math.min(n, file.length) }, async () => { while (file.length) await f(file.shift()); }));
@@ -634,11 +634,11 @@ async function redaction() {
     ["etude-marche", t("demarrer.js.redaction.marche"), async () => {
       const m = await (S.marche || null);
       if (m?.marche?.date) return;
-      if (m?.echec && m.echec.statut !== 409) throw m.echec; // déjà tentée pendant les questions : pas de seconde recherche
+      if (m?.echec && m.echec.statut !== 409) throw m.echec; // already attempted during the questions: no second search
       try { await api(`${base}/documents/memo/marche`, { method: "POST" }); }
       catch (e) {
         if (e.statut !== 409) throw e;
-        // Déjà en cours (lancée au début du parcours) : on attend son résultat, deux minutes au plus
+        // Already in progress (launched at the start of the flow): wait for its result, two minutes at most
         for (let k = 0; k < 24; k++) { await new Promise((r) => setTimeout(r, 5000)); const x = await api(`${base}/documents/memo`).catch(() => null); if (x?.marche?.date || !x?.marche?.en_cours) return; }
       }
     }],
@@ -647,9 +647,9 @@ async function redaction() {
     ...SECTIONS.map(([k, nom]) => [`memo-${k}`, t("demarrer.js.redaction.memo_section", { section: nom }), () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
   ];
   const libelle = Object.fromEntries(taches.map(([k, lib]) => [k, lib]));
-  // Réponses indispensables au mémorandum : vérifiées avant de lancer quoi que ce soit (sinon 9 échecs sans issue)
+  // Answers required for the memorandum: checked before launching anything (otherwise 9 failures with no way out)
   const incompletes = questionsIncompletes(S.reponses);
-  // Ce qui est déjà rédigé n'est pas refait (reprise après une interruption)
+  // What is already drafted is not redone (resumption after an interruption)
   const deja = new Set();
   try {
     const [d, m] = await Promise.all([api(base), api(`${base}/documents/memo`)]);
@@ -658,7 +658,7 @@ async function redaction() {
     if (d.documents?.teaser) deja.add("teaser");
     for (const x of m.sections || []) if (x.redigee) deja.add(`memo-${x.cle}`);
     if (m.marche?.date) deja.add("etude-marche");
-  } catch { /* on refait tout */ }
+  } catch { /* redo everything */ }
   const lignes = Object.fromEntries(taches.map(([k, lib]) => [k, el("li", { class: deja.has(k) ? "fait" : incompletes.length && k.startsWith("memo-") ? "attente" : null }, el("span", { class: "etat", "aria-hidden": "true" }), lib)]));
   const chrono = el("span", { class: "petit guide-chrono", "aria-hidden": "true" });
   remplir(...titre(t("demarrer.js.redaction.titre"), t("demarrer.js.redaction.aide")),
@@ -672,9 +672,9 @@ async function redaction() {
     catch (e) { lignes[k].classList.replace("en-cours", "erreur"); erreurs.push({ k, message: e.message, statut: e.statut }); }
   };
   try {
-    await executer(taches[0]); // la valorisation d'abord : le datapack, le teaser et le mémorandum s'en servent
-    // L'étude de marché tourne pendant tout le reste ; seuls les chapitres qui la citent (marché, synthèse,
-    // perspectives) l'attendent, et ils passent en dernier
+    await executer(taches[0]); // the valuation first: the datapack, the teaser and the memorandum use it
+    // The market research runs during everything else; only the chapters that cite it (market, summary,
+    // outlook) wait for it, and they go last
     const marche = executer(taches[1]);
     const citent = new Set(["memo-marche", "memo-synthese", "memo-perspectives"]);
     const memo = taches.filter(([k]) => k.startsWith("memo-"));
@@ -684,10 +684,10 @@ async function redaction() {
   } finally { clearInterval(minuterie); }
 
   const suite = $("#redaction-suite");
-  // 1. Réponses indispensables manquantes : on les demande ici, avec un accès direct à la question
+  // 1. Missing required answers: ask for them here, with direct access to the question
   let manquantes = incompletes;
   if (!manquantes.length && erreurs.some((e) => e.statut === 409 && e.k.startsWith("memo-"))) {
-    S.reponses = (await api(`${base}/answers`).catch(() => ({}))).reponses || S.reponses; // réponses peut-être modifiées ailleurs
+    S.reponses = (await api(`${base}/answers`).catch(() => ({}))).reponses || S.reponses; // answers possibly changed elsewhere
     manquantes = questionsIncompletes(S.reponses);
   }
   if (manquantes.length) {
@@ -698,7 +698,7 @@ async function redaction() {
     $("#ecran").querySelector("#redaction-suite button")?.focus();
     return;
   }
-  // 2. Échecs passagers (service de rédaction indisponible, délai) : un message par cause, et « Réessayer »
+  // 2. Temporary failures (drafting service unavailable, timeout): one message per cause, and "Try again"
   const nonBloquants = new Set(["teaser", "etude-marche"]);
   const bloquantes = erreurs.filter((e) => !nonBloquants.has(e.k));
   if (bloquantes.length) {
@@ -717,9 +717,9 @@ async function redaction() {
   aller("pret");
 }
 
-// ================================================================== Relecture et envoi
-/** Écran final : même état que la page du dossier (etatParcours), donc même statut, même pourcentage, même fourchette
- *  et mêmes tâches. « Prêt » seulement si tout l'indispensable est fait ; sinon « rédigé » et ce qui reste. */
+// ================================================================== Review and sending
+/** Final screen: same state as the file page (etatParcours), so same status, same percentage, same range
+ *  and same tasks. "Ready" only if everything required is done; otherwise "drafted" and what is left. */
 async function pret() {
   const e = (await rafraichirEtat()) || etatParcours(S.dossier, null);
   const f = ecranFinal(e), v = e.valeur;
@@ -739,7 +739,7 @@ async function pret() {
     el("p", { class: "petit" }, t("demarrer.js.pret.affiner"), el("a", { href: lien(`/espace/valorisation/?dossier=${id}#valorisation`), text: t("demarrer.js.pret.reglages") }), t("demarrer.js.pret.photos"), el("a", { href: lien(`/espace/documents/memo/?dossier=${id}`), text: t("demarrer.js.pret.page_memo") }), t("demarrer.js.pret.modifier"), el("a", { href: lien(`/espace/demarrer/?dossier=${id}&etape=questions`), text: t("demarrer.js.pret.revoir") }), "."));
 }
 
-// ================================================================== Chargement
+// ================================================================== Loading
 (async () => {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
@@ -749,14 +749,14 @@ async function pret() {
     S.email = moi.email; S.dossier = dossier; S.chiffres = ch; S.reponses = rep.reponses || {}; S.vues = vuesDe(S.reponses);
     S.etat = etatParcours(dossier, ...(await documentsPourEtat(dossier)));
     $("#guide-entreprise").textContent = dossier.entreprise.nom || t("demarrer.votre_dossier");
-    // Nom de code au-dessus du nom réel, comme sur la page du dossier : c'est sous ce nom que le dossier circulera
+    // Code name above the real name, as on the file page: the file will circulate under this name
     if (dossier.nom_de_code) { $("#guide-code").textContent = dossier.nom_de_code; $("#guide-nom-code").hidden = false; }
     document.title = `${dossier.entreprise.nom} · Passation`;
     S.complet = Boolean(dossier.documents?.memo && dossier.documents?.teaser && dossier.documents?.datapack && dossier.parcours?.valorisation);
-    // Documents déjà rédigés : on rouvre sur l'écran final (récapitulatif et points à compléter), pas sur une question
-    // facultative laissée vide ; ?etape=… permet toujours d'y revenir (audit, point 17)
+    // Documents already drafted: reopen on the final screen (summary and points to complete), not on an optional
+    // question left empty; ?etape=… still allows going back to it (audit, point 17)
     aller(etapeDemandee() || (S.complet || S.reponses.suivi?.pret_envoye ? "pret" : etapeCourante()));
-    if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // pendant les questions, pas à la fin
+    if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // during the questions, not at the end
   } catch (e) { if (e.message !== "non_connecte") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();

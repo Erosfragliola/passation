@@ -1,60 +1,60 @@
-// Page d'un dossier et parcours guidé (module pur, testé dans test/dossier-parcours.test.js) : à partir du détail du
-// dossier (GET /api/dossiers/:id) et, s'il est rédigé, du mémorandum (GET …/documents/memo), on déduit l'état unique
-// lu par les deux pages :
-//   - le fil du parcours en 5 étapes (fait, actuelle, à venir), liste unique ETAPES_PARCOURS ;
-//   - « À faire maintenant » : 3 tâches au plus, l'indispensable d'abord (chiffres, questions, rédaction), puis le
-//     facultatif (exercices précédents, recommandations du mémorandum, pièces) ;
-//   - l'action principale, qui reprend exactement la première tâche ;
-//   - l'avancement en %, le statut « prêt » (100 % si et seulement si tout l'indispensable est fait) ;
-//   - l'état des 4 documents, la fourchette affichée, ce sur quoi elle repose et l'explication de son évolution.
-// Aucune donnée n'est inventée : tout vient des deux réponses de l'API.
+// File page and guided steps (pure module, tested in test/dossier-parcours.test.js): from the file's details
+// (GET /api/dossiers/:id) and, if it is drafted, the memorandum (GET …/documents/memo), we derive the single state
+// read by both pages:
+//   - the 5-step progress line (done, current, upcoming), single list ETAPES_PARCOURS;
+//   - "To do now": 3 tasks at most, what is required first (figures, questions, drafting), then what is
+//     optional (previous fiscal years, memorandum recommendations, documents);
+//   - the main action, which repeats exactly the first task;
+//   - progress in %, the "ready" status (100% if and only if everything required is done);
+//   - the status of the 4 documents, the displayed range, what it is based on and the explanation of how it changed.
+// No data is invented: everything comes from the two API responses.
 import { CHECKLIST, avancement } from "./dossier-regles.js";
 import { fourchette, montant } from "./landing/estimation.js";
 import { lien, t, locale } from "./i18n.js";
 
-/** Liste unique des étapes, pour la page du dossier et le parcours guidé (mêmes libellés, même ordre). */
+/** Single list of the steps, for the file page and the guided steps (same labels, same order). */
 export const ETAPES_PARCOURS = [["estimation"], ["chiffres"], ["reponses"], ["redaction"], ["relecture"]];
-// Libellés : src/contenu/<langue>/dossier.json, lus à chaque accès (élément 1 de chaque paire).
+// Labels: src/contenu/<language>/dossier.json, read at each access (element 1 of each pair).
 for (const e of ETAPES_PARCOURS) Object.defineProperty(e, 1, { get: () => t(`dossier.etapes.${e[0]}`), enumerable: true, configurable: true });
-/** Écran du parcours guidé → étape du fil. Le site est une question de « Vos réponses ». */
+/** Screen of the guided steps → step of the progress line. The website is a question of "Your answers". */
 export const ETAPE_DE_L_ECRAN = { comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", questions: "reponses", site: "reponses", redaction: "redaction", pret: "relecture" };
-/** Étiquettes de la valeur, identiques partout (fiche de l'accueil, page du dossier, parcours guidé, valorisation). */
+/** Labels of the value, identical everywhere (home page card, file page, guided steps, valuation). */
 export const etiquetteExpress = () => t("dossier.etiquette_express");
 export const etiquetteTitres = () => t("dossier.etiquette_titres");
 export const NB_PIECES = CHECKLIST.reduce((n, g) => n + g.items.length, 0);
-/** Seuil des questions (en %) à partir duquel la rédaction peut être lancée. */
+/** Threshold of the questions (in %) from which drafting can be launched. */
 const SEUIL_REDACTION = 40;
 const MAX_TACHES = 3;
 
-/** « 2024 » ; « 2023 et 2024 » ; « 2022 à 2024 » (consécutifs) ; « 2019, 2021 et 2024 ». */
+/** "2024"; "2023 and 2024"; "2022 to 2024" (consecutive); "2019, 2021 and 2024". */
 export function listeAnnees(annees = []) {
   const l = [...annees].sort((a, b) => a - b);
   if (l.length <= 1) return l.join("");
   if (l.length > 2 && l.every((a, i) => !i || a - l[i - 1] === 1)) return t("dossier.annees.suite", { de: l[0], a: l.at(-1) });
   return t("dossier.annees.liste", { debut: l.slice(0, -1).join(", "), fin: l.at(-1) });
 }
-/** Horodatage en secondes (format de la base) → « 18/11/2026 », heure de Paris. */
+/** Timestamp in seconds (database format) → "18/11/2026", Paris time. */
 export function dateCourte(secondes) {
   if (!Number.isFinite(secondes)) return null;
   return new Date(secondes * 1000).toLocaleDateString(locale(), { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-/** Points « À compléter » du mémorandum, un par élément signalé dans un chapitre : « Équipe : Nombre de salariés ».
- *  Seul décompte du travail restant (page du dossier, tâches et écran final du parcours guidé). */
+/** "To be completed" points of the memorandum, one per element flagged in a chapter: "Team: Number of employees".
+ *  The only count of the remaining work (file page, tasks and final screen of the guided steps). */
 export function pointsACompleter(memo) {
   return (memo?.sections || []).flatMap((s) => (s.a_completer || []).map((x) => t("dossier.point", { chapitre: s.titre, point: x })));
 }
-/** « 1 point à compléter », « 4 points à compléter ». */
+/** "1 point to complete", "4 points to complete". */
 export const libellePoints = (n) => t("dossier.points_a_completer", { n });
 
-/** Une partie du teaser compte comme rédigée si elle a un vrai texte (ni vide, ni « À compléter »). */
+/** A part of the teaser counts as drafted if it has a real text (neither empty nor "To be completed"). */
 const partieRedigee = (contenu) => { const x = String(contenu ?? "").trim(); return x !== "" && !/^(à compléter|to be completed)\.?$/i.test(x); };
-/** Parties du teaser encore vides (GET …/documents/teaser). Toutes sont indispensables : la page est courte. */
+/** Parts of the teaser still empty (GET …/documents/teaser). All are required: the page is short. */
 export function partiesTeaserVides(teaser) {
   return (teaser?.teaser?.sections || []).filter((s) => !partieRedigee(s.contenu));
 }
 
-/** Lecture du mémorandum : chapitres non rédigés, éléments « À compléter », photos. null si non rédigé. */
+/** Reading of the memorandum: undrafted chapters, "To be completed" elements, photos. null if not drafted. */
 export function lectureMemo(memo) {
   if (!memo) return null;
   const sections = memo.sections || [];
@@ -67,8 +67,8 @@ export function lectureMemo(memo) {
   };
 }
 
-/** Résultat du moteur (valorisationApprofondie) → ce que voit le dirigeant : la fourchette des titres (jamais la
- *  valeur centrale) et ce qui l'explique. Utilisé par le serveur (détail du dossier) et la page valorisation. */
+/** Engine result (valorisationApprofondie) → what the owner sees: the range for the shares (never the
+ *  central value) and what explains it. Used by the server (file details) and the valuation page. */
 export function resumeValorisation(r) {
   const s = r?.synthese;
   if (!s || !Number.isFinite(s.bas) || !Number.isFinite(s.haut)) return null;
@@ -77,8 +77,8 @@ export function resumeValorisation(r) {
     facteur_decotes: r.pont_titres?.facteur_decotes ?? 1, ecart_bfr: r.pont_titres?.ecart_bfr ?? 0, hors_exploitation: r.pont_titres?.hors_exploitation ?? 0 };
 }
 
-/** Alertes du moteur montrées au dirigeant : celles des flux actualisés (méthode écartée, jamais affichée) sont
- *  retirées ; celle qui compare la valeur centrale à l'actif net est reformulée sur la fourchette. */
+/** Engine alerts shown to the owner: those of the discounted cash flows (method left out, never displayed) are
+ *  removed; the one that compares the central value with the net assets is reworded on the range. */
 export function alertesDirigeant(alertes = []) {
   return alertes
     .filter((a) => !/DCF|valeur terminale|flux actualis|terminal value|discounted cash/i.test(a))
@@ -88,18 +88,18 @@ export function alertesDirigeant(alertes = []) {
 }
 
 /**
- * Phrase qui explique le passage de l'estimation express (valeur d'entreprise, comptes publics) à la valorisation
- * approfondie (valeur des titres, vos comptes), à partir des seuls montants calculés. null si la fourchette affichée
- * ne change pas ou s'il manque l'une des deux.
- * @param est  estimation express du dossier { statut, exercice, methode, agregat, bas, haut }
- * @param v    valorisation du dossier { bas, haut, annees, ebe_normatif, dette_nette, facteur_decotes, ecart_bfr, hors_exploitation }
+ * Sentence that explains the move from the quick estimate (enterprise value, public accounts) to the detailed
+ * valuation (value of the shares, your accounts), from the calculated amounts only. null if the displayed range
+ * does not change or if one of the two is missing.
+ * @param est  quick estimate of the file { statut, exercice, methode, agregat, bas, haut }
+ * @param v    valuation of the file { bas, haut, annees, ebe_normatif, dette_nette, facteur_decotes, ecart_bfr, hors_exploitation }
  */
 export function explicationEcart(est, v) {
   if (est?.statut !== "ok" || !v || !Number.isFinite(v.bas) || !Number.isFinite(v.haut)) return null;
   const avant = fourchette(est.bas, est.haut), apres = fourchette(v.bas, v.haut);
   if (avant === apres) return null;
   const m = (x) => montant(Math.abs(x), Math.abs(x));
-  const visible = (x) => Number.isFinite(x) && Math.round(Math.abs(x) / 1e4) > 0; // 5 k€ au moins (arrondi à la dizaine de k€)
+  const visible = (x) => Number.isFinite(x) && Math.round(Math.abs(x) / 1e4) > 0; // €5K at least (rounded to the nearest €10K)
   const raisons = [];
   const an = (v.annees || []).filter(Number.isInteger);
   if (an.length) raisons.push(t("dossier.ecart.comptes", { annees: listeAnnees(an) }));
@@ -117,9 +117,9 @@ export function explicationEcart(est, v) {
 }
 
 /**
- * @param d  détail du dossier (GET /api/dossiers/:id)
- * @param memo  réponse de GET …/documents/memo, ou null si le mémorandum n'est pas rédigé
- * @param teaser  réponse de GET …/documents/teaser, ou null si le teaser n'est pas rédigé
+ * @param d  file details (GET /api/dossiers/:id)
+ * @param memo  response of GET …/documents/memo, or null if the memorandum is not drafted
+ * @param teaser  response of GET …/documents/teaser, or null if the teaser is not drafted
  */
 export function etatParcours(d, memo = null, teaser = null) {
   const id = d.id, p = d.parcours || {}, docs = d.documents || {};
@@ -129,7 +129,7 @@ export function etatParcours(d, memo = null, teaser = null) {
   const v = p.valorisation && Number.isFinite(p.valorisation.bas) && Number.isFinite(p.valorisation.haut) ? p.valorisation : null;
   const m = docs.memo ? lectureMemo(memo) : null;
   const memoARelire = Boolean(m && (m.nonRedigees.length || m.nbACompleter));
-  // Un document n'est « prêt » que s'il a du contenu : un teaser ou un mémorandum vide est « incomplet »
+  // A document is "ready" only if it has content: an empty teaser or memorandum is "incomplete"
   const teaserVides = docs.teaser && teaser ? partiesTeaserVides(teaser) : [];
   const nbPartiesTeaser = teaser?.teaser?.sections?.length || 0;
   const fournies = new Set((d.checklist || []).filter((k) => CHECKLIST.some((g) => g.items.some(([c]) => c === k)))).size;
@@ -143,16 +143,16 @@ export function etatParcours(d, memo = null, teaser = null) {
     datapack: `/api/dossiers/${id}/documents/datapack`,
   };
 
-  // ---------- Fil du parcours : une étape n'est faite que si le dirigeant a fait ou validé quelque chose
+  // ---------- Progress line: a step is done only if the owner has done or approved something
   const fait = {
-    estimation: true, // le dirigeant a saisi son SIREN et vu la fiche : le dossier en est issu
-    chiffres: Boolean(ex.dernier_complet), // le dernier exercice, confirmé par le dirigeant (jamais d'office)
+    estimation: true, // the owner entered their SIREN and saw the card: the file comes from it
+    chiffres: Boolean(ex.dernier_complet), // the latest fiscal year, confirmed by the owner (never by default)
     reponses: q.total > 0 && restantes === 0,
     redaction: Boolean(v && docs.memo && docs.teaser && !(m && m.nonRedigees.length) && !teaserVides.length),
-    relecture: false, // l'envoi se fait hors de la page : l'étape reste la dernière ouverte
+    relecture: false, // sending happens outside the page: the step stays the last one open
   };
   const pret = fait.chiffres && fait.reponses && fait.redaction;
-  const redige = Boolean(v && docs.memo && docs.teaser); // documents produits (des chapitres peuvent rester à rédiger)
+  const redige = Boolean(v && docs.memo && docs.teaser); // documents produced (some chapters may still need drafting)
   const lienEtape = {
     estimation: `${liens.valorisation}#chiffres`, chiffres: `${liens.demarrer}&etape=chiffres`,
     reponses: `${liens.demarrer}&etape=questions`, redaction: liens.memo, relecture: liens.memo,
@@ -164,7 +164,7 @@ export function etatParcours(d, memo = null, teaser = null) {
     href: i !== iActuelle && fait[cle] ? lienEtape[cle] : null,
   }));
 
-  // ---------- À faire maintenant : l'indispensable d'abord, puis le facultatif (marqué comme tel)
+  // ---------- To do now: what is required first, then what is optional (marked as such)
   const taches = [];
   if (!fait.chiffres) {
     taches.push(ex.dernier == null
@@ -209,12 +209,12 @@ export function etatParcours(d, memo = null, teaser = null) {
   }
   const affichees = taches.slice(0, MAX_TACHES);
 
-  // ---------- Action principale : exactement la première tâche (même libellé, même lien)
+  // ---------- Main action: exactly the first task (same label, same link)
   const action = affichees.length
     ? { texte: affichees[0].titre, href: affichees[0].href, cle: affichees[0].cle, pieces: Boolean(affichees[0].pieces) }
     : { texte: t("dossier.relire_envoyer"), href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
 
-  // ---------- Avancement : 100 % si et seulement si tout l'indispensable est fait
+  // ---------- Progress: 100% if and only if everything required is done
   const brut = avancement({
     estimation_express: d.estimation?.statut === "ok", dernier_exercice: fait.chiffres, questions_pct: q.pct,
     valorisation_approfondie: Boolean(v), documents: ["datapack", "teaser", "memo"].filter((k) => docs[k]).length,
@@ -242,7 +242,7 @@ export function etatParcours(d, memo = null, teaser = null) {
       : venir(t("dossier.documents.redige_redaction"))) },
   ];
 
-  // ---------- Fourchette affichée (jamais de valeur centrale), ce sur quoi elle repose, et pourquoi elle a changé
+  // ---------- Displayed range (never a central value), what it is based on, and why it changed
   const est = d.estimation;
   let valeur;
   if (v) {
@@ -267,8 +267,8 @@ export function etatParcours(d, memo = null, teaser = null) {
   };
 }
 
-/** Écran final du parcours guidé : « prêt » seulement si tout l'indispensable est fait ; sinon « rédigé » (ou pas
- *  encore), avec exactement les mêmes tâches que « À faire maintenant » sur la page du dossier. */
+/** Final screen of the guided steps: "ready" only if everything required is done; otherwise "drafted" (or not
+ *  yet), with exactly the same tasks as "To do now" on the file page. */
 export function ecranFinal(e) {
   if (e.pret) {
     return { titre: t("dossier.final.pret_titre"), aide: t("dossier.final.pret_aide"),

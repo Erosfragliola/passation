@@ -1,9 +1,9 @@
-// Page d'un dossier : fil du parcours, action principale, « À faire maintenant », en-tête (valeur et sa base),
-// documents, pièces (dépôt type Drive, replié sauf quand c'est l'étape en cours), gestion du dossier.
-// Les règles (états, tâches, textes) sont dans le module pur dossier-parcours.js, testé.
+// File page: progress line, main action, "To do now", header (value and its basis),
+// documents, uploads (Drive-style, collapsed except when it is the current step), file management.
+// The rules (states, tasks, texts) are in the pure module dossier-parcours.js, tested.
 import { CHECKLIST } from "/js/dossier-regles.js";
 import { etatParcours } from "/js/dossier-parcours.js";
-import { fourchette } from "/js/landing/estimation.js"; // même arrondi que l'écran de résultat de la landing
+import { fourchette } from "/js/landing/estimation.js"; // same rounding as the landing's result screen
 import { lien, t, nombre } from "/js/i18n.js";
 
 const $ = (s) => document.querySelector(s);
@@ -27,7 +27,7 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
-/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+/** Replaces the content of a node, ignoring null, undefined and false (otherwise the browser writes "null"). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const ICONES = {
   chiffres: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
@@ -68,24 +68,24 @@ function afficher({ checklist = true } = {}) {
   document.title = t("espace.js.titre_page", { nom: e.nom || t("espace.js.votre_dossier") });
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
 
-  // Fil du parcours : étapes faites cliquables, l'actuelle mise en avant
+  // Progress line: completed steps clickable, the current one highlighted
   remplacer($("#fil"), ...etat.etapes.map((x, i) => {
     const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(i + 1) }), el("span", { class: "lib", text: x.libelle })];
     if (x.etat === "fait") return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": t("espace.js.etape_faite", { etape: x.libelle }) }, contenu));
     if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_en_cours") })));
     return el("li", {}, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_a_venir") })));
   }));
-  // Action principale = première tâche de « À faire maintenant » (même libellé, même lien ; les pièces ouvrent le dépôt)
+  // Main action = first task of "To do now" (same label, same link; documents open the upload area)
   for (const a of [$("#cta"), $("#cta-tel")]) {
     a.textContent = etat.action.texte; a.href = etat.action.href;
     a.onclick = etat.action.pieces ? (ev) => { ev.preventDefault(); ouvrirPieces(true); } : null;
   }
 
-  // En-tête : nom de code, raison sociale, avancement, valeur et sa base
+  // Header: code name, company name, progress, value and its basis
   $("#nom-code").textContent = dossier.nom_de_code || "";
   $("#dossier-nom").textContent = e.nom || t("espace.js.votre_entreprise");
   $("#dossier-meta").textContent = [e.ville, `SIREN ${dossier.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}`, e.date_creation ? t("espace.js.depuis", { annee: e.date_creation.slice(0, 4) }) : null].filter(Boolean).join(" · ");
-  const g = etat.avancement; // même calcul que l'écran final du parcours guidé (etatParcours)
+  const g = etat.avancement; // same calculation as the final screen of the guided steps (etatParcours)
   $("#avancement-global").textContent = t("espace.js.pct", { n: g });
   $("#anneau").setAttribute("aria-label", t("espace.js.anneau", { n: g }));
   $("#anneau-val").setAttribute("stroke-dasharray", `${((2 * Math.PI * 32 * g) / 100).toFixed(1)} 201`);
@@ -96,7 +96,7 @@ function afficher({ checklist = true } = {}) {
   $("#valeur-ecart").textContent = v.ecart || ""; $("#valeur-ecart").hidden = !v.ecart;
   $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
 
-  // À faire maintenant
+  // To do now
   remplacer($("#afaire"), etat.taches.length
     ? el("ul", { class: "taches" }, ...etat.taches.map((x) => el("li", { class: "tache" },
       icone(x.cle),
@@ -118,7 +118,7 @@ function afficher({ checklist = true } = {}) {
       "aria-label": a.principal ? null : t("espace.js.action_de", { action: a.libelle, objet: x.titre }),
     }, a.libelle))) : null)));
 
-  // Pièces : résumé, et dépôt replié sauf quand c'est l'étape en cours (ou ouvert par le dirigeant)
+  // Uploads: summary, and upload area collapsed except when it is the current step (or opened by the owner)
   const { fournies, total } = etat.pieces;
   $("#checklist-compte").textContent = t("dossier.taches.pieces.detail", { n: fournies, total });
   $("#jauge-pieces").style.width = `${Math.round((100 * fournies) / total)}%`;
@@ -135,9 +135,9 @@ function ouvrirPieces(ouvert, defiler = true) {
 }
 $("#pieces-bouton").addEventListener("click", () => ouvrirPieces(!piecesOuvert, false));
 
-// ------------------------------------------------------------------ Pièces : dépôt type Drive
-// Un dossier par thème ; dans chaque thème, une ligne par pièce attendue, où l'on glisse ses fichiers (ou on clique).
-// Une pièce sans fichier peut aussi être cochée « je l'ai » (elle sera transmise autrement).
+// ------------------------------------------------------------------ Uploads: Drive-style
+// One folder per theme; in each theme, one row per expected document, where files are dropped (or clicked).
+// A document without a file can also be ticked "I have it" (it will be sent another way).
 let pieces = [], theme = 0;
 const taille = (o) => (o >= 1048576 ? t("espace.js.mo", { n: nombre(o / 1048576, { maximumFractionDigits: 1 }) }) : t("espace.js.ko", { n: Math.max(1, Math.round(o / 1024)) }));
 const EXT = (n) => (/\.([a-z0-9]{2,5})$/i.exec(n)?.[1] || "").toUpperCase().slice(0, 4);
@@ -163,8 +163,8 @@ async function envoyer(fichiers, item) {
   }
   await rafraichir();
 }
-/** Zone de dépôt : glisser-déposer, clic sur la zone, ou bouton « Ajouter » (accessible au clavier, sans
- *  imbriquer de contrôles dans un faux bouton). */
+/** Drop zone: drag and drop, click on the zone, or "Add" button (keyboard accessible, without
+ *  nesting controls inside a fake button). */
 function zoneDepot(item, contenu, classe, libelle) {
   const input = el("input", { type: "file", multiple: true, class: "visuellement-cache", tabindex: "-1", "aria-hidden": "true" });
   input.addEventListener("change", () => { if (input.files.length) envoyer([...input.files], item); });

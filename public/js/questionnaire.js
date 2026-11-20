@@ -1,13 +1,13 @@
-// Questionnaire complet (8 étapes), partagé par l'écran et le serveur. Le dirigeant n'en voit que la partie absente
-// du parcours guidé, facultative : POUR_ALLER_PLUS_LOIN (parcours.js).
-// Types : euros, pct (saisi en %, stocké en fraction), texte, oui_non, choix (options), regions (cases), exceptionnels (liste).
-// Textes (titre, intro, libellé, aide) : src/contenu/<langue>/questionnaire.json, lus à chaque accès (marqueur T) dans la
-// langue de la page ou de la requête. Les options des questions à choix sont les valeurs enregistrées (en français) :
-// leur libellé affiché passe par libelleOption().
+// Full questionnaire (8 steps), shared by the screen and the server. The owner only sees the part missing
+// from the guided steps, which is optional: POUR_ALLER_PLUS_LOIN (parcours.js).
+// Types: euros, pct (entered in %, stored as a fraction), texte, oui_non, choix (options), regions (checkboxes), exceptionnels (list).
+// Texts (title, intro, label, help): src/contenu/<language>/questionnaire.json, read at each access (marker T) in the
+// language of the page or the request. The options of choice questions are the saved values (in French):
+// their displayed label goes through libelleOption().
 import { valeur, T, avecTextes } from "./i18n.js";
-/** Libellé affiché d'une réponse à choix (la valeur enregistrée reste la valeur française). */
+/** Displayed label of a choice answer (the saved value stays the French value). */
 export const libelleOption = (cle, v) => valeur(`questionnaire.options.${cle}`)?.[v] ?? v;
-/** Précision affichée sous une réponse à choix multiples (« finitions, matériaux »), ou null. */
+/** Detail displayed under a multiple-choice answer ("finitions, matériaux"), or null. */
 export const detailOption = (cle, v) => valeur(`questionnaire.details.${cle}`)?.[v] ?? null;
 
 export const ETAPES = [
@@ -98,5 +98,5 @@ for (const e of ETAPES) {
   for (const q of e.questions) avecTextes(q, `questionnaire.etapes.${e.cle}.questions.${q.cle}`);
 }
 
-/** Régions métropolitaines (découpage de 2016), pour la question « regions » et la carte du mémorandum. */
+/** Metropolitan regions (2016 boundaries), for the "regions" question and the memorandum's map. */
 export const REGIONS = ["Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté", "Bretagne", "Centre-Val de Loire", "Corse", "Grand Est", "Hauts-de-France", "Île-de-France", "Normandie", "Nouvelle-Aquitaine", "Occitanie", "Pays de la Loire", "Provence-Alpes-Côte d'Azur"];

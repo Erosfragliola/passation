@@ -1,4 +1,4 @@
-// Page du mémorandum : site et logo (faits validés un par un), sections rédigées à la demande, impression.
+// Memorandum page: website and logo (facts approved one by one), sections drafted on demand, printing.
 const $ = (s) => document.querySelector(s);
 import { CARTE } from "/js/carte-france.js";
 import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices } from "/js/memo-format.js";
@@ -12,7 +12,7 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
-/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+/** Replaces the content of a node, ignoring null, undefined and false (otherwise the browser writes "null"). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 let etat = null;
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
@@ -109,18 +109,18 @@ function dessinerVerrou() {
   $("#btn-tout").disabled = !v.ok;
 }
 
-// ================================================================== Le mémorandum, à la manière des banques d'affaires
-// Conventions des mémorandums d'information des banques d'affaires (reprises, rien de copié) : pages « partie.page »,
-// titre en petites capitales et phrase-message en couleur d'accent, puces carrées, encadrés à bandeau plein, tableaux
-// en k€ à repères numérotés, sources et notes en pied de page, page d'ouverture par partie, glossaire, avertissement.
-// Tous les chiffres viennent du serveur (calculés par le code) ; la page ne fait que les mettre en forme.
+// ================================================================== The memorandum, in the style of investment banks
+// Conventions of investment-bank information memorandums (adopted, nothing copied): "part.page" pages,
+// title in small capitals and key sentence in the accent color, square bullets, boxes with a solid band, tables
+// in k€ with numbered markers, sources and notes in the footer, opening page per part, glossary, disclaimer.
+// All the figures come from the server (calculated by the code); the page only formats them.
 
 const pct0 = (x) => pourcent(x, { decimales: 0 });
 const NS = "http://www.w3.org/2000/svg";
 const svg = (tag, attrs = {}, ...enfants) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); e.append(...enfants.filter(Boolean)); return e; };
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 
-// Pictogrammes au trait (originaux, 24 × 24)
+// Line pictograms (original, 24 × 24)
 const ICONES = {
   cadenas: "M6 11h12v10H6zM8 11V7a4 4 0 1 1 8 0v4",
   document: "M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h7",
@@ -148,16 +148,16 @@ const ICONES = {
 };
 const icone = (nom, classe = "dp-picto") => svg("svg", { viewBox: "0 0 24 24", class: classe, "aria-hidden": "true" }, svg("path", { d: ICONES[nom] }));
 
-/** Logo Passation (symbole « Le Seuil » + nom). */
+/** Passation logo ("Le Seuil" symbol + name). */
 const logoPassation = (clair = false) => el("span", { class: `dp-logo-passation${clair ? " clair" : ""}` },
   svg("svg", { viewBox: "0 0 32 32", "aria-hidden": "true" }, svg("path", { d: "M9 27V15a7 7 0 0 1 14 0v12", fill: "none", stroke: "currentColor", "stroke-width": "2.4" }), svg("path", { d: "M5 27h22", stroke: "currentColor", "stroke-width": "2.4" }), svg("circle", { cx: "16", cy: "21", r: "2.8", fill: "#A8653A" })),
   "Passation");
 
-/** Texte avec **gras** → nœuds texte et <strong> (jamais de HTML injecté). */
+/** Text with **bold** → text nodes and <strong> (HTML is never injected). */
 function enrichi(texte) {
   return String(texte).split(/\*\*(.+?)\*\*/g).map((morceau, i) => (i % 2 ? el("strong", { text: morceau }) : document.createTextNode(morceau)));
 }
-/** Texte de chapitre → paragraphes et puces séparés. */
+/** Chapter text → separate paragraphs and bullets. */
 function decouperTexte(texte) {
   const paragraphes = [], puces = [];
   for (const b of String(texte || "").split(/\n\s*\n/)) {
@@ -171,7 +171,7 @@ function decouperTexte(texte) {
 }
 const aRediger = (quoi) => el("p", { class: "a-rediger", text: quoi ? tr("memo.js.a_rediger", { quoi }) : tr("cgu.completer") });
 
-// ------------------------------------------------------------------ Données
+// ------------------------------------------------------------------ Data
 const ch = () => etat.chiffres || {};
 const cr = () => ch().compte_resultat || { annees: [], lignes: [] };
 const serie = (cle) => cr().lignes.find((l) => l.cle === cle)?.valeurs || [];
@@ -186,25 +186,25 @@ const SOURCES = { get publiques() { return tr("memo.js.sources.publiques"); }, g
 const entier = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0");
 const majuscule = (t) => String(t).replace(/^./, (c) => c.toUpperCase());
 
-// ------------------------------------------------------------------ Éléments de mise en page
-/** Repère numéroté (carré plein) : renvoi entre un tableau et son commentaire, numéro de point fort. */
+// ------------------------------------------------------------------ Layout elements
+/** Numbered marker (solid square): cross-reference between a table and its comment, strength number. */
 const carre = (n, classe = "") => el("span", { class: `im-carre ${classe}`.trim(), text: String(n) });
 const intertitre = (t) => el("h4", { class: "im-intertitre", text: t });
-/** Encadré à bandeau de titre plein. */
+/** Box with a solid title band. */
 const encadre = (titre, ...contenu) => el("section", { class: "im-encadre" }, el("h4", { class: "im-bandeau", text: titre }), el("div", { class: "im-encadre-corps" }, ...contenu.flat().filter(Boolean)));
-/** Bandeau de conclusion, en bas de page. */
+/** Conclusion band, at the bottom of the page. */
 const messageCle = (t) => (t ? el("div", { class: "im-message-cle" }, el("p", { text: t })) : null);
-/** Encart d'information (hypothèses, avertissements). */
+/** Information box (assumptions, warnings). */
 const info = (t) => (t ? el("div", { class: "im-info" }, el("span", { class: "im-info-i", "aria-hidden": "true", text: "i" }), el("p", { text: t })) : null);
 
-/** Puce rédigée « **Fait clé** : explication » → { titre, texte }. */
+/** Drafted bullet "**Key fact**: explanation" → { titre, texte }. */
 function eclaterPuce(t) {
   const m = /^\*\*(.+?)\*\*\s*[:–-]?\s*(.*)$/s.exec(String(t).trim());
   if (m) return { titre: m[1].replace(/[\s:]+$/, ""), texte: m[2] };
   const i = String(t).indexOf(" : ");
   return i > 0 && i < 70 ? { titre: t.slice(0, i), texte: t.slice(i + 3) } : { titre: null, texte: t };
 }
-/** Pictogramme d'un fait selon son thème (mots du fait clé en gras, puis du texte). */
+/** Pictogram of a fact according to its theme (words of the key fact in bold, then of the text). */
 const THEMES_PICTOS = [
   [/client|commerc|fid[eé]l|relation/i, "poignee"], [/[ée]quipe|salari|encadr|personnel|compagnon|apprenti|dirigeant/i, "equipe"],
   [/croissance|progress|hausse|d[ée]velopp|trajectoire|extension/i, "croissance"], [/marge|rentab|ebe|r[ée]sultat/i, "graphe"],
@@ -217,13 +217,13 @@ const THEMES_PICTOS = [
   [/p[ée]rim[eè]tre|cession|capital|holding/i, "cadenas"], [/livr|pose|chantier/i, "camion"], [/compl[ée]ter/i, "loupe"],
 ];
 const pictoDe = (texte) => { const { titre, texte: t } = eclaterPuce(texte); const cherche = `${titre || ""} ${titre ? "" : t}`; return (THEMES_PICTOS.find(([re]) => re.test(cherche)) || THEMES_PICTOS.find(([re]) => re.test(t)) || [null, "valide"])[1]; };
-/** Liste de faits : pictogramme du thème, fait clé en gras ; découpable d'une page à l'autre. */
+/** List of facts: theme pictogram, key fact in bold; can be split from one page to the next. */
 function puces(items, { numeros = false, pictos = true } = {}) {
   if (!items?.length) return null;
   return el("ul", { class: `im-puces${numeros ? " numerotees" : ""}${pictos && !numeros ? " pictos" : ""}`, "data-decoupable": "" },
     ...items.map((t, k) => el("li", {}, numeros ? carre(k + 1) : pictos ? el("span", { class: "im-puce-picto" }, icone(pictoDe(t), "im-picto")) : null, el("span", {}, ...enrichi(t)))));
 }
-/** Texte d'un chapitre → éléments de liste (les paragraphes deviennent des puces, comme dans les mémorandums). */
+/** Text of a chapter → list items (paragraphs become bullets, as in memorandums). */
 const textePuces = (s) => { const { paragraphes, puces: l } = decouperTexte(s.contenu); return [...paragraphes, ...l]; };
 const corpsTexte = (s) => {
   if (!s.redigee) return aRediger(s.court);
@@ -232,16 +232,16 @@ const corpsTexte = (s) => {
   return [paragraphes.length ? el("p", { class: "im-chapeau-texte" }, ...enrichi(paragraphes.join(" "))) : null, puces(l)];
 };
 
-/** Colonne de chiffres clés à pictogrammes cerclés. */
+/** Column of key figures with circled pictograms. */
 function colonneChiffres(items) {
   return el("aside", { class: "im-colonne-chiffres" }, ...items.filter(Boolean).map(([ic, valeur, libelle]) =>
     el("div", { class: "im-cc" }, el("span", { class: "im-cc-icone" }, icone(ic, "im-picto")), el("strong", { text: valeur }), el("span", { text: libelle }))));
 }
-/** Rangée de chiffres clés en cartouches. */
+/** Row of key figures in cartouches. */
 const bandeChiffres = (items) => el("div", { class: "im-bande-chiffres" }, ...items.filter(Boolean).map(([valeur, libelle]) => el("div", { class: "im-bc" }, el("strong", { text: valeur }), el("span", { text: libelle }))));
-/** Tableau libellé / valeur. */
+/** Label / value table. */
 const tableCles = (lignes) => el("table", { class: "im-table-cles" }, el("tbody", {}, ...lignes.filter((l) => l && l[1] != null && l[1] !== "").map(([k, v]) => el("tr", {}, el("th", { scope: "row", text: k }), el("td", { text: v })))));
-/** Barres horizontales (structure du secteur, concentration des clients). */
+/** Horizontal bars (industry structure, customer concentration). */
 function barresH(lignes, { max = null } = {}) {
   const l = lignes.filter(Boolean);
   if (!l.length) return null;
@@ -250,23 +250,23 @@ function barresH(lignes, { max = null } = {}) {
     ...l.map((x) => el("div", { class: `im-bh${x.accent ? " accent" : ""}`, "aria-hidden": "true" }, el("span", { class: "im-bh-lib", text: x.libelle }),
       el("span", { class: "im-bh-piste" }, el("span", { class: "im-bh-barre", style: `width:${Math.max(1.5, ((x.valeur || 0) / m) * 100).toFixed(1)}%` })), el("strong", { class: "im-bh-val", text: x.texte }))));
 }
-/** Texte dont un morceau (le chiffre) est mis en gras. */
+/** Text with one part (the figure) in bold. */
 function surligne(texte, morceau) {
   const i = morceau ? texte.indexOf(morceau) : -1;
   return i < 0 ? [texte] : [texte.slice(0, i), el("strong", { text: morceau }), texte.slice(i + morceau.length)];
 }
 
-/** Motif de fond original (arches du symbole Passation), couverture et pages d'ouverture. */
+/** Original background pattern (arches of the Passation symbol), cover and opening pages. */
 function motif() {
   const g = svg("svg", { class: "im-motif", viewBox: "0 0 1600 900", preserveAspectRatio: "xMidYMid slice", "aria-hidden": "true" });
   for (let k = 0; k < 9; k++) { const r = 120 + k * 72; g.append(svg("path", { d: `M ${1230 - r} 900 V 600 A ${r} ${r} 0 0 1 ${1230 + r} 600 V 900` })); }
   return g;
 }
 
-// ------------------------------------------------------------------ Page type
+// ------------------------------------------------------------------ Standard page
 /**
- * Page de mémorandum : « 2.1 Titre » en petites capitales (numéro posé après assemblage), phrase-message en couleur
- * d'accent, contenu, bandeau de conclusion, pied avec sources, notes, date et numéro de page.
+ * Memorandum page: "2.1 Title" in small capitals (number set after assembly), key sentence in the accent
+ * color, content, conclusion band, footer with sources, notes, date and page number.
  */
 function page({ s = null, titre, message = null, contenu = [], conclusion = null, sources = [], notes = [], suite = false, ancre = true, numerotee = true, classe = "" }) {
   const src = [...new Set(sources.filter(Boolean))];
@@ -283,11 +283,11 @@ function page({ s = null, titre, message = null, contenu = [], conclusion = null
       el("span", { class: "im-pied-date", text: majuscule(moisAnnee()) }),
       el("span", { class: "im-page-num" })));
 }
-/** Première page d'un chapitre : titre du chapitre, message = titre affirmatif rédigé, conclusion = accroche. */
+/** First page of a chapter: chapter title, message = drafted assertive title, conclusion = hook. */
 const chapitre = (s, options = {}) => page({ s, titre: s.titre, message: s.titre_affirme || s.accroche || null, conclusion: s.titre_affirme && s.accroche ? s.accroche : null, ...options });
 
-// ------------------------------------------------------------------ Graphiques et tableaux
-/** Histogramme par exercice (valeurs en k€ écrites), avec en option la courbe de marge au-dessus. */
+// ------------------------------------------------------------------ Charts and tables
+/** Bar chart per fiscal year (values written in k€), with the margin curve above as an option. */
 function histogramme({ annees, valeurs, marges = null, libelle, croissance = false }) {
   if (!annees?.length || !valeurs.some(ok)) return null;
   const L = 640, H = 200, bas = 172, pas = L / annees.length, w = Math.min(croissance ? 84 : 64, pas * 0.4);
@@ -303,7 +303,7 @@ function histogramme({ annees, valeurs, marges = null, libelle, croissance = fal
     g.append(texte(cx(i), bas - h - 7, ok(v) ? kEuros(v) : tr("dossier.formats.nd"), "im-graph-val"));
     g.append(texte(cx(i), bas + 21, String(a), "im-graph-an"));
   });
-  // Croissance d'un exercice à l'autre : petite flèche courbe au-dessus de l'intervalle
+  // Growth from one fiscal year to the next: small curved arrow above the gap
   if (croissance && !avecMarge) annees.forEach((a, i) => {
     if (!i || !ok(valeurs[i]) || !ok(valeurs[i - 1]) || valeurs[i - 1] <= 0) return;
     const v = valeurs[i] / valeurs[i - 1] - 1, x0 = cx(i - 1) + w / 2 + 4, x1 = cx(i) - w / 2 - 4;
@@ -321,7 +321,7 @@ function histogramme({ annees, valeurs, marges = null, libelle, croissance = fal
   }
   return g;
 }
-/** Répartition du chiffre d'affaires du dernier exercice : charges et EBE (anneau, parts écrites). */
+/** Breakdown of the latest fiscal year's revenue: expenses and EBITDA (ring, shares written). */
 function structureCharges() {
   const c = cr(), i = c.annees.length - 1, ca = serie("chiffre_affaires")[i];
   if (i < 0 || !ok(ca) || ca <= 0) return null;
@@ -330,7 +330,7 @@ function structureCharges() {
     [tr("memo.js.charges.personnel"), v("charges_personnel"), "#2B5040"], [tr("memo.js.charges.impots"), v("impots_taxes"), "#D9CDB8"], [tr("demarrer.js.chiffres.ebe"), serie("ebe")[i], "#A8653A"]]
     .filter(([, x]) => ok(x) && x > 0);
   const total = parts.reduce((a, [, x]) => a + x, 0);
-  if (Math.abs(total - ca) / ca > 0.08) return null; // autres produits ou postes non détaillés : on ne dessine pas un anneau faux
+  if (Math.abs(total - ca) / ca > 0.08) return null; // other income or items not detailed: we do not draw a false ring
   const R = 60, ep = 22, C = 2 * Math.PI * R;
   const g = svg("svg", { viewBox: "0 0 160 160", class: "im-anneau-charges", role: "img", "aria-label": tr("memo.js.charges.aria", { annee: c.annees[i], liste: parts.map(([l, x]) => `${l} ${pourcent(x / ca, { decimales: 0 })}`).join(", ") }) });
   let cumul = 0;
@@ -339,18 +339,18 @@ function structureCharges() {
   const t2 = svg("text", { x: 80, y: 95, "text-anchor": "middle", class: "im-anneau-lib" }); t2.textContent = tr("memo.js.charges.ca", { annee: c.annees[i] }); g.append(t2);
   return el("div", { class: "im-charges" }, g, el("ul", { class: "im-charges-legende" }, ...parts.map(([l, x, coul]) => el("li", {}, el("i", { style: `background:${coul}` }), el("span", { text: l }), el("strong", { text: pourcent(x / ca, { decimales: 0 }) })))));
 }
-/** Besoin en fonds de roulement en jours de chiffre d'affaires, par exercice (barres horizontales). */
+/** Working capital in days of revenue, per fiscal year (horizontal bars). */
 function graphiqueBfr() {
   const bfr = (ch().endettement?.bfr || []).filter((b) => ok(b.jours));
   if (bfr.length < 2) return null;
   return barresH(bfr.map((b, k) => ({ libelle: String(b.annee), valeur: Math.max(0, b.jours), texte: tr("memo.js.jours", { n: Math.round(b.jours) }), accent: k === bfr.length - 1 })));
 }
-/** Ligne de graphique : libellé à gauche dans un cartouche, graphique, pastille de croissance. */
+/** Chart row: label on the left in a cartouche, chart, growth badge. */
 const ligneGraphique = (libelle, graphique, pastille) => (graphique ? el("div", { class: "im-ligne-graph" },
   el("div", { class: "im-ligne-lib" }, el("span", { text: libelle })),
   el("div", { class: "im-ligne-corps" }, pastille ? el("span", { class: "im-pastille-tcam", text: pastille }) : null, graphique)) : null);
 
-/** Tableau financier : en-tête plein, totaux sur fond, ratios en italique, négatifs entre parenthèses, repères numérotés. */
+/** Financial table: solid header, totals on a background, ratios in italics, negatives in parentheses, numbered markers. */
 function tableau({ annees, lignes, enTete = tr("memo.js.tableau.en_keur"), colonneSup = null }) {
   return el("table", { class: "im-tableau" },
     el("thead", {}, el("tr", {}, el("th", { scope: "col", text: enTete }), ...annees.map((a) => el("th", { scope: "col", class: "num", text: String(a) })), colonneSup ? el("th", { scope: "col", class: "num sup", text: colonneSup.titre }) : null)),
@@ -365,7 +365,7 @@ function tableauCompteResultat() {
   const t = c.tcam, sup = t && c.annees.length >= 2 ? { titre: tr("memo.js.tcam", { de: String(t.de).slice(2), a: String(t.a).slice(2) }), valeurs: { chiffre_affaires: ok(t.ca) ? pourcent(t.ca, { signe: true }) : tr("dossier.formats.nd"), ebe: ok(t.ebe) ? pourcent(t.ebe, { signe: true }) : tr("dossier.formats.nd") } } : null;
   return tableau({ annees: c.annees, lignes: c.lignes, colonneSup: sup });
 }
-/** Passage de l'EBE comptable à l'EBE retraité, chaque retraitement justifié renvoyant à son commentaire. */
+/** Bridge from reported to adjusted EBITDA, each justified adjustment referring to its comment. */
 function ebeRetraite() {
   const t = ch().ebe_retraite;
   if (!t?.annees?.length) return null;
@@ -379,7 +379,7 @@ function ebeRetraite() {
   const normatif = t.normatif && ok(t.normatif.valeur) ? tr("memo.js.ebe.normatif", { montant: montant(t.normatif.valeur), base: t.normatif.mode === "dernier" ? tr("dossier.formats.exercice", { annee: t.normatif.annees.at(-1) }) : tr("valorisation.js.moyenne", { annees: t.normatif.annees.join(", ") }) }) : null;
   return { table: tableau({ annees: t.annees, lignes }), justifs, normatif, vide: !t.retraitements.length, pont: pontEbe(t) };
 }
-/** Pont (cascade) de l'EBE comptable à l'EBE retraité, dernier exercice ; chaque retraitement est une marche. */
+/** Bridge (waterfall) from reported to adjusted EBITDA, latest fiscal year; each adjustment is a step. */
 function pontEbe(t) {
   const i = t.annees.length - 1, depart = t.ebe_comptable[i], arrivee = t.ebe_retraite[i];
   const marches = t.retraitements.map((r) => ({ libelle: r.libelle, v: r.valeurs[i] })).filter((m) => ok(m.v) && Math.round(m.v / 1000) !== 0);
@@ -416,7 +416,7 @@ function tableauBfr() {
   if (!bfr.length) return null;
   return tableau({ annees: bfr.map((b) => b.annee), enTete: tr("memo.js.bfr.titre"), lignes: [{ cle: "bfr", libelle: tr("memo.js.tableau.en_keur"), type: "total", valeurs: bfr.map((b) => b.montant) }, { cle: "jours", libelle: tr("memo.js.bfr.jours"), type: "texte", valeurs: bfr.map((b) => b.jours) }] });
 }
-/** Cinq premiers clients, anonymes : part du chiffre d'affaires, ancienneté de la relation. */
+/** Top five customers, anonymous: share of revenue, length of the relationship. */
 function tableauClients() {
   const c = ch().clients;
   if (!c?.lignes?.length) return null;
@@ -429,7 +429,7 @@ function tableauClients() {
       el("td", { class: "num", text: ok(x.anciennete) ? String(an - x.anciennete) : tr("dossier.formats.nd") })))));
 }
 
-/** Carte des régions : siège, régions des clients, reste du territoire. */
+/** Map of the regions: head office, customers' regions, rest of the country. */
 function carteFrance() {
   const q = p();
   const clients = new Set(q.clients?.regions || []);
@@ -445,7 +445,7 @@ function carteFrance() {
       nationale ? [el("span", { class: "im-pastille national" }), tr("memo.js.carte.presence_nationale")] : null));
 }
 
-/** Organigramme juridique : cédant, holding éventuelle, société, murs ; périmètre de cession en pointillés. */
+/** Legal structure chart: seller, possible holding company, company, premises; scope of the sale in dotted lines. */
 function organigramme() {
   const pe = ch().perimetre || {};
   const boite = (t, classe, detail) => el("div", { class: `im-org-boite ${classe}` }, el("strong", { text: t }), detail ? el("span", { text: detail }) : null);
@@ -471,7 +471,7 @@ function photo(n, attendu = tr("memo.js.photos.photo_n", { n: "" }).trim()) {
     : el("div", { class: "im-photo-vide" }, el("span", { text: tr("memo.js.photos.a_ajouter", { quoi: attendu }) }), el("span", { class: "petit", text: tr("memo.js.photos.ou") }));
 }
 
-/** Frise historique : axe épais, années cerclées, faits au-dessus et au-dessous en alternance (6 au plus). */
+/** Historical timeline: thick axis, circled years, facts alternately above and below (6 at most). */
 function pointsFrise(texte) {
   const phrases = String(texte).replace(/\*\*/g, "").replace(/\n/g, " ").replace(/\s+-\s+/g, " ").split(/(?<=\.)\s+/);
   const points = new Map();
@@ -485,12 +485,12 @@ function frise(points) {
     el("ol", { class: "im-frise", style: `--n:${points.length}` }, ...points.map(([a, t], k) => el("li", { class: k % 2 ? "bas" : "haut" }, el("span", { class: "im-frise-txt", text: t }), el("span", { class: "im-frise-an", text: String(a) })))));
 }
 
-/** Structure du secteur (registres publics). */
+/** Industry structure (public registries). */
 const faitsMarche = () => (etat.marche?.faits || []).filter((f) => f.valide);
 const THEMES = ["taille", "tendance", "demande", "reglementation", "concurrence"];
 const srcFait = (f) => `${f.source || new URL(f.url).hostname}${f.annee ? `, ${f.annee}` : ""}`;
 
-/** Structure du secteur en cercles emboîtés, aires proportionnelles aux effectifs (registres publics). */
+/** Industry structure as nested circles, areas proportional to the counts (public registries). */
 function cerclesSecteur(sct) {
   const n = (cles) => cles.reduce((a, k) => a + (sct.repartition.find((x) => x.cle === k)?.n || 0), 0);
   const niveaux = [
@@ -513,7 +513,7 @@ function cerclesSecteur(sct) {
     sct.part_meme_taille_ou_plus != null ? el("p", { class: "im-cercles-note" }, el("strong", { text: pct0(sct.part_meme_taille_ou_plus) }), tr("memo.js.cercles.note")) : null);
 }
 
-// ------------------------------------------------------------------ Pages fixes
+// ------------------------------------------------------------------ Fixed pages
 function couverture() {
   const q = p();
   return el("div", { class: "diapo im-couverture" },
@@ -553,7 +553,7 @@ function pageAvertissement() {
     logoPassation())] });
 }
 
-// ------------------------------------------------------------------ Chapitres
+// ------------------------------------------------------------------ Chapters
 function pagesSynthese(s) {
   const q = p(), cl = ch().clients || {}, er = ch().ebe_retraite || {};
   const an = cr().annees.at(-1), ca = derniere("chiffre_affaires"), t = cr().tcam, retraite = er.ebe_retraite?.at(-1), marge = er.marge_retraitee?.at(-1), endet = ch().endettement;
@@ -731,7 +731,7 @@ function pagesChapitre(s) {
 
 function dessinerMemo() {
   etat.versionPhotos ??= Date.now();
-  $("#studio").classList.remove("actif"); // toutes les pages visibles le temps de les mesurer (découpage, remplissage)
+  $("#studio").classList.remove("actif"); // all pages visible while they are measured (splitting, filling)
   const enfants = [couverture(), pageSommaire(), pageGlossaire()];
   (etat.parties || []).forEach((pt, k) => {
     enfants.push(pageOuverture(pt, k));
@@ -750,7 +750,7 @@ function dessinerMemo() {
   remplacer($("#memo"), ...enfants);
   decouper();
   remplirPages();
-  // Numéros « partie.page » (une suite garde le numéro de sa page), pages, renvois du sommaire et des points forts
+  // "part.page" numbers (a continuation keeps its page's number), pages, references of the contents and strengths
   const diapos = [...$("#memo").querySelectorAll(".diapo")];
   const numSection = {};
   let partie = 0, n = 0;
@@ -770,9 +770,9 @@ function dessinerMemo() {
   presentation();
 }
 
-// ------------------------------------------------------------------ Présentation : une page à la fois
-// Comme un logiciel de présentation : la page au centre, la liste des pages en dessous, et à droite ce qu'il faut
-// faire sur la page affichée (recommandations, rédiger à nouveau, modifier le texte, ajouter des photos).
+// ------------------------------------------------------------------ Presentation: one page at a time
+// Like presentation software: the page in the center, the list of pages below, and on the right what needs
+// doing on the displayed page (recommendations, redraft, edit the text, add photos).
 const cleSession = `passation-memo-page-${id}`;
 const pres = { idx: (() => { try { return Number(sessionStorage.getItem(cleSession)) || 0; } catch { return 0; } })(), tout: false };
 const diapos = () => [...$("#memo").querySelectorAll(".diapo")];
@@ -781,7 +781,7 @@ const titrePage = (d) => d.querySelector(".im-entete h3")?.textContent || (d.cla
 function allerPage(k, focus = false) {
   const l = diapos();
   pres.idx = Math.max(0, Math.min(l.length - 1, k));
-  try { sessionStorage.setItem(cleSession, String(pres.idx)); } catch { /* sans stockage */ }
+  try { sessionStorage.setItem(cleSession, String(pres.idx)); } catch { /* without storage */ }
   appliquerPresentation();
   if (focus) $("#vignettes").querySelectorAll("button")[pres.idx]?.focus();
 }
@@ -807,7 +807,7 @@ function appliquerPresentation() {
   if (d) panneau(d);
 }
 
-/** Ce qu'il faut faire sur la page affichée : recommandations tirées des données, et actions. */
+/** What needs doing on the displayed page: recommendations drawn from the data, and actions. */
 function panneau(d) {
   const s = d.dataset.section ? section(d.dataset.section) : null;
   const recos = [];
@@ -848,14 +848,14 @@ document.addEventListener("keydown", (ev) => {
   if (ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); allerPage(pres.idx - 1); }
 });
 
-/** Page trop pleine : les derniers éléments du dernier bloc découpable passent sur une page « (suite) ». */
+/** Page too full: the last elements of the last splittable block move to a "(continued)" page. */
 function decouper() {
   for (const d of [...$("#memo").querySelectorAll(".im-page")]) {
     let courante = d;
     for (let garde = 0; garde < 5; garde++) {
       const zone = courante.querySelector(".im-zone");
       if (zone.scrollHeight <= zone.clientHeight + 2) break;
-      // D'abord resserrer légèrement le texte : une page (suite) pour deux puces serait plus vide que pleine
+      // First tighten the text slightly: a (continued) page for two bullets would be more empty than full
       if (!courante.classList.contains("serre")) { courante.classList.add("serre"); if (zone.scrollHeight <= zone.clientHeight + 2) break; }
       const cible = [...zone.querySelectorAll("[data-decoupable]")].filter((b) => b.children.length > 1).at(-1);
       if (!cible) break;
@@ -872,8 +872,8 @@ function decouper() {
 }
 
 /**
- * Page trop vide : le texte grandit (variable --k, de 1 à 1,3) tant que la zone n'est pas remplie et que rien ne
- * déborde. Le remplissage est mesuré au bas du contenu le plus bas (textes, tableaux, graphiques).
+ * Page too empty: the text grows (variable --k, from 1 to 1.3) as long as the area is not filled and nothing
+ * overflows. Filling is measured at the bottom of the lowest content (texts, tables, charts).
  */
 function remplirPages() {
   const debord = (z) => z.scrollHeight > z.clientHeight + 2;
@@ -930,8 +930,8 @@ $("#btn-tout").addEventListener("click", async (ev) => {
   b.disabled = false;
 });
 $("#btn-imprimer").addEventListener("click", () => window.print());
-/** Arrivée depuis la page du dossier : #section-<clé> ouvre la page du chapitre, #donnees ouvre les photos et le
- *  site, ?imprimer=1 propose l'enregistrement en PDF une fois le mémorandum affiché. */
+/** Arrival from the file page: #section-<key> opens the chapter's page, #donnees opens the photos and the
+ *  website, ?imprimer=1 offers saving as PDF once the memorandum is displayed. */
 async function suivreLien() {
   const m = /^#section-([a-z-]+)$/.exec(location.hash);
   if (m) { const k = diapos().findIndex((d) => d.dataset.section === m[1]); if (k >= 0) allerPage(k); }

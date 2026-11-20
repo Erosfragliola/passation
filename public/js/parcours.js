@@ -1,15 +1,15 @@
-// Questions du parcours guidé : une par écran, réponses rapides (choix) quand c'est possible, questions sautées
-// quand elles ne s'appliquent pas. Chaque réponse est rangée dans l'étape du questionnaire complet correspondante.
+// Questions of the guided steps: one per screen, quick answers (choices) when possible, questions skipped
+// when they do not apply. Each answer is stored in the corresponding step of the full questionnaire.
 import { ETAPES } from "./questionnaire.js";
 import { T, avecTextes } from "./i18n.js";
-// Textes des questions (titre, aide, chapitre, pourquoi, libellés) : src/contenu/<langue>/parcours.json (marqueur T).
-// Les options des questions à choix sont les valeurs enregistrées (en français) ; libellés : libelleOption().
-/** Périmètre de l'opération : réponses possibles (reprises telles quelles dans le schéma du mémorandum). */
+// Texts of the questions (title, help, chapter, why, labels): src/contenu/<language>/parcours.json (marker T).
+// The options of choice questions are the saved values (in French); labels: libelleOption().
+/** Scope of the deal: possible answers (used as they are in the memorandum's schema). */
 export const DETENTION = { direct: "En direct, à titre personnel", holding: "Par une société holding", associes: "Avec d'autres associés" };
 export const MURS = { societe: "À l'entreprise elle-même", dirigeant: "À vous ou à votre famille (souvent une SCI)", tiers: "À un propriétaire extérieur", aucun: "Pas de locaux en propre" };
 export const MURS_CESSION = { inclus: "Oui, avec l'entreprise", bail: "Non, un bail sera proposé au repreneur", ouvert: "À discuter" };
 
-// Chaque question : `chapitre` (où va la réponse dans le mémorandum) et `pourquoi` (ce qu'un repreneur y cherche).
+// Each question: `chapitre` (where the answer goes in the memorandum) and `pourquoi` (what a buyer looks for in it).
 export const QUESTIONS = [
   { id: "activite", titre: T, aide: T,
     chapitre: T, pourquoi: T,
@@ -89,50 +89,50 @@ for (const q of QUESTIONS) {
 }
 
 const rempli = (v) => v != null && v !== "" && !(typeof v === "string" && !v.trim()) && !(Array.isArray(v) && !v.length);
-/** Réponses indispensables au mémorandum encore vides sur cet écran (libellés), quel que soit le passage du dirigeant. */
+/** Answers required for the memorandum still empty on this screen (labels), whatever the owner's path. */
 export const requisManquants = (q, r) => q.champs.filter((c) => c.requis && !rempli(r[c.etape]?.[c.cle])).map((c) => c.requis);
 /**
- * Une question est-elle répondue ? Les réponses facultatives laissées vides comptent comme répondues si l'écran a été
- * vu ; les réponses indispensables au mémorandum (« requis ») doivent toujours être remplies.
+ * Is a question answered? Optional answers left empty count as answered if the screen has been
+ * seen; answers required for the memorandum ("requis") must always be filled in.
  */
 export function questionRepondue(q, r, vues = []) {
   if (requisManquants(q, r).length) return false;
   if (vues.includes(q.id)) return true;
   return q.champs.every((c) => rempli(r[c.etape]?.[c.cle]));
 }
-/** Questions dont une réponse indispensable manque (l'ordre du parcours). */
+/** Questions with a missing required answer (in the order of the flow). */
 export const questionsIncompletes = (r) => QUESTIONS.filter((q) => requisManquants(q, r).length);
 
-// ---------------------------------------------------------------- Une seule notion de « questions »
-// Les questions du dirigeant sont celles du parcours guidé, plus celle du site internet (posée en premier, dans
-// l'étape « Vos réponses »). Le total est le même partout : parcours guidé, page du dossier, serveur.
-/** Le site a-t-il une réponse (adresse donnée, ou « pas de site ») ? */
+// ---------------------------------------------------------------- A single notion of "questions"
+// The owner's questions are those of the guided steps, plus the website question (asked first, in the
+// "Your answers" step). The total is the same everywhere: guided steps, file page, server.
+/** Does the website have an answer (address given, or "no website")? */
 const siteRepondu = (r = {}) => Boolean(r.site?.url || r.site?.aucun);
 export const NB_QUESTIONS = QUESTIONS.length + 1;
-/** Écrans vus (« Passer » compte comme une réponse), enregistrés dans l'étape « parcours » des réponses. */
+/** Screens seen ("Skip" counts as an answer), saved in the "parcours" step of the answers. */
 export const vuesDe = (r = {}) => (Array.isArray(r.parcours?.vues) ? r.parcours.vues.filter((x) => typeof x === "string") : []);
-/** Questions répondues sur le total, et leur pourcentage (pour l'avancement global). */
+/** Questions answered out of the total, and their percentage (for overall progress). */
 export function avancementQuestions(r = {}, vues = vuesDe(r)) {
   const faits = QUESTIONS.filter((q) => questionRepondue(q, r, vues)).length + (siteRepondu(r) ? 1 : 0);
   return { faits, total: NB_QUESTIONS, pct: Math.round((100 * faits) / NB_QUESTIONS) };
 }
 /**
- * Questions qui restent à montrer, dans l'ordre du parcours : « site » d'abord s'il n'a pas de réponse, puis les
- * identifiants des questions sans réponse. Le compteur « Question N sur M » du parcours guidé compte cette liste :
- * les questions déjà répondues, pré-remplies et validées, ou passées n'y sont pas.
+ * Questions still to show, in the order of the flow: "site" first if it has no answer, then the
+ * identifiers of the unanswered questions. The "Question N of M" counter of the guided steps counts this list:
+ * questions already answered, prefilled and approved, or skipped are not in it.
  */
 export function questionsAPoser(r = {}, vues = vuesDe(r)) {
   return [...(siteRepondu(r) ? [] : ["site"]), ...QUESTIONS.filter((q) => !questionRepondue(q, r, vues)).map((q) => q.id)];
 }
 
-/** Adresse de site proposée à partir d'une adresse e-mail professionnelle (jamais pour une messagerie grand public). */
+/** Website address suggested from a professional email address (never for a consumer email provider). */
 const MESSAGERIES = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook.fr", "hotmail.com", "hotmail.fr", "live.com", "live.fr", "msn.com", "yahoo.com", "yahoo.fr", "icloud.com", "me.com", "orange.fr", "wanadoo.fr", "free.fr", "sfr.fr", "neuf.fr", "laposte.net", "aol.com", "protonmail.com", "proton.me", "gmx.fr", "gmx.com", "bbox.fr", "numericable.fr", "club-internet.fr", "exemple.fr"]);
-/** Questions du questionnaire complet absentes du parcours guidé : facultatives (« Pour aller plus loin »), hors du
- *  pourcentage et de « À faire maintenant ». Celles qui ne servaient qu'aux flux actualisés (méthode écartée, rien
- *  ne les affiche) ne sont plus posées. */
+/** Questions of the full questionnaire missing from the guided steps: optional ("Going further"), outside the
+ *  percentage and "To do now". Those that only served the discounted cash flows (method left out, nothing
+ *  displays them) are no longer asked. */
 const CLES_DU_PARCOURS = new Set(QUESTIONS.flatMap((q) => [...q.champs, ...(q.suite?.champs || [])].map((c) => `${c.etape}.${c.cle}`)));
 const SANS_USAGE = new Set(["perspectives.investissements_pct", "bilan.capital_personnes_physiques"]);
-// Copie des étapes avec leurs accesseurs (les textes restent lus dans la langue courante, pas figés au chargement).
+// Copy of the steps with their accessors (texts are still read in the current language, not frozen at load time).
 export const POUR_ALLER_PLUS_LOIN = ETAPES
   .map((e) => Object.defineProperties({}, { ...Object.getOwnPropertyDescriptors(e),
     questions: { value: e.questions.filter((q) => !CLES_DU_PARCOURS.has(`${e.cle}.${q.cle}`) && !SANS_USAGE.has(`${e.cle}.${q.cle}`)), enumerable: true } }))

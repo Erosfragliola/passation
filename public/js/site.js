@@ -1,22 +1,22 @@
-// Comportements communs du site : menu mobile, apparitions au scroll, année.
+// Shared behaviors of the site: mobile menu, reveals on scroll, year.
 (() => {
   document.documentElement.classList.remove("sans-js");
-  // Textes : dictionnaire posé par le Worker (<script id="i18n">, espace « commun ») ; script classique, sans import.
+  // Texts: dictionary placed by the Worker (<script id="i18n">, "commun" namespace); classic script, without import.
   let T = {};
-  try { T = JSON.parse(document.getElementById("i18n")?.textContent || "{}").commun?.site || {}; } catch { /* page sans dictionnaire */ }
+  try { T = JSON.parse(document.getElementById("i18n")?.textContent || "{}").commun?.site || {}; } catch { /* page without a dictionary */ }
 
-  // Développement : contenus de la page d'accueil encore à fournir (clés vides de src/contenu/cles.json et des « cles » de src/contenu/<langue>/accueil.json)
+  // Development: home page content still to provide (empty keys of src/contenu/cles.json and of the "cles" in src/contenu/<language>/accueil.json)
   const manquants = document.documentElement.dataset.contenuManquant;
-  if (manquants) console.warn(`Contenu à fournir (src/contenu/cles.json, ou « cles » de src/contenu/<langue>/accueil.json) : ${manquants.split(" ").join(", ")}`); // i18n:ignorer-ligne (développement seulement)
+  if (manquants) console.warn(`Contenu à fournir (src/contenu/cles.json, ou « cles » de src/contenu/<langue>/accueil.json) : ${manquants.split(" ").join(", ")}`); // i18n:ignorer-ligne (development only)
 
-  // Sélecteur de langue : le choix est mémorisé (cookie « langue », lu par le Worker sur la page d'accueil) ; l'ancre
-  // de la page suit (le Worker ne la connaît pas).
+  // Language switcher: the choice is remembered ("langue" cookie, read by the Worker on the home page); the page's
+  // anchor follows (the Worker does not know it).
   document.querySelectorAll("a[data-langue]").forEach((a) => a.addEventListener("click", () => {
     document.cookie = `langue=${a.dataset.langue}; path=/; max-age=31536000; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
     if (location.hash) a.href = a.href.split("#")[0] + location.hash;
   }));
 
-  // Menu mobile
+  // Mobile menu
   const bouton = document.querySelector(".nav-bouton");
   const menu = document.getElementById("nav-mobile");
   if (bouton && menu) {
@@ -32,9 +32,9 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") fermer(); });
   }
 
-  // Apparitions légères au scroll (désactivées si l'utilisateur réduit les animations)
+  // Light reveals on scroll (disabled if the user reduces motion)
   const elements = document.querySelectorAll(".apparait");
-  const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches; // la vidéo du hero : js/landing/video.js
+  const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches; // the hero video: js/landing/video.js
   if (reduit || !("IntersectionObserver" in window)) {
     elements.forEach((el) => el.classList.add("visible"));
   } else {
@@ -44,7 +44,7 @@
     elements.forEach((el) => obs.observe(el));
   }
 
-  // Liens qui renvoient vers le champ de recherche
+  // Links that lead back to the search field
   document.querySelectorAll("[data-focus]").forEach((lien) => {
     lien.addEventListener("click", () => {
       const cible = document.querySelector(lien.dataset.focus);
@@ -52,7 +52,7 @@
     });
   });
 
-  // Confirmation après suppression d'un dossier
+  // Confirmation after a file is deleted
   if (new URLSearchParams(location.search).has("dossier-supprime")) {
     const m = document.createElement("p");
     m.className = "message-flottant";
