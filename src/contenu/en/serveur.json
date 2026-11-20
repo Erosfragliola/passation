@@ -1,0 +1,129 @@
+{
+  "_lisez_moi": "Worker messages (API errors, emails), read in the language of the page the call comes from. Same keys as src/contenu/fr/serveur.json.",
+  "index": {
+    "erreur_survenue_reessayez_dans": "Something went wrong. Please try again in a moment.",
+    "service_momentanement_indisponible": "The service is temporarily unavailable.",
+    "requete_refusee": "Request refused."
+  },
+  "auth": {
+    "connectez_vous_pour_acceder": "Sign in to access your file.",
+    "cette_adresse_e_mail": "This email address isn’t valid.",
+    "trop_demandes_code_reessayez": "Too many code requests. Please try again in an hour.",
+    "envoi_e_mails_ne": "Email sending isn’t working right now. Please try again later.",
+    "code_compte_6_chiffres": "The code has 6 digits.",
+    "trop_essais_reessayez_dans": "Too many attempts. Please try again in an hour.",
+    "code_expire_ou_deja": "This code has expired or has already been used. Request a new one.",
+    "trop_essais_faux_code": "Too many wrong attempts: this code is blocked. Request a new one.",
+    "code_incorrect": {
+      "one": "Incorrect code. {n} attempt left.",
+      "other": "Incorrect code. {n} attempts left."
+    }
+  },
+  "documents": {
+    "validez_abord_chiffres_moins": "First approve your figures (at least one complete fiscal year) to generate the datapack.",
+    "redaction_automatique_encore_activee": "Automatic drafting isn’t enabled yet.",
+    "decrivez_abord_activite_questionnaire": "First describe your business (questionnaire, “Your business” screen).",
+    "redaction_echoue_reessayez_dans": "Drafting failed. Please try again in a moment.",
+    "texte_propose_contenait_encore": "The proposed text still contained identifying details; it wasn’t saved. Check your answers (name, city, brands) and try again.",
+    "generez_abord_teaser": "Generate the teaser first.",
+    "texte_contient_elements_identifiants": "This text contains identifying details: remove them before saving.",
+    "etude_marche_encore_activee": "Market research isn’t enabled yet.",
+    "etude_marche_deja_cours": "Market research is already in progress.",
+    "recherche_chiffres_marche_abouti": "The search for market figures didn’t succeed: the chapter will rely on the public registries. You can run it again from the memorandum page.",
+    "lecture_site_encore_activee": "Website reading isn’t enabled yet.",
+    "adresse_site_invalide_exemple": "Invalid website address (example: www.my-company.com).",
+    "aucun_fichier_recu": "No file received.",
+    "logo_depasse_1_mo": "The logo is larger than 1 MB.",
+    "adresse_image_invalide": "Invalid image address.",
+    "image_introuvable_ou_trop": "Image not found or too large (1 MB max).",
+    "format_accepte_png_jpeg": "Accepted formats: PNG, JPEG or WebP.",
+    "photo_depasse_3_mo": "The photo is larger than 3 MB.",
+    "image_introuvable_ou_trop_2": "Image not found or too large (3 MB max).",
+    "confirmez_que_cette_photo": "Confirm that this photo belongs to the company (or that you have the right to use it).",
+    "titre_doit_tenir_ligne": "The title must fit on one line (110 characters max).",
+    "corrigez_reglages": "First correct your settings: {alertes}",
+    "marche_limite": "The market research has already been run {n} times for this file.",
+    "photos_max": "{n} photos at most.",
+    "avant_memo": "Before the memorandum: {liste}."
+  },
+  "pieces": {
+    "envoyez_fichier": "Send a file.",
+    "aucun_fichier_recu": "No file received.",
+    "choisissez_piece_correspondante": "Choose the matching document.",
+    "formats_acceptes_pdf_images": "Accepted formats: PDF, images, Word, Excel, OpenDocument, text.",
+    "20_mo_plus_par": "20 MB max per file.",
+    "fichier_vide": "The file is empty.",
+    "max_fichiers": "{n} documents at most per file."
+  },
+  "maquette": {
+    "numero_siren_valide": "This SIREN number isn’t valid.",
+    "trop_recherches_peu_temps": "Too many searches in a short time. Please try again in an hour.",
+    "registres_publics_ne_repondent": "The public registries aren’t responding right now. Please try again in a few minutes.",
+    "nous_ne_trouvons_entreprise": "We can’t find a company with this SIREN.",
+    "cette_entreprise_plus_active": "This company is no longer active in the public registries."
+  },
+  "valorisation": {
+    "lecture_automatique_encore_activee": "Automatic reading isn’t enabled yet. Enter your figures by hand in the meantime.",
+    "envoyez_fichier_pdf": "Send a PDF file.",
+    "aucun_fichier_recu": "No file received.",
+    "fichier_depasse_10_mo": "The file is larger than 10 MB.",
+    "fichier_pdf": "This file isn’t a PDF.",
+    "nous_avons_pu_lire": "We couldn’t read this document. Check that it’s a readable French tax return (liasse fiscale), or enter your figures by hand.",
+    "exercice_ou_valeurs_invalides": "Invalid fiscal year or values.",
+    "trois_exercices_suffisent_retirez": "Three fiscal years are enough; remove one before adding another.",
+    "exercice_introuvable": "Fiscal year not found.",
+    "reponses_invalides": "Invalid answers.",
+    "lectures_max": "You’ve reached the maximum number of readings ({n}) for this file. Complete the figures by hand."
+  },
+  "estimation": {
+    "chiffres_invalides": "Invalid figures.",
+    "trop_estimations_peu_temps": "Too many estimates in a short time. Please try again in an hour."
+  },
+  "suivi": {
+    "dossier_encore_complet": "The file isn’t complete yet."
+  },
+  "validation": {
+    "elements_exceptionnels_doivent_etre": "One-off items must be a list.",
+    "decotes_doivent_etre_liste": "Discounts must be a list.",
+    "pas_un_nombre": "{libelle}: “{valeur}” is not a number.",
+    "hors_bornes_pct": "{cle}: {valeur} is outside the allowed limits ({min} to {max}). Percentages are expressed as fractions (5% = 0.05).",
+    "negatif": "{cle}: a negative amount ({valeur}) is not allowed.",
+    "decote_inconnue": "Unknown discount: “{cle}”.",
+    "hors_bornes": "{libelle}: {valeur} is outside the allowed limits ({min} to {max})."
+  },
+  "dossiers": {
+    "dossier_introuvable": "File not found.",
+    "numero_siren_valide": "This SIREN number isn’t valid.",
+    "nous_ne_trouvons_cette": "We can’t find this company.",
+    "registres_publics_ne_repondent": "The public registries aren’t responding right now. Please try again in a few minutes.",
+    "max_dossiers": "{n} files at most per account: delete one to open another."
+  },
+  "ratelimit": {
+    "limite_jour": "You’ve reached the limit of {max} automated tasks per day. Please try again tomorrow."
+  },
+  "email": {
+    "bonjour": "Hello,",
+    "code": {
+      "sujet": "{code}: your Passation sign-in code",
+      "intro": "Here is your code to open your Passation file:",
+      "validite": "It is valid for 10 minutes and can only be used once. Type it into the sign-in window you left open.",
+      "ignorer": "If you didn’t request anything, ignore this message: no one can sign in without this code.",
+      "texte": "Your Passation sign-in code: {code} (valid for 10 minutes, single use). If you didn’t request anything, ignore this message."
+    },
+    "pourquoi": "You are receiving this message because you opened a file on Passation. You can delete your file at any time from your space.",
+    "lien_texte": "{bouton}: {lien}",
+    "votre_entreprise": "your company",
+    "pret": {
+      "sujet": "Your Passation file is ready",
+      "titre": "The file for {nom} is ready.",
+      "texte": "Valuation, Excel datapack, anonymous teaser and information memorandum: everything is drafted. All that’s left is to review them.",
+      "bouton": "Review my file"
+    },
+    "rappel": {
+      "sujet": "Your Passation file is waiting for you",
+      "titre": "The file for {nom} is in progress.",
+      "texte": "You can pick up where you left off: your answers are saved.",
+      "bouton": "Resume my file"
+    }
+  }
+}

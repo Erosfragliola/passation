@@ -6,6 +6,7 @@
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { CLES_CHECKLIST } from "../../public/js/dossier-regles.js";
+import { t as tr } from "../../public/js/i18n.js";
 
 const PIECES = { tailleMax: 20 * 1024 * 1024, parDossier: 80 };
 /** Types acceptés : PDF, images, bureautique (Word, Excel, OpenDocument), texte. */
@@ -29,16 +30,16 @@ export async function routePieces(request, env, row, pieceId) {
   const m = request.method, id = row.id;
   if (!pieceId && m === "GET") return json({ pieces: await liste(env, id) });
   if (!pieceId && m === "POST") {
-    let form; try { form = await request.formData(); } catch { return json({ erreur: "requete_invalide", message: "Envoyez un fichier." }, 400); }
+    let form; try { form = await request.formData(); } catch { return json({ erreur: "requete_invalide", message: tr("serveur.pieces.envoyez_fichier") }, 400); }
     const f = form.get("fichier"), item = String(form.get("item") || "");
-    if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: "Aucun fichier reçu." }, 400);
-    if (!CLES_CHECKLIST.has(item)) return json({ erreur: "element_inconnu", message: "Choisissez la pièce correspondante." }, 400);
+    if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: tr("serveur.pieces.aucun_fichier_recu") }, 400);
+    if (!CLES_CHECKLIST.has(item)) return json({ erreur: "element_inconnu", message: tr("serveur.pieces.choisissez_piece_correspondante") }, 400);
     const ext = extension(f.name), mime = TYPES_PIECES[ext];
-    if (!mime) return json({ erreur: "type_refuse", message: "Formats acceptés : PDF, images, Word, Excel, OpenDocument, texte." }, 415);
-    if (f.size > PIECES.tailleMax) return json({ erreur: "trop_lourd", message: "20 Mo au plus par fichier." }, 413);
-    if (!f.size) return json({ erreur: "fichier_vide", message: "Le fichier est vide." }, 400);
+    if (!mime) return json({ erreur: "type_refuse", message: tr("serveur.pieces.formats_acceptes_pdf_images") }, 415);
+    if (f.size > PIECES.tailleMax) return json({ erreur: "trop_lourd", message: tr("serveur.pieces.20_mo_plus_par") }, 413);
+    if (!f.size) return json({ erreur: "fichier_vide", message: tr("serveur.pieces.fichier_vide") }, 400);
     const n = await env.DB.prepare("SELECT COUNT(*) AS n FROM pieces WHERE dossier_id = ?").bind(id).first();
-    if ((n?.n ?? 0) >= PIECES.parDossier) return json({ erreur: "limite", message: `${PIECES.parDossier} fichiers au plus par dossier.` }, 429);
+    if ((n?.n ?? 0) >= PIECES.parDossier) return json({ erreur: "limite", message: tr("serveur.pieces.max_fichiers", { n: PIECES.parDossier }) }, 429);
     const pid = crypto.randomUUID(), cle = `dossiers/${id}/pieces/${pid}.${ext}`;
     await env.FILES.put(cle, await f.arrayBuffer(), { httpMetadata: { contentType: mime } });
     await env.DB.prepare("INSERT INTO pieces (id, dossier_id, item_key, r2_key, filename, mime, size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")

@@ -8,6 +8,7 @@ import { origineAutorisee } from "./lib/auth.js";
 import { relancer } from "./routes/suivi.js";
 import { routePage, routeRobots, routeSitemap } from "./routes/pages.js";
 import { avecLangue, langueDeRequete } from "./i18n.js";
+import { t as tr } from "../public/js/i18n.js";
 
 /**
  * Point d'entrée du Worker.
@@ -23,7 +24,7 @@ export default {
     } catch (e) {
       // Aucune information interne dans la réponse ; le détail reste dans les journaux du Worker.
       console.error("erreur non gérée :", e?.stack || e);
-      return json({ erreur: "erreur_interne", message: "Une erreur est survenue. Réessayez dans un instant." }, 500);
+      return json({ erreur: "erreur_interne", message: tr("serveur.index.erreur_survenue_reessayez_dans") }, 500);
     }
   },
   /** Tâche planifiée quotidienne : rappel unique des dossiers interrompus depuis 3 jours. */
@@ -46,12 +47,12 @@ async function router(request, env) {
   // local, l'API refuse de fonctionner plutôt que de dégrader la sécurité en silence.
   if (p.startsWith("/api/") && !env.SESSION_SECRET && !LOCAL.has(url.hostname)) {
     console.error("SESSION_SECRET absent : API désactivée (npx wrangler secret put SESSION_SECRET)");
-    return json({ erreur: "configuration_incomplete", message: "Le service est momentanément indisponible." }, 503);
+    return json({ erreur: "configuration_incomplete", message: tr("serveur.index.service_momentanement_indisponible") }, 503);
   }
 
   // Toute requête qui modifie des données doit venir du site lui-même (protection CSRF).
   if (p.startsWith("/api/") && !origineAutorisee(request)) {
-    return json({ erreur: "origine_refusee", message: "Requête refusée." }, 403);
+    return json({ erreur: "origine_refusee", message: tr("serveur.index.requete_refusee") }, 403);
   }
 
   if (m === "GET") {

@@ -11,7 +11,7 @@ import { envoyerCodeConnexion } from "../lib/email.js";
 import { verifierDebit, verifierDebitCle } from "../lib/ratelimit.js";
 import { sirenValide, nettoyerSiren } from "../lib/siren.js";
 import { creerDossierPourSiren, listerDossiers } from "./dossiers.js";
-import { lien } from "../../public/js/i18n.js";
+import { lien, t as tr } from "../../public/js/i18n.js";
 
 const MESSAGE_ENVOI = "Si l'adresse est valide, un code à 6 chiffres vient de vous être envoyé. Il est valable 10 minutes.";
 
@@ -23,12 +23,12 @@ export async function routeDemandeCode(request, env) {
   const corps = await lireCorps(request);
   if (!corps) return json({ erreur: "requete_invalide" }, 400);
   const email = normaliserEmail(corps.email);
-  if (!emailValide(email)) return json({ erreur: "email_invalide", message: "Cette adresse e-mail n'est pas valide." }, 400);
+  if (!emailValide(email)) return json({ erreur: "email_invalide", message: tr("serveur.auth.cette_adresse_e_mail") }, 400);
 
   const parIp = await verifierDebit(env.DB, request, env, "code-ip", 10);
   const parEmail = await verifierDebitCle(env.DB, env, "code-email", email, 5);
   if (!parIp.autorise || !parEmail.autorise) {
-    return json({ erreur: "trop_de_requetes", message: "Trop de demandes de code. Réessayez dans une heure." }, 429);
+    return json({ erreur: "trop_de_requetes", message: tr("serveur.auth.trop_demandes_code_reessayez") }, 429);
   }
 
   const t = maintenant();
@@ -44,7 +44,7 @@ export async function routeDemandeCode(request, env) {
   const envoi = await envoyerCodeConnexion(env, email, code, request.url);
   if (!envoi.envoye) {
     if (envoi.raison !== "envoi_non_configure") console.log(`Envoi du code impossible : ${envoi.raison}`);
-    return json({ erreur: "envoi_impossible", message: "L'envoi d'e-mails ne fonctionne pas pour le moment. Réessayez plus tard." }, 503);
+    return json({ erreur: "envoi_impossible", message: tr("serveur.auth.envoi_e_mails_ne") }, 503);
   }
   return json({ ok: true, message: MESSAGE_ENVOI });
 }
@@ -55,17 +55,17 @@ export async function routeVerificationCode(request, env) {
   const email = normaliserEmail(corps.email);
   const code = String(corps.code ?? "").replace(/\s/g, "");
   if (!emailValide(email) || !/^\d{6}$/.test(code)) {
-    return json({ erreur: "code_invalide", message: "Le code compte 6 chiffres." }, 400);
+    return json({ erreur: "code_invalide", message: tr("serveur.auth.code_compte_6_chiffres") }, 400);
   }
   // Limite par IP : empêche d'essayer des codes sur de nombreuses adresses à la fois.
   const parIp = await verifierDebit(env.DB, request, env, "code-essai-ip", 30);
-  if (!parIp.autorise) return json({ erreur: "trop_de_requetes", message: "Trop d'essais. Réessayez dans une heure." }, 429);
+  if (!parIp.autorise) return json({ erreur: "trop_de_requetes", message: tr("serveur.auth.trop_essais_reessayez_dans") }, 429);
 
   const t = maintenant();
   const ligne = await env.DB.prepare(
     "SELECT id, code_hash FROM login_codes WHERE email = ? AND used_at IS NULL AND expires_at > ? ORDER BY created_at DESC LIMIT 1",
   ).bind(email, t).first();
-  const expire = () => json({ erreur: "code_expire", message: "Ce code a expiré ou a déjà servi. Demandez-en un nouveau." }, 400);
+  const expire = () => json({ erreur: "code_expire", message: tr("serveur.auth.code_expire_ou_deja") }, 400);
   if (!ligne) return expire();
 
   // L'essai est compté avant la comparaison, de façon atomique : impossible de dépasser la limite en parallèle.
@@ -78,10 +78,10 @@ export async function routeVerificationCode(request, env) {
     const restants = CODE_ESSAIS_MAX - essai.attempts;
     if (restants <= 0) {
       await env.DB.prepare("UPDATE login_codes SET used_at = ? WHERE id = ?").bind(t, ligne.id).run();
-      return json({ erreur: "code_bloque", message: "Trop d'essais faux : ce code est bloqué. Demandez-en un nouveau." }, 400);
+      return json({ erreur: "code_bloque", message: tr("serveur.auth.trop_essais_faux_code") }, 400);
     }
     return json({ erreur: "code_incorrect", restants,
-      message: `Code incorrect. Encore ${restants} essai${restants > 1 ? "s" : ""}.` }, 400);
+      message: tr("serveur.auth.code_incorrect", { n: restants }) }, 400);
   }
 
   // Consommation atomique : le code ne sert qu'une fois.

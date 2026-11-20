@@ -47,6 +47,11 @@ export function comparer() {
 /** Textes français en dur : accents ou mots courants dans le texte des pages et les chaînes du JavaScript. */
 export function textesEnDur() {
   const trouves = [];
+  // Valeurs enregistrées des réponses à choix (identifiants en français, libellés traduits par libelleOption) et
+  // noms de régions (noms propres) : pas des textes à traduire.
+  const options = JSON.parse(readFileSync(`${dossier("fr")}questionnaire.json`, "utf8")).options;
+  const admis = new Set([...Object.values(options).flatMap((o) => Object.keys(o)),
+    ...[...readFileSync(`${racine}public/js/questionnaire.js`, "utf8").matchAll(/"([A-ZÎ][^"]+)"/g)].map((m) => m[1])]);
   const MOTS = /[éèêàçùâîôû]|\b(?:nous|votre|vos|pour|avec|découvrez|dossier|entreprise|chiffres?)\b/i;
   const pages = ["404.html", "cgu.html", "confidentialite.html", "connexion.html", "estimation.html", "index.html", "mentions-legales.html",
     "espace/index.html", "espace/demarrer/index.html", "espace/valorisation/index.html", "espace/documents/memo/index.html", "espace/documents/teaser/index.html"];
@@ -58,11 +63,15 @@ export function textesEnDur() {
   const js = (d) => readdirSync(`${racine}public/js/${d}`).filter((f) => f.endsWith(".js")).map((f) => `${d}${f}`);
   for (const f of [...js(""), ...js("landing/")]) {
     const lignes = readFileSync(`${racine}public/js/${f}`, "utf8").split("\n");
+    let ignore = false; // entre « i18n:ignorer-debut » et « i18n:ignorer-fin » : texte jamais affiché (signalé ailleurs)
     lignes.forEach((l, i) => {
+      if (l.includes("i18n:ignorer-debut")) ignore = true;
+      if (l.includes("i18n:ignorer-fin")) ignore = false;
+      if (ignore || l.includes("i18n:ignorer-ligne")) return;
       if (/^\s*(\/\/|\*|\/\*)/.test(l)) return;
       const code = l.replace(/\/\/.*$/, "");
       for (const m of code.matchAll(/(["'`])((?:\\.|(?!\1).)*)\1/g)) {
-        if (/[éèêàçùâîôû]/.test(m[2]) && !/^[\w./-]*$/.test(m[2])) { trouves.push(`public/js/${f}:${i + 1} : « ${m[2].slice(0, 60)} »`); }
+        if (/[éèêàçùâîôû]/.test(m[2]) && !/^[\w./-]*$/.test(m[2]) && !admis.has(m[2])) { trouves.push(`public/js/${f}:${i + 1} : « ${m[2].slice(0, 60)} »`); }
       }
     });
   }

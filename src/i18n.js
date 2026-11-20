@@ -44,6 +44,8 @@ import fr_questionnaire from "./contenu/fr/questionnaire.json";
 import en_questionnaire from "./contenu/en/questionnaire.json";
 import fr_regles from "./contenu/fr/regles.json";
 import en_regles from "./contenu/en/regles.json";
+import fr_serveur from "./contenu/fr/serveur.json";
+import en_serveur from "./contenu/en/serveur.json";
 import fr_teaser from "./contenu/fr/teaser.json";
 import en_teaser from "./contenu/en/teaser.json";
 import fr_valorisation from "./contenu/fr/valorisation.json";
@@ -54,8 +56,8 @@ export { CLES };
 
 /** Fichiers de traduction, par langue puis par espace de noms (= nom du fichier). Mêmes clés dans chaque langue. */
 export const SOURCES = {
-  fr: { accueil: fr_accueil, cgu: fr_cgu, champs: fr_champs, commun: fr_commun, confidentialite: fr_confidentialite, connexion: fr_connexion, connexion_code: fr_connexion_code, demarrer: fr_demarrer, dossier: fr_dossier, erreur_404: fr_erreur_404, espace: fr_espace, estimation: fr_estimation, memo: fr_memo, mentions_legales: fr_mentions_legales, parcours: fr_parcours, questionnaire: fr_questionnaire, regles: fr_regles, teaser: fr_teaser, valorisation: fr_valorisation },
-  en: { accueil: en_accueil, cgu: en_cgu, champs: en_champs, commun: en_commun, confidentialite: en_confidentialite, connexion: en_connexion, connexion_code: en_connexion_code, demarrer: en_demarrer, dossier: en_dossier, erreur_404: en_erreur_404, espace: en_espace, estimation: en_estimation, memo: en_memo, mentions_legales: en_mentions_legales, parcours: en_parcours, questionnaire: en_questionnaire, regles: en_regles, teaser: en_teaser, valorisation: en_valorisation },
+  fr: { accueil: fr_accueil, cgu: fr_cgu, champs: fr_champs, commun: fr_commun, confidentialite: fr_confidentialite, connexion: fr_connexion, connexion_code: fr_connexion_code, demarrer: fr_demarrer, dossier: fr_dossier, erreur_404: fr_erreur_404, espace: fr_espace, estimation: fr_estimation, memo: fr_memo, mentions_legales: fr_mentions_legales, parcours: fr_parcours, questionnaire: fr_questionnaire, regles: fr_regles, serveur: fr_serveur, teaser: fr_teaser, valorisation: fr_valorisation },
+  en: { accueil: en_accueil, cgu: en_cgu, champs: en_champs, commun: en_commun, confidentialite: en_confidentialite, connexion: en_connexion, connexion_code: en_connexion_code, demarrer: en_demarrer, dossier: en_dossier, erreur_404: en_erreur_404, espace: en_espace, estimation: en_estimation, memo: en_memo, mentions_legales: en_mentions_legales, parcours: en_parcours, questionnaire: en_questionnaire, regles: en_regles, serveur: en_serveur, teaser: en_teaser, valorisation: en_valorisation },
 };
 
 /** Valeur vide : chaîne blanche ou absente (la traduction manque, le français prend le relais). */

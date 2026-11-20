@@ -22,6 +22,7 @@ import { lireSite, adressePublique } from "../documents/site.js";
 import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat, regionDe, SECTEURS_NAF } from "../documents/anonymat.js";
 import { faitsTeaser, visuelsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
+import { t as tr } from "../../public/js/i18n.js";
 
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 const slug = (s) => String(s || "entreprise").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "entreprise";
@@ -30,10 +31,10 @@ const NOMS_DE_CODE = ["Cèdre", "Atlas", "Orme", "Saule", "Granit", "Boréal", "
 async function datapack(env, row, { stocker = false } = {}) {
   const { resultat, entree, hypotheses } = await calculer(env, row);
   if (resultat.statut === "hypotheses_invalides") {
-    return json({ erreur: "hypotheses_invalides", message: `Corrigez d'abord vos réglages : ${resultat.alertes.join(" ")}` }, 409);
+    return json({ erreur: "hypotheses_invalides", message: tr("serveur.documents.corrigez_reglages", { alertes: resultat.alertes.join(" ") }) }, 409);
   }
   if (resultat.statut !== "ok") {
-    return json({ erreur: "chiffres_absents", message: "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack." }, 409);
+    return json({ erreur: "chiffres_absents", message: tr("serveur.documents.validez_abord_chiffres_moins") }, 409);
   }
   const entreprise = { ...JSON.parse(row.company_json || "{}"), siren: row.siren };
   const octets = construireDatapack({ entreprise, entree, H: hypotheses, resultat, nomDeCode: row.code_name || (entreprise.naf ? projet(entreprise.naf) : null) }).octets({ titre: `Datapack ${entreprise.nom || ""}` });
@@ -81,10 +82,10 @@ async function lireTeaser(env, row) {
 }
 
 async function genererTeaser(env, row) {
-  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: "La rédaction automatique n'est pas encore activée." }, 503);
+  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: tr("serveur.documents.redaction_automatique_encore_activee") }, 503);
   const ctx = await contexte(env, row);
   if (!ctx.reponses.activite?.description?.trim()) {
-    return json({ erreur: "questionnaire_incomplet", message: "Décrivez d'abord votre activité (questionnaire, écran « Votre activité »)." }, 409);
+    return json({ erreur: "questionnaire_incomplet", message: tr("serveur.documents.decrivez_abord_activite_questionnaire") }, 409);
   }
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
   if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
@@ -100,10 +101,10 @@ async function genererTeaser(env, row) {
   } catch (e) {
     console.log(`Rédaction du teaser impossible : ${e.message}`);
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
-    return json({ erreur: "redaction_echouee", message: "La rédaction a échoué. Réessayez dans un instant." }, 502);
+    return json({ erreur: "redaction_echouee", message: tr("serveur.documents.redaction_echoue_reessayez_dans") }, 502);
   }
   if (problemes.length) {
-    return json({ erreur: "anonymat", message: "Le texte proposé contenait encore des éléments identifiants ; il n'a pas été enregistré. Vérifiez vos réponses (nom, ville, marques) puis réessayez.", problemes }, 422);
+    return json({ erreur: "anonymat", message: tr("serveur.documents.texte_propose_contenait_encore"), problemes }, 422);
   }
   let code = row.code_name;
   if (!code) {
@@ -128,10 +129,10 @@ async function modifierSection(request, env, row, cle) {
   const contenu = typeof corps?.contenu === "string" ? corps.contenu.slice(0, 4000) : null;
   if (contenu === null) return json({ erreur: "requete_invalide" }, 400);
   const { teaser } = await lireTeaser(env, row);
-  if (!teaser) return json({ erreur: "introuvable", message: "Générez d'abord le teaser." }, 404);
+  if (!teaser) return json({ erreur: "introuvable", message: tr("serveur.documents.generez_abord_teaser") }, 404);
   const { interdits } = await contexte(env, row);
   const problemes = verifierAnonymat(contenu, interdits);
-  if (problemes.length) return json({ erreur: "anonymat", message: "Ce texte contient des éléments identifiants : retirez-les avant d'enregistrer.", problemes }, 422);
+  if (problemes.length) return json({ erreur: "anonymat", message: tr("serveur.documents.texte_contient_elements_identifiants"), problemes }, 422);
   await env.DB.prepare("UPDATE document_sections SET content_md = ?, edited_by_user = 1, updated_at = ? WHERE document_id = ? AND section_key = ?")
     .bind(contenu, maintenant(), teaser.id, cle).run();
   return json(await lireTeaser(env, row));
@@ -205,14 +206,14 @@ async function secteurDe(env, entreprise) {
 
 /** Étude de marché : structure du secteur (registres) + faits sourcés trouvés sur le web, à valider par le dirigeant. */
 async function etudeMarche(env, row) {
-  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: "L'étude de marché n'est pas encore activée." }, 503);
+  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: tr("serveur.documents.etude_marche_encore_activee") }, 503);
   const reponses = await lireReponses(env, row.id);
   const avant = reponses.marche || {};
-  if ((avant.essais || 0) >= MARCHE.etudesMaxParDossier) return json({ erreur: "limite", message: `L'étude de marché a déjà été lancée ${MARCHE.etudesMaxParDossier} fois pour ce dossier.` }, 429);
+  if ((avant.essais || 0) >= MARCHE.etudesMaxParDossier) return json({ erreur: "limite", message: tr("serveur.documents.marche_limite", { n: MARCHE.etudesMaxParDossier }) }, 429);
   // Une étude déjà en cours (page rechargée, deuxième onglet) n'est pas relancée : on répond « en cours », avant le
   // quota (qui décompte un traitement à chaque appel) pour qu'une demande en double ne consomme rien
   const t0 = maintenant();
-  if (avant.en_cours && t0 - avant.en_cours < 180 && !(avant.date > avant.en_cours)) return json({ erreur: "en_cours", message: "L'étude de marché est déjà en cours." }, 409);
+  if (avant.en_cours && t0 - avant.en_cours < 180 && !(avant.date > avant.en_cours)) return json({ erreur: "en_cours", message: tr("serveur.documents.etude_marche_deja_cours") }, 409);
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
   if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
   const ecrire = (d) => env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'marche', ?, ?)
@@ -229,7 +230,7 @@ async function etudeMarche(env, row) {
     // La structure du secteur (registres publics) est gardée même si la recherche web échoue ou dure trop
     await ecrire({ ...avant, secteur: secteur ?? avant.secteur ?? null, en_cours: null, essais: (avant.essais || 0) + 1 });
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
-    return json({ erreur: "recherche_echouee", message: "La recherche de chiffres de marché n'a pas abouti : le chapitre s'appuiera sur les registres publics. Vous pourrez la relancer depuis la page du mémorandum." }, 502);
+    return json({ erreur: "recherche_echouee", message: tr("serveur.documents.recherche_chiffres_marche_abouti") }, 502);
   }
   const marche = { secteur, faits: r.faits.map((f, i) => ({ id: i + 1, ...f, valide: true })), date: maintenant(), essais: (avant.essais || 0) + 1, en_cours: null };
   await ecrire(marche);
@@ -237,9 +238,9 @@ async function etudeMarche(env, row) {
 }
 
 async function lireSiteRoute(request, env, row) {
-  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: "La lecture du site n'est pas encore activée." }, 503);
+  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: tr("serveur.documents.lecture_site_encore_activee") }, 503);
   let corps; try { corps = await request.json(); } catch { corps = null; }
-  if (!adressePublique(corps?.url || "")) return json({ erreur: "adresse_invalide", message: "Adresse de site invalide (exemple : www.mon-entreprise.fr)." }, 400);
+  if (!adressePublique(corps?.url || "")) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_site_invalide_exemple") }, 400);
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
   if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
   let lecture, faits;
@@ -269,22 +270,22 @@ async function deposerLogo(request, env, row) {
   const type = request.headers.get("content-type") || "";
   if (type.startsWith("multipart/form-data")) {
     const f = (await request.formData()).get("fichier");
-    if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: "Aucun fichier reçu." }, 400);
-    if (f.size > 1_000_000) return json({ erreur: "trop_lourd", message: "Le logo dépasse 1 Mo." }, 413);
+    if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: tr("serveur.documents.aucun_fichier_recu") }, 400);
+    if (f.size > 1_000_000) return json({ erreur: "trop_lourd", message: tr("serveur.documents.logo_depasse_1_mo") }, 413);
     octets = new Uint8Array(await f.arrayBuffer());
   } else {
     let corps; try { corps = await request.json(); } catch { corps = null; }
     const u = adressePublique(corps?.url || "");
-    if (!u) return json({ erreur: "adresse_invalide", message: "Adresse d'image invalide." }, 400);
+    if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
     try {
       const r = await fetch(u, { signal: AbortSignal.timeout(8000) });
       if (!r.ok || Number(r.headers.get("content-length") || 0) > 1_000_000) throw new Error("image");
       octets = new Uint8Array(await r.arrayBuffer());
       if (octets.length > 1_000_000) throw new Error("image");
-    } catch { return json({ erreur: "image_injoignable", message: "Image introuvable ou trop lourde (1 Mo au plus)." }, 422); }
+    } catch { return json({ erreur: "image_injoignable", message: tr("serveur.documents.image_introuvable_ou_trop") }, 422); }
   }
   const ext = typeImage(octets);
-  if (!ext) return json({ erreur: "format", message: "Format accepté : PNG, JPEG ou WebP." }, 415);
+  if (!ext) return json({ erreur: "format", message: tr("serveur.documents.format_accepte_png_jpeg") }, 415);
   const cle = `dossiers/${row.id}/logo.${ext}`;
   await env.FILES.put(cle, octets, { httpMetadata: { contentType: MIME[ext] } });
   const site = (await lireReponses(env, row.id)).site || {};
@@ -308,26 +309,26 @@ async function ajouterPhoto(request, env, row) {
     const fd = await request.formData();
     const f = fd.get("fichier");
     attestation = fd.get("attestation") === "oui"; legende = String(fd.get("legende") || "").slice(0, 120);
-    if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: "Aucun fichier reçu." }, 400);
-    if (f.size > 3_000_000) return json({ erreur: "trop_lourd", message: "La photo dépasse 3 Mo." }, 413);
+    if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: tr("serveur.documents.aucun_fichier_recu") }, 400);
+    if (f.size > 3_000_000) return json({ erreur: "trop_lourd", message: tr("serveur.documents.photo_depasse_3_mo") }, 413);
     octets = new Uint8Array(await f.arrayBuffer());
   } else {
     let corps; try { corps = await request.json(); } catch { corps = null; }
     attestation = corps?.attestation === true; legende = String(corps?.legende || "").slice(0, 120);
     const u = adressePublique(corps?.url || "");
-    if (!u) return json({ erreur: "adresse_invalide", message: "Adresse d'image invalide." }, 400);
+    if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
     try {
       const r = await fetch(u, { signal: AbortSignal.timeout(10_000) });
       octets = new Uint8Array(await r.arrayBuffer());
       if (!r.ok || octets.length > 3_000_000) throw new Error("image");
-    } catch { return json({ erreur: "image_injoignable", message: "Image introuvable ou trop lourde (3 Mo au plus)." }, 422); }
+    } catch { return json({ erreur: "image_injoignable", message: tr("serveur.documents.image_introuvable_ou_trop_2") }, 422); }
   }
-  if (!attestation) return json({ erreur: "attestation", message: "Confirmez que cette photo appartient à l'entreprise (ou que vous avez le droit de l'utiliser)." }, 400);
+  if (!attestation) return json({ erreur: "attestation", message: tr("serveur.documents.confirmez_que_cette_photo") }, 400);
   const ext = typeImage(octets);
-  if (!ext) return json({ erreur: "format", message: "Format accepté : PNG, JPEG ou WebP." }, 415);
+  if (!ext) return json({ erreur: "format", message: tr("serveur.documents.format_accepte_png_jpeg") }, 415);
   const site = (await lireReponses(env, row.id)).site || {};
   site.photos ||= [];
-  if (site.photos.length >= PHOTOS_MAX) return json({ erreur: "trop_de_photos", message: `${PHOTOS_MAX} photos au plus.` }, 400);
+  if (site.photos.length >= PHOTOS_MAX) return json({ erreur: "trop_de_photos", message: tr("serveur.documents.photos_max", { n: PHOTOS_MAX }) }, 400);
   const cle = `dossiers/${row.id}/photos/${crypto.randomUUID()}.${ext}`;
   await env.FILES.put(cle, octets, { httpMetadata: { contentType: MIME[ext] } });
   site.photos.push({ cle, type: MIME[ext], legende, attestee_le: maintenant() });
@@ -367,17 +368,17 @@ async function ecrireSection(env, docId, cle, valeur, parDirigeant) {
 async function genererSection(env, row, cle) {
   const section = SECTIONS_MEMO.find((x) => x.cle === cle);
   if (!section) return json({ erreur: "section_inconnue" }, 404);
-  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: "La rédaction automatique n'est pas encore activée." }, 503);
+  if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: tr("serveur.documents.redaction_automatique_encore_activee") }, 503);
   const entreprise = { ...JSON.parse(row.company_json || "{}"), siren: row.siren };
   const reponses = await lireReponses(env, row.id);
   const verrou = memoDeverrouille(reponses);
-  if (!verrou.ok) return json({ erreur: "questionnaire_incomplet", message: `Avant le mémorandum : ${verrou.manque.join(" ; ")}.` }, 409);
+  if (!verrou.ok) return json({ erreur: "questionnaire_incomplet", message: tr("serveur.documents.avant_memo", { liste: verrou.manque.join(" ; ") }) }, 409);
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
   if (quota) return json({ erreur: "quota_atteint", message: quota.message }, 429);
   const { resultat, entree } = await calculer(env, row);
   let r;
   try { r = await redigerSectionMemo(env, section, donneesSection(section, { entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) })); }
-  catch (e) { console.log(`Rédaction du mémorandum impossible : ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "redaction_echouee", message: "La rédaction a échoué. Réessayez dans un instant." }, 502); }
+  catch (e) { console.log(`Rédaction du mémorandum impossible : ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "redaction_echouee", message: tr("serveur.documents.redaction_echoue_reessayez_dans") }, 502); }
   await ecrireSection(env, await documentMemo(env, row), cle, { titre: titreValide(r.titre), accroche: titreValide(r.accroche, 200), contenu: String(r.contenu || ""), a_completer: r.a_completer || [] }, false);
   return json(await lireMemo(env, row));
 }
@@ -391,7 +392,7 @@ async function modifierSectionMemo(request, env, row, cle) {
   const avant = await env.DB.prepare("SELECT content_md FROM document_sections WHERE document_id = ? AND section_key = ?").bind(docId, cle).first();
   let v = {}; try { v = avant ? JSON.parse(avant.content_md) : {}; } catch { v = {}; }
   const titre = typeof corps.titre === "string" ? titreValide(corps.titre) : v.titre ?? null;
-  if (typeof corps.titre === "string" && corps.titre.trim() && !titre) return json({ erreur: "titre_invalide", message: "Le titre doit tenir en une ligne (110 caractères au plus)." }, 400);
+  if (typeof corps.titre === "string" && corps.titre.trim() && !titre) return json({ erreur: "titre_invalide", message: tr("serveur.documents.titre_doit_tenir_ligne") }, 400);
   await ecrireSection(env, docId, cle, { titre, accroche: v.accroche ?? null, contenu: corps.contenu.slice(0, 8000), a_completer: [] }, true);
   return json(await lireMemo(env, row));
 }

@@ -136,6 +136,8 @@ export function parametresMaquette(d, totalFenetres = 24) {
 const sansAccents = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 export const memeVille = (a, b) => sansAccents(a) === sansAccents(b);
 
+// i18n:ignorer-debut : noms de villes et frise rédigée en français (redigerFrise), utilisés seulement par les
+// tests depuis le retrait de l'ancienne page d'accueil ; jamais affichés.
 const PETITS_MOTS = new Set(["de", "du", "des", "la", "le", "les", "en", "sur", "sous", "et", "lès", "lez", "aux", "au"]);
 /** « SAINT-LEONARD » → « Saint-Leonard », « ERDRE-EN-ANJOU » → « Erdre-en-Anjou ». */
 export function casseVille(v) {
@@ -250,3 +252,4 @@ export function redigerFrise(d, anneeCourante = new Date().getFullYear()) {
   return [creation, ...retenus, { date: "Aujourd'hui", texte: "Il est temps de préparer la suite.", ordre: anneeCourante + 1 }]
     .map(({ date, texte }) => ({ date, texte }));
 }
+// i18n:ignorer-fin

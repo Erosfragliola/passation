@@ -1,0 +1,129 @@
+{
+  "_lisez_moi": "Messages du Worker (erreurs de l'API, e-mails), lus dans la langue de la page d'où vient l'appel. Mêmes clés dans src/contenu/en/serveur.json.",
+  "index": {
+    "erreur_survenue_reessayez_dans": "Une erreur est survenue. Réessayez dans un instant.",
+    "service_momentanement_indisponible": "Le service est momentanément indisponible.",
+    "requete_refusee": "Requête refusée."
+  },
+  "auth": {
+    "connectez_vous_pour_acceder": "Connectez-vous pour accéder à votre dossier.",
+    "cette_adresse_e_mail": "Cette adresse e-mail n'est pas valide.",
+    "trop_demandes_code_reessayez": "Trop de demandes de code. Réessayez dans une heure.",
+    "envoi_e_mails_ne": "L'envoi d'e-mails ne fonctionne pas pour le moment. Réessayez plus tard.",
+    "code_compte_6_chiffres": "Le code compte 6 chiffres.",
+    "trop_essais_reessayez_dans": "Trop d'essais. Réessayez dans une heure.",
+    "code_expire_ou_deja": "Ce code a expiré ou a déjà servi. Demandez-en un nouveau.",
+    "trop_essais_faux_code": "Trop d'essais faux : ce code est bloqué. Demandez-en un nouveau.",
+    "code_incorrect": {
+      "one": "Code incorrect. Encore {n} essai.",
+      "other": "Code incorrect. Encore {n} essais."
+    }
+  },
+  "documents": {
+    "validez_abord_chiffres_moins": "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack.",
+    "redaction_automatique_encore_activee": "La rédaction automatique n'est pas encore activée.",
+    "decrivez_abord_activite_questionnaire": "Décrivez d'abord votre activité (questionnaire, écran « Votre activité »).",
+    "redaction_echoue_reessayez_dans": "La rédaction a échoué. Réessayez dans un instant.",
+    "texte_propose_contenait_encore": "Le texte proposé contenait encore des éléments identifiants ; il n'a pas été enregistré. Vérifiez vos réponses (nom, ville, marques) puis réessayez.",
+    "generez_abord_teaser": "Générez d'abord le teaser.",
+    "texte_contient_elements_identifiants": "Ce texte contient des éléments identifiants : retirez-les avant d'enregistrer.",
+    "etude_marche_encore_activee": "L'étude de marché n'est pas encore activée.",
+    "etude_marche_deja_cours": "L'étude de marché est déjà en cours.",
+    "recherche_chiffres_marche_abouti": "La recherche de chiffres de marché n'a pas abouti : le chapitre s'appuiera sur les registres publics. Vous pourrez la relancer depuis la page du mémorandum.",
+    "lecture_site_encore_activee": "La lecture du site n'est pas encore activée.",
+    "adresse_site_invalide_exemple": "Adresse de site invalide (exemple : www.mon-entreprise.fr).",
+    "aucun_fichier_recu": "Aucun fichier reçu.",
+    "logo_depasse_1_mo": "Le logo dépasse 1 Mo.",
+    "adresse_image_invalide": "Adresse d'image invalide.",
+    "image_introuvable_ou_trop": "Image introuvable ou trop lourde (1 Mo au plus).",
+    "format_accepte_png_jpeg": "Format accepté : PNG, JPEG ou WebP.",
+    "photo_depasse_3_mo": "La photo dépasse 3 Mo.",
+    "image_introuvable_ou_trop_2": "Image introuvable ou trop lourde (3 Mo au plus).",
+    "confirmez_que_cette_photo": "Confirmez que cette photo appartient à l'entreprise (ou que vous avez le droit de l'utiliser).",
+    "titre_doit_tenir_ligne": "Le titre doit tenir en une ligne (110 caractères au plus).",
+    "corrigez_reglages": "Corrigez d'abord vos réglages : {alertes}",
+    "marche_limite": "L'étude de marché a déjà été lancée {n} fois pour ce dossier.",
+    "photos_max": "{n} photos au plus.",
+    "avant_memo": "Avant le mémorandum : {liste}."
+  },
+  "pieces": {
+    "envoyez_fichier": "Envoyez un fichier.",
+    "aucun_fichier_recu": "Aucun fichier reçu.",
+    "choisissez_piece_correspondante": "Choisissez la pièce correspondante.",
+    "formats_acceptes_pdf_images": "Formats acceptés : PDF, images, Word, Excel, OpenDocument, texte.",
+    "20_mo_plus_par": "20 Mo au plus par fichier.",
+    "fichier_vide": "Le fichier est vide.",
+    "max_fichiers": "{n} fichiers au plus par dossier."
+  },
+  "maquette": {
+    "numero_siren_valide": "Ce numéro SIREN n'est pas valide.",
+    "trop_recherches_peu_temps": "Trop de recherches en peu de temps. Réessayez dans une heure.",
+    "registres_publics_ne_repondent": "Les registres publics ne répondent pas pour le moment. Réessayez dans quelques minutes.",
+    "nous_ne_trouvons_entreprise": "Nous ne trouvons pas d'entreprise avec ce SIREN.",
+    "cette_entreprise_plus_active": "Cette entreprise n'est plus active dans les registres publics."
+  },
+  "valorisation": {
+    "lecture_automatique_encore_activee": "La lecture automatique n'est pas encore activée. Saisissez vos chiffres à la main en attendant.",
+    "envoyez_fichier_pdf": "Envoyez un fichier PDF.",
+    "aucun_fichier_recu": "Aucun fichier reçu.",
+    "fichier_depasse_10_mo": "Le fichier dépasse 10 Mo.",
+    "fichier_pdf": "Ce fichier n'est pas un PDF.",
+    "nous_avons_pu_lire": "Nous n'avons pas pu lire ce document. Vérifiez qu'il s'agit bien d'une liasse fiscale lisible, ou saisissez vos chiffres à la main.",
+    "exercice_ou_valeurs_invalides": "Exercice ou valeurs invalides.",
+    "trois_exercices_suffisent_retirez": "Trois exercices suffisent ; retirez-en un avant d'en ajouter.",
+    "exercice_introuvable": "Exercice introuvable.",
+    "reponses_invalides": "Réponses invalides.",
+    "lectures_max": "Vous avez atteint le nombre maximal de lectures ({n}) pour ce dossier. Complétez les chiffres à la main."
+  },
+  "estimation": {
+    "chiffres_invalides": "Chiffres invalides.",
+    "trop_estimations_peu_temps": "Trop d'estimations en peu de temps. Réessayez dans une heure."
+  },
+  "suivi": {
+    "dossier_encore_complet": "Le dossier n'est pas encore complet."
+  },
+  "validation": {
+    "elements_exceptionnels_doivent_etre": "Les éléments exceptionnels doivent être une liste.",
+    "decotes_doivent_etre_liste": "Les décotes doivent être une liste.",
+    "pas_un_nombre": "{libelle} : « {valeur} » n'est pas un nombre.",
+    "hors_bornes_pct": "{cle} : {valeur} est hors des bornes admises ({min} à {max}). Les pourcentages s'expriment en fraction (5 % = 0,05).",
+    "negatif": "{cle} : un montant négatif ({valeur}) n'est pas admis.",
+    "decote_inconnue": "Décote inconnue : « {cle} ».",
+    "hors_bornes": "{libelle} : {valeur} est hors des bornes admises ({min} à {max})."
+  },
+  "dossiers": {
+    "dossier_introuvable": "Dossier introuvable.",
+    "numero_siren_valide": "Ce numéro SIREN n'est pas valide.",
+    "nous_ne_trouvons_cette": "Nous ne trouvons pas cette entreprise.",
+    "registres_publics_ne_repondent": "Les registres publics ne répondent pas pour le moment. Réessayez dans quelques minutes.",
+    "max_dossiers": "{n} dossiers au plus par compte : supprimez-en un pour en ouvrir un autre."
+  },
+  "ratelimit": {
+    "limite_jour": "Vous avez atteint la limite de {max} traitements automatiques par jour. Réessayez demain."
+  },
+  "email": {
+    "bonjour": "Bonjour,",
+    "code": {
+      "sujet": "{code} : votre code de connexion Passation",
+      "intro": "Voici votre code pour ouvrir votre dossier Passation :",
+      "validite": "Il est valable 10 minutes et ne sert qu'une fois. Tapez-le dans la fenêtre de connexion restée ouverte.",
+      "ignorer": "Si vous n'avez rien demandé, ignorez ce message : personne ne peut se connecter sans ce code.",
+      "texte": "Votre code de connexion Passation : {code} (valable 10 minutes, usage unique). Si vous n'avez rien demandé, ignorez ce message."
+    },
+    "pourquoi": "Vous recevez ce message parce que vous avez ouvert un dossier sur Passation. Vous pouvez supprimer votre dossier à tout moment depuis votre espace.",
+    "lien_texte": "{bouton} : {lien}",
+    "votre_entreprise": "votre entreprise",
+    "pret": {
+      "sujet": "Votre dossier Passation est prêt",
+      "titre": "Le dossier de {nom} est prêt.",
+      "texte": "Valorisation, datapack Excel, teaser anonyme et mémorandum d'information : tout est rédigé. Il vous reste à les relire.",
+      "bouton": "Relire mon dossier"
+    },
+    "rappel": {
+      "sujet": "Votre dossier Passation vous attend",
+      "titre": "Le dossier de {nom} est en cours.",
+      "texte": "Vous pouvez reprendre là où vous vous étiez arrêté : vos réponses sont enregistrées.",
+      "bouton": "Reprendre mon dossier"
+    }
+  }
+}

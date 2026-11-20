@@ -7,7 +7,7 @@
 
   // Développement : contenus de la page d'accueil encore à fournir (clés vides de src/contenu/cles.json et des « cles » de src/contenu/<langue>/accueil.json)
   const manquants = document.documentElement.dataset.contenuManquant;
-  if (manquants) console.warn(`Contenu à fournir (src/contenu/cles.json, ou « cles » de src/contenu/<langue>/accueil.json) : ${manquants.split(" ").join(", ")}`);
+  if (manquants) console.warn(`Contenu à fournir (src/contenu/cles.json, ou « cles » de src/contenu/<langue>/accueil.json) : ${manquants.split(" ").join(", ")}`); // i18n:ignorer-ligne (développement seulement)
 
   // Sélecteur de langue : le choix est mémorisé (cookie « langue », lu par le Worker sur la page d'accueil) ; l'ancre
   // de la page suit (le Worker ne la connaît pas).
