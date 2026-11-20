@@ -3,5 +3,6 @@
   "connexion_passation": "Connexion · Passation",
   "ouvrir_mon_dossier": "Ouvrir mon dossier",
   "indiquez_votre_adresse_e_mail": "Indiquez votre adresse e-mail : nous vous envoyons un code à 6 chiffres, valable 10 minutes. Pas de mot de passe.",
-  "connexion_necessite_javascript": "La connexion nécessite JavaScript."
+  "connexion_necessite_javascript": "La connexion nécessite JavaScript.",
+  "meta_description": "Ouvrez votre dossier Passation avec un code à 6 chiffres envoyé par e-mail, sans mot de passe."
 }

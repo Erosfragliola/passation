@@ -75,7 +75,7 @@ export function rendrePage(page, { url, langue, chemin, espace, statut = page.st
     ...LANGUES.map((l) => `<link rel="alternate" hreflang="${l}" href="${echapper(absolue(l))}">`),
     `<link rel="alternate" hreflang="x-default" href="${echapper(absolue(LANGUE_DEFAUT))}">`,
     ...LANGUES.filter((l) => l !== langue).map((l) => `<meta property="og:locale:alternate" content="${LOCALES_OG[l]}">`),
-    indexable ? "" : `<meta name="robots" content="noindex">`,
+    indexable ? `<meta property="og:url" content="${echapper(absolue(langue))}">` : `<meta name="robots" content="noindex">`,
     `<script type="application/json" id="i18n">${jsonDansScript(dictionnaireJs)}</script>`,
   ].filter(Boolean).join("\n  ");
 
