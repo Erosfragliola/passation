@@ -1,13 +1,13 @@
-// Hero (accueil v5, 18/11/2026) : la vidéo est découpée autour des bulles qui s'y logent, coins ou bords (comme une
-// pièce de puzzle), avec tous les angles arrondis, y compris les angles rentrants. La forme se recalcule à chaque
-// changement de taille. Sur téléphone (bulles masquées) : un rectangle aux angles asymétriques.
+// Hero (home page v5, 18/11/2026): the video is cut around the bubbles placed in it, corners or edges (like a
+// puzzle piece), with all angles rounded, including the inward ones. The shape is recalculated at every
+// size change. On phones (bubbles hidden): a rectangle with asymmetric corners.
 const scene = typeof document === "undefined" ? null : document.getElementById("hero-scene");
 const fond = scene?.querySelector(".hero-fond");
 const bulles = [...(scene?.querySelectorAll(".hero-bulle[data-cote]") || [])];
 
 /**
- * Polygone à angles droits (sens des aiguilles d'une montre) d'un rectangle W × H dont on retire des encoches :
- * coins hg/hd/bd/bg { w, h } et bords g/d/h/b, chacun une liste de { debut, longueur, profondeur }.
+ * Right-angled polygon (clockwise) of a W × H rectangle from which notches are removed:
+ * corners hg/hd/bd/bg { w, h } and edges g/d/h/b, each a list of { debut, longueur, profondeur }.
  */
 export function polygone(W, H, { hg, hd, bd, bg, h = [], d = [], b = [], g = [] } = {}) {
   const p = [];
@@ -22,7 +22,7 @@ export function polygone(W, H, { hg, hd, bd, bg, h = [], d = [], b = [], g = [] 
   return p;
 }
 
-/** Polygone → chemin SVG aux angles arrondis (rayon r, réduit si un côté est trop court ; rayons propres par angle). */
+/** Polygon → SVG path with rounded angles (radius r, reduced if a side is too short; own radii per angle). */
 export function cheminArrondi(points, r, rayonDe = () => r) {
   const n = points.length, seg = [];
   const lg = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -45,7 +45,7 @@ function dessiner() {
   if (!scene || !fond) return;
   const W = fond.clientWidth, H = fond.clientHeight;
   if (!W || !H) return;
-  // Sous 900 px, les bulles sont posées par-dessus (aucune découpe) : seule la forme aux angles asymétriques reste
+  // Below 900 px, the bubbles are placed on top (no cut-out): only the shape with asymmetric corners remains
   const visibles = W < 860 ? [] : bulles.filter((x) => getComputedStyle(x).display !== "none");
   if (!visibles.length) { fond.style.clipPath = `path('${cheminArrondi(polygone(W, H), 26, (i) => ([1, 3].includes(i) ? 70 : 24))}')`; return; }
   const ecart = 14, f = fond.getBoundingClientRect(), encoches = { h: [], d: [], b: [], g: [] };
