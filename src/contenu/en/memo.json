@@ -1,0 +1,21 @@
+{
+  "_lisez_moi": "Text of the /espace/documents/memo/ page (set by the Worker, src/routes/pages.js). Same keys as src/contenu/fr/memo.json.",
+  "memorandum_passation": "Memorandum · Passation",
+  "mon_dossier_memorandum": "<a id=\"ariane-dossier\" href=\"/espace/\"><span aria-hidden=\"true\">← </span>My file</a><span class=\"ariane-sep\" aria-hidden=\"true\">›</span><span aria-current=\"page\">Memorandum</span>",
+  "memorandum_information": "Information memorandum",
+  "rediger_chapitres_manquants": "Draft the missing chapters",
+  "voir_toutes_pages": "See all pages",
+  "sources_memorandum_site_logo_photos": "Memorandum sources: website, logo, photos and market",
+  "votre_site_votre_logo_vos": "Your website, your logo and your photos",
+  "adresse_site": "Website address",
+  "lire_site": "Read the website",
+  "8_pages_plus_meme_site": "Up to 8 pages, from the same website, respecting its rules (robots.txt). No social media, no online reviews.",
+  "marche_votre_entreprise": "Your company’s market",
+  "passation_compte_entreprises_votre_secteur": "Passation counts the companies in your industry in the public registries, then searches the web for recent market figures, each with its source. Keep only what seems right to you.",
+  "pages_memorandum": "Memorandum pages",
+  "page_precedente": "Previous page",
+  "page_suivante": "Next page",
+  "memorandum": "Memorandum",
+  "aller_page": "Go to page",
+  "www_mon_entreprise_fr": "www.my-company.com"
+}

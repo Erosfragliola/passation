@@ -46,7 +46,7 @@ const RESSOURCE = /^\/(css|js|img|fonts|video)\/|\.(?!html?$)[a-z0-9]{2,5}$/i;
 /** Contenu d'une page : son espace de noms, « commun » et les réglages (« cles »). */
 export function contenuDePage(espace, langue) {
   const d = DICTIONNAIRES[langue];
-  if (espace === "accueil") return { ...completer({ ...d.accueil, cles: { ...CLES, ...d.accueil.cles }, commun: d.commun }), langue };
+  if (espace === "accueil") return completer({ ...d.accueil, cles: { ...CLES, ...d.accueil.cles }, commun: d.commun, langue });
   return { ...(d[espace] || {}), commun: d.commun, cles: CLES, langue, typo: false };
 }
 
@@ -95,7 +95,9 @@ export function rendrePage(page, { url, langue, chemin, espace, statut = page.st
         const v = lire(contenu, el.getAttribute("data-t-html"));
         el.removeAttribute("data-t-html");
         if (estVide(v)) { el.remove(); return; }
-        el.setInnerContent(String(v), { html: true });
+        // Le contenu inséré n'est pas relu par les autres règles : ses liens internes passent ici sous /fr/.
+        const h = langue === LANGUE_DEFAUT ? String(v) : String(v).replace(/(\shref=")([^"]*)"/g, (m, a, href) => `${a}${lienLocal(href, langue)}"`);
+        el.setInnerContent(h, { html: true });
       },
     })
     .on("[data-t-attr]", {

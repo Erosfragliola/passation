@@ -1,0 +1,20 @@
+{
+  "_lisez_moi": "Text of the /espace/ page (set by the Worker, src/routes/pages.js). Same keys as src/contenu/fr/espace.json.",
+  "continuer": "Continue",
+  "parcours": "<strong id=\"avancement-global\">–</strong><small>complete</small>",
+  "valorisation": "Valuation",
+  "faire_maintenant": "Next up",
+  "pieces_reunir": "Documents to gather",
+  "ouvrir_depot": "Open the upload area",
+  "documents_habituellement_demandes_lors_audit": "The documents usually requested during an acquisition due diligence. Drop them here: they stay private and are deleted with your file.",
+  "gerer_mon_dossier": "Manage my file",
+  "suppression_efface_definitivement_dossier_vos": "Deleting permanently erases the file, your figures, your answers, your documents and all generated files.",
+  "supprimer_mon_dossier": "Delete my file",
+  "continuer_2": "<a class=\"btn btn-principal\" id=\"cta-tel\" href=\"/espace/demarrer/\">Continue</a>",
+  "supprimer_dossier": "Delete this file?",
+  "toutes_ses_donnees_tous_ses": "All its data and files will be permanently erased. This cannot be undone.",
+  "annuler": "Cancel",
+  "supprimer_definitivement": "Delete permanently",
+  "votre_parcours": "Your progress",
+  "themes": "Topics"
+}

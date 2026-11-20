@@ -1,8 +1,30 @@
 {
-  "_lisez_moi": "Text shared by every page (header, language switcher). Same keys as src/contenu/fr/commun.json.",
+  "_lisez_moi": "Text shared by every page (header, language switcher, footer). Same keys as src/contenu/fr/commun.json.",
   "langues": {
     "choisir": "Choose language",
     "en": "English",
     "fr": "Français"
+  },
+  "nav": {
+    "evitement": "Skip to content",
+    "retour_accueil": "Back to home",
+    "principale": "Main navigation",
+    "accueil": "Passation, home",
+    "mon_dossier": "My file",
+    "deconnexion": "Sign out",
+    "ariane": "Breadcrumb"
+  },
+  "brouillon": "Draft",
+  "pied": {
+    "simple": "<span>© <span data-annee>2026</span> Passation</span>\n    <span><a href=\"/mentions-legales\">Legal notice</a> · <a href=\"/cgu\">Terms</a> · <a href=\"/confidentialite\">Privacy</a></span>"
+  },
+  "chargement": "Loading…",
+  "titres": {
+    "dossier": "Your file · Passation"
+  },
+  "documents": {
+    "vos_documents": "Your documents",
+    "pdf": "Download as PDF",
+    "pdf_aide": "In the window that opens, choose “Save as PDF”."
   }
 }

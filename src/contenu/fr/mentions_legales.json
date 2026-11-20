@@ -1,0 +1,14 @@
+{
+  "_lisez_moi": "Textes de la page /mentions-legales.html (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/mentions_legales.json.",
+  "mentions_legales_passation": "Mentions légales · Passation",
+  "mentions_legales": "Mentions <em>légales</em>",
+  "brouillon_chaque_information_ci_dessous": "Brouillon : chaque information ci-dessous est à compléter avant la mise en ligne publique.",
+  "editeur_site": "Éditeur du site",
+  "raison_sociale_completer_forme_juridique": "Raison sociale : À compléter<br>Forme juridique et capital : À compléter<br>Siège social : À compléter<br>RCS et SIREN : À compléter<br>Directeur de la publication : À compléter<br>Contact : À compléter",
+  "hebergement": "Hébergement",
+  "cloudflare_inc_completer_adresse_exacte": "Cloudflare, Inc. À compléter : adresse exacte de l’hébergeur.",
+  "avertissement": "Avertissement",
+  "estimations_documents_produits_par_passation": "Les estimations et documents produits par Passation sont indicatifs et non contractuels. Ils ne constituent pas un conseil juridique, fiscal ou financier.",
+  "propriete_intellectuelle": "Propriété intellectuelle",
+  "textes_illustrations_passation_polices_geist": "Textes et illustrations : © Passation. Polices Geist et Geist Mono sous licence SIL Open Font License 1.1."
+}

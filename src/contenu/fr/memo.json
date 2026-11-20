@@ -1,0 +1,21 @@
+{
+  "_lisez_moi": "Textes de la page /espace/documents/memo/ (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/memo.json.",
+  "memorandum_passation": "Mémorandum · Passation",
+  "mon_dossier_memorandum": "<a id=\"ariane-dossier\" href=\"/espace/\"><span aria-hidden=\"true\">← </span>Mon dossier</a><span class=\"ariane-sep\" aria-hidden=\"true\">›</span><span aria-current=\"page\">Mémorandum</span>",
+  "memorandum_information": "Mémorandum d'information",
+  "rediger_chapitres_manquants": "Rédiger les chapitres manquants",
+  "voir_toutes_pages": "Voir toutes les pages",
+  "sources_memorandum_site_logo_photos": "Les sources du mémorandum : site, logo, photos et marché",
+  "votre_site_votre_logo_vos": "Votre site, votre logo et vos photos",
+  "adresse_site": "Adresse du site",
+  "lire_site": "Lire le site",
+  "8_pages_plus_meme_site": "8 pages au plus, du même site, dans le respect de ses règles (robots.txt). Ni réseaux sociaux, ni avis en ligne.",
+  "marche_votre_entreprise": "Le marché de votre entreprise",
+  "passation_compte_entreprises_votre_secteur": "Passation compte les entreprises de votre secteur dans les registres publics, puis cherche sur le web des chiffres de marché récents, chacun avec sa source. Gardez seulement ce qui vous paraît juste.",
+  "pages_memorandum": "Pages du mémorandum",
+  "page_precedente": "Page précédente",
+  "page_suivante": "Page suivante",
+  "memorandum": "Mémorandum",
+  "aller_page": "Aller à la page",
+  "www_mon_entreprise_fr": "www.mon-entreprise.fr"
+}

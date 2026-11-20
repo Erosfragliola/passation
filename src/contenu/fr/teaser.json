@@ -1,0 +1,8 @@
+{
+  "_lisez_moi": "Textes de la page /espace/documents/teaser/ (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/teaser.json.",
+  "teaser_anonyme_passation": "Teaser anonyme · Passation",
+  "mon_dossier_teaser_anonyme": "<a id=\"ariane-dossier\" href=\"/espace/\"><span aria-hidden=\"true\">← </span>Mon dossier</a><span class=\"ariane-sep\" aria-hidden=\"true\">›</span><span aria-current=\"page\">Teaser anonyme</span>",
+  "teaser_anonyme": "Teaser anonyme",
+  "page_pour_eveiller_interet_repreneur": "Une page pour éveiller l'intérêt d'un repreneur sans révéler l'identité de l'entreprise. Chaque texte est contrôlé : nom, ville, SIREN, montants exacts et marques sont refusés.",
+  "rediger_teaser": "Rédiger le teaser"
+}

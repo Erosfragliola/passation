@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Votre dossier · Passation</title>
+  <title data-t-html="commun.titres.dossier"></title>
   <meta name="theme-color" content="#FBF6EC">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -11,18 +11,18 @@
   <link rel="stylesheet" href="/css/espace-bento.css">
 </head>
 <body class="page-dossier page-espace">
-<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<a class="lien-evitement" href="#contenu" data-t-html="commun.nav.evitement"></a>
 <header class="nav-zone">
-  <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/" aria-current="page">Mon dossier</a><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
+  <nav class="nav" data-t-attr="aria-label=commun.nav.principale">
+    <a class="logo" href="/" data-t-attr="aria-label=commun.nav.accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/" aria-current="page" data-t-html="commun.nav.mon_dossier"></a><button class="btn btn-contour" type="button" id="btn-deconnexion" data-t-html="commun.nav.deconnexion"></button><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
   </nav>
 </header>
 <main id="contenu" class="espace espace-bento dossier-parcours" aria-busy="true">
   <div class="bande-parcours">
     <div class="conteneur bande-int">
-      <ol class="fil" id="fil" aria-label="Votre parcours"></ol>
-      <a class="btn btn-principal" id="cta" href="/espace/demarrer/">Continuer</a>
+      <ol class="fil" id="fil" data-t-attr="aria-label=votre_parcours"></ol>
+      <a class="btn btn-principal" id="cta" href="/espace/demarrer/" data-t-html="continuer"></a>
     </div>
   </div>
 
@@ -32,16 +32,16 @@
         <div class="dossier-haut">
           <div>
             <p class="nom-code" id="nom-code"></p>
-            <h1 class="affiche" id="dossier-nom">Chargement…</h1>
+            <h1 class="affiche" id="dossier-nom" data-t-html="commun.chargement"></h1>
             <p class="dossier-meta" id="dossier-meta"></p>
           </div>
           <div class="anneau" id="anneau" role="img" aria-label="">
             <svg viewBox="0 0 80 80" aria-hidden="true"><circle class="fond" cx="40" cy="40" r="32"/><circle class="val" id="anneau-val" cx="40" cy="40" r="32" stroke-dasharray="0 201"/></svg>
-            <div aria-hidden="true"><strong id="avancement-global">–</strong><small>du parcours</small></div>
+            <div aria-hidden="true" data-t-html="parcours"></div>
           </div>
         </div>
         <div class="dossier-valeur">
-          <p class="valeur-etiquette" id="valeur-etiquette">Valorisation</p>
+          <p class="valeur-etiquette" id="valeur-etiquette" data-t-html="valorisation"></p>
           <p class="valeur-montant" id="valeur-montant">–</p>
           <p class="valeur-base" id="valeur-base"></p>
           <p class="valeur-base valeur-ecart" id="valeur-ecart" hidden></p>
@@ -50,23 +50,23 @@
       </section>
 
       <section class="tuile tuile-afaire" aria-labelledby="titre-afaire">
-        <h2 class="affiche" id="titre-afaire">À faire maintenant</h2>
+        <h2 class="affiche" id="titre-afaire" data-t-html="faire_maintenant"></h2>
         <div id="afaire"></div>
       </section>
 
-      <div class="section-titre"><h2 class="affiche" id="titre-docs">Vos documents</h2><p class="petit" id="docs-resume"></p></div>
+      <div class="section-titre"><h2 class="affiche" id="titre-docs" data-t-html="commun.documents.vos_documents"></h2><p class="petit" id="docs-resume"></p></div>
       <div class="docs" id="docs"></div>
 
       <section class="tuile pieces-zone" id="checklist" aria-labelledby="titre-pieces">
         <div class="pieces-resume">
-          <h2 id="titre-pieces" class="affiche">Pièces à réunir</h2>
+          <h2 id="titre-pieces" class="affiche" data-t-html="pieces_reunir"></h2>
           <div class="pieces-compte"><strong id="checklist-compte"></strong><span class="jauge-pieces" aria-hidden="true"><span id="jauge-pieces"></span></span></div>
-          <button class="btn btn-contour" type="button" id="pieces-bouton" aria-expanded="false" aria-controls="pieces-depot">Ouvrir le dépôt</button>
+          <button class="btn btn-contour" type="button" id="pieces-bouton" aria-expanded="false" aria-controls="pieces-depot" data-t-html="ouvrir_depot"></button>
         </div>
         <div class="pieces-depot" id="pieces-depot" hidden>
-          <p class="petit">Les documents habituellement demandés lors d'un audit d'acquisition. Glissez-les ici : ils restent privés et sont supprimés avec votre dossier.</p>
+          <p class="petit" data-t-html="documents_habituellement_demandes_lors_audit"></p>
           <div class="drive">
-            <div class="drive-dossiers" id="drive-dossiers" role="tablist" aria-label="Thèmes"></div>
+            <div class="drive-dossiers" id="drive-dossiers" role="tablist" data-t-attr="aria-label=themes"></div>
             <div class="drive-contenu" id="checklist-groupes" role="tabpanel" tabindex="0"></div>
           </div>
         </div>
@@ -74,29 +74,26 @@
     </div>
 
     <details class="gerer-dossier">
-      <summary>Gérer mon dossier</summary>
-      <p class="petit">La suppression efface définitivement le dossier, vos chiffres, vos réponses, vos pièces et tous les fichiers générés.</p>
-      <button class="btn btn-danger" type="button" id="btn-supprimer">Supprimer mon dossier</button>
+      <summary data-t-html="gerer_mon_dossier"></summary>
+      <p class="petit" data-t-html="suppression_efface_definitivement_dossier_vos"></p>
+      <button class="btn btn-danger" type="button" id="btn-supprimer" data-t-html="supprimer_mon_dossier"></button>
     </details>
   </div>
 
-  <div class="cta-tel"><a class="btn btn-principal" id="cta-tel" href="/espace/demarrer/">Continuer</a></div>
+  <div class="cta-tel" data-t-html="continuer_2"></div>
 
   <dialog id="dialog-supprimer" aria-labelledby="titre-supprimer">
-    <h2 id="titre-supprimer">Supprimer ce dossier ?</h2>
-    <p>Toutes ses données et tous ses fichiers seront effacés définitivement. Cette action est irréversible.</p>
+    <h2 id="titre-supprimer" data-t-html="supprimer_dossier"></h2>
+    <p data-t-html="toutes_ses_donnees_tous_ses"></p>
     <div class="dialog-actions">
-      <button class="btn btn-contour" type="button" id="annuler-supprimer">Annuler</button>
-      <button class="btn btn-danger" type="button" id="confirmer-supprimer">Supprimer définitivement</button>
+      <button class="btn btn-contour" type="button" id="annuler-supprimer" data-t-html="annuler"></button>
+      <button class="btn btn-danger" type="button" id="confirmer-supprimer" data-t-html="supprimer_definitivement"></button>
     </div>
   </dialog>
   <p class="message-carte" id="espace-message" role="status" hidden></p>
 </main>
 <footer class="pied">
-  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0">
-    <span>© <span data-annee>2026</span> Passation</span>
-    <span><a href="/mentions-legales">Mentions légales</a> · <a href="/cgu">CGU</a> · <a href="/confidentialite">Confidentialité</a></span>
-  </div>
+  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0" data-t-html="commun.pied.simple"></div>
 </footer>
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/barre-espace.js"></script>

@@ -1,0 +1,20 @@
+{
+  "_lisez_moi": "Textes de la page /espace/ (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/espace.json.",
+  "continuer": "Continuer",
+  "parcours": "<strong id=\"avancement-global\">–</strong><small>du parcours</small>",
+  "valorisation": "Valorisation",
+  "faire_maintenant": "À faire maintenant",
+  "pieces_reunir": "Pièces à réunir",
+  "ouvrir_depot": "Ouvrir le dépôt",
+  "documents_habituellement_demandes_lors_audit": "Les documents habituellement demandés lors d'un audit d'acquisition. Glissez-les ici : ils restent privés et sont supprimés avec votre dossier.",
+  "gerer_mon_dossier": "Gérer mon dossier",
+  "suppression_efface_definitivement_dossier_vos": "La suppression efface définitivement le dossier, vos chiffres, vos réponses, vos pièces et tous les fichiers générés.",
+  "supprimer_mon_dossier": "Supprimer mon dossier",
+  "continuer_2": "<a class=\"btn btn-principal\" id=\"cta-tel\" href=\"/espace/demarrer/\">Continuer</a>",
+  "supprimer_dossier": "Supprimer ce dossier ?",
+  "toutes_ses_donnees_tous_ses": "Toutes ses données et tous ses fichiers seront effacés définitivement. Cette action est irréversible.",
+  "annuler": "Annuler",
+  "supprimer_definitivement": "Supprimer définitivement",
+  "votre_parcours": "Votre parcours",
+  "themes": "Thèmes"
+}

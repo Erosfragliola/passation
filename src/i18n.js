@@ -9,18 +9,41 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { installerDictionnaire, sourceDeLangue, LANGUES, LANGUE_DEFAUT, PREFIXES } from "../public/js/i18n.js";
 import CLES from "./contenu/cles.json";
-import frAccueil from "./contenu/fr/accueil.json";
-import enAccueil from "./contenu/en/accueil.json";
-import frCommun from "./contenu/fr/commun.json";
-import enCommun from "./contenu/en/commun.json";
+// Un fichier par espace de noms et par langue (imports statiques : le Worker est empaqueté d'avance).
+import fr_accueil from "./contenu/fr/accueil.json";
+import en_accueil from "./contenu/en/accueil.json";
+import fr_commun from "./contenu/fr/commun.json";
+import en_commun from "./contenu/en/commun.json";
+import fr_cgu from "./contenu/fr/cgu.json";
+import en_cgu from "./contenu/en/cgu.json";
+import fr_confidentialite from "./contenu/fr/confidentialite.json";
+import en_confidentialite from "./contenu/en/confidentialite.json";
+import fr_connexion from "./contenu/fr/connexion.json";
+import en_connexion from "./contenu/en/connexion.json";
+import fr_demarrer from "./contenu/fr/demarrer.json";
+import en_demarrer from "./contenu/en/demarrer.json";
+import fr_erreur_404 from "./contenu/fr/erreur_404.json";
+import en_erreur_404 from "./contenu/en/erreur_404.json";
+import fr_espace from "./contenu/fr/espace.json";
+import en_espace from "./contenu/en/espace.json";
+import fr_estimation from "./contenu/fr/estimation.json";
+import en_estimation from "./contenu/en/estimation.json";
+import fr_memo from "./contenu/fr/memo.json";
+import en_memo from "./contenu/en/memo.json";
+import fr_mentions_legales from "./contenu/fr/mentions_legales.json";
+import en_mentions_legales from "./contenu/en/mentions_legales.json";
+import fr_teaser from "./contenu/fr/teaser.json";
+import en_teaser from "./contenu/en/teaser.json";
+import fr_valorisation from "./contenu/fr/valorisation.json";
+import en_valorisation from "./contenu/en/valorisation.json";
 
 export { LANGUES, LANGUE_DEFAUT, PREFIXES };
 export { CLES };
 
 /** Fichiers de traduction, par langue puis par espace de noms (= nom du fichier). Mêmes clés dans chaque langue. */
 export const SOURCES = {
-  fr: { accueil: frAccueil, commun: frCommun },
-  en: { accueil: enAccueil, commun: enCommun },
+  fr: { accueil: fr_accueil, commun: fr_commun, cgu: fr_cgu, confidentialite: fr_confidentialite, connexion: fr_connexion, demarrer: fr_demarrer, erreur_404: fr_erreur_404, espace: fr_espace, estimation: fr_estimation, memo: fr_memo, mentions_legales: fr_mentions_legales, teaser: fr_teaser, valorisation: fr_valorisation },
+  en: { accueil: en_accueil, commun: en_commun, cgu: en_cgu, confidentialite: en_confidentialite, connexion: en_connexion, demarrer: en_demarrer, erreur_404: en_erreur_404, espace: en_espace, estimation: en_estimation, memo: en_memo, mentions_legales: en_mentions_legales, teaser: en_teaser, valorisation: en_valorisation },
 };
 
 /** Valeur vide : chaîne blanche ou absente (la traduction manque, le français prend le relais). */

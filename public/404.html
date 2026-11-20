@@ -3,32 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Page introuvable · Passation</title>
+  <title data-t-html="page_introuvable_passation"></title>
   <meta name="theme-color" content="#FBF6EC">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<a class="lien-evitement" href="#contenu" data-t-html="commun.nav.evitement"></a>
 <header class="nav-zone">
-  <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-contour" href="/">Retour à l'accueil</a><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
+  <nav class="nav" data-t-attr="aria-label=commun.nav.principale">
+    <a class="logo" href="/" data-t-attr="aria-label=commun.nav.accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" href="/" data-t-html="commun.nav.retour_accueil"></a><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
   </nav>
 </header>
 <main id="contenu" class="page-texte">
   <div class="conteneur">
-    <p class="etiquette">Erreur 404</p>
-    <h1>Cette page est <em>introuvable</em>.</h1>
-    <p class="chapo">Le lien est peut-être ancien ou incomplet.</p>
-    <p style="margin-top:24px"><a class="btn btn-noir" href="/">Retour à l’accueil</a></p>
+    <p class="etiquette" data-t-html="erreur_404"></p>
+    <h1 data-t-html="cette_page_est_introuvable"></h1>
+    <p class="chapo" data-t-html="lien_est_peut_etre_ancien"></p>
+    <p style="margin-top:24px" data-t-html="retour_accueil"></p>
   </div>
 </main>
 <footer class="pied">
-  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0">
-    <span>© <span data-annee>2026</span> Passation</span>
-    <span><a href="/mentions-legales">Mentions légales</a> · <a href="/cgu">CGU</a> · <a href="/confidentialite">Confidentialité</a></span>
-  </div>
+  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0" data-t-html="commun.pied.simple"></div>
 </footer>
 <script src="/js/site.js" defer></script>
 </body>

@@ -1,0 +1,7 @@
+{
+  "_lisez_moi": "Textes de la page /espace/demarrer/ (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/demarrer.json.",
+  "nom_sous_lequel_circulera_votre": "<span class=\"guide-code\" id=\"guide-code\"></span><span class=\"guide-code-aide\">nom sous lequel circulera votre dossier</span>",
+  "votre_dossier": "Votre dossier",
+  "etapes": "Étapes",
+  "avancement": "Avancement"
+}

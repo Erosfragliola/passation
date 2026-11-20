@@ -1,0 +1,8 @@
+{
+  "_lisez_moi": "Text of the /espace/documents/teaser/ page (set by the Worker, src/routes/pages.js). Same keys as src/contenu/fr/teaser.json.",
+  "teaser_anonyme_passation": "Anonymous teaser · Passation",
+  "mon_dossier_teaser_anonyme": "<a id=\"ariane-dossier\" href=\"/espace/\"><span aria-hidden=\"true\">← </span>My file</a><span class=\"ariane-sep\" aria-hidden=\"true\">›</span><span aria-current=\"page\">Anonymous teaser</span>",
+  "teaser_anonyme": "Anonymous teaser",
+  "page_pour_eveiller_interet_repreneur": "A one-page document to spark a buyer’s interest without revealing the company’s identity. Every text is checked: name, city, SIREN, exact amounts and brands are rejected.",
+  "rediger_teaser": "Draft the teaser"
+}

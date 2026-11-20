@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Teaser anonyme · Passation</title>
+  <title data-t-html="teaser_anonyme_passation"></title>
   <meta name="theme-color" content="#FBF6EC">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -11,26 +11,26 @@
   <link rel="stylesheet" href="/css/espace-bento.css">
 </head>
 <body class="page-document page-espace">
-<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<a class="lien-evitement" href="#contenu" data-t-html="commun.nav.evitement"></a>
 <header class="nav-zone pas-imprime">
-  <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
+  <nav class="nav" data-t-attr="aria-label=commun.nav.principale">
+    <a class="logo" href="/" data-t-attr="aria-label=commun.nav.accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/" data-t-html="commun.nav.mon_dossier"></a><button class="btn btn-contour" type="button" id="btn-deconnexion" data-t-html="commun.nav.deconnexion"></button><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
   </nav>
 </header>
 <main id="contenu" class="document-zone" aria-busy="true">
-  <nav class="ariane conteneur pas-imprime" aria-label="Fil d'Ariane"><a id="ariane-dossier" href="/espace/"><span aria-hidden="true">← </span>Mon dossier</a><span class="ariane-sep" aria-hidden="true">›</span><span aria-current="page">Teaser anonyme</span></nav>
+  <nav class="ariane conteneur pas-imprime" data-t-html="mon_dossier_teaser_anonyme" data-t-attr="aria-label=commun.nav.ariane"></nav>
   <div class="conteneur conteneur-moyen">
     <div class="document-outils pas-imprime">
       <div>
-        <p class="etiquette">Vos documents</p>
-        <h1 class="affiche">Teaser anonyme</h1>
-        <p class="chapo-petit">Une page pour éveiller l'intérêt d'un repreneur sans révéler l'identité de l'entreprise. Chaque texte est contrôlé : nom, ville, SIREN, montants exacts et marques sont refusés.</p>
+        <p class="etiquette" data-t-html="commun.documents.vos_documents"></p>
+        <h1 class="affiche" data-t-html="teaser_anonyme"></h1>
+        <p class="chapo-petit" data-t-html="page_pour_eveiller_interet_repreneur"></p>
       </div>
       <div class="document-actions">
-        <button class="btn btn-noir" type="button" id="btn-generer">Rédiger le teaser</button>
-        <button class="btn btn-contour" type="button" id="btn-imprimer" hidden aria-describedby="aide-pdf">Télécharger en PDF</button>
-        <p class="aide-pdf" id="aide-pdf">Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».</p>
+        <button class="btn btn-noir" type="button" id="btn-generer" data-t-html="rediger_teaser"></button>
+        <button class="btn btn-contour" type="button" id="btn-imprimer" hidden aria-describedby="aide-pdf" data-t-html="commun.documents.pdf"></button>
+        <p class="aide-pdf" id="aide-pdf" data-t-html="commun.documents.pdf_aide"></p>
       </div>
       <p class="message-carte" id="message" role="status" aria-live="polite" hidden></p>
     </div>

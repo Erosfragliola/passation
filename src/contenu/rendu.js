@@ -140,11 +140,12 @@ export function clesVides(contenu) {
   return vides;
 }
 
-/** Identité légale du pied de page : « Raison sociale, forme au capital de X, RCS Y, adresse. » Les morceaux vides
- * disparaissent ; rien du tout si tout est vide. */
-export function identiteLegale(legal = {}) {
+/** Identité légale du pied de page : « Raison sociale, forme au capital de X, RCS Y, adresse. » (en anglais : « with
+ * share capital of X »). Les morceaux vides disparaissent ; rien du tout si tout est vide. */
+export function identiteLegale(legal = {}, langue = "fr") {
   const v = (k) => (typeof legal?.[k] === "string" ? legal[k].trim() : "");
-  const forme = [v("forme"), v("capital") ? `au capital de ${v("capital")}` : ""].filter(Boolean).join(" ");
+  const capital = langue === "fr" ? `au capital de ${v("capital")}` : `with share capital of ${v("capital")}`;
+  const forme = [v("forme"), v("capital") ? capital : ""].filter(Boolean).join(" ");
   const parties = [v("raison_sociale"), forme, v("rcs") ? `RCS ${v("rcs")}` : "", v("adresse")].filter(Boolean);
   return parties.length ? `${parties.join(", ")}.` : "";
 }
@@ -159,7 +160,7 @@ export function completer(contenu) {
   const temoignages = Array.isArray(contenu.cles?.temoignages) ? contenu.cles.temoignages : [];
   return {
     ...contenu,
-    pied: { ...contenu.pied, identite: identiteLegale(contenu.cles?.legal) },
+    pied: { ...contenu.pied, identite: identiteLegale(contenu.cles?.legal, contenu.langue) },
     preuves: { ...contenu.preuves, legendes: temoignages.map(legendeTemoignage) },
   };
 }

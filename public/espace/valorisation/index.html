@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Valorisation · Passation</title>
+  <title data-t-html="valorisation_passation"></title>
   <meta name="theme-color" content="#FBF6EC">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
@@ -11,39 +11,35 @@
   <link rel="stylesheet" href="/css/espace-bento.css">
 </head>
 <body class="page-espace">
-<a class="lien-evitement" href="#contenu">Aller au contenu</a>
+<a class="lien-evitement" href="#contenu" data-t-html="commun.nav.evitement"></a>
 <header class="nav-zone">
-  <nav class="nav" aria-label="Navigation principale">
-    <a class="logo" href="/" aria-label="Passation, accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
-    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/">Mon dossier</a><button class="btn btn-contour" type="button" id="btn-deconnexion">Se déconnecter</button><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
+  <nav class="nav" data-t-attr="aria-label=commun.nav.principale">
+    <a class="logo" href="/" data-t-attr="aria-label=commun.nav.accueil"><svg class="logo-symbole" viewBox="0 0 32 32" aria-hidden="true"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 27h22" stroke="currentColor" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</a>
+    <div class="nav-actions"><a class="btn btn-contour" id="lien-dossier" href="/espace/" data-t-html="commun.nav.mon_dossier"></a><button class="btn btn-contour" type="button" id="btn-deconnexion" data-t-html="commun.nav.deconnexion"></button><div class="langues" role="group" data-t-attr="aria-label=commun.langues.choisir"><a data-langue="en" hreflang="en" lang="en" data-t-attr="title=commun.langues.en">EN</a><span class="langues-sep" aria-hidden="true">|</span><a data-langue="fr" hreflang="fr" lang="fr" data-t-attr="title=commun.langues.fr">FR</a></div></div>
   </nav>
 </header>
 <main id="contenu" class="espace espace-bento parcours" aria-busy="true">
   <section class="espace-tete">
     <div class="conteneur">
-      <nav class="ariane pas-imprime" aria-label="Fil d'Ariane"><a id="ariane-dossier" href="/espace/"><span aria-hidden="true">← </span>Mon dossier</a><span class="ariane-sep" aria-hidden="true">›</span><span aria-current="page">Valorisation</span></nav>
-      <h1 class="affiche" id="dossier-nom">Chargement…</h1>
+      <nav class="ariane pas-imprime" data-t-html="mon_dossier_valorisation" data-t-attr="aria-label=commun.nav.ariane"></nav>
+      <h1 class="affiche" id="dossier-nom" data-t-html="commun.chargement"></h1>
       <!-- Onglets de la page (non numérotés) : le fil du parcours est celui de la page du dossier -->
-      <nav class="etapes onglets" aria-label="Sections de la page">
-        <a href="#chiffres" data-etape="chiffres">Vos chiffres <span class="etape-etat" id="etat-chiffres"></span></a>
-        <a href="#entreprise" data-etape="entreprise">Pour aller plus loin <span class="etape-etat" id="etat-entreprise"></span></a>
-        <a href="#valorisation" data-etape="valorisation">Votre valorisation <span class="etape-etat" id="etat-valorisation"></span></a>
-      </nav>
+      <nav class="etapes onglets" data-t-html="vos_chiffres_pour_aller_plus" data-t-attr="aria-label=sections_page"></nav>
     </div>
   </section>
 
   <!-- 1. Vos chiffres -->
   <section class="panneau" id="chiffres" aria-labelledby="titre-chiffres" hidden>
     <div class="conteneur">
-      <h2 id="titre-chiffres" tabindex="-1">Vos chiffres</h2>
-      <p class="chapo-petit">Le détail de vos comptes, ligne par ligne : pour corriger un montant ou ajouter les lignes facultatives. Seul le dernier exercice est indispensable ; les deux précédents fiabilisent la fourchette. Rien n'entre dans le calcul sans votre validation. Pour aller plus vite, <a class="lien-guide" href="/espace/demarrer/">le parcours guidé</a> ne demande que l'essentiel.</p>
+      <h2 id="titre-chiffres" tabindex="-1" data-t-html="vos_chiffres"></h2>
+      <p class="chapo-petit" data-t-html="detail_vos_comptes_ligne_par"></p>
       <div class="chiffres-barre">
-        <div class="choix-annee" id="choix-annee" role="group" aria-label="Exercice affiché"></div>
+        <div class="choix-annee" id="choix-annee" role="group" data-t-attr="aria-label=exercice_affiche"></div>
         <div class="chiffres-outils">
-          <label class="visuellement-cache" for="nouvel-exercice">Année d'un exercice à ajouter</label>
+          <label class="visuellement-cache" for="nouvel-exercice" data-t-html="annee_exercice_ajouter"></label>
           <input id="nouvel-exercice" type="number" min="1990" max="2100" step="1" placeholder="2025" inputmode="numeric">
-          <button class="btn btn-contour btn-petit" type="button" id="btn-exercice">Ajouter un exercice</button>
-          <span class="depot depot-compact" id="depot"><input type="file" id="fichier-liasse" accept="application/pdf" hidden><button class="btn btn-noir btn-petit" type="button" id="btn-liasse" title="Formulaires 2033 ou 2050 à 2059, 10 Mo au plus">Lire une liasse (PDF)</button></span>
+          <button class="btn btn-contour btn-petit" type="button" id="btn-exercice" data-t-html="ajouter_exercice"></button>
+          <span class="depot depot-compact" id="depot"><input type="file" id="fichier-liasse" accept="application/pdf" hidden><button class="btn btn-noir btn-petit" type="button" id="btn-liasse" data-t-html="lire_liasse_pdf" data-t-attr="title=formulaires_2033_ou_2050_2059"></button></span>
         </div>
       </div>
       <p class="message-carte" id="message-liasse" role="status" aria-live="polite" hidden></p>
@@ -54,8 +50,8 @@
   <!-- 2. Votre entreprise -->
   <section class="panneau" id="entreprise" aria-labelledby="titre-entreprise" hidden>
     <div class="conteneur conteneur-moyen">
-      <h2 id="titre-entreprise">Pour aller plus loin</h2>
-      <p class="chapo-petit">Questions facultatives : elles ne comptent ni dans l'avancement de votre dossier, ni dans « À faire maintenant ». Les questions indispensables sont celles du <a class="lien-guide" href="/espace/demarrer/">parcours guidé</a>. Vos réponses sont enregistrées au fil de la saisie.</p>
+      <h2 id="titre-entreprise" data-t-html="pour_aller_plus_loin"></h2>
+      <p class="chapo-petit" data-t-html="questions_facultatives_elles_ne_comptent"></p>
       <ol class="sous-etapes" id="sous-etapes"></ol>
       <form class="form-carte questionnaire" id="questionnaire" novalidate></form>
       <p class="petit enregistre" id="etat-enregistrement" role="status" aria-live="polite"></p>
@@ -65,17 +61,14 @@
   <!-- 3. Votre valorisation -->
   <section class="panneau" id="valorisation" aria-labelledby="titre-valorisation" hidden>
     <div class="conteneur">
-      <h2 id="titre-valorisation">Votre <em>valorisation</em></h2>
+      <h2 id="titre-valorisation" data-t-html="votre_valorisation"></h2>
       <div id="resultat" aria-live="polite"></div>
     </div>
   </section>
   <p class="message-carte" id="parcours-message" role="status" hidden></p>
 </main>
 <footer class="pied">
-  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0">
-    <span>© <span data-annee>2026</span> Passation</span>
-    <span><a href="/mentions-legales">Mentions légales</a> · <a href="/cgu">CGU</a> · <a href="/confidentialite">Confidentialité</a></span>
-  </div>
+  <div class="conteneur pied-bas petit" style="margin-top:0;border-top:0;padding-top:0" data-t-html="commun.pied.simple"></div>
 </footer>
 <script src="/js/site.js" defer></script>
 <script type="module" src="/js/barre-espace.js"></script>
