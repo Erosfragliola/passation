@@ -1,9 +1,9 @@
-// Contrôle des traductions : npm run i18n:check
-//   1. chaque fichier de src/contenu/fr/ a son pendant dans src/contenu/en/, avec exactement les mêmes clés ;
-//   2. aucune valeur vide en anglais là où le français en a une (une valeur vide en français est un réglage voulu) ;
-//   3. liste des valeurs anglaises identiques au français (souvent un oubli ; noms propres et sigles admis) ;
-//   4. textes français restés en dur hors des fichiers de traduction (pages HTML et JavaScript du navigateur).
-// Sortie : code 1 si 1 ou 2 échouent (ou 4 avec --strict) ; 3 est un avertissement.
+// Translation check: npm run i18n:check
+//   1. each file of src/contenu/fr/ has its counterpart in src/contenu/en/, with exactly the same keys;
+//   2. no empty value in English where the French has one (an empty value in French is an intended setting);
+//   3. list of English values identical to the French (often an oversight; proper nouns and acronyms allowed);
+//   4. French texts left hard-coded outside the translation files (HTML pages and browser JavaScript).
+// Output: code 1 if 1 or 2 fail (or 4 with --strict); 3 is a warning.
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
@@ -11,7 +11,7 @@ const racine = fileURLToPath(new URL("..", import.meta.url));
 const dossier = (l) => `${racine}src/contenu/${l}/`;
 const strict = process.argv.includes("--strict");
 
-/** Feuilles d'un objet : [["a.b.0", valeur], …] (les clés « _lisez_moi » sont des modes d'emploi, ignorées). */
+/** Leaves of an object: [["a.b.0", value], …] (the "_lisez_moi" keys are instructions, ignored). */
 export function feuilles(v, chemin = "") {
   if (v && typeof v === "object") {
     return Object.entries(v).filter(([k]) => k !== "_lisez_moi").flatMap(([k, y]) => feuilles(y, chemin ? `${chemin}.${k}` : k));
@@ -19,7 +19,7 @@ export function feuilles(v, chemin = "") {
   return [[chemin, v]];
 }
 
-/** Valeurs qui peuvent légitimement être identiques dans les deux langues. */
+/** Values that can legitimately be identical in both languages. */
 const IDENTIQUES_ADMIS = /^(?:[A-Z]{2,6}|Passation|SIREN|SIRET|NAF|EBITDA|Excel|[\d\s.,:/%€$kM–+-]*|[a-z_]+:\{[a-z_.]+\}|\{[a-z0-9_.]+\}(?:\/5)?|English|Français|Datapack|Teaser|Guides?|Cookies|Certifications|Production|Commercial|version \{n\}|Justification|Documents|France|2\.2 Multiples|2\.3 DCF|Sources?|Date|Projection|Section \{num\} – \{titre\}|Actions|Page(?: \{n\})?|Photo \{n\}|source|\(x\)|\{nom\} · Passation|Teaser · version \{version\} · \{date\}|qualifications, labels|\d+ s|\d+ sources|Projet Chêne|Menuiserie Durand & Fils|.{0,2})$/;
 
 export function comparer() {
@@ -44,11 +44,11 @@ export function comparer() {
   return { erreurs, identiques };
 }
 
-/** Textes français en dur : accents ou mots courants dans le texte des pages et les chaînes du JavaScript. */
+/** Hard-coded French texts: accents or common words in the text of the pages and the JavaScript strings. */
 export function textesEnDur() {
   const trouves = [];
-  // Valeurs enregistrées des réponses à choix (identifiants en français, libellés traduits par libelleOption) et
-  // noms de régions (noms propres) : pas des textes à traduire.
+  // Saved values of choice answers (identifiers in French, labels translated by libelleOption) and
+  // region names (proper nouns): not texts to translate.
   const options = JSON.parse(readFileSync(`${dossier("fr")}questionnaire.json`, "utf8")).options;
   const admis = new Set([...Object.values(options).flatMap((o) => Object.keys(o)),
     ...[...readFileSync(`${racine}public/js/questionnaire.js`, "utf8").matchAll(/"([A-ZÎ][^"]+)"/g)].map((m) => m[1])]);
@@ -63,7 +63,7 @@ export function textesEnDur() {
   const js = (d) => readdirSync(`${racine}public/js/${d}`).filter((f) => f.endsWith(".js")).map((f) => `${d}${f}`);
   for (const f of [...js(""), ...js("landing/")]) {
     const lignes = readFileSync(`${racine}public/js/${f}`, "utf8").split("\n");
-    let ignore = false; // entre « i18n:ignorer-debut » et « i18n:ignorer-fin » : texte jamais affiché (signalé ailleurs)
+    let ignore = false; // between "i18n:ignorer-debut" and "i18n:ignorer-fin": text never displayed (flagged elsewhere)
     lignes.forEach((l, i) => {
       if (l.includes("i18n:ignorer-debut")) ignore = true;
       if (l.includes("i18n:ignorer-fin")) ignore = false;

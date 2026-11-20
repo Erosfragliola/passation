@@ -1,7 +1,7 @@
-// Contrôles automatiques d'un exercice (validation par exception) : le dirigeant confirme l'exercice d'un clic ;
-// seules les lignes signalées demandent son attention. Aucun chiffre n'est corrigé automatiquement.
-//   niveau « alerte »    : la ligne doit être vérifiée et validée à part
-//   niveau « attention » : signal à lire, n'empêche pas la validation de l'exercice
+// Automatic checks of a fiscal year (approval by exception): the owner confirms the fiscal year in one click;
+// only the flagged lines need their attention. No figure is corrected automatically.
+//   level "alerte"    : the line must be checked and approved separately
+//   level "attention" : a signal to read, does not prevent approval of the fiscal year
 import { CHAMPS, libelleEcran } from "../../public/js/champs-financiers.js";
 import { t as tr, langue, locale } from "../../public/js/i18n.js";
 
@@ -14,30 +14,30 @@ const libelle = (k) => libelleEcran(CHAMPS.find((c) => c.cle === k)) || k;
 const fmt = (x) => { const n = Math.round(x).toLocaleString(locale()); return langue() === "fr" ? `${n} €` : `€${n}`; };
 
 /**
- * @param lignes { [cle]: { valeur, source, valide } } de l'exercice
- * @param o.caPublic chiffre d'affaires publié (INPI) pour la même année, s'il existe
- * @param o.precedent lignes de l'exercice précédent, s'il existe
+ * @param lignes { [cle]: { valeur, source, valide } } of the fiscal year
+ * @param o.caPublic published revenue (INPI) for the same year, if it exists
+ * @param o.precedent lines of the previous fiscal year, if it exists
  * @returns [{ code, niveau, lignes: [cles], message }]
  */
 export function controlerExercice(lignes, { caPublic = null, precedent = null } = {}) {
   const res = [];
   const ajoute = (code, niveau, cles, message) => res.push({ code, niveau, lignes: cles, message });
 
-  // Lignes obligatoires vides
+  // Empty required lines
   const vides = CHAMPS.filter((c) => c.obligatoire && v(lignes, c.cle) === null)
     .filter((c) => !(["achats_consommes", "charges_externes", "charges_personnel"].includes(c.cle) && v(lignes, "ebe") !== null));
   if (vides.length) ajoute("manquant", "alerte", vides.map((c) => c.cle), tr("serveur.controles.lignes_a_completer", { n: vides.length, liste: vides.map((c) => libelleEcran(c)).join(", ") }));
 
-  // Valeurs impossibles
+  // Impossible values
   for (const k of NON_NEGATIFS) if (v(lignes, k) !== null && v(lignes, k) < 0) ajoute("negatif", "alerte", [k], tr("serveur.controles.negatif", { libelle: libelle(k), montant: fmt(v(lignes, k)) }));
 
-  // Chiffre d'affaires différent des comptes publics
+  // Revenue different from the public accounts
   const ca = v(lignes, "chiffre_affaires");
   if (ca !== null && Number.isFinite(caPublic) && caPublic > 0 && ecart(ca, caPublic) > 0.01) {
     ajoute("ca_public", "alerte", ["chiffre_affaires"], tr("serveur.controles.ca_public", { saisi: fmt(ca), publie: fmt(caPublic) }));
   }
 
-  // Bilan : actif ≈ passif (tolérance 3 % : comptes de régularisation non détaillés ici)
+  // Balance sheet: assets ≈ liabilities (3% tolerance: accruals not detailed here)
   const a = ACTIF.map((k) => v(lignes, k)), p = PASSIF.map((k) => v(lignes, k));
   const nA = a.filter((x) => x !== null).length, nP = p.filter((x) => x !== null).length;
   if (nA >= 4 && nP >= 4) {
@@ -45,7 +45,7 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
     if (ecart(tA, tP) > 0.03) ajoute("bilan", "attention", [...ACTIF, ...PASSIF].filter((k) => v(lignes, k) !== null), tr("serveur.controles.bilan", { actif: fmt(tA), passif: fmt(tP) }));
   }
 
-  // EBE ≈ résultat d'exploitation + dotations (tolérance 20 % : provisions et autres charges non détaillées)
+  // EBITDA ≈ operating income + depreciation and provisions (20% tolerance: provisions and other expenses not detailed)
   const det = ["achats_consommes", "charges_externes", "impots_taxes", "charges_personnel"].map((k) => v(lignes, k));
   const rex = v(lignes, "resultat_exploitation"), dot = v(lignes, "dotations_amortissements");
   if (ca !== null && det.every((x) => x !== null) && rex !== null && dot !== null) {
@@ -55,7 +55,7 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
     }
   }
 
-  // Variation suspecte du chiffre d'affaires d'une année sur l'autre (unité en milliers ?)
+  // Suspicious change in revenue from one year to the next (unit in thousands?)
   const caPrec = v(precedent, "chiffre_affaires");
   if (ca !== null && caPrec !== null && caPrec > 0 && ca > 0 && (ca / caPrec > 3 || caPrec / ca > 3)) {
     ajoute("variation", "alerte", ["chiffre_affaires"], tr("serveur.controles.variation", { avant: fmt(caPrec), apres: fmt(ca) }));
@@ -63,5 +63,5 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
   return res;
 }
 
-/** Lignes que la validation en bloc ne couvre pas (signalées en « alerte »). */
+/** Lines that block approval does not cover (flagged as "alerte"). */
 export const lignesBloquees = (controles) => new Set(controles.filter((c) => c.niveau === "alerte").flatMap((c) => c.lignes));

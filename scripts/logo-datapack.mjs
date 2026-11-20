@@ -1,6 +1,6 @@
-// Logo Passation du datapack Excel (symbole de la barre de navigation + mot « Passation » en Geist), rendu par
-// Chrome en PNG transparent puis écrit en base64 dans src/documents/logo-datapack.js.
-// Usage : node scripts/logo-datapack.mjs [chemin de Chrome]
+// Passation logo of the Excel datapack (navigation-bar symbol + the word "Passation" in Geist), rendered by
+// Chrome as a transparent PNG then written in base64 into src/documents/logo-datapack.js.
+// Usage: node scripts/logo-datapack.mjs [path to Chrome]
 import { chromium } from "playwright-core";
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -15,7 +15,7 @@ svg { width: 60px; height: 60px; }
 </style></head><body><span class="logo"><svg viewBox="0 0 32 32"><path d="M9 27V15a7 7 0 0 1 14 0v12" fill="none" stroke="#231E18" stroke-width="2.2"/><path d="M5 27h22" stroke="#231E18" stroke-width="2.2"/><circle cx="16" cy="21" r="2.6" fill="#A8653A"/></svg>Passation</span></body></html>`;
 
 const b = await chromium.launch({ executablePath: chrome });
-const p = await b.newPage({ deviceScaleFactor: 2 }); // 2× : net à l'écran, affiché à la taille CSS
+const p = await b.newPage({ deviceScaleFactor: 2 }); // 2×: sharp on screen, displayed at the CSS size
 await p.setContent(html);
 await p.evaluate(() => document.fonts.ready);
 const el = p.locator(".logo");

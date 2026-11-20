@@ -1,5 +1,5 @@
-// Prépare les photos du site (à lancer en local : npm run images) : convertit chaque photo de public/img/source/
-// en WebP 800/1600/2400 px, < 250 Ko, dans public/img/photos/.
+// Prepares the site's photos (to run locally: npm run images): converts each photo of public/img/source/
+// into WebP 800/1600/2400 px, < 250 KB, in public/img/photos/.
 import sharp from "sharp";
 import { mkdirSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, parse, resolve } from "node:path";
@@ -12,10 +12,10 @@ const MAX_OCTETS = 250 * 1024;
 
 async function versWebp(entree, nom) {
   const { width } = await sharp(entree).metadata();
-  // Jamais d'agrandissement : on ne produit que les largeurs utiles (au moins la plus petite).
+  // Never upscaled: only the useful widths are produced (at least the smallest).
   const largeurs = LARGEURS.filter((l, i) => i === 0 || l <= width);
   for (const l of largeurs) {
-    let q = 90, info; // photos : qualité élevée
+    let q = 90, info; // photos: high quality
     do {
       info = await sharp(entree).resize({ width: l, withoutEnlargement: true }).webp({ quality: q, effort: 6 })
         .toFile(join(sortie, `${nom}-${l}.webp`));
@@ -25,7 +25,7 @@ async function versWebp(entree, nom) {
   }
 }
 
-// Photos déposées dans public/img/source/
+// Photos placed in public/img/source/
 const source = join(racine, "public/img/source");
 if (existsSync(source)) {
   for (const f of readdirSync(source)) {

@@ -1,18 +1,18 @@
-// Polices de la landing en woff2, à partir des TTF du kit de refonte (_refonte/assets/fonts, licences OFL) :
+// Landing fonts in woff2, from the TTFs of the redesign kit (_refonte/assets/fonts, OFL licenses):
 //   node scripts/polices-landing.mjs
-// Encodeur WOFF2 minimal écrit ici (Brotli de Node, aucune dépendance) : tables recopiées sans transformation
-// (« null transform », version 3 pour glyf et loca, prévue par la norme W3C WOFF2). Pas de sous-ensemble : les
-// fichiers gardent tous leurs caractères. Les woff2 produits sont versionnés ; le kit ne l'est pas.
+// Minimal WOFF2 encoder written here (Node's Brotli, no dependency): tables copied without transformation
+// ("null transform", version 3 for glyf and loca, provided for by the W3C WOFF2 standard). No subsetting: the
+// files keep all their characters. The woff2 output is under version control; the kit is not.
 import { readFileSync, writeFileSync } from "node:fs";
 import { brotliCompressSync, constants } from "node:zlib";
 
 const KIT = new URL("../_refonte/assets/fonts/", import.meta.url);
 const SORTIE = new URL("../public/fonts/", import.meta.url);
 const POLICES = [
-  ["BigShoulders-Bold.ttf", "big-shoulders-bold.woff2"],             // tampon « Projet … »
+  ["BigShoulders-Bold.ttf", "big-shoulders-bold.woff2"],             // "Projet …" stamp
 ];
 
-// Index des balises connues (norme WOFF2, § 5.1) ; les autres sont écrites en clair (index 63)
+// Index of known tags (WOFF2 standard, § 5.1); the others are written in full (index 63)
 const CONNUES = ["cmap", "head", "hhea", "hmtx", "maxp", "name", "OS/2", "post", "cvt ", "fpgm", "glyf", "loca", "prep", "CFF ",
   "VORG", "EBDT", "EBLC", "gasp", "hdmx", "kern", "LTSH", "PCLT", "VDMX", "vhea", "vmtx", "BASE", "GDEF", "GPOS", "GSUB"];
 
@@ -30,7 +30,7 @@ export function ttfVersWoff2(ttf) {
     const o = 12 + i * 16;
     tables.push({ tag: ttf.toString("latin1", o, o + 4), offset: v.getUint32(o + 8), longueur: v.getUint32(o + 12) });
   }
-  // glyf immédiatement suivi de loca, comme l'attendent les décodeurs
+  // glyf immediately followed by loca, as decoders expect
   const loca = tables.find((t) => t.tag === "loca");
   if (loca) {
     tables = tables.filter((t) => t !== loca);
@@ -39,7 +39,7 @@ export function ttfVersWoff2(ttf) {
   const repertoire = [];
   for (const t of tables) {
     const index = CONNUES.indexOf(t.tag);
-    const version = t.tag === "glyf" || t.tag === "loca" ? 3 : 0;      // 3 = sans transformation pour glyf/loca
+    const version = t.tag === "glyf" || t.tag === "loca" ? 3 : 0;      // 3 = no transformation for glyf/loca
     repertoire.push((index >= 0 ? index : 63) | (version << 6));
     if (index < 0) repertoire.push(...Buffer.from(t.tag, "latin1"));
     repertoire.push(...base128(t.longueur));
@@ -53,7 +53,7 @@ export function ttfVersWoff2(ttf) {
   const total = Math.ceil(brut / 4) * 4;
   const sortie = Buffer.alloc(total);
   const e = new DataView(sortie.buffer);
-  e.setUint32(0, 0x774f4632);           // « wOF2 »
+  e.setUint32(0, 0x774f4632);           // "wOF2"
   e.setUint32(4, flavor);
   e.setUint32(8, total);
   e.setUint16(12, nb);

@@ -1,5 +1,5 @@
-// Enregistre des réponses réelles des trois sources pour les tests (npm run fixtures).
-// Les données personnelles (dirigeants, administration, adresses, prix) sont retirées avant écriture.
+// Records real responses from the three sources for the tests (npm run fixtures).
+// Personal data (officers, administration, addresses, prices) is removed before writing.
 import { writeFileSync } from "node:fs";
 import { rechercherBrut } from "../src/sources/entreprise.js";
 import { exercicesBruts } from "../src/sources/inpi.js";

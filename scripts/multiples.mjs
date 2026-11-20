@@ -1,11 +1,11 @@
-// Calcule src/data/multiples.json par croisement de trois sources (npm run multiples).
-// Méthode (documentée aussi dans le fichier produit) :
-//   r_s  = Damodaran secteur / Damodaran marché          (niveau relatif du secteur, sociétés cotées)
-//   E1   = milieu de la fourchette du barème PME (Captain)
-//   E2   = moyenne Dealsuite du secteur si publiée, sinon moyenne tous secteurs Dealsuite × r_s
-//   E3   = Argos mid-market × r_s × (3,9 / 6,9)          (ramené à la taille d'une PME par l'écart Dealsuite)
-//   central = moyenne des estimations disponibles ; bas / haut = fourchette du barème PME, élargie au central.
-//   Sans ligne de barème : fourchette = central × écarts relatifs moyens du barème (fourchette dérivée).
+// Calculates src/data/multiples.json by cross-checking three sources (npm run multiples).
+// Method (also documented in the output file):
+//   r_s  = Damodaran industry / Damodaran market         (relative level of the industry, listed companies)
+//   E1   = midpoint of the SME scale's range (Captain)
+//   E2   = Dealsuite industry average if published, otherwise Dealsuite all-industry average × r_s
+//   E3   = Argos mid-market × r_s × (3.9 / 6.9)          (brought down to SME size by the Dealsuite gap)
+//   central = average of the available estimates; low / high = range of the SME scale, widened to the central value.
+//   Without a scale line: range = central × average relative gaps of the scale (derived range).
 import { readFileSync, writeFileSync } from "node:fs";
 
 const S = JSON.parse(readFileSync(new URL("../src/data/multiples-sources.json", import.meta.url)));
@@ -14,7 +14,7 @@ const moy = (t) => t.reduce((a, b) => a + b, 0) / t.length;
 const arr = (x) => Math.round(x * 10) / 10;
 const tailleFacteur = S.taille_dealsuite.multiple_ebitda_200k / S.taille_dealsuite.multiple_ebitda_10m;
 
-// Écarts relatifs moyens du barème (bas/milieu et haut/milieu), pour les secteurs sans ligne de barème
+// Average relative gaps of the scale (low/mid and high/mid), for industries without a scale line
 const lignes = Object.values(S.bareme_pme.lignes);
 const ecartBas = moy(lignes.map(([b, h]) => b / ((b + h) / 2)));
 const ecartHaut = moy(lignes.map(([b, h]) => h / ((b + h) / 2)));

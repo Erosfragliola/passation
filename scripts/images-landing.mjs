@@ -1,6 +1,6 @@
-// Images de la landing tirées du kit de refonte (_refonte/assets, non versionné) : node scripts/images-landing.mjs
-// Seules les images utiles sont copiées dans public/img/landing/ (plus d'établi en bois) ; le masque d'encre du
-// tampon passe en WebP.
+// Landing images taken from the redesign kit (_refonte/assets, not under version control): node scripts/images-landing.mjs
+// Only the useful images are copied into public/img/landing/ (no more wooden workbench); the stamp's ink mask
+// becomes WebP.
 import sharp from "sharp";
 import { copyFileSync, mkdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";

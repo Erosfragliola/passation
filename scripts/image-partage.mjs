@@ -1,4 +1,4 @@
-// Image de partage (og:image, 1200 × 630) tirée du poster du hero : node scripts/image-partage.mjs
+// Share image (og:image, 1200 × 630) taken from the hero poster: node scripts/image-partage.mjs
 import sharp from "sharp";
 import { fileURLToPath } from "node:url";
 

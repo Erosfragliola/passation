@@ -1,5 +1,5 @@
-// Environnement de test : base D1 imitée par SQLite en mémoire (node:sqlite) avec la vraie migration,
-// et faux bucket R2. Aucun service externe n'est appelé.
+// Test environment: D1 database imitated by in-memory SQLite (node:sqlite) with the real migration,
+// and a fake R2 bucket. No external service is called.
 import { DatabaseSync } from "node:sqlite";
 import { readFileSync, readdirSync } from "node:fs";
 
