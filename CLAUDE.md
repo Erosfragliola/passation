@@ -5,7 +5,11 @@ Plateforme web pour le dirigeant de PME française qui prépare la cession de so
 Le détail (architecture, schéma, routes, méthode, étapes) est dans `PLAN.md` : le lire en début de session.
 
 ## Langue
-Répondre en français, au vouvoiement dans l'interface. Commits en français.
+Répondre en français. Commits en français.
+Le site est bilingue : anglais (langue par défaut) et français (sous `/fr/`). Tout texte ajouté ou modifié doit l'être
+dans les deux langues (`src/contenu/en/` et `src/contenu/fr/`, mêmes clés), sans texte en dur dans les pages, les
+scripts ni le Worker, en respectant le glossaire `docs/glossaire-traduction.md`. La version française vouvoie.
+`npm run i18n:check` doit rester sans erreur.
 
 ## Périmètre
 - Travailler **uniquement** dans le clone du dépôt (chez le propriétaire : `~/Desktop/PROJETS/PASSATION/app` ; ailleurs,
