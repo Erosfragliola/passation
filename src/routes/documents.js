@@ -18,7 +18,7 @@ import { compterSecteur, structureSecteur } from "../sources/secteur.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
 import { MARCHE, CLAUDE_QUOTAS } from "../config.js";
 import { quotaClaude } from "../lib/ratelimit.js";
-import { lireSite, adressePublique } from "../documents/site.js";
+import { lireSite, adressePublique, fetchPublic } from "../documents/site.js";
 import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat, regionDe, SECTEURS_NAF } from "../documents/anonymat.js";
 import { faitsTeaser, visuelsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
@@ -278,7 +278,7 @@ async function deposerLogo(request, env, row) {
     const u = adressePublique(corps?.url || "");
     if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
     try {
-      const r = await fetch(u, { signal: AbortSignal.timeout(8000) });
+      const r = await fetchPublic(u, { signal: AbortSignal.timeout(8000) });
       if (!r.ok || Number(r.headers.get("content-length") || 0) > 1_000_000) throw new Error("image");
       octets = new Uint8Array(await r.arrayBuffer());
       if (octets.length > 1_000_000) throw new Error("image");
@@ -318,7 +318,7 @@ async function ajouterPhoto(request, env, row) {
     const u = adressePublique(corps?.url || "");
     if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
     try {
-      const r = await fetch(u, { signal: AbortSignal.timeout(10_000) });
+      const r = await fetchPublic(u, { signal: AbortSignal.timeout(10_000) });
       octets = new Uint8Array(await r.arrayBuffer());
       if (!r.ok || octets.length > 3_000_000) throw new Error("image");
     } catch { return json({ erreur: "image_injoignable", message: tr("serveur.documents.image_introuvable_ou_trop_2") }, 422); }

@@ -7,13 +7,24 @@ const TAILLE_MAX = 1_500_000;
 const MOTS_UTILES = ["propos", "qui-sommes", "quisommes", "entreprise", "societe", "histoire", "savoir", "metier", "produit", "service", "prestation", "realisation", "reference", "equipe", "valeurs", "activite", "expertise", "atelier", "fabrication", "engagement", "certification", "qualite"];
 const MOTS_EXCLUS = ["contact", "mentions", "legal", "cgv", "cgu", "confidentialite", "privacy", "cookie", "panier", "cart", "compte", "login", "connexion", "recrutement", "emploi", "blog/page", "tag/", "wp-admin", "feed"];
 
+/** Hôte joignable sans risque : nom de domaine public en http(s), port standard (ni IP, ni nom local, ni port
+ *  interne). Contrôle repris à chaque redirection (fetchPublic). */
+export function hoteSur(u) {
+  if (!["http:", "https:"].includes(u.protocol)) return false;
+  if (u.username || u.password) return false;
+  if (u.port && !["80", "443"].includes(u.port)) return false;
+  const h = u.hostname.toLowerCase().replace(/\.$/, "");
+  if (!h.includes(".") || /^[\d.]+$/.test(h) || /^0x/i.test(h) || h.includes(":") || h.startsWith("[")) return false;
+  if (h === "localhost" || /\.(local|internal|localhost|lan|home|intranet|corp)$/.test(h)) return false;
+  return true;
+}
+
 /** Adresse http(s) publique uniquement (pas d'IP, pas de nom local). Renvoie un URL normalisé ou null. */
 export function adressePublique(brut) {
   let u;
   try { u = new URL(/^https?:\/\//i.test(String(brut).trim()) ? String(brut).trim() : `https://${String(brut).trim()}`); } catch { return null; }
-  if (!["http:", "https:"].includes(u.protocol)) return null;
+  if (!hoteSur(u)) return null;
   const h = u.hostname.toLowerCase();
-  if (!h.includes(".") || /^[\d.]+$/.test(h) || h.includes(":") || h.endsWith(".local") || h.endsWith(".internal") || h === "localhost") return null;
   if (/(^|\.)(facebook|instagram|linkedin|twitter|x|tiktok|youtube|google|societe|pappers|infogreffe)\.[a-z]+$/.test(h)) return null;
   u.hash = "";
   return u;
@@ -100,8 +111,24 @@ export function robotsAutorise(robots, chemin) {
   return plusLong(autorises) >= plusLong(interdits);
 }
 
+export const REDIRECTIONS_MAX = 5;
+/** fetch d'une adresse fournie par l'utilisateur (audit SEC-05) : les redirections sont suivies ici, une à une, et
+ *  chaque nouvelle adresse doit passer hoteSur ; sinon erreur « adresse_refusee ». Le moteur Workers ne joint pas le
+ *  réseau privé de Cloudflare ; ce contrôle empêche en plus qu'une redirection vise une IP ou un nom interne. */
+export async function fetchPublic(url, options = {}, f = fetch) {
+  let u = new URL(url);
+  for (let i = 0; i <= REDIRECTIONS_MAX; i++) {
+    if (!hoteSur(u)) throw new Error("adresse_refusee");
+    const r = await f(u.href, { ...options, redirect: "manual" });
+    const vers = r.status >= 300 && r.status < 400 ? r.headers.get("location") : null;
+    if (!vers) return r;
+    u = new URL(vers, u);
+  }
+  throw new Error("trop_de_redirections");
+}
+
 async function lire(url, f) {
-  const r = await f(url, { headers: { "user-agent": USER_AGENT, accept: "text/html,application/xhtml+xml" }, redirect: "follow", signal: AbortSignal.timeout(10_000) });
+  const r = await fetchPublic(url, { headers: { "user-agent": USER_AGENT, accept: "text/html,application/xhtml+xml" }, signal: AbortSignal.timeout(10_000) }, f);
   if (!r.ok) return null;
   if (!/text\/html|application\/xhtml/i.test(r.headers.get("content-type") || "")) return null;
   const texte = await r.text();
@@ -113,7 +140,7 @@ export async function lireSite(adresse, { fetch: f = fetch } = {}) {
   const base = adressePublique(adresse);
   if (!base) throw new Error("adresse_invalide");
   let robots = "";
-  try { const r = await f(new URL("/robots.txt", base), { headers: { "user-agent": USER_AGENT }, signal: AbortSignal.timeout(5000) }); if (r.ok) robots = (await r.text()).slice(0, 50_000); } catch { /* pas de robots.txt */ }
+  try { const r = await fetchPublic(new URL("/robots.txt", base), { headers: { "user-agent": USER_AGENT }, signal: AbortSignal.timeout(5000) }, f); if (r.ok) robots = (await r.text()).slice(0, 50_000); } catch { /* pas de robots.txt */ }
   if (!robotsAutorise(robots, base.pathname || "/")) throw new Error("robots_refuse");
   const accueil = await lire(base.href, f);
   if (!accueil) throw new Error("site_injoignable");

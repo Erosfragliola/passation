@@ -7,6 +7,7 @@ import { routeEstimation } from "./routes/estimation.js";
 import { routeDemandeCode, routeVerificationCode, routeDeconnexion, routeMoi } from "./routes/auth.js";
 import { routeDossiers } from "./routes/dossiers.js";
 import { origineAutorisee } from "./lib/auth.js";
+import { avecEntetes } from "./lib/entetes.js";
 import { relancer } from "./routes/suivi.js";
 import { routePage, routeRobots, routeSitemap } from "./routes/pages.js";
 import { t as tr } from "../public/js/i18n.js";
@@ -20,13 +21,16 @@ const LOCAL = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
 export default {
   async fetch(request, env) {
+    let reponse;
     try {
-      return await avecLangue(langueDeRequete(request), () => router(request, env));
+      reponse = await avecLangue(langueDeRequete(request), () => router(request, env));
     } catch (e) {
       // Aucune information interne dans la réponse ; le détail reste dans les journaux du Worker.
       console.error("erreur non gérée :", e?.stack || e);
-      return json({ erreur: "erreur_interne", message: tr("serveur.index.erreur_survenue_reessayez_dans") }, 500);
+      reponse = json({ erreur: "erreur_interne", message: tr("serveur.index.erreur_survenue_reessayez_dans") }, 500);
     }
+    // En-têtes de sécurité sur toutes les réponses du Worker (audit SEC-04)
+    return avecEntetes(reponse, new URL(request.url));
   },
   /** Tâche planifiée quotidienne : rappel unique des dossiers interrompus depuis 3 jours. */
   async scheduled(event, env, ctx) {

@@ -16,7 +16,8 @@
     "images": "node scripts/images.mjs",
     "fixtures": "node scripts/fixtures.mjs",
     "multiples": "node scripts/multiples.mjs",
-    "i18n:check": "node scripts/i18n-check.mjs"
+    "i18n:check": "node scripts/i18n-check.mjs",
+    "demo:video": "node scripts/video-demo.mjs"
   },
   "devDependencies": {
     "axe-core": "4.14.0",
