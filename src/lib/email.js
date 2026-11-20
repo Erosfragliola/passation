@@ -37,7 +37,7 @@ export async function envoyerCodeConnexion(env, email, code, urlSite, { fetch: f
 export async function envoyerMessage(env, email, { sujet, titre, texte, lien, bouton }, urlSite, { fetch: f = fetch } = {}) {
   const local = LOCAL.has(new URL(urlSite).hostname);
   if (!env.BREVO_API_KEY) {
-    if (local) { console.log(`\n[Passation, développement] E-mail « ${sujet} » pour ${email} : ${lien}\n`); return { envoye: true, mode: "console" }; }
+    if (local) { console.log(`\n[Passation, development] Email "${sujet}" for ${email}: ${lien}\n`); return { envoye: true, mode: "console" }; }
     return { envoye: false, raison: "envoi_non_configure" };
   }
   const echappe = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

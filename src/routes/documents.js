@@ -70,7 +70,7 @@ async function lireTeaser(env, row) {
   const { results } = await env.DB.prepare("SELECT section_key, content_md, edited_by_user FROM document_sections WHERE document_id = ?").bind(doc.id).all();
   const parCle = Object.fromEntries(results.map((s) => [s.section_key, s]));
   let visuels = null;
-  try { visuels = visuelsTeaser(await contexte(env, row)); } catch (e) { console.log(`Visuels du teaser indisponibles : ${e.message}`); }
+  try { visuels = visuelsTeaser(await contexte(env, row)); } catch (e) { console.log(`Teaser visuals unavailable: ${e.message}`); }
   return {
     nom_de_code: row.code_name,
     visuels,
@@ -99,7 +99,7 @@ async function genererTeaser(env, row) {
       if (!problemes.length) break;
     }
   } catch (e) {
-    console.log(`Rédaction du teaser impossible : ${e.message}`);
+    console.log(`Could not draft the teaser: ${e.message}`);
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
     return json({ erreur: "redaction_echouee", message: tr("serveur.documents.redaction_echoue_reessayez_dans") }, 502);
   }
@@ -198,7 +198,7 @@ async function secteurDe(env, entreprise) {
   let comptes = await lireCache(env.DB, cle);
   if (!comptes) {
     try { comptes = await compterSecteur({ naf, region }); if (comptes) await ecrireCache(env.DB, cle, comptes); }
-    catch (e) { console.log(`Structure du secteur indisponible : ${e.message}`); return null; }
+    catch (e) { console.log(`Industry structure unavailable: ${e.message}`); return null; }
   }
   const date = new Date().toLocaleDateString(locale());
   return structureSecteur(comptes, { naf, region, trancheEntreprise: entreprise.tranche_effectif?.code, date });
@@ -226,7 +226,7 @@ async function etudeMarche(env, row) {
   let r;
   try { r = await rechercherMarche(env, contexte); }
   catch (e) {
-    console.log(`Étude de marché impossible : ${e.message}`);
+    console.log(`Market research failed: ${e.message}`);
     // The industry structure (public registries) is kept even if the web search fails or takes too long
     await ecrire({ ...avant, secteur: secteur ?? avant.secteur ?? null, en_cours: null, essais: (avant.essais || 0) + 1 });
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
@@ -249,7 +249,7 @@ async function lireSiteRoute(request, env, row) {
     faits = await extraireSite(env, lecture.pages);
   } catch (e) {
     const messages = { robots_refuse: tr("serveur.documents.site.robots"), site_injoignable: tr("serveur.documents.site.injoignable"), adresse_invalide: tr("serveur.documents.site.adresse") };
-    console.log(`Lecture du site impossible : ${e.message}`);
+    console.log(`Could not read the website: ${e.message}`);
     if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
     return json({ erreur: e.message, message: messages[e.message] || tr("serveur.documents.site.impossible") }, 422);
   }
@@ -378,7 +378,7 @@ async function genererSection(env, row, cle) {
   const { resultat, entree } = await calculer(env, row);
   let r;
   try { r = await redigerSectionMemo(env, section, donneesSection(section, { entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) })); }
-  catch (e) { console.log(`Rédaction du mémorandum impossible : ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "redaction_echouee", message: tr("serveur.documents.redaction_echoue_reessayez_dans") }, 502); }
+  catch (e) { console.log(`Could not draft the memorandum: ${e.message}`); if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503); return json({ erreur: "redaction_echouee", message: tr("serveur.documents.redaction_echoue_reessayez_dans") }, 502); }
   await ecrireSection(env, await documentMemo(env, row), cle, { titre: titreValide(r.titre), accroche: titreValide(r.accroche, 200), contenu: String(r.contenu || ""), a_completer: r.a_completer || [] }, false);
   return json(await lireMemo(env, row));
 }

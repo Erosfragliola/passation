@@ -34,7 +34,7 @@ function lexer(src) {
     if (fn) { t.push({ k: "fn", v: fn[1] }); i += fn[1].length; continue; }
     const op = /^(<=|>=|<>|[-+*/^(),=<>&])/.exec(src.slice(i));
     if (op) { t.push({ k: "op", v: op[1] }); i += op[1].length; continue; }
-    throw new Error(`Formule illisible près de « ${src.slice(i, i + 12)} »`);
+    throw new Error(`Unreadable formula near "${src.slice(i, i + 12)}"`);
   }
   return t;
 }
@@ -48,10 +48,10 @@ export function evaluer(src, feuilleCourante, lire) {
   const t = lexer(src);
   let p = 0;
   const voir = () => t[p], prendre = () => t[p++];
-  const attendre = (v) => { const x = prendre(); if (!x || x.v !== v) throw new Error(`« ${v} » attendu dans ${src}`); };
+  const attendre = (v) => { const x = prendre(); if (!x || x.v !== v) throw new Error(`"${v}" expected in ${src}`); };
   function primaire() {
     const x = prendre();
-    if (!x) throw new Error(`Formule incomplète : ${src}`);
+    if (!x) throw new Error(`Incomplete formula: ${src}`);
     if (x.k === "num" || x.k === "str") return x.v;
     if (x.k === "op" && x.v === "(") { const v = comparaison(); attendre(")"); return v; }
     if (x.k === "op" && x.v === "-") return -puissance();
@@ -90,10 +90,10 @@ export function evaluer(src, feuilleCourante, lire) {
         if (r?.erreurDiff) erreur(r.erreurDiff);
         return r;
       }
-      if (!FONCTIONS[x.v]) throw new Error(`Fonction non prise en charge : ${x.v}`);
+      if (!FONCTIONS[x.v]) throw new Error(`Unsupported function: ${x.v}`);
       return FONCTIONS[x.v](args);
     }
-    throw new Error(`Jeton inattendu dans ${src}`);
+    throw new Error(`Unexpected token in ${src}`);
   }
   const nombre = (v) => (v === null || v === "" ? 0 : typeof v === "number" ? v : typeof v === "boolean" ? Number(v) : erreur("#VALUE!"));
   function puissance() { let v = primaire(); while (voir()?.v === "^") { prendre(); v = nombre(v) ** nombre(primaire()); } return v; }
@@ -110,6 +110,6 @@ export function evaluer(src, feuilleCourante, lire) {
     return v;
   }
   const v = comparaison();
-  if (p < t.length) throw new Error(`Fin de formule inattendue : ${src}`);
+  if (p < t.length) throw new Error(`Unexpected end of formula: ${src}`);
   return v;
 }

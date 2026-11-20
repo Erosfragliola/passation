@@ -28,7 +28,7 @@ export async function verifierDebitCle(db, env, nom, cle, max, { parJour = false
       "ON CONFLICT(bucket) DO UPDATE SET count = count + 1 RETURNING count",
     ).bind(bucket, fenetre * duree).first();
   } catch (e) {
-    console.warn("limite de débit indisponible", e.message);
+    console.warn("rate limit unavailable", e.message);
     return { autorise: siIndisponible !== "refuser", restant: null };
   }
   // Occasional cleanup of expired windows (hourly: after 2 h; daily: after 2 days)

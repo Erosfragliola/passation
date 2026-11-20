@@ -17,5 +17,5 @@ export async function ecrireCache(db, cle, valeur) {
     "INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?) " +
     "ON CONFLICT(key) DO UPDATE SET payload_json = excluded.payload_json, fetched_at = excluded.fetched_at",
   ).bind(cle, JSON.stringify(valeur), Math.floor(Date.now() / 1000)).run();
-  } catch (e) { console.warn("cache indisponible (écriture)", e.message); }
+  } catch (e) { console.warn("cache unavailable (write)", e.message); }
 }

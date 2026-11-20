@@ -170,7 +170,7 @@ export function rendrePage(page, { url, langue, chemin, espace, statut = page.st
   const reponse = rewriter.transform(page);
   if (espace === "accueil" && local(url)) {
     const vides = clesVides(contenu);
-    if (vides.length) console.warn(`Contenu de la page d'accueil à fournir : ${vides.join(", ")}`);
+    if (vides.length) console.warn(`Home page content to provide: ${vides.join(", ")}`);
   }
   const entetes = new Headers(reponse.headers);
   entetes.set("cache-control", "public, max-age=0, must-revalidate");

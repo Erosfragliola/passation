@@ -27,4 +27,4 @@ writeFileSync(sortie, `// Fichier généré par scripts/logo-datapack.mjs : ne p
 export const LOGO_PNG = "${png.toString("base64")}";
 export const LOGO_TAILLE = { largeur: ${Math.round(width)}, hauteur: ${Math.round(height)} };
 `);
-console.log(`écrit : ${sortie} (${png.length} octets, ${Math.round(width)} × ${Math.round(height)} px)`);
+console.log(`written: ${sortie} (${png.length} bytes, ${Math.round(width)} × ${Math.round(height)} px)`);

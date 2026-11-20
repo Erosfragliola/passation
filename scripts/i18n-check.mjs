@@ -26,19 +26,19 @@ export function comparer() {
   const erreurs = [], identiques = [];
   const fichiers = (l) => readdirSync(dossier(l)).filter((f) => f.endsWith(".json")).sort();
   const fr = fichiers("fr"), en = fichiers("en");
-  for (const f of fr.filter((x) => !en.includes(x))) erreurs.push(`en/${f} manquant`);
-  for (const f of en.filter((x) => !fr.includes(x))) erreurs.push(`en/${f} sans pendant français`);
+  for (const f of fr.filter((x) => !en.includes(x))) erreurs.push(`en/${f} missing`);
+  for (const f of en.filter((x) => !fr.includes(x))) erreurs.push(`en/${f} without a French counterpart`);
   for (const f of fr.filter((x) => en.includes(x))) {
     const a = new Map(feuilles(JSON.parse(readFileSync(dossier("fr") + f, "utf8"))));
     const b = new Map(feuilles(JSON.parse(readFileSync(dossier("en") + f, "utf8"))));
-    for (const k of a.keys()) if (!b.has(k)) erreurs.push(`${f} : clé « ${k} » absente en anglais`);
-    for (const k of b.keys()) if (!a.has(k)) erreurs.push(`${f} : clé « ${k} » absente en français`);
+    for (const k of a.keys()) if (!b.has(k)) erreurs.push(`${f}: key "${k}" missing in English`);
+    for (const k of b.keys()) if (!a.has(k)) erreurs.push(`${f}: key "${k}" missing in French`);
     for (const [k, v] of a) {
       if (!b.has(k)) continue;
       const w = b.get(k);
       const vide = (x) => x == null || (typeof x === "string" && x.trim() === "");
-      if (!vide(v) && vide(w)) erreurs.push(`${f} : « ${k} » vide en anglais`);
-      if (typeof v === "string" && v === w && !vide(v) && !IDENTIQUES_ADMIS.test(v.trim())) identiques.push(`${f} : ${k} = « ${v.slice(0, 70)} »`);
+      if (!vide(v) && vide(w)) erreurs.push(`${f}: "${k}" empty in English`);
+      if (typeof v === "string" && v === w && !vide(v) && !IDENTIQUES_ADMIS.test(v.trim())) identiques.push(`${f}: ${k} = "${v.slice(0, 70)}"`);
     }
   }
   return { erreurs, identiques };
@@ -57,8 +57,8 @@ export function textesEnDur() {
     "espace/index.html", "espace/demarrer/index.html", "espace/valorisation/index.html", "espace/documents/memo/index.html", "espace/documents/teaser/index.html"];
   for (const p of pages) {
     const s = readFileSync(`${racine}public/${p}`, "utf8").replace(/<!--[\s\S]*?-->/g, "").replace(/<script[\s\S]*?<\/script>/g, "").replace(/<style[\s\S]*?<\/style>/g, "").replace(/<svg[\s\S]*?<\/svg>/g, "");
-    for (const m of s.matchAll(/>([^<>]+)</g)) if (MOTS.test(m[1]) && m[1].trim()) trouves.push(`public/${p} : « ${m[1].trim().slice(0, 60)} »`);
-    for (const m of s.matchAll(/\s(?:alt|title|placeholder|aria-label|content|value)="([^"]*)"/g)) if (MOTS.test(m[1])) trouves.push(`public/${p} : attribut « ${m[1].slice(0, 60)} »`);
+    for (const m of s.matchAll(/>([^<>]+)</g)) if (MOTS.test(m[1]) && m[1].trim()) trouves.push(`public/${p}: "${m[1].trim().slice(0, 60)}"`);
+    for (const m of s.matchAll(/\s(?:alt|title|placeholder|aria-label|content|value)="([^"]*)"/g)) if (MOTS.test(m[1])) trouves.push(`public/${p}: attribute "${m[1].slice(0, 60)}"`);
   }
   const js = (d) => readdirSync(`${racine}public/js/${d}`).filter((f) => f.endsWith(".js")).map((f) => `${d}${f}`);
   for (const f of [...js(""), ...js("landing/")]) {
@@ -71,7 +71,7 @@ export function textesEnDur() {
       if (/^\s*(\/\/|\*|\/\*)/.test(l)) return;
       const code = l.replace(/\/\/.*$/, "");
       for (const m of code.matchAll(/(["'`])((?:\\.|(?!\1).)*)\1/g)) {
-        if (/[éèêàçùâîôû]/.test(m[2]) && !/^[\w./-]*$/.test(m[2]) && !admis.has(m[2])) { trouves.push(`public/js/${f}:${i + 1} : « ${m[2].slice(0, 60)} »`); }
+        if (/[éèêàçùâîôû]/.test(m[2]) && !/^[\w./-]*$/.test(m[2]) && !admis.has(m[2])) { trouves.push(`public/js/${f}:${i + 1}: "${m[2].slice(0, 60)}"`); }
       }
     });
   }
@@ -81,12 +81,12 @@ export function textesEnDur() {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const { erreurs, identiques } = comparer();
   const enDur = textesEnDur();
-  console.log(`Clés : ${erreurs.length ? `${erreurs.length} erreur(s)` : "identiques dans les deux langues, aucune valeur vide"}`);
+  console.log(`Keys: ${erreurs.length ? `${erreurs.length} error(s)` : "identical in both languages, no empty value"}`);
   for (const e of erreurs) console.log(`  ✗ ${e}`);
-  console.log(`Valeurs anglaises identiques au français (à vérifier) : ${identiques.length}`);
+  console.log(`English values identical to the French (to check): ${identiques.length}`);
   for (const e of identiques.slice(0, 200)) console.log(`  · ${e}`);
-  console.log(`Textes français en dur hors des fichiers de traduction : ${enDur.length}`);
+  console.log(`Hard-coded French texts outside the translation files: ${enDur.length}`);
   for (const e of enDur.slice(0, strict ? Infinity : 40)) console.log(`  · ${e}`);
-  if (!strict && enDur.length > 40) console.log(`  … (${enDur.length - 40} de plus, --strict pour tout voir)`);
+  if (!strict && enDur.length > 40) console.log(`  … (${enDur.length - 40} more, --strict to see everything)`);
   process.exit(erreurs.length || (strict && enDur.length) ? 1 : 0);
 }

@@ -12,4 +12,4 @@ mkdirSync(site("etiquettes"), { recursive: true });
 copyFileSync(kit("tags/kraft-recto.webp"), site("etiquettes/kraft-recto.webp"));
 await sharp(kit("textures/grunge.png")).webp({ quality: 70, alphaQuality: 70 }).toFile(site("grunge.webp"));
 
-for (const f of ["etiquettes/kraft-recto.webp", "grunge.webp"]) console.log(`${f} : ${(statSync(site(f)).size / 1024).toFixed(0)} Ko`);
+for (const f of ["etiquettes/kraft-recto.webp", "grunge.webp"]) console.log(`${f}: ${(statSync(site(f)).size / 1024).toFixed(0)} KB`);

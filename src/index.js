@@ -24,14 +24,14 @@ export default {
       return await avecLangue(langueDeRequete(request), () => router(request, env));
     } catch (e) {
       // No internal information in the response; the details stay in the Worker logs.
-      console.error("erreur non gérée :", e?.stack || e);
+      console.error("unhandled error:", e?.stack || e);
       return json({ erreur: "erreur_interne", message: tr("serveur.index.erreur_survenue_reessayez_dans") }, 500);
     }
   },
   /** Daily scheduled task: a single reminder for files left unfinished for 3 days. */
   async scheduled(event, env, ctx) {
     // Without an originating page, the user's language is unknown: reminders in French (the language of the data).
-    ctx.waitUntil(avecLangue("fr", () => relancer(env)).then((n) => console.log(`Rappels envoyés : ${n}`)));
+    ctx.waitUntil(avecLangue("fr", () => relancer(env)).then((n) => console.log(`Reminders sent: ${n}`)));
   },
 };
 
@@ -47,7 +47,7 @@ async function router(request, env) {
   // Without a server secret, sign-in codes and IP hashes would be hashed without a secret salt: outside local
   // development, the API refuses to run rather than silently weaken security.
   if (p.startsWith("/api/") && !env.SESSION_SECRET && !LOCAL.has(url.hostname)) {
-    console.error("SESSION_SECRET absent : API désactivée (npx wrangler secret put SESSION_SECRET)");
+    console.error("SESSION_SECRET missing: API disabled (npx wrangler secret put SESSION_SECRET)");
     return json({ erreur: "configuration_incomplete", message: tr("serveur.index.service_momentanement_indisponible") }, 503);
   }
 

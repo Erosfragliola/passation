@@ -147,12 +147,12 @@ describe("sign-in by code", () => {
   });
   it("internal error (database unavailable): generic JSON 500, without technical details (SEC-08)", async () => {
     const espion = vi.spyOn(console, "error").mockImplementation(() => {});
-    env.DB = { prepare: () => { throw new Error("D1_ERROR: table secrète introuvable"); }, batch: async () => { throw new Error("D1"); } };
+    env.DB = { prepare: () => { throw new Error("D1_ERROR: secret table not found"); }, batch: async () => { throw new Error("D1"); } };
     const r = await appel("/api/me", { cookie: `passation_session=${"x".repeat(40)}` });
     expect(r.status).toBe(500);
     const texte = await r.text();
     expect(JSON.parse(texte).erreur).toBe("erreur_interne");
-    expect(texte).not.toMatch(/D1|secrète/);
+    expect(texte).not.toMatch(/D1|secret table/);
     espion.mockRestore();
   });
 });

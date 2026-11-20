@@ -69,6 +69,6 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     const ttf = readFileSync(new URL(source, KIT));
     const woff2 = ttfVersWoff2(ttf);
     writeFileSync(new URL(cible, SORTIE), woff2);
-    console.log(`${cible} : ${(ttf.length / 1024).toFixed(0)} Ko → ${(woff2.length / 1024).toFixed(1)} Ko`);
+    console.log(`${cible}: ${(ttf.length / 1024).toFixed(0)} KB → ${(woff2.length / 1024).toFixed(1)} KB`);
   }
 }

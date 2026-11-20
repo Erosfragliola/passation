@@ -31,4 +31,4 @@ writeFileSync("public/js/carte-france.js", `// Régions de France métropolitain
 // Source : IGN Admin Express, Licence ouverte Etalab (via github.com/gregoiredavid/france-geojson). Généré par scripts/carte-france.mjs.
 export const CARTE = ${JSON.stringify({ largeur: L, hauteur: H, regions })};
 `);
-console.log("carte :", Object.keys(regions).length, "régions,", L, "×", H, ",", Math.round(readFileSync("public/js/carte-france.js").length / 1024), "Ko");
+console.log("map:", Object.keys(regions).length, "regions,", L, "×", H, ",", Math.round(readFileSync("public/js/carte-france.js").length / 1024), "KB");

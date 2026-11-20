@@ -110,13 +110,13 @@ export function creerClasseur() {
     const cache = new Map(), enCours = new Set();
     const lire = (nomF, r, c) => {
       const fe = parNom.get(nomF);
-      if (!fe) throw new Error(`Feuille inconnue : ${nomF}`);
+      if (!fe) throw new Error(`Unknown sheet: ${nomF}`);
       const cle = `${nomF}|${r},${c}`;
       if (cache.has(cle)) return cache.get(cle);
       const cel = fe.cellules.get(`${r},${c}`);
       if (!cel) return null;
       if (cel.f == null) return cel.v ?? null;
-      if (enCours.has(cle)) throw new Error(`Référence circulaire : ${cle}`);
+      if (enCours.has(cle)) throw new Error(`Circular reference: ${cle}`);
       enCours.add(cle);
       let v;
       try { v = evaluer(cel.f, nomF, lire); } catch (e) { if (e.excel) v = { erreur: e.excel }; else throw e; }

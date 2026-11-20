@@ -21,7 +21,7 @@ async function versWebp(entree, nom) {
         .toFile(join(sortie, `${nom}-${l}.webp`));
       q -= 6;
     } while (info.size > MAX_OCTETS && q > 30);
-    console.log(`${nom}-${l}.webp  ${Math.round(info.size / 1024)} Ko  (qualité ${q + 6})`);
+    console.log(`${nom}-${l}.webp  ${Math.round(info.size / 1024)} KB  (quality ${q + 6})`);
   }
 }
 

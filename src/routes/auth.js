@@ -43,7 +43,7 @@ export async function routeDemandeCode(request, env) {
 
   const envoi = await envoyerCodeConnexion(env, email, code, request.url);
   if (!envoi.envoye) {
-    if (envoi.raison !== "envoi_non_configure") console.log(`Envoi du code impossible : ${envoi.raison}`);
+    if (envoi.raison !== "envoi_non_configure") console.log(`Could not send the code: ${envoi.raison}`);
     return json({ erreur: "envoi_impossible", message: tr("serveur.auth.envoi_e_mails_ne") }, 503);
   }
   return json({ ok: true, message: messageEnvoi() });

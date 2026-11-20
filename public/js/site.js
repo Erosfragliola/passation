@@ -7,7 +7,7 @@
 
   // Development: home page content still to provide (empty keys of src/contenu/cles.json and of the "cles" in src/contenu/<language>/accueil.json)
   const manquants = document.documentElement.dataset.contenuManquant;
-  if (manquants) console.warn(`Contenu à fournir (src/contenu/cles.json, ou « cles » de src/contenu/<langue>/accueil.json) : ${manquants.split(" ").join(", ")}`); // i18n:ignorer-ligne (development only)
+  if (manquants) console.warn(`Content to provide (src/contenu/cles.json, or "cles" in src/contenu/<langue>/accueil.json): ${manquants.split(" ").join(", ")}`); // i18n:ignorer-ligne (development only)
 
   // Language switcher: the choice is remembered ("langue" cookie, read by the Worker on the home page); the page's
   // anchor follows (the Worker does not know it).
