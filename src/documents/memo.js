@@ -7,14 +7,15 @@ import { libelleEffectif } from "../../public/js/regles.js";
 import { DETENTION, MURS, MURS_CESSION } from "../../public/js/parcours.js";
 import { montant, pourcent, multiple } from "../../public/js/memo-format.js";
 import { projet } from "./nom-de-code.js";
+import { t as tr, T, avecTextes } from "../../public/js/i18n.js";
 
 /** Parties du mémorandum, chacune ouverte par une page d'ouverture (convention des banques d'affaires). */
 export const PARTIES_MEMO = [
-  { n: 1, titre: "Synthèse", detail: "L'opportunité en bref et les points forts du dossier" },
-  { n: 2, titre: "L'entreprise", detail: "Histoire, savoir-faire et organisation" },
-  { n: 3, titre: "Marché et clients", detail: "Le secteur, ses moteurs et la clientèle" },
-  { n: 4, titre: "Performance financière", detail: "Comptes, retraitements et endettement" },
-  { n: 5, titre: "Perspectives et opération", detail: "Axes de développement et cession envisagée" },
+  { n: 1, titre: T, detail: T },
+  { n: 2, titre: T, detail: T },
+  { n: 3, titre: T, detail: T },
+  { n: 4, titre: T, detail: T },
+  { n: 5, titre: T, detail: T },
 ];
 
 /**
@@ -22,34 +23,37 @@ export const PARTIES_MEMO = [
  * l'en-tête ; `partie` : numéro de partie ; `point_fort` : numéro du point fort de la synthèse que le chapitre développe.
  */
 export const SECTIONS_MEMO = [
-  { cle: "synthese", titre: "Synthèse de l'opportunité", court: "Synthèse", partie: 1, point_fort: null,
+  { cle: "synthese", titre: T, court: T, partie: 1, point_fort: null,
     consigne: "Rédige la synthèse (executive summary). Un paragraphe d'ouverture : qui est l'entreprise, son métier, depuis quand, où, sa taille (chiffre d'affaires, effectif), son marché. Puis 3 à 4 puces sur ce qui fait l'intérêt du dossier pour un repreneur, chacune appuyée sur un fait ou un chiffre fourni. Termine par une phrase sur l'opération (part cédée, motif, accompagnement). Les six points forts numérotés sont affichés à part : ne les recopie pas.",
     donnees: ["entreprise", "activite", "atouts", "operation", "perimetre", "indicateurs", "clients", "marche_resume"] },
-  { cle: "histoire", titre: "Histoire et identité", court: "Histoire", partie: 2, point_fort: null,
+  { cle: "histoire", titre: T, court: T, partie: 2, point_fort: null,
     consigne: "Retrace le développement de l'entreprise dans l'ordre chronologique : création, implantations, changements de forme ou de dirigeant, agrandissements, étapes marquantes. Une puce par étape, commençant par l'année en gras. Termine par ce que cette histoire dit de l'entreprise aujourd'hui (ancrage, continuité, réputation), sans extrapoler.",
     donnees: ["entreprise", "frise", "activite", "faits:histoire,implantation"] },
-  { cle: "activite", titre: "Activité et savoir-faire", court: "Savoir-faire", partie: 2, point_fort: 1,
+  { cle: "activite", titre: T, court: T, partie: 2, point_fort: 1,
     consigne: "Décris le métier, l'offre de produits ou de services, la façon de produire ou de servir le client, et ce qui différencie l'entreprise (savoir-faire, qualité, équipements, certifications fournies). Le repreneur doit comprendre en une page comment l'entreprise gagne de l'argent. 4 à 6 puces, chacune un aspect distinct.",
     donnees: ["activite", "faits:activite,produits,qualite"] },
-  { cle: "organisation", titre: "Organisation et équipe", court: "Équipe", partie: 2, point_fort: 2,
+  { cle: "organisation", titre: T, court: T, partie: 2, point_fort: 2,
     consigne: "Décris l'organisation : effectif, métiers clés, encadrement intermédiaire, ce que fait aujourd'hui le dirigeant et ce qui dépend de lui. Le repreneur cherche à savoir si l'entreprise peut fonctionner sans son dirigeant actuel : réponds avec les faits fournis, et signale ce qui reste à organiser.",
     donnees: ["entreprise", "activite", "dirigeant_role", "faits:equipe"] },
-  { cle: "marche", titre: "Marché", court: "Marché", partie: 3, point_fort: 3,
+  { cle: "marche", titre: T, court: T, partie: 3, point_fort: 3,
     consigne: "Présente le marché de l'entreprise comme une banque d'affaires : structure du secteur (nombre d'entreprises, fragmentation, place de l'entreprise par sa taille, à partir de « structure_du_secteur »), puis taille et évolution du marché, moteurs de la demande, réglementation et concurrence, uniquement à partir des « faits_de_marche_sources ». Une puce par thème. Cite l'organisme source entre parenthèses après chaque chiffre de marché (par exemple « (INSEE, 2024) »). Si les faits de marché manquent, dis-le et ajoute la demande à a_completer.",
     donnees: ["entreprise", "activite", "marche"] },
-  { cle: "clients", titre: "Clients", court: "Clients", partie: 3, point_fort: 4,
+  { cle: "clients", titre: T, court: T, partie: 3, point_fort: 4,
     consigne: "Analyse la clientèle comme un repreneur le ferait : typologie des clients, zone commerciale, concentration (part du premier client, des cinq premiers), ancienneté des relations, part récurrente du chiffre d'affaires. Le tableau des principaux clients est affiché à part : commente-le. Si la concentration est élevée, dis-le factuellement et indique ce qui l'atténue s'il est fourni ; ne la masque pas.",
     donnees: ["activite", "clients", "indicateurs", "faits:clients,marche"] },
-  { cle: "finances", titre: "Performance financière", court: "Finances", partie: 4, point_fort: 5,
+  { cle: "finances", titre: T, court: T, partie: 4, point_fort: 5,
     consigne: "Commente la trajectoire financière à partir des indicateurs et des tableaux fournis : évolution du chiffre d'affaires (croissance annuelle moyenne), niveau et évolution de la marge d'EBE, nature de chaque retraitement entre l'EBE comptable et l'EBE retraité, endettement net (ou trésorerie nette) rapporté à l'EBE, besoin en fonds de roulement en jours de chiffre d'affaires. Les tableaux sont affichés à part : commente-les, ne les recopie pas en entier.",
     donnees: ["indicateurs", "compte_resultat", "ebe_retraite", "endettement"] },
-  { cle: "perspectives", titre: "Axes de développement", court: "Perspectives", partie: 5, point_fort: 6,
+  { cle: "perspectives", titre: T, court: T, partie: 5, point_fort: 6,
     consigne: "Présente 3 à 5 axes de développement identifiés par le dirigeant, un par puce, chacun avec ce qu'il suppose (investissement, recrutement, nouveaux marchés). Relie-les aux tendances de marché sourcées quand elles sont fournies. Présente toute croissance future comme l'estimation du dirigeant, jamais comme un fait.",
     donnees: ["atouts", "perspectives", "marche_resume", "faits:autre"] },
-  { cle: "operation", titre: "Opération envisagée", court: "Opération", partie: 5, point_fort: null,
+  { cle: "operation", titre: T, court: T, partie: 5, point_fort: null,
     consigne: "Présente l'opération : part du capital cédée, motif du cédant, accompagnement proposé au repreneur, calendrier souhaité, périmètre (détention des titres, situation des murs). Ton neutre et précis. Aucune indication de prix ni de valeur.",
     donnees: ["operation", "perimetre"] },
 ];
+// Titres (parties et chapitres) : src/contenu/<langue>/serveur.json, lus dans la langue de la requête.
+for (const x of PARTIES_MEMO) avecTextes(x, `serveur.memo.parties.${x.n}`);
+for (const x of SECTIONS_MEMO) avecTextes(x, `serveur.memo.sections.${x.cle}`);
 
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 const exercicesDe = (entree) => entree?.exercices || [];
@@ -77,21 +81,21 @@ export function compteResultat(entree, resultat) {
   const margeBrute = ca.map((v, i) => (ok(v) && ok(achats[i]) ? v - achats[i] : null));
   const ebe = brut("ebe"), rex = brut("resultat_exploitation"), rn = brut("resultat_net");
   const lignes = [
-    { cle: "chiffre_affaires", libelle: "Chiffre d'affaires", type: "total", valeurs: ca },
-    { cle: "croissance", libelle: "Croissance annuelle", type: "ratio", valeurs: croissance },
-    { cle: "achats_consommes", libelle: "Achats consommés", type: "montant", valeurs: negatif(achats) },
-    { cle: "marge_brute", libelle: "Marge brute", type: "total", valeurs: margeBrute },
-    { cle: "marge_brute_pct", libelle: "en % du chiffre d'affaires", type: "ratio", valeurs: parCa(margeBrute) },
-    { cle: "charges_externes", libelle: "Autres achats et charges externes", type: "montant", valeurs: negatif(brut("charges_externes")) },
-    { cle: "impots_taxes", libelle: "Impôts et taxes", type: "montant", valeurs: negatif(brut("impots_taxes")) },
-    { cle: "charges_personnel", libelle: "Salaires et charges sociales", type: "montant", valeurs: negatif(brut("charges_personnel")) },
-    { cle: "ebe", libelle: "EBE", type: "total", valeurs: ebe },
-    { cle: "ebe_pct", libelle: "Marge d'EBE", type: "ratio", valeurs: parCa(ebe) },
-    { cle: "dotations_amortissements", libelle: "Dotations aux amortissements", type: "montant", valeurs: negatif(brut("dotations_amortissements")) },
-    { cle: "resultat_exploitation", libelle: "Résultat d'exploitation", type: "total", valeurs: rex },
-    { cle: "resultat_exploitation_pct", libelle: "en % du chiffre d'affaires", type: "ratio", valeurs: parCa(rex) },
-    { cle: "resultat_net", libelle: "Résultat net", type: "total", valeurs: rn },
-    { cle: "resultat_net_pct", libelle: "en % du chiffre d'affaires", type: "ratio", valeurs: parCa(rn) },
+    { cle: "chiffre_affaires", libelle: tr("demarrer.js.chiffres.ca"), type: "total", valeurs: ca },
+    { cle: "croissance", libelle: tr("serveur.memo.cr.croissance"), type: "ratio", valeurs: croissance },
+    { cle: "achats_consommes", libelle: tr("memo.js.charges.achats"), type: "montant", valeurs: negatif(achats) },
+    { cle: "marge_brute", libelle: tr("memo.js.finances.marge_brute"), type: "total", valeurs: margeBrute },
+    { cle: "marge_brute_pct", libelle: tr("serveur.memo.cr.pct_ca"), type: "ratio", valeurs: parCa(margeBrute) },
+    { cle: "charges_externes", libelle: tr("champs.champs.charges_externes.libelle"), type: "montant", valeurs: negatif(brut("charges_externes")) },
+    { cle: "impots_taxes", libelle: tr("memo.js.charges.impots"), type: "montant", valeurs: negatif(brut("impots_taxes")) },
+    { cle: "charges_personnel", libelle: tr("champs.champs.charges_personnel.libelle"), type: "montant", valeurs: negatif(brut("charges_personnel")) },
+    { cle: "ebe", libelle: tr("demarrer.js.chiffres.ebe"), type: "total", valeurs: ebe },
+    { cle: "ebe_pct", libelle: tr("teaser.js.marge_ebe"), type: "ratio", valeurs: parCa(ebe) },
+    { cle: "dotations_amortissements", libelle: tr("champs.champs.dotations_amortissements.libelle"), type: "montant", valeurs: negatif(brut("dotations_amortissements")) },
+    { cle: "resultat_exploitation", libelle: tr("champs.champs.resultat_exploitation.libelle"), type: "total", valeurs: rex },
+    { cle: "resultat_exploitation_pct", libelle: tr("serveur.memo.cr.pct_ca"), type: "ratio", valeurs: parCa(rex) },
+    { cle: "resultat_net", libelle: tr("demarrer.js.chiffres.rn"), type: "total", valeurs: rn },
+    { cle: "resultat_net_pct", libelle: tr("serveur.memo.cr.pct_ca"), type: "ratio", valeurs: parCa(rn) },
   ].filter((l) => l.valeurs.some(ok));
   const premier = annees[0], dernier = annees.at(-1), ans = dernier - premier;
   const consecutifs = annees.every((a, i) => i === 0 || a - annees[i - 1] === 1);
@@ -173,8 +177,7 @@ export function perimetre(reponses = {}) {
 }
 
 /** Origine des chiffres, par exercice validé : « liasses fiscales 2023 et 2024 ; comptes déposés (INPI) 2022 ». */
-const ORIGINES = { liasse: "liasse fiscale", dirigeant: "chiffres transmis par le dirigeant", inpi: "comptes annuels déposés (INPI)" };
-const PLURIELS = { liasse: "liasses fiscales" };
+const origine = (o, n) => tr(`serveur.memo.origines.${o}`, { n });
 export function sourcesChiffres(lignesChiffres = {}, annees = []) {
   const parOrigine = {};
   for (const a of annees) {
@@ -183,9 +186,9 @@ export function sourcesChiffres(lignesChiffres = {}, annees = []) {
     const o = ["liasse", "dirigeant", "inpi"].find((s) => presentes.has(s));
     if (o) (parOrigine[o] ??= []).push(a);
   }
-  const liste = (l) => (l.length === 1 ? String(l[0]) : `${l.slice(0, -1).join(", ")} et ${l.at(-1)}`);
+  const liste = (l) => (l.length === 1 ? String(l[0]) : tr("dossier.annees.liste", { debut: l.slice(0, -1).join(", "), fin: l.at(-1) }));
   return ["liasse", "dirigeant", "inpi"].filter((o) => parOrigine[o])
-    .map((o) => `${parOrigine[o].length > 1 && PLURIELS[o] ? PLURIELS[o] : ORIGINES[o]} ${liste(parOrigine[o])}`).join(" ; ") || null;
+    .map((o) => `${origine(o, parOrigine[o].length)} ${liste(parOrigine[o])}`).join(" ; ") || null;
 }
 
 /** Indicateurs clés, calculés ici et déjà mis en forme : Claude les recopie, il ne calcule rien. */
@@ -261,8 +264,8 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
 /** Le mémorandum s'ouvre quand l'activité est décrite et l'opération précisée. */
 export function memoDeverrouille(reponses = {}) {
   const manque = [];
-  if (!reponses.activite?.description?.trim()) manque.push("Décrire votre activité (questionnaire, « Votre activité »)");
-  if (!reponses.operation?.part_cedee) manque.push("Préciser l'opération envisagée (questionnaire, « L'opération envisagée »)");
+  if (!reponses.activite?.description?.trim()) manque.push(tr("serveur.memo.manque.activite"));
+  if (!reponses.operation?.part_cedee) manque.push(tr("serveur.memo.manque.operation"));
   return { ok: manque.length === 0, manque };
 }
 

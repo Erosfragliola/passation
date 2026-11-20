@@ -5,6 +5,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import { contenuConcis } from "../documents/concision.js";
 import { MODELS } from "../config.js";
 import { CHAMPS } from "../../public/js/champs-financiers.js";
+import { t as tr, langue } from "../../public/js/i18n.js";
+
+/** Langue du texte produit : les consignes et les données restent en français ; en anglais, une instruction finale
+ *  demande un texte rédigé en anglais (la langue de l'interface au moment de la génération). */
+const langueDeSortie = () => (langue() === "en"
+  ? "\n\nLANGUE DE SORTIE : rédige tout le texte que tu produis en anglais américain, sobre et professionnel, même si ces consignes et les données sont en français. Ne traduis pas les noms propres, les noms de code ni les marques ; « EBE » s'écrit « EBITDA »."
+  : "");
 
 export const claudeDisponible = (env) => Boolean(env.ANTHROPIC_API_KEY);
 // ANTHROPIC_BASE_URL : réglage de développement uniquement (serveur simulé pour les essais locaux), absent en production.
@@ -45,7 +52,8 @@ const SCHEMA_LIASSE = {
   },
 };
 
-const CONSIGNE = `Tu lis une liasse fiscale française (formulaires 2033 du régime simplifié ou 2050 à 2059 du régime normal), ou des comptes annuels.
+// Construite à l'appel (dictionnaires installés), toujours en français : la liasse est un document français.
+const consigneLiasse = () => `Tu lis une liasse fiscale française (formulaires 2033 du régime simplifié ou 2050 à 2059 du régime normal), ou des comptes annuels.
 Recopie les montants demandés, pour chaque exercice présent dans le document (exercice N et, s'il figure, exercice N-1).
 Règles :
 - Recopie uniquement ce qui est écrit. Ne calcule rien, n'estime rien. Si un montant n'apparaît pas, valeur = null.
@@ -53,14 +61,14 @@ Règles :
 - Les montants négatifs (perte, variation négative) gardent leur signe.
 - Pour chaque montant, indique la page du PDF et le libellé exact de la ligne.
 Champs demandés (clé : définition) :
-${CHAMPS.map((c) => `- ${c.cle} : ${c.libelle} (${c.aide})`).join("\n")}`;
+${CHAMPS.map((c) => `- ${c.cle} : ${tr(`champs.champs.${c.cle}.libelle`, {}, "fr")} (${tr(`champs.champs.${c.cle}.aide`, {}, "fr")})`).join("\n")}`;
 
 /** @returns { exercices: [{annee, date_cloture, champs: [{cle, valeur, page, libelle_lu}]}], remarques, usage } */
 export async function lireLiasse(env, pdfBase64) {
   const reponse = await client(env).messages.create({
     model: MODELS.fast,
     max_tokens: 16000,
-    system: CONSIGNE,
+    system: consigneLiasse(),
     messages: [{
       role: "user",
       content: [
@@ -102,10 +110,11 @@ export async function redigerTeaser(env, faits, corrections = []) {
   const consigne = corrections.length
     ? `${CONSIGNE_TEASER}\nUne première version contenait des éléments identifiants à supprimer absolument : ${corrections.join(", ")}.`
     : CONSIGNE_TEASER;
+  const consigneLangue = consigne + langueDeSortie();
   const reponse = await client(env).beta.messages.create({
     model: MODELS.deep,
     max_tokens: 16000,
-    system: consigne,
+    system: consigneLangue,
     messages: [{ role: "user", content: `Faits disponibles (JSON) :\n${JSON.stringify(faits, null, 2)}` }],
     output_config: { format: { type: "json_schema", schema: SCHEMA_TEASER } },
     betas: ["server-side-fallback-2026-07-01"],
@@ -143,7 +152,7 @@ Liste aussi les termes identifiants (marques, noms de produits, noms propres, li
 export async function extraireSite(env, pages) {
   const contenu = pages.map((p) => `=== Page : ${p.url}\nTitre : ${p.titre}\n${p.texte}`).join("\n\n");
   const reponse = await client(env).messages.create({
-    model: MODELS.fast, max_tokens: 16000, system: CONSIGNE_SITE,
+    model: MODELS.fast, max_tokens: 16000, system: CONSIGNE_SITE + langueDeSortie(),
     messages: [{ role: "user", content: contenu }],
     output_config: { format: { type: "json_schema", schema: SCHEMA_SITE } },
   });
@@ -188,7 +197,7 @@ Règles absolues
 export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   const reponse = await client(env).beta.messages.create({
     model: MODELS.deep, max_tokens: 16000,
-    system: `${CONSIGNE_MEMO}\n\nChapitre à rédiger : « ${titre} ».\n${consigne}`,
+    system: `${CONSIGNE_MEMO}\n\nChapitre à rédiger : « ${titre} ».\n${consigne}${langueDeSortie()}`,
     messages: [{ role: "user", content: `Données du dossier (JSON) :\n${JSON.stringify(donnees, null, 2)}` }],
     output_config: { format: { type: "json_schema", schema: SCHEMA_SECTION } },
     betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
@@ -246,7 +255,7 @@ export async function rechercherMarche(env, contexte) {
     const reste = fin - Date.now();
     if (reste < 15000) throw new Error("recherche_trop_longue");
     reponse = await client(env).beta.messages.create({
-      model: MODELS.deep, max_tokens: 8000, system: CONSIGNE_MARCHE, messages,
+      model: MODELS.deep, max_tokens: 8000, system: CONSIGNE_MARCHE + langueDeSortie(), messages,
       tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 4, user_location: { type: "approximate", country: "FR" } }],
       betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
     }, { timeout: Math.min(75000, reste), maxRetries: 0 });

@@ -1,3 +1,5 @@
+// En premier : dictionnaires installés avant que les autres modules ne lisent un texte.
+import { avecLangue, langueDeRequete } from "./i18n.js";
 import { json } from "./http.js";
 import { routeMaquette } from "./routes/maquette.js";
 import { routeRecherche } from "./routes/company.js";
@@ -7,7 +9,6 @@ import { routeDossiers } from "./routes/dossiers.js";
 import { origineAutorisee } from "./lib/auth.js";
 import { relancer } from "./routes/suivi.js";
 import { routePage, routeRobots, routeSitemap } from "./routes/pages.js";
-import { avecLangue, langueDeRequete } from "./i18n.js";
 import { t as tr } from "../public/js/i18n.js";
 
 /**

@@ -125,5 +125,117 @@
       "texte": "Vous pouvez reprendre là où vous vous étiez arrêté : vos réponses sont enregistrées.",
       "bouton": "Reprendre mon dossier"
     }
+  },
+  "anonymat": {
+    "meur": "{n} M€",
+    "ca_moins": "moins de {m}",
+    "ca_entre": "entre {de} et {a}",
+    "ca_plus": "plus de {m}",
+    "marge_negative": "négative",
+    "marge_inferieure": "inférieure à {n} %",
+    "marge_entre": "entre {de} et {a} %",
+    "marge_superieure": "supérieure à {n} %",
+    "moins_ans": "moins de {n} ans",
+    "plus_ans": "plus de {n} ans"
+  },
+  "memo": {
+    "parties": {
+      "1": {
+        "titre": "Synthèse",
+        "detail": "L'opportunité en bref et les points forts du dossier"
+      },
+      "2": {
+        "titre": "L'entreprise",
+        "detail": "Histoire, savoir-faire et organisation"
+      },
+      "3": {
+        "titre": "Marché et clients",
+        "detail": "Le secteur, ses moteurs et la clientèle"
+      },
+      "4": {
+        "titre": "Performance financière",
+        "detail": "Comptes, retraitements et endettement"
+      },
+      "5": {
+        "titre": "Perspectives et opération",
+        "detail": "Axes de développement et cession envisagée"
+      }
+    },
+    "sections": {
+      "synthese": {
+        "titre": "Synthèse de l'opportunité",
+        "court": "Synthèse"
+      },
+      "histoire": {
+        "titre": "Histoire et identité",
+        "court": "Histoire"
+      },
+      "activite": {
+        "titre": "Activité et savoir-faire",
+        "court": "Savoir-faire"
+      },
+      "organisation": {
+        "titre": "Organisation et équipe",
+        "court": "Équipe"
+      },
+      "marche": {
+        "titre": "Marché",
+        "court": "Marché"
+      },
+      "clients": {
+        "titre": "Clients",
+        "court": "Clients"
+      },
+      "finances": {
+        "titre": "Performance financière",
+        "court": "Finances"
+      },
+      "perspectives": {
+        "titre": "Axes de développement",
+        "court": "Perspectives"
+      },
+      "operation": {
+        "titre": "Opération envisagée",
+        "court": "Opération"
+      }
+    },
+    "cr": {
+      "croissance": "Croissance annuelle",
+      "pct_ca": "en % du chiffre d'affaires"
+    },
+    "origines": {
+      "liasse": {
+        "one": "liasse fiscale",
+        "other": "liasses fiscales"
+      },
+      "dirigeant": {
+        "one": "chiffres transmis par le dirigeant",
+        "other": "chiffres transmis par le dirigeant"
+      },
+      "inpi": {
+        "one": "comptes annuels déposés (INPI)",
+        "other": "comptes annuels déposés (INPI)"
+      }
+    },
+    "manque": {
+      "activite": "Décrire votre activité (questionnaire, « Votre activité »)",
+      "operation": "Préciser l'opération envisagée (questionnaire, « L'opération envisagée »)"
+    }
+  },
+  "teaser": {
+    "sections": {
+      "accroche": "Accroche",
+      "activite": "L'activité",
+      "chiffres": "Chiffres clés",
+      "atouts": "Atouts",
+      "operation": "L'opération"
+    },
+    "tendance": {
+      "hausse": "chiffre d'affaires en croissance",
+      "baisse": "chiffre d'affaires en baisse",
+      "stable": "chiffre d'affaires stable"
+    },
+    "recurrent": "environ {n} % du chiffre d'affaires récurrent",
+    "france": "France"
   }
 }

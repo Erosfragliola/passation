@@ -125,5 +125,117 @@
       "texte": "You can pick up where you left off: your answers are saved.",
       "bouton": "Resume my file"
     }
+  },
+  "anonymat": {
+    "meur": "€{n}M",
+    "ca_moins": "less than {m}",
+    "ca_entre": "between {de} and {a}",
+    "ca_plus": "more than {m}",
+    "marge_negative": "negative",
+    "marge_inferieure": "below {n}%",
+    "marge_entre": "between {de}% and {a}%",
+    "marge_superieure": "above {n}%",
+    "moins_ans": "less than {n} years",
+    "plus_ans": "more than {n} years"
+  },
+  "memo": {
+    "parties": {
+      "1": {
+        "titre": "Summary",
+        "detail": "The opportunity at a glance and the file’s strengths"
+      },
+      "2": {
+        "titre": "The company",
+        "detail": "History, know-how and organization"
+      },
+      "3": {
+        "titre": "Market and customers",
+        "detail": "The industry, its drivers and the customer base"
+      },
+      "4": {
+        "titre": "Financial performance",
+        "detail": "Accounts, adjustments and debt"
+      },
+      "5": {
+        "titre": "Outlook and deal",
+        "detail": "Growth opportunities and planned sale"
+      }
+    },
+    "sections": {
+      "synthese": {
+        "titre": "Opportunity summary",
+        "court": "Summary"
+      },
+      "histoire": {
+        "titre": "History and identity",
+        "court": "History"
+      },
+      "activite": {
+        "titre": "Business and know-how",
+        "court": "Know-how"
+      },
+      "organisation": {
+        "titre": "Organization and team",
+        "court": "Team"
+      },
+      "marche": {
+        "titre": "Market",
+        "court": "Market"
+      },
+      "clients": {
+        "titre": "Customers",
+        "court": "Customers"
+      },
+      "finances": {
+        "titre": "Financial performance",
+        "court": "Financials"
+      },
+      "perspectives": {
+        "titre": "Growth opportunities",
+        "court": "Outlook"
+      },
+      "operation": {
+        "titre": "Planned deal",
+        "court": "Deal"
+      }
+    },
+    "cr": {
+      "croissance": "Annual growth",
+      "pct_ca": "as a % of revenue"
+    },
+    "origines": {
+      "liasse": {
+        "one": "tax return",
+        "other": "tax returns"
+      },
+      "dirigeant": {
+        "one": "figures provided by the owner",
+        "other": "figures provided by the owner"
+      },
+      "inpi": {
+        "one": "filed annual accounts (INPI)",
+        "other": "filed annual accounts (INPI)"
+      }
+    },
+    "manque": {
+      "activite": "Describe your business (questionnaire, “Your business”)",
+      "operation": "Specify the planned deal (questionnaire, “The planned deal”)"
+    }
+  },
+  "teaser": {
+    "sections": {
+      "accroche": "Hook",
+      "activite": "The business",
+      "chiffres": "Key figures",
+      "atouts": "Strengths",
+      "operation": "The deal"
+    },
+    "tendance": {
+      "hausse": "growing revenue",
+      "baisse": "declining revenue",
+      "stable": "stable revenue"
+    },
+    "recurrent": "about {n}% recurring revenue",
+    "france": "France"
   }
 }
