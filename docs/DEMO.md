@@ -17,6 +17,22 @@ sont vérifiées par `test/demo.test.js` et ont été calculées indépendamment
    rattaché contiendra des chiffres fictifs : ne pas diffuser ses documents et **supprimer le dossier après la
    démonstration** (Mon dossier → Supprimer).
 
+## Plan B : vidéo du parcours (si le réseau, Brevo ou Claude font défaut)
+
+La démonstration en direct dépend de Brevo (code de connexion), de l'API Claude (rédactions) et des API publiques.
+Une vidéo d'une minute du parcours complet s'enregistre en local, sans aucune de ces dépendances, avec l'entreprise
+et les chiffres fictifs de ce document (« Menuiserie Exemple », SIREN 000000018, nom de code « Projet Chêne ») :
+
+```
+npx playwright-core install ffmpeg      # une fois par machine
+npm run demo:video -- --langue fr --sortie ~/Desktop/Passation-demo-fr.webm
+npm run demo:video -- --langue en --sortie ~/Desktop/Passation-demo-en.webm
+```
+
+Le script (`scripts/video-demo.mjs`) lance son propre serveur local, lit le code de connexion dans son terminal et
+filme en 1440 × 900 : accueil, estimation express, connexion, dossier, chiffres, valorisation, mémorandum, teaser.
+Rien n'est envoyé en production. La relancer la veille si l'interface a changé.
+
 ## Déroulé (environ 5 minutes)
 
 | Étape | Action | Ce qu'on montre |

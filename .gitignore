@@ -16,3 +16,6 @@ public/img/source/
 
 # Kit de refonte de la landing (références et sources, non publiées)
 /_refonte/
+
+# Vidéos de démonstration (scripts/video-demo.mjs)
+passation-demo-*.webm
