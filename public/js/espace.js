@@ -4,6 +4,7 @@
 import { CHECKLIST } from "/js/dossier-regles.js";
 import { etatParcours } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js"; // même arrondi que l'écran de résultat de la landing
+import { lien } from "/js/i18n.js";
 
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -15,7 +16,7 @@ function message(texte, erreur = false) {
 }
 async function api(chemin, options = {}) {
   const r = await fetch(chemin, { ...options, headers: { "content-type": "application/json", ...(options.headers || {}) } });
-  if (r.status === 401) { location.replace("/connexion"); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non connecté"); }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(d.message || "Erreur");
   return d;
@@ -51,7 +52,7 @@ async function charger() {
   const siren = (params.get("siren") || "").replace(/\D/g, "");
   if (!id && siren.length === 9) id = (moi.dossiers.find((x) => x.siren === siren) || (await api("/api/dossiers", { method: "POST", body: JSON.stringify({ siren }) })).dossier).id;
   if (!id && moi.dossiers.length) id = moi.dossiers[0].id;
-  if (!id) { location.replace("/#titre-hero"); return; }
+  if (!id) { location.replace(lien("/#titre-hero")); return; }
   dossier = await api(`/api/dossiers/${id}`);
   [memo, teaser] = await Promise.all([
     dossier.documents?.memo ? api(`/api/dossiers/${id}/documents/memo`).catch(() => null) : null,
@@ -65,7 +66,7 @@ function afficher({ checklist = true } = {}) {
   etat = etatParcours(dossier, memo, teaser);
   const e = dossier.entreprise, id = dossier.id;
   document.title = `${e.nom || "Votre dossier"} · Passation`;
-  $("#lien-dossier").href = `/espace/?dossier=${id}`;
+  $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
 
   // Fil du parcours : étapes faites cliquables, l'actuelle mise en avant
   remplacer($("#fil"), ...etat.etapes.map((x, i) => {
@@ -224,7 +225,7 @@ $("#confirmer-supprimer").addEventListener("click", async () => {
   try {
     await api(`/api/dossiers/${dossier.id}`, { method: "DELETE" });
     dialogue.close();
-    location.replace("/?dossier-supprime=1");
+    location.replace(lien("/?dossier-supprime=1"));
   } catch (err) { dialogue.close(); message(err.message, true); }
 });
 

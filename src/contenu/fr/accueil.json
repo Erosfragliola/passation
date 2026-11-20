@@ -1,0 +1,403 @@
+{
+  "_lisez_moi": "Textes de la page d'accueil. *mot* : mot-clé en italique. {cle} : valeur de « cles » (src/contenu/cles.json, ou « cles » ci-dessous pour les réglages qui sont du texte). Une valeur vide retire l'élément de la page. Espaces fines et apostrophes typographiques ajoutées automatiquement : écrivez « Et la vôtre ? » avec une espace simple. Dans les « cles » : prix et durées avec leur unité (« 490 € », « Gratuit », « 20 minutes ») ; temoignages : liste d'objets { texte, prenom, metier, ville }, deux au moins pour afficher « Ils l'ont fait » ; guides : liste d'objets { titre, url, image }, trois au moins pour afficher la section et le lien de l'en-tête ; rappel : true pour afficher « Être rappelé » (e-mail à email_contact) ; fondateur_nom et fondateur_texte affichent « Derrière Passation » ; legal : l'identité du pied de page, les morceaux vides sont retirés.",
+  "cles": {
+    "duree_etape2": "",
+    "fondateur_titre": "",
+    "fondateur_texte": "",
+    "temoignages": [],
+    "guides": [],
+    "faq_prix": "",
+    "faq_duree": "",
+    "faq_qui": "",
+    "faq_repreneur": "",
+    "hebergement": "",
+    "partenaires": ""
+  },
+  "meta": {
+    "titre": "Passation · Préparez la cession de votre entreprise",
+    "description": "Une première valeur de votre entreprise à partir de son SIREN, puis le dossier de cession complet : estimation approfondie, datapack Excel, teaser anonyme et mémorandum d'information.",
+    "partage_titre": "Vous avez bâti. Préparez votre transmission.",
+    "partage_image_alt": "Un artisan à son établi, sous sa lampe. Passation : préparer la cession de votre PME."
+  },
+  "nav": {
+    "evitement": "Aller au contenu",
+    "accueil": "Passation, accueil",
+    "principale": "Navigation principale",
+    "comment": "Comment ça marche",
+    "livrables": "Exemple de dossier",
+    "confidentialite": "Confidentialité",
+    "guides": "Guides",
+    "questions": "Questions",
+    "espace": "Mon dossier",
+    "menu_ouvrir": "Ouvrir le menu",
+    "telephone": "Nous appeler au {telephone}"
+  },
+  "intro": {
+    "passer": "Passer l'intro"
+  },
+  "champ": {
+    "libelle": "SIREN ou nom de votre société",
+    "bouton": "Estimer mon entreprise",
+    "bouton_court": "Estimer",
+    "suggestions": "Sociétés correspondantes",
+    "zone": "Estimer votre entreprise"
+  },
+  "hero": {
+    "surtitre": "Préparer la cession de votre PME",
+    "titre": "Vous avez bâti. Préparez votre *transmission*.",
+    "sous_titre": "Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.",
+    "note_comptes": "",
+    "preuves": {
+      "dirigeants": "*{nb_dirigeants}* dirigeants accompagnés",
+      "avis": "*{note_avis}/5* · {nb_avis} avis",
+      "registres": ""
+    },
+    "coches": [
+      "Estimation gratuite, sans compte",
+      "Personne n’est averti",
+      "Registres officiels"
+    ],
+    "bulles": {
+      "delai": {
+        "chiffre": "30 s",
+        "texte": "pour une première fourchette de valeur"
+      },
+      "methodes": {
+        "chiffre": "3 sources",
+        "texte": "de multiples croisées, pour une fourchette que vous pouvez défendre"
+      },
+      "code": {
+        "titre": "Votre nom de code",
+        "code": "Projet Chêne",
+        "valeur": "1,8 – 2,4 M€",
+        "fictif": "exemple fictif"
+      },
+      "docs": [
+        "Valorisation",
+        "Teaser",
+        "Mémorandum",
+        "Datapack"
+      ]
+    }
+  },
+  "comment": {
+    "titre": "Trois étapes, sans surprise.",
+    "etapes": [
+      {
+        "chiffre": "30 secondes",
+        "titre": "Une première fourchette de valeur",
+        "texte": "Tapez le nom ou le SIREN de votre société : la fourchette s’affiche aussitôt, à partir des registres publics. Sans compte, et personne n’est averti.",
+        "obtenez": "Vous obtenez une fourchette de valeur et le nom de code de votre dossier.",
+        "pastilles": [
+          "Gratuit",
+          "Sans compte"
+        ]
+      },
+      {
+        "chiffre": "Multiples du secteur",
+        "titre": "Une fourchette sourcée",
+        "texte": "Vous complétez quelques chiffres clés. Passation applique les multiples d’EBE (excédent brut d’exploitation) de votre secteur, sources datées, et contrôle le résultat par l’actif net.",
+        "obtenez": "Vous obtenez une fourchette, avec le détail du calcul et ses sources.",
+        "pastilles": [
+          "{duree_etape2}",
+          "{prix_etape2}"
+        ]
+      },
+      {
+        "chiffre": "9 chapitres",
+        "titre": "Teaser, mémo et datapack",
+        "texte": "Le teaser, anonyme, pour intéresser des repreneurs. Le mémo pour raconter toute votre entreprise. Le datapack, le fichier Excel des chiffres. Vous relisez, vous partagez.",
+        "obtenez": "Vous obtenez le teaser, le mémorandum et le datapack Excel, modifiables.",
+        "pastilles": [
+          "À votre rythme",
+          "{prix_dossier}"
+        ]
+      }
+    ],
+    "illustrations": {
+      "fictif": "exemple fictif",
+      "siren": {
+        "saisie": "Menuiserie Durand & Fils",
+        "libelle": "Valeur d'entreprise estimée",
+        "valeur": "1,8 – 2,4 M€"
+      },
+      "chiffres": {
+        "lignes": [
+          {
+            "poste": "Chiffre d'affaires",
+            "montant": "2,4 M€"
+          },
+          {
+            "poste": "EBE",
+            "montant": "300 k€"
+          },
+          {
+            "poste": "Trésorerie nette",
+            "montant": "900 k€"
+          }
+        ],
+        "libelle": "Valeur de vos titres",
+        "fourchette": "1,8 – 2,4 M€",
+        "bas": "1,8 M€",
+        "haut": "2,4 M€"
+      },
+      "documents": [
+        "Teaser",
+        "Mémorandum",
+        "Datapack"
+      ]
+    }
+  },
+  "pourquoi": {
+    "sources": "Données issues des registres publics officiels"
+  },
+  "confidentialite": {
+    "titre": "Personne ne saura. Sauf ceux que vous choisirez.",
+    "texte": "Préparer une cession demande de la discrétion. Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
+    "garanties": [
+      {
+        "titre": "Accès réservé",
+        "texte": "Connexion par code à usage unique, envoyé par e-mail. Vous seul voyez votre dossier."
+      },
+      {
+        "titre": "Teaser anonyme, sous nom de code",
+        "texte": "Ni nom, ni ville, ni chiffre identifiant. Vous choisissez quand vous dévoiler."
+      },
+      {
+        "titre": "Aucune revente",
+        "texte": "Vos données servent uniquement aux traitements que vous demandez."
+      },
+      {
+        "titre": "Suppression en un clic",
+        "texte": "Dossier, chiffres et fichiers : vous effacez tout quand vous le décidez."
+      }
+    ],
+    "politique": "Lire notre politique",
+    "fictif": "Exemple fictif",
+    "fiche": "Mémorandum d’information",
+    "avant": "Menuiserie Durand & Fils",
+    "apres": "Projet Chêne",
+    "exemple_alt": "Exemple fictif : le nom de l’entreprise devient Projet Chêne"
+  },
+  "equipe": {
+    "surtitre": "Qui est derrière Passation",
+    "titre": "Des personnes, pas un robot.",
+    "texte": "{fondateur_texte}",
+    "citation": "Une entreprise ne se vend pas. Elle se transmet.",
+    "nom": "{fondateur_nom}",
+    "fonction": "{fondateur_titre}",
+    "photo_alt": "{fondateur_nom}, fondateur de Passation",
+    "rappel": "Être rappelé",
+    "rappel_lien": "mailto:{email_contact}?subject=%C3%8Atre%20rappel%C3%A9",
+    "telephone": "{telephone}",
+    "telephone_aria": "Nous appeler au {telephone}"
+  },
+  "preuves": {
+    "surtitre": "Ils l’ont fait",
+    "titre": "Ils ont préparé leur cession.",
+    "entreprises": "{chiffres.entreprises_estimees}",
+    "entreprises_libelle": "entreprises estimées",
+    "note": "{note_avis}/5",
+    "note_libelle": "sur {nb_avis} avis",
+    "dossiers": "{chiffres.dossiers_prepares}",
+    "dossiers_libelle": "dossiers préparés",
+    "methodes": "3",
+    "methodes_libelle": "sources de multiples croisées et datées",
+    "legendes": []
+  },
+  "guides": {
+    "surtitre": "Pour tout comprendre",
+    "titre": "Les guides de la transmission.",
+    "etiquette": "Guide"
+  },
+  "questions": {
+    "surtitre": "Questions fréquentes",
+    "titre": "Ce que les dirigeants nous demandent.",
+    "liste": [
+      {
+        "q": "Combien ça coûte ?",
+        "r": [
+          "{faq_prix}"
+        ]
+      },
+      {
+        "q": "L'estimation express est-elle fiable ?",
+        "r": [
+          "C'est un premier ordre de grandeur. Elle applique des multiples sectoriels aux derniers comptes publiés de votre société.",
+          "Elle ignore vos retraitements, votre dette et vos spécificités. La valorisation approfondie les prend en compte."
+        ]
+      },
+      {
+        "q": "D'où viennent les chiffres de ma société ?",
+        "r": [
+          "Des registres publics : l'annuaire des entreprises de l'État, les comptes annuels déposés et le BODACC. Nous indiquons toujours l'exercice utilisé."
+        ]
+      },
+      {
+        "q": "Combien de temps ça prend ?",
+        "r": [
+          "{faq_duree}"
+        ]
+      },
+      {
+        "q": "Mes comptes sont confidentiels, ça marche quand même ?",
+        "r": [
+          "Nous vous le signalons. Vous saisissez alors votre chiffre d'affaires et votre EBE, ou vous importez votre liasse fiscale."
+        ]
+      },
+      {
+        "q": "Est-ce que quelqu'un est prévenu ?",
+        "r": [
+          "Non. L'estimation express lit uniquement des registres publics : personne n'est informé de votre recherche, ni votre société, ni votre expert-comptable. Aucun compte n'est demandé."
+        ]
+      },
+      {
+        "q": "Qui est derrière Passation ?",
+        "r": [
+          "{faq_qui}"
+        ]
+      },
+      {
+        "q": "Mon expert-comptable peut-il y accéder ?",
+        "r": [
+          "Pas directement : votre dossier n'est visible que par vous. Vous pouvez lui transmettre vous-même le datapack Excel, le teaser ou le mémorandum."
+        ]
+      },
+      {
+        "q": "Est-ce que ça remplace mon expert-comptable ou mon avocat ?",
+        "r": [
+          "Non. Passation vous fait gagner du temps et prépare le terrain. Pour les décisions juridiques et fiscales, faites-vous accompagner par un professionnel."
+        ]
+      },
+      {
+        "q": "Et pour trouver un repreneur ?",
+        "r": [
+          "{faq_repreneur}"
+        ]
+      },
+      {
+        "q": "Que deviennent mes données si j'arrête ?",
+        "r": [
+          "Elles restent dans votre espace, visibles par vous seul, tant que vous ne les supprimez pas. Le bouton « Supprimer mon dossier » efface en une fois le dossier, les chiffres et les fichiers."
+        ]
+      }
+    ]
+  },
+  "relance": {
+    "titre": "Et si on regardait *votre entreprise* ?",
+    "texte": "L’estimation est gratuite et sans compte : en 30 secondes, une première idée de sa valeur.",
+    "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
+    "livrables_titre": "Ce que contient votre dossier",
+    "livrables": [
+      "Une page anonyme, sous nom de code, pour intéresser des repreneurs.",
+      "La présentation complète de votre entreprise, en neuf chapitres.",
+      "Le fichier Excel de vos chiffres et du calcul de la valeur, en formules."
+    ],
+    "garanties_titre": "Nos garanties"
+  },
+  "pied": {
+    "identite": "",
+    "avertissement": "Estimations indicatives, non contractuelles. Ne constitue pas un conseil juridique, fiscal ou financier.",
+    "liens": "Liens légaux",
+    "mentions": "Mentions légales",
+    "confidentialite": "Confidentialité",
+    "cgu": "Conditions d’utilisation",
+    "joindre": "Nous joindre",
+    "documents_titre": "Votre dossier",
+    "utiles_titre": "Liens utiles",
+    "sources_note": "Registres lus à chaque estimation (mis en cache 24 heures). Multiples sectoriels sourcés et datés.",
+    "telephone_lien": "tel:{telephone}",
+    "email_lien": "mailto:{email_contact}",
+    "marque": "Passation"
+  },
+  "js": {
+    "chargement": "Nous lisons les registres publics...",
+    "erreurs": {
+      "siren_invalide": "Ce SIREN ne semble pas valide. Vérifiez les 9 chiffres ou tapez le nom de votre société.",
+      "introuvable": "Nous ne trouvons pas cette société. Essayez son SIREN, ou son nom exact.",
+      "source_indisponible": "Le registre ne répond pas pour le moment. Réessayez dans un instant.",
+      "inactive": "Cette entreprise n'est plus active dans les registres publics.",
+      "trop_de_requetes": "Trop de recherches en peu de temps. Réessayez dans une heure.",
+      "reseau": "Connexion impossible. Vérifiez votre réseau et réessayez.",
+      "saisie_vide": "Tapez le nom de votre société ou son SIREN à 9 chiffres."
+    },
+    "resultat": {
+      "code_intro": "Votre dossier circulera sous ce nom",
+      "fourchette_titre": "Valeur d'entreprise estimée",
+      "methode": "Calculée sur l'EBE {annee} ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur.",
+      "note": "Estimation indicative, établie à partir des comptes publics {exercice}. Elle s'affine avec vos propres chiffres.",
+      "note_saisie": "Estimation indicative, établie à partir des deux chiffres que vous avez saisis. L'estimation approfondie l'affine avec vos comptes complets.",
+      "sur_mesure": "Sur mesure",
+      "sur_mesure_note": "La méthode express s'appuie sur l'EBE du dernier exercice ; elle ne s'applique pas ici. L'estimation approfondie tient compte de vos retraitements et de vos perspectives.",
+      "a_completer": "À affiner avec vos chiffres",
+      "a_completer_note": "Nous n'affichons pas de fourchette sans référence sectorielle fiable pour votre activité. L'estimation approfondie s'appuie sur vos propres chiffres.",
+      "confidentiels": "Vos comptes sont confidentiels. Deux chiffres suffisent pour une première fourchette.",
+      "ca": "Chiffre d'affaires du dernier exercice (k€)",
+      "ebe": "EBE du dernier exercice (k€)",
+      "voir": "Voir ma fourchette",
+      "saisie_note": "Ces chiffres ne sont pas enregistrés tant que vous n'avez pas créé de compte.",
+      "saisie_erreur": "Indiquez votre chiffre d'affaires et votre EBE, en milliers d'euros.",
+      "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
+      "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
+      "dossier_bouton": "Ouvrir mon dossier",
+      "dossier_note": "Votre dossier : gratuit, un code par e-mail, aucun mot de passe",
+      "tampon": "Confidentiel",
+      "profil": {
+        "secteur": "Secteur",
+        "region": "Région",
+        "anciennete": "Ancienneté",
+        "effectif": "Effectif"
+      },
+      "profil_note": "Ni nom, ni ville, ni chiffre identifiant : c'est ce que verra un repreneur.",
+      "prive": "Visible de vous seul",
+      "methode_saisie": "Calculée sur l'EBE que vous avez saisi ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur."
+    },
+    "video": {
+      "pause": "Mettre la vidéo en pause",
+      "lecture": "Lire la vidéo"
+    },
+    "analyse": [
+      "Entreprise identifiée dans les registres",
+      "Comptes publics récupérés",
+      "Multiples du secteur appliqués",
+      "Nom de code attribué"
+    ]
+  },
+  "sources": {
+    "libelle": "Données issues de",
+    "liste": [
+      "INSEE",
+      "INPI",
+      "BODACC"
+    ]
+  },
+  "dossier": {
+    "titre": "Le dossier d’une grande cession, pour votre PME.",
+    "texte": "Ce que les banques d’affaires préparent pour les grandes entreprises, Passation le prépare pour la vôtre.",
+    "documents": {
+      "titre": "Trois documents, rédigés d’un coup",
+      "texte": "Au format des banques d’affaires, à partir de vos chiffres. Vous relisez, vous corrigez, vous transmettez.",
+      "pilules": [
+        "Teaser anonyme",
+        "Mémorandum",
+        "Datapack Excel"
+      ],
+      "photo_alt": "Photo d’illustration : artisane à l’établi"
+    },
+    "methodes": {
+      "chiffre": "3",
+      "titre": "sources de multiples croisées",
+      "texte": "Les multiples d’EBE (excédent brut d’exploitation) de votre secteur, croisés entre trois références datées, puis contrôlés par l’actif net. Chaque hypothèse est sourcée : une fourchette que vous pouvez défendre."
+    },
+    "liste": {
+      "etapes": [
+        "Valorisation",
+        "Teaser anonyme",
+        "Mémorandum",
+        "Datapack Excel"
+      ],
+      "legende": "Rédigé par l’IA, vérifié par vous",
+      "alt": "Exemple de dossier en cours : valorisation, teaser et mémorandum prêts, datapack en cours"
+    }
+  }
+}

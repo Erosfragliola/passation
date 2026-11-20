@@ -6,18 +6,20 @@ import { routeDemandeCode, routeVerificationCode, routeDeconnexion, routeMoi } f
 import { routeDossiers } from "./routes/dossiers.js";
 import { origineAutorisee } from "./lib/auth.js";
 import { relancer } from "./routes/suivi.js";
-import { routeLanding } from "./routes/landing.js";
+import { routePage, routeRobots, routeSitemap } from "./routes/pages.js";
+import { avecLangue, langueDeRequete } from "./i18n.js";
 
 /**
  * Point d'entrée du Worker.
- * Seules les URL /api/* et la page d'accueil arrivent ici (run_worker_first) ; le reste est servi depuis public/.
+ * Tout arrive ici sauf les ressources statiques (css, js, img, fonts, video : run_worker_first) : l'API, et les pages,
+ * remplies dans leur langue (src/routes/pages.js).
  */
 const LOCAL = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
 export default {
   async fetch(request, env) {
     try {
-      return await router(request, env);
+      return await avecLangue(langueDeRequete(request), () => router(request, env));
     } catch (e) {
       // Aucune information interne dans la réponse ; le détail reste dans les journaux du Worker.
       console.error("erreur non gérée :", e?.stack || e);
@@ -26,7 +28,8 @@ export default {
   },
   /** Tâche planifiée quotidienne : rappel unique des dossiers interrompus depuis 3 jours. */
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(relancer(env).then((n) => console.log(`Rappels envoyés : ${n}`)));
+    // Sans page d'origine, la langue de l'utilisateur n'est pas connue : rappels en français (la langue des données).
+    ctx.waitUntil(avecLangue("fr", () => relancer(env)).then((n) => console.log(`Rappels envoyés : ${n}`)));
   },
 };
 
@@ -35,7 +38,8 @@ async function router(request, env) {
   const p = url.pathname;
   const m = request.method;
 
-  if (p === "/" && (m === "GET" || m === "HEAD")) return routeLanding(request, env);
+  if (p === "/robots.txt") return routeRobots(request);
+  if (p === "/sitemap.xml") return routeSitemap(request);
   if (p === "/api/health") return json({ ok: true, app: env.APP_NAME ?? "Passation" });
 
   // Sans secret serveur, codes de connexion et empreintes d'IP seraient hachés sans sel secret : hors développement
@@ -68,5 +72,6 @@ async function router(request, env) {
   }
 
   if (p.startsWith("/api/")) return json({ erreur: "route_inconnue" }, 404);
+  if (m === "GET" || m === "HEAD") return routePage(request, env);
   return env.ASSETS.fetch(request);
 }

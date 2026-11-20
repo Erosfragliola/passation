@@ -1,0 +1,8 @@
+{
+  "_lisez_moi": "Textes communs à toutes les pages (en-tête, sélecteur de langue). Mêmes clés dans src/contenu/en/commun.json.",
+  "langues": {
+    "choisir": "Choisir la langue",
+    "en": "English",
+    "fr": "Français"
+  }
+}

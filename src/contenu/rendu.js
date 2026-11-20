@@ -1,19 +1,23 @@
-// Contenus de la page d'accueil (src/contenu/landing.json) : fonctions pures, sans DOM ni Worker (testées dans
-// test/contenu.test.js). Le Worker les applique à la page avec HTMLRewriter (src/routes/landing.js).
+// Textes des pages (src/contenu/<langue>/*.json) : fonctions pures, sans DOM ni Worker (testées dans
+// test/contenu.test.js). Le Worker les applique aux pages avec HTMLRewriter (src/routes/pages.js).
+// contenu.langue (« fr » par défaut) choisit la typographie ; contenu.typo === false la désactive (textes déjà
+// typographiés, recopiés tels quels des pages).
 //
 // Conventions du fichier de contenu :
 //   *mot*      mot-clé en italique (Instrument Serif) ;
 //   {cle}      valeur de « cles » (prix, téléphone…) ;
 //   valeur vide (ou {cle} vide) : l'élément est retiré de la page ;
 //   liste de textes : un paragraphe par élément.
-// La typographie française est appliquée ici : on peut écrire le fichier avec des espaces et apostrophes simples.
+// La typographie est appliquée ici : on peut écrire le fichier avec des espaces et apostrophes simples.
 
 const FINE = " ";   // espace fine insécable
 const INSECABLE = " ";
 
 /** Espaces fines avant ; : ! ? et dans « », apostrophe typographique, espace insécable avant les unités, points
  *  de suspension. N'ajoute jamais d'espace là où il n'y en a pas avant ; : ! ? (heures, adresses). */
-export function typographier(s) {
+export function typographier(s, langue = "fr") {
+  if (langue === false) return String(s);
+  if (langue !== "fr") return String(s).replace(/\.\.\./g, "…").replace(/'/g, "’");
   return String(s)
     .replace(/\.\.\./g, "…")
     .replace(/'/g, "’")
@@ -26,6 +30,9 @@ export function typographier(s) {
 
 /** Échappement HTML (texte et attributs). */
 export const echapper = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/** Typographie d'un contenu : sa langue, ou false (aucune). */
+const typo = (contenu) => (contenu?.typo === false ? false : contenu?.langue || "fr");
 
 /** Valeur à un chemin « a.b.0.c ». */
 export function lire(contenu, chemin) {
@@ -66,8 +73,8 @@ export function interpoler(s, cles = {}) {
 }
 
 /** Texte en ligne : échappé, typographié, *mot* → <em>mot</em>. */
-export function enLigne(s) {
-  return echapper(typographier(s)).replace(/\*([^*]+)\*/g, "<em>$1</em>");
+export function enLigne(s, langue = "fr") {
+  return echapper(typographier(s, langue)).replace(/\*([^*]+)\*/g, "<em>$1</em>");
 }
 
 /**
@@ -77,7 +84,7 @@ export function enLigne(s) {
 export function html(contenu, chemin) {
   const v = lire(contenu, chemin);
   if (estVide(v)) return null;
-  const un = (s) => { const t = interpoler(s, contenu.cles); return t == null || estVide(t) ? null : enLigne(t); };
+  const un = (s) => { const t = interpoler(s, contenu.cles); return t == null || estVide(t) ? null : enLigne(t, typo(contenu)); };
   if (Array.isArray(v)) {
     const ps = v.map(un).filter(Boolean);
     return ps.length ? ps.map((p) => `<p>${p}</p>`).join("") : null;
@@ -91,7 +98,7 @@ export function texte(contenu, chemin) {
   const v = lire(contenu, chemin);
   if (typeof v !== "string" || estVide(v)) return null;
   const t = interpoler(v, contenu.cles);
-  return t == null || estVide(t) ? null : typographier(t).replace(/\*([^*]+)\*/g, "$1");
+  return t == null || estVide(t) ? null : typographier(t, typo(contenu)).replace(/\*([^*]+)\*/g, "$1");
 }
 
 /** « attr=chemin; attr2=chemin2 » → [[attr, chemin], …] */
@@ -108,7 +115,7 @@ export function valeurAttribut(attr, t) {
 export function pourJs(contenu, chemin) {
   const v = lire(contenu, chemin);
   const parcourir = (x) => {
-    if (typeof x === "string") return typographier(interpoler(x, contenu.cles) ?? "");
+    if (typeof x === "string") return typographier(interpoler(x, contenu.cles) ?? "", typo(contenu));
     if (Array.isArray(x)) return x.map(parcourir);
     if (x && typeof x === "object") return Object.fromEntries(Object.entries(x).map(([k, y]) => [k, parcourir(y)]));
     return x;

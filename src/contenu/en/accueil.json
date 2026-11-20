@@ -1,24 +1,9 @@
 {
-  "_lisez_moi": "Textes de la page d'accueil. *mot* : mot-clé en italique. {cle} : valeur de « cles ». Une valeur vide retire l'élément de la page. Espaces fines et apostrophes typographiques ajoutées automatiquement : écrivez « Et la vôtre ? » avec une espace simple. Dans « cles » : prix et durées avec leur unité (« 490 € », « Gratuit », « 20 minutes ») ; temoignages : liste d'objets { texte, prenom, metier, ville }, deux au moins pour afficher « Ils l'ont fait » ; guides : liste d'objets { titre, url, image }, trois au moins pour afficher la section et le lien de l'en-tête ; rappel : true pour afficher « Être rappelé » (e-mail à email_contact) ; fondateur_nom et fondateur_texte affichent « Derrière Passation » ; legal : l'identité du pied de page, les morceaux vides sont retirés.",
+  "_lisez_moi": "Textes de la page d'accueil. *mot* : mot-clé en italique. {cle} : valeur de « cles » (src/contenu/cles.json, ou « cles » ci-dessous pour les réglages qui sont du texte). Une valeur vide retire l'élément de la page. Espaces fines et apostrophes typographiques ajoutées automatiquement : écrivez « Et la vôtre ? » avec une espace simple. Dans les « cles » : prix et durées avec leur unité (« 490 € », « Gratuit », « 20 minutes ») ; temoignages : liste d'objets { texte, prenom, metier, ville }, deux au moins pour afficher « Ils l'ont fait » ; guides : liste d'objets { titre, url, image }, trois au moins pour afficher la section et le lien de l'en-tête ; rappel : true pour afficher « Être rappelé » (e-mail à email_contact) ; fondateur_nom et fondateur_texte affichent « Derrière Passation » ; legal : l'identité du pied de page, les morceaux vides sont retirés.",
   "cles": {
-    "nb_dirigeants": "",
-    "note_avis": "",
-    "nb_avis": "",
-    "prix_etape2": "",
     "duree_etape2": "",
-    "prix_dossier": "",
-    "telephone": "",
-    "email_contact": "",
-    "rappel": false,
-    "fondateur_nom": "",
     "fondateur_titre": "",
     "fondateur_texte": "",
-    "fondateur_photo": "",
-    "photo_dirigeant": "",
-    "chiffres": {
-      "entreprises_estimees": "",
-      "dossiers_prepares": ""
-    },
     "temoignages": [],
     "guides": [],
     "faq_prix": "",
@@ -26,15 +11,7 @@
     "faq_qui": "",
     "faq_repreneur": "",
     "hebergement": "",
-    "partenaires": "",
-    "legal": {
-      "raison_sociale": "",
-      "forme": "",
-      "capital": "",
-      "rcs": "",
-      "adresse": ""
-    },
-    "videos_metiers": []
+    "partenaires": ""
   },
   "meta": {
     "titre": "Passation · Préparez la cession de votre entreprise",

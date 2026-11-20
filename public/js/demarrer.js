@@ -13,6 +13,7 @@ import { REGIONS } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { lien } from "/js/i18n.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -34,7 +35,7 @@ function message(t, erreur = false) { const m = $("#message"); m.textContent = t
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
   const r = await fetch(chemin, { ...options, headers: enJson ? { "content-type": "application/json" } : {} });
-  if (r.status === 401) { location.replace("/connexion"); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non connecté"); }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw Object.assign(new Error(d.message || "Une erreur est survenue."), { statut: r.status });
   return d;
@@ -296,7 +297,7 @@ function chiffres() {
     el("p", { class: "petit" },
       el("button", { type: "button", class: "lien-simple", onclick: () => { S.saisie = null; aller("saisie"); } }, "Saisir un autre exercice"), " · ",
       el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, "Déposer une autre liasse"), " · ",
-      el("a", { href: `/espace/valorisation/?dossier=${id}#chiffres`, text: "Mode détaillé (toutes les lignes)" })),
+      el("a", { href: lien(`/espace/valorisation/?dossier=${id}#chiffres`), text: "Mode détaillé (toutes les lignes)" })),
     dernierConfirme() ? el("button", { type: "button", class: "btn btn-vert", onclick: () => aller(etapeCourante()) }, "Continuer ", fleche()) : null);
 }
 function ligneAVerifier(annee, cle, cellule) {
@@ -724,21 +725,21 @@ async function pret() {
       el("p", { class: "valeur-centrale chiffre", text: fourchette(v.bas, v.haut) }), el("p", { class: "petit", text: v.base }), v.ecart ? el("p", { class: "petit", text: v.ecart }) : null) : null,
     f.reste.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: f.resteTitre }),
       el("ul", {}, ...f.reste.map((t) => el("li", {}, t.pieces
-        ? el("a", { href: `/espace/?dossier=${id}#checklist`, text: t.titre })
-        : el("a", { href: t.href.startsWith("#") ? `/espace/?dossier=${id}${t.href}` : t.href, text: t.titre }), el("span", { class: "petit", text: ` · ${t.detail}` }))))) : null,
+        ? el("a", { href: lien(`/espace/?dossier=${id}#checklist`), text: t.titre })
+        : el("a", { href: t.href.startsWith("#") ? lien(`/espace/?dossier=${id}${t.href}`) : t.href, text: t.titre }), el("span", { class: "petit", text: ` · ${t.detail}` }))))) : null,
     el("div", { class: "guide-docs" },
-      ...[["Valorisation détaillée", "Multiples du secteur, hypothèses et sources", `/espace/valorisation/?dossier=${id}#valorisation`],
+      ...[["Valorisation détaillée", "Multiples du secteur, hypothèses et sources", lien(`/espace/valorisation/?dossier=${id}#valorisation`)],
         ["Datapack Excel", "9 onglets, formules vivantes", `${base}/documents/datapack`, true],
-        ["Teaser anonyme", "Une page pour éveiller l'intérêt", `/espace/documents/teaser/?dossier=${id}`],
-        ["Mémorandum d'information", "La présentation complète, en diapositives", `/espace/documents/memo/?dossier=${id}`]]
+        ["Teaser anonyme", "Une page pour éveiller l'intérêt", lien(`/espace/documents/teaser/?dossier=${id}`)],
+        ["Mémorandum d'information", "La présentation complète, en diapositives", lien(`/espace/documents/memo/?dossier=${id}`)]]
         .map(([t, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: t }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
-    el("p", { class: "petit" }, "Pour affiner (décotes et primes, EBE retenu) : ", el("a", { href: `/espace/valorisation/?dossier=${id}#valorisation`, text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: `/espace/documents/memo/?dossier=${id}`, text: "page du mémorandum" }), ". Pour modifier une réponse : ", el("a", { href: `/espace/demarrer/?dossier=${id}&etape=questions`, text: "revoir vos réponses" }), "."));
+    el("p", { class: "petit" }, "Pour affiner (décotes et primes, EBE retenu) : ", el("a", { href: lien(`/espace/valorisation/?dossier=${id}#valorisation`), text: "réglages de la valorisation" }), ". Pour ajouter des photos au mémorandum : ", el("a", { href: lien(`/espace/documents/memo/?dossier=${id}`), text: "page du mémorandum" }), ". Pour modifier une réponse : ", el("a", { href: lien(`/espace/demarrer/?dossier=${id}&etape=questions`), text: "revoir vos réponses" }), "."));
 }
 
 // ================================================================== Chargement
 (async () => {
-  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
-  $("#lien-dossier").href = `/espace/?dossier=${id}`;
+  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
+  $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
   try {
     const [moi, dossier, ch, rep, props] = await Promise.all([api("/api/me"), api(base), api(`${base}/financials`), api(`${base}/answers`), api(`${base}/documents/memo/propositions`).catch(() => ({}))]);
     S.propositions = props.propositions || {};

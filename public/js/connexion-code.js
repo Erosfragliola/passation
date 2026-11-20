@@ -2,6 +2,7 @@
 //   1. l'adresse e-mail → un code est envoyé ;  2. le code → session ouverte, direction le dossier.
 // Utilisé par la fenêtre de connexion (landing) et par la page /connexion.
 // Les liens marqués data-connexion ouvrent la fenêtre ; sans JavaScript, ils mènent à /connexion.
+import { lien } from "/js/i18n.js";
 
 const ATTENTE_RENVOI = 30; // secondes avant de pouvoir redemander un code
 
@@ -126,7 +127,7 @@ export async function ouvrirConnexion({ siren = "" } = {}) {
   try {
     const r = await fetch("/api/me");
     await r.text();
-    if (r.ok) { location.assign(siren ? `/espace/?siren=${siren}` : "/espace/"); return; }
+    if (r.ok) { location.assign(lien(siren ? `/espace/?siren=${siren}` : "/espace/")); return; }
   } catch { /* réseau : on tente quand même la fenêtre */ }
 
   document.getElementById("dialog-connexion")?.remove();

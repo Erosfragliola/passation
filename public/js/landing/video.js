@@ -1,4 +1,4 @@
-// Vidéo du hero : playlist de clips de métiers (src/contenu/landing.json, cles.videos_metiers :
+// Vidéo du hero : playlist de clips de métiers (src/contenu/cles.json, videos_metiers :
 // [{ mp4, webm, poster, metier, mp4_720?, webm_720? }]), 1,5 à 2 s chacun, enchaînés en fondu de 400 ms par deux
 // <video> en alternance (le second lecteur n'est créé qu'à ce moment), en boucle. Liste vide : la vidéo actuelle, en
 // boucle, en 1080p ; la 2160p seulement à partir de 1 600 px de large, sur une connexion rapide.

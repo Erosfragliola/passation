@@ -11,6 +11,7 @@ import { envoyerCodeConnexion } from "../lib/email.js";
 import { verifierDebit, verifierDebitCle } from "../lib/ratelimit.js";
 import { sirenValide, nettoyerSiren } from "../lib/siren.js";
 import { creerDossierPourSiren, listerDossiers } from "./dossiers.js";
+import { lien } from "../../public/js/i18n.js";
 
 const MESSAGE_ENVOI = "Si l'adresse est valide, un code à 6 chiffres vient de vous être envoyé. Il est valable 10 minutes.";
 
@@ -104,7 +105,7 @@ export async function routeVerificationCode(request, env) {
     const dossier = await creerDossierPourSiren(env, user.id, siren).catch(() => null);
     if (dossier) destination = `/espace/demarrer/?dossier=${dossier.id}`; // parcours guidé, repris là où il s'est arrêté
   }
-  return json({ ok: true, destination }, 200, { "set-cookie": cookieSession(secret), "cache-control": "no-store" });
+  return json({ ok: true, destination: lien(destination) }, 200, { "set-cookie": cookieSession(secret), "cache-control": "no-store" });
 }
 
 export async function routeDeconnexion(request, env) {

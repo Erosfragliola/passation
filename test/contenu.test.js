@@ -1,7 +1,11 @@
 // Contenus de la page d'accueil : rendu (typographie, italiques, clés vides) et cohérence avec index.html.
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import contenu from "../src/contenu/landing.json";
+import accueil from "../src/contenu/fr/accueil.json";
+import CLES from "../src/contenu/cles.json";
+import commun from "../src/contenu/fr/commun.json";
+// Contenu de la page d'accueil tel que le Worker le compose : textes français et réglages communs.
+const contenu = { ...accueil, commun, cles: { ...CLES, ...accueil.cles } };
 import { typographier, enLigne, interpoler, html, texte, lire, estVide, condition, pourJs, jsonDansScript, clesVides, lireAttributs, valeurAttribut, identiteLegale, completer, legendeTemoignage } from "../src/contenu/rendu.js";
 
 const FINE = " ", INSEC = " ";
@@ -200,7 +204,7 @@ describe("fichier de contenu et page d'accueil", () => {
 // data-t-liste, data-t-json), ou si un script de l'accueil la lit dans le sous-arbre « js ». Exceptions documentées :
 // « cles » (liste à fournir par le propriétaire, conditions data-si et gabarits {…}), js.erreurs (lu par le code
 // d'erreur renvoyé par l'API), « _lisez_moi » (mode d'emploi du fichier).
-describe("aucune clé orpheline dans landing.json", () => {
+describe("aucune clé orpheline dans accueil.json", () => {
   const source = (f) => readFileSync(new URL(`../public/js/landing/${f}`, import.meta.url), "utf8");
   const lues = new Set([
     ...[...source("resultat.js").matchAll(/\bR\.([a-z_]+)/g)].map((m) => `js.resultat.${m[1]}`),
@@ -211,7 +215,7 @@ describe("aucune clé orpheline dans landing.json", () => {
   const json = [...PAGE.matchAll(/data-t-json="([^"]+)"/g)].map((m) => m[1]).filter((c) => c !== "js");
   const feuilles = [];
   const parcourir = (v, c) => (v && typeof v === "object" ? Object.entries(v).forEach(([k, y]) => parcourir(y, c ? `${c}.${k}` : k)) : feuilles.push(c));
-  parcourir(contenu, "");
+  parcourir(accueil, "");
   const servie = (c) => c === "_lisez_moi" || c.startsWith("cles.") || c.startsWith("js.erreurs.")
     || [...cites, ...json].some((p) => c === p || c.startsWith(`${p}.`) || p.startsWith(`${c}.`))
     || [...lues].some((p) => c === p || c.startsWith(`${p}.`));

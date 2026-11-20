@@ -3,6 +3,7 @@
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { envoyerMessage } from "../lib/email.js";
+import { lien as lienLocal } from "../../public/js/i18n.js";
 import { SECTIONS_MEMO } from "../documents/memo.js";
 
 export const DELAI_RAPPEL = 3 * 24 * 3600;
@@ -31,7 +32,7 @@ export async function routeTermine(request, env, row, user) {
   if (!(await dossierComplet(env, row.id))) return json({ erreur: "incomplet", message: "Le dossier n'est pas encore complet." }, 409);
   const suivi = await lireSuivi(env, row.id);
   if (suivi.pret_envoye) return json({ ok: true, deja: true });
-  const lien = new URL(`/espace/demarrer/?dossier=${row.id}`, request.url).href;
+  const lien = new URL(lienLocal(`/espace/demarrer/?dossier=${row.id}`), request.url).href;
   const nom = JSON.parse(row.company_json || "{}").nom || "votre entreprise";
   const r = await envoyerMessage(env, user.email, { sujet: "Votre dossier Passation est prêt", titre: `Le dossier de ${nom} est prêt.`, texte: "Valorisation, datapack Excel, teaser anonyme et mémorandum d'information : tout est rédigé. Il vous reste à les relire.", lien, bouton: "Relire mon dossier" }, request.url);
   if (r.envoye) await ecrireSuivi(env, row.id, { ...suivi, pret_envoye: maintenant() });
@@ -53,7 +54,7 @@ export async function relancer(env, base = env.APP_URL || "https://passation.ero
   let n = 0;
   for (const d of await dossiersARelancer(env)) {
     const nom = JSON.parse(d.company_json || "{}").nom || "votre entreprise";
-    const r = await envoyerMessage(env, d.email, { sujet: "Votre dossier Passation vous attend", titre: `Le dossier de ${nom} est en cours.`, texte: "Vous pouvez reprendre là où vous vous étiez arrêté : vos réponses sont enregistrées.", lien: `${base}/espace/demarrer/?dossier=${d.id}`, bouton: "Reprendre mon dossier" }, base);
+    const r = await envoyerMessage(env, d.email, { sujet: "Votre dossier Passation vous attend", titre: `Le dossier de ${nom} est en cours.`, texte: "Vous pouvez reprendre là où vous vous étiez arrêté : vos réponses sont enregistrées.", lien: `${base}${lienLocal(`/espace/demarrer/?dossier=${d.id}`)}`, bouton: "Reprendre mon dossier" }, base);
     if (r.envoye) { await ecrireSuivi(env, d.id, { ...(await lireSuivi(env, d.id)), rappel_envoye: maintenant() }); n++; }
   }
   return n;

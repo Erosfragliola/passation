@@ -8,6 +8,7 @@ import { REGIONS } from "/js/questionnaire.js";
 import { POUR_ALLER_PLUS_LOIN as ETAPES } from "/js/parcours.js";
 import { ETIQUETTE_TITRES, resumeValorisation, explicationEcart, alertesDirigeant } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { lien } from "/js/i18n.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const params = new URLSearchParams(location.search);
@@ -48,7 +49,7 @@ function message(texte, erreur = false, cible = "#parcours-message") {
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
   const r = await fetch(chemin, { ...options, headers: { ...(enJson ? { "content-type": "application/json" } : {}), ...(options.headers || {}) } });
-  if (r.status === 401) { location.replace("/connexion"); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non connecté"); }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(d.message || "Une erreur est survenue.");
   return d;
@@ -477,9 +478,9 @@ function dessinerResultat() {
 
 // ================================================================== Chargement
 async function charger() {
-  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
-  $("#lien-dossier").href = `/espace/?dossier=${id}`;
-  document.querySelectorAll(".lien-guide").forEach((a) => { a.href = `/espace/demarrer/?dossier=${id}`; });
+  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
+  $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
+  document.querySelectorAll(".lien-guide").forEach((a) => { a.href = lien(`/espace/demarrer/?dossier=${id}`); });
   const [dossier, ch, rep] = await Promise.all([api(base), api(`${base}/financials`), api(`${base}/answers`)]);
   dossierCourant = dossier;
   document.title = `Valorisation · ${dossier.entreprise.nom} · Passation`;

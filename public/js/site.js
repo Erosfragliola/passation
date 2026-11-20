@@ -2,9 +2,16 @@
 (() => {
   document.documentElement.classList.remove("sans-js");
 
-  // Développement : contenus de la page d'accueil encore à fournir (clés vides de src/contenu/landing.json)
+  // Développement : contenus de la page d'accueil encore à fournir (clés vides de src/contenu/cles.json et des « cles » de src/contenu/<langue>/accueil.json)
   const manquants = document.documentElement.dataset.contenuManquant;
-  if (manquants) console.warn(`Contenu à fournir (src/contenu/landing.json, « cles ») : ${manquants.split(" ").join(", ")}`);
+  if (manquants) console.warn(`Contenu à fournir (src/contenu/cles.json, ou « cles » de src/contenu/<langue>/accueil.json) : ${manquants.split(" ").join(", ")}`);
+
+  // Sélecteur de langue : le choix est mémorisé (cookie « langue », lu par le Worker sur la page d'accueil) ; l'ancre
+  // de la page suit (le Worker ne la connaît pas).
+  document.querySelectorAll("a[data-langue]").forEach((a) => a.addEventListener("click", () => {
+    document.cookie = `langue=${a.dataset.langue}; path=/; max-age=31536000; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
+    if (location.hash) a.href = a.href.split("#")[0] + location.hash;
+  }));
 
   // Menu mobile
   const bouton = document.querySelector(".nav-bouton");

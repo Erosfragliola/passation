@@ -1,4 +1,5 @@
 // Page du teaser : rédaction (Claude, contrôlée par le serveur), relecture, modification par section, impression.
+import { lien } from "/js/i18n.js";
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
 const base = `/api/dossiers/${id}/documents/teaser`;
@@ -13,7 +14,7 @@ const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat()
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
   const r = await fetch(chemin, { ...options, headers: { "content-type": "application/json" } });
-  if (r.status === 401) { location.replace("/connexion"); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non connecté"); }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) { const e = new Error(d.message || "Une erreur est survenue."); e.problemes = d.problemes; throw e; }
   return d;
@@ -155,8 +156,8 @@ $("#btn-generer").addEventListener("click", async (ev) => {
 });
 $("#btn-imprimer").addEventListener("click", () => window.print());
 async function charger() {
-  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
-  $("#lien-dossier").href = `/espace/?dossier=${id}`;
+  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
+  $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
   try {
     const d = await api(base); rendu(d);
     // Arrivée depuis le bouton « PDF » de la page du dossier : on propose l'enregistrement une fois le teaser affiché

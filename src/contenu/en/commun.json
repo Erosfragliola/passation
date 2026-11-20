@@ -1,0 +1,8 @@
+{
+  "_lisez_moi": "Text shared by every page (header, language switcher). Same keys as src/contenu/fr/commun.json.",
+  "langues": {
+    "choisir": "Choose language",
+    "en": "English",
+    "fr": "Français"
+  }
+}

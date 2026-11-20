@@ -10,6 +10,7 @@
 // Aucune donnée n'est inventée : tout vient des deux réponses de l'API.
 import { CHECKLIST, avancement } from "./dossier-regles.js";
 import { fourchette, montant } from "./landing/estimation.js";
+import { lien } from "./i18n.js";
 
 /** Liste unique des étapes, pour la page du dossier et le parcours guidé (mêmes libellés, même ordre). */
 export const ETAPES_PARCOURS = [
@@ -137,10 +138,10 @@ export function etatParcours(d, memo = null, teaser = null) {
   const manquantes = NB_PIECES - fournies;
 
   const liens = {
-    demarrer: `/espace/demarrer/?dossier=${id}`,
-    valorisation: `/espace/valorisation/?dossier=${id}`,
-    memo: `/espace/documents/memo/?dossier=${id}`,
-    teaser: `/espace/documents/teaser/?dossier=${id}`,
+    demarrer: lien(`/espace/demarrer/?dossier=${id}`),
+    valorisation: lien(`/espace/valorisation/?dossier=${id}`),
+    memo: lien(`/espace/documents/memo/?dossier=${id}`),
+    teaser: lien(`/espace/documents/teaser/?dossier=${id}`),
     datapack: `/api/dossiers/${id}/documents/datapack`,
   };
 

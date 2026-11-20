@@ -5,7 +5,7 @@ import {
   NB_PIECES, ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, ETIQUETTE_EXPRESS, ETIQUETTE_TITRES,
 } from "../public/js/dossier-parcours.js";
 import { NB_QUESTIONS } from "../public/js/parcours.js";
-import LANDING from "../src/contenu/landing.json";
+import LANDING from "../src/contenu/fr/accueil.json";
 
 // Dossiers entièrement fictifs. Les valeurs attendues sont comptées à la main à partir de ces données, pas tirées du code.
 const ID = "00000000-0000-4000-8000-000000000001";

@@ -2,6 +2,7 @@
 const $ = (s) => document.querySelector(s);
 import { CARTE } from "/js/carte-france.js";
 import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices } from "/js/memo-format.js";
+import { lien } from "/js/i18n.js";
 const id = new URLSearchParams(location.search).get("dossier") || "";
 const base = `/api/dossiers/${id}/documents/memo`;
 const el = (tag, attrs = {}, ...enfants) => {
@@ -17,7 +18,7 @@ function message(t, erreur = false) { const m = $("#message"); m.textContent = t
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
   const r = await fetch(chemin, { ...options, headers: enJson ? { "content-type": "application/json" } : {} });
-  if (r.status === 401) { location.replace("/connexion"); throw new Error("non connecté"); }
+  if (r.status === 401) { location.replace(lien("/connexion")); throw new Error("non connecté"); }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(d.message || "Une erreur est survenue.");
   return d;
@@ -103,7 +104,7 @@ function dessinerVerrou() {
   const v = etat.deverrouille;
   remplacer($("#verrou"), v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: "Avant de rédiger le mémorandum :" }),
     el("ul", {}, ...v.manque.map((m) => el("li", { text: m }))),
-    el("a", { class: "btn btn-noir btn-mini", href: `/espace/valorisation/?dossier=${id}#entreprise` }, "Ouvrir le questionnaire")));
+    el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/valorisation/?dossier=${id}#entreprise`) }, "Ouvrir le questionnaire")));
   $("#btn-tout").disabled = !v.ok;
 }
 
@@ -960,8 +961,8 @@ async function suivreLien() {
   if (new URLSearchParams(location.search).get("imprimer") === "1") { await document.fonts?.ready; window.print(); }
 }
 (async () => {
-  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace("/espace/"); return; }
-  $("#lien-dossier").href = `/espace/?dossier=${id}`;
+  if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
+  $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
   try { etat = await api(base); tout(); suivreLien(); } catch (e) { if (e.message !== "non connecté") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();
