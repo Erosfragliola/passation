@@ -1,31 +1,31 @@
-/* Passation : feuille de styles commune, DA v2 (chaude, foncée, incarnée)
-   Proportions visées : crème 50 % · espresso 30 % · sable 15 % · vert et cuivre 5 %.
-   Contrastes vérifiés (WCAG AA) : voir PLAN.md, section DA v2. */
+/* Passation: shared stylesheet, art direction v2 (warm, dark, embodied)
+   Target proportions: cream 50% · espresso 30% · sand 15% · green and copper 5%.
+   Contrasts checked (WCAG AA): see PLAN.md, art direction v2 section. */
 
 @font-face { font-family: "Geist"; src: url("/fonts/geist-var.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
 @font-face { font-family: "Geist"; src: url("/fonts/geist-var-italic.woff2") format("woff2"); font-weight: 100 900; font-style: italic; font-display: swap; }
 
 :root {
-  --espresso: #231E18;      /* texte principal, boutons, sections sombres */
-  --creme: #FBF6EC;         /* fond principal */
-  --sable: #EADFCB;         /* cartes, citations, bouton secondaire */
-  --pierre: #8A7F70;        /* traits et filets uniquement (contraste insuffisant pour du texte) */
-  --vert: #1E3A2E;          /* accent : CTA principal, chiffres de valorisation */
-  --cuivre: #A8653A;        /* signature : le témoin. Jamais pour du texte. */
-  --cuivre-clair: #E9C9A4;  /* mot en italique des titres sur fond sombre */
+  --espresso: #231E18;      /* main text, buttons, dark sections */
+  --creme: #FBF6EC;         /* main background */
+  --sable: #EADFCB;         /* cards, quotes, secondary button */
+  --pierre: #8A7F70;        /* lines and rules only (contrast insufficient for text) */
+  --vert: #1E3A2E;          /* accent: main CTA, valuation figures */
+  --cuivre: #A8653A;        /* signature: the baton. Never for text. */
+  --cuivre-clair: #E9C9A4;  /* italic word of titles on a dark background */
 
-  --pierre-texte: #696155;  /* texte secondaire sur crème (5,7:1) et sable (4,6:1) */
-  --pierre-nuit: #A39886;   /* texte secondaire sur espresso (≥ 5:1) */
-  --espresso-2: #2E2720;    /* cartes sur fond espresso */
+  --pierre-texte: #696155;  /* secondary text on cream (5.7:1) and sand (4.6:1) */
+  --pierre-nuit: #A39886;   /* secondary text on espresso (≥ 5:1) */
+  --espresso-2: #2E2720;    /* cards on an espresso background */
   --vert-survol: #2C5242;
   --trait: rgba(35, 30, 24, 0.12);
   --trait-fort: rgba(35, 30, 24, 0.22);
   --trait-nuit: rgba(251, 246, 236, 0.12);
 
-  /* Une seule famille : Geist (titres, texte et étiquettes) */
+  /* A single family: Geist (titles, text and labels) */
   --serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
   --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; /* police unique (18/11/2026) : plus de chasse fixe */
+  --mono: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; /* single font (18/11/2026): no more monospace */
 
   --r-carte: 24px;
   --r-pilule: 999px;
@@ -53,7 +53,7 @@ a { color: inherit; }
 .lien-evitement:focus { left: 16px; }
 .conteneur { width: 100%; max-width: var(--largeur); margin: 0 auto; padding: 0 var(--gouttiere); }
 
-/* ---------- Typographie ---------- */
+/* ---------- Typography ---------- */
 h1, h2, h3 { font-family: var(--serif); font-weight: 500; margin: 0; letter-spacing: -0.04em; color: inherit; }
 h1 { font-size: clamp(2.6rem, 7.6vw, 5.6rem); line-height: 1; }
 h2 { font-size: clamp(2rem, 4.8vw, 3.5rem); line-height: 1.05; }
@@ -70,11 +70,11 @@ p { margin: 0; }
 .petit { font-size: 0.9rem; color: var(--pierre-texte); }
 .nuit .petit { color: var(--pierre-nuit); }
 .chiffre { font-variant-numeric: tabular-nums; }
-/* Sections sombres */
+/* Dark sections */
 .nuit { background: var(--espresso); color: var(--creme); }
 .nuit .chapo, .nuit p { color: rgba(251, 246, 236, 0.86); }
 
-/* ---------- Boutons ---------- */
+/* ---------- Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   min-height: 50px; padding: 0 26px; border-radius: var(--r-pilule);
@@ -94,7 +94,7 @@ p { margin: 0; }
 .btn .fleche { transition: transform .2s; }
 .btn:hover .fleche { transform: translateX(3px); }
 
-/* ---------- Navigation en pilule flottante ---------- */
+/* ---------- Floating pill navigation ---------- */
 .nav-zone { position: fixed; top: 12px; left: 0; right: 0; z-index: 50; padding: 0 var(--gouttiere); }
 .nav {
   max-width: 1000px; margin: 0 auto;
@@ -129,18 +129,18 @@ section { padding: 88px 0; }
 .centre { text-align: center; margin-left: auto; margin-right: auto; }
 .centre .chapo { margin-left: auto; margin-right: auto; }
 
-/* ---------- Photos : étalonnage commun et emplacements ---------- */
+/* ---------- Photos: shared grading and placements ---------- */
 .photo { position: relative; overflow: hidden; border-radius: var(--r-carte); background: var(--espresso-2); }
 .photo img, .photo video { width: 100%; height: 100%; object-fit: cover; filter: var(--etalonnage); }
-/* ---------- Hero plein écran ---------- */
+/* ---------- Full-screen hero ---------- */
 .hero {
   position: relative; min-height: 100svh; padding: 132px 0 0; overflow: hidden;
   display: flex; flex-direction: column; justify-content: space-between; isolation: isolate;
   background: var(--espresso); color: var(--creme);
 }
 .hero-fond { position: absolute; inset: 0; z-index: -2; }
-.hero-fond img, .hero-fond video { width: 100%; height: 100%; object-fit: cover; } /* hero en noir et blanc : pas d'étalonnage sépia */
-.hero::before { /* voile espresso à 45 %, puis dégradé plus sombre en bas pour les chiffres */
+.hero-fond img, .hero-fond video { width: 100%; height: 100%; object-fit: cover; } /* black-and-white hero: no sepia grading */
+.hero::before { /* espresso overlay at 45%, then a darker gradient at the bottom for the figures */
   content: ""; position: absolute; inset: 0; z-index: -1;
   background:
     linear-gradient(180deg, rgba(35, 30, 24, 0.0) 45%, rgba(35, 30, 24, 0.55) 75%, rgba(35, 30, 24, 0.92) 100%),
@@ -169,21 +169,21 @@ section { padding: 88px 0; }
 .recherche-note { margin-top: 14px; font-size: 0.92rem; color: rgba(251, 246, 236, 0.82); }
 .recherche-note strong { font-weight: 500; color: var(--creme); }
 
-/* ---------- Mission : mosaïque ---------- */
+/* ---------- Mission: mosaic ---------- */
 .m-citation { background: var(--sable); border-radius: var(--r-carte); padding: 32px; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
 @media (min-width: 900px) { .m-citation { padding: 44px; } }
 .m-citation blockquote { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(1.45rem, 2.6vw, 2rem); line-height: 1.25; letter-spacing: -0.03em; color: var(--espresso); }
 .m-citation blockquote em { color: var(--vert); }
 .m-texte { background: var(--creme); border: 1px solid var(--trait); border-radius: var(--r-carte); padding: 28px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
 
-/* ---------- Comment ça marche ---------- */
+/* ---------- How it works ---------- */
 .etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
 @media (min-width: 900px) { .etapes { grid-template-columns: repeat(3, 1fr); } }
 .etape { display: flex; flex-direction: column; gap: 14px; }
 .etape .photo { aspect-ratio: 4 / 3.2; margin-bottom: 10px; }
 .etape h3 { font-size: 1.9rem; }
 
-/* ---------- Boîte à outils ---------- */
+/* ---------- Toolbox ---------- */
 .outils { display: grid; gap: 16px; }
 @media (min-width: 640px) { .outils { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1000px) { .outils { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
@@ -193,7 +193,7 @@ section { padding: 88px 0; }
 .outil ul { margin: 2px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 0.95rem; }
 .outil li { display: flex; gap: 10px; }
 .outil li::before { content: ""; flex: none; width: 5px; height: 5px; border-radius: 50%; background: var(--pierre); margin-top: 0.65em; }
-/* ---------- Confidentialité (nuit) ---------- */
+/* ---------- Confidentiality (night) ---------- */
 .garanties { display: grid; gap: 1px; background: var(--trait-nuit); border-radius: var(--r-carte); overflow: hidden; border: 1px solid var(--trait-nuit); }
 @media (min-width: 640px) { .garanties { grid-template-columns: 1fr 1fr; } }
 .a-remplir {
@@ -214,7 +214,7 @@ section { padding: 88px 0; }
 .faq .reponse { padding: 0 48px 26px 0; }
 .faq .reponse p + p { margin-top: 10px; }
 
-/* ---------- Appel final + pied de page (nuit) ---------- */
+/* ---------- Final call to action + footer (night) ---------- */
 .final { position: relative; overflow: hidden; isolation: isolate; text-align: center; }
 .final::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, var(--espresso) 0%, rgba(35, 30, 24, 0.6) 40%, var(--espresso) 100%); }
 .final .chapo { margin: 20px auto 32px; }
@@ -229,7 +229,7 @@ section { padding: 88px 0; }
 .pied a:hover { color: var(--cuivre-clair); text-decoration: underline; }
 .pied-bas { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--trait-nuit); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 0.88rem; color: var(--pierre-nuit); }
 
-/* ---------- Pages de texte ---------- */
+/* ---------- Text pages ---------- */
 .page-texte { padding: 140px 0 104px; }
 .page-texte .conteneur { max-width: 780px; }
 .page-texte h1 { font-size: clamp(2.6rem, 7vw, 4.2rem); margin-bottom: 24px; }
@@ -237,7 +237,7 @@ section { padding: 88px 0; }
 .page-texte p, .page-texte li { margin-bottom: 10px; }
 .page-texte .a-remplir { margin: 24px 0; }
 
-/* ---------- Apparition au scroll ---------- */
+/* ---------- Reveal on scroll ---------- */
 .apparait { opacity: 0; transform: translateY(18px); transition: opacity .8s ease, transform .8s ease; }
 .apparait.visible { opacity: 1; transform: none; }
 .sans-js .apparait { opacity: 1; transform: none; }
@@ -247,7 +247,7 @@ section { padding: 88px 0; }
   .btn, .btn .fleche, .faq summary .plus { transition: none; }
 }
 
-/* ---------- Autocomplétion ---------- */
+/* ---------- Autocomplete ---------- */
 .suggestions {
   list-style: none; margin: 8px 0 0; padding: 6px; text-align: left; position: absolute; left: 0; right: 0; z-index: 20;
   background: var(--creme); color: var(--espresso); border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
@@ -257,7 +257,7 @@ section { padding: 88px 0; }
 .sugg-nom { font-weight: 500; }
 .sugg-info { font-family: var(--mono); font-size: 12px; color: var(--pierre-texte); }
 
-/* ---------- Votre maquette : frise, estimation, actions ---------- */
+/* ---------- Your model: timeline, estimate, actions ---------- */
 .frise { list-style: none; margin: 0; padding: 0 0 0 22px; border-left: 1px solid var(--trait-nuit); display: grid; gap: 14px; }
 .frise li { position: relative; display: grid; gap: 2px; opacity: 0; transform: translateY(6px); transition: opacity .5s ease, transform .5s ease; }
 .frise li.visible { opacity: 1; transform: none; }
@@ -272,14 +272,14 @@ section { padding: 88px 0; }
 #estimation-valeur { font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .frise li { transition: none; } }
 
-/* Vidéo du hero : posée sur l'image de couverture, fondu à la lecture */
+/* Hero video: placed over the cover image, fades in on playback */
 .hero-fond { position: absolute; }
 .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s ease; }
 .hero-video.lue { opacity: 1; }
-/* Photos portrait dans des cadres paysage : cadrage sur le haut (les visages) */
+/* Portrait photos in landscape frames: framed on the top (the faces) */
 .etape .photo img, .m-portrait img { object-position: center 30%; }
 
-/* ---------- Connexion et espace dirigeant ---------- */
+/* ---------- Sign-in and owner's space ---------- */
 .conteneur-etroit { max-width: 640px; }
 .form-carte { margin-top: 28px; padding: 28px; border-radius: var(--r-carte); background: var(--sable); display: grid; gap: 12px; }
 .form-carte label { font-weight: 500; }
@@ -294,12 +294,12 @@ section { padding: 88px 0; }
 .nuit .jauge { background: var(--trait-nuit); }
 .jauge span { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--vert); transition: width .6s ease; }
 .nuit .jauge span { background: var(--cuivre-clair); }
-/* Tableau de bord : prochaine étape, puis l'état des 4 documents (prêt = lien ; à venir = grisé, pas un lien) */
+/* Dashboard: next step, then the status of the 4 documents (ready = link; upcoming = greyed out, not a link) */
 .titre-docs { font-size: 1.6rem; margin: 48px 0 16px; }
 .guide-doc.a-venir { background: transparent; border: 1px dashed var(--trait-fort); color: #696155; cursor: default; }
 .guide-doc.a-venir:hover { background: transparent; }
 .guide-doc.a-venir .fleche { display: none; }
-/* Gestion du dossier : repliée, ouverte à la demande */
+/* File management: collapsed, opened on demand */
 .gerer-dossier { margin-top: 56px; border-top: 1px solid var(--trait-fort); padding-top: 20px; }
 .gerer-dossier summary { cursor: pointer; display: flex; align-items: baseline; gap: 14px; list-style-position: outside; }
 .gerer-dossier summary::-webkit-details-marker { display: none; }
@@ -315,10 +315,10 @@ dialog { border: 0; border-radius: var(--r-carte); padding: 28px; max-width: 460
 dialog::backdrop { background: rgba(35, 30, 24, 0.6); }
 dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 .dialog-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 22px; }
-/* Connexion par code */
+/* Sign-in by code */
 .dialog-connexion { width: min(520px, calc(100vw - 32px)); max-width: none; position: relative; }
 .dialog-connexion .form-carte { margin-top: 18px; }
-/* Titre de la fenêtre de connexion (accueil) : même titre d'affiche que la page /connexion (19/11/2026) */
+/* Title of the sign-in window (home page): same poster title as the /connexion page (19/11/2026) */
 .dialog-connexion h2.affiche { font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; text-transform: uppercase;
   font-size: clamp(36px, 5vw, 48px); line-height: .95; letter-spacing: .005em; color: var(--vert); margin: 0 40px 0 0; }
 .dialog-fermer { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--trait-fort); background: transparent; color: var(--espresso); font-size: 1.4rem; line-height: 1; cursor: pointer; }
@@ -331,7 +331,7 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 .message-flottant { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60; max-width: calc(100% - 32px);
   padding: 14px 22px; border-radius: var(--r-pilule); background: var(--espresso); color: var(--creme); box-shadow: 0 12px 40px rgba(0,0,0,.3); }
 
-/* ---------- Parcours de valorisation (espace/valorisation) ---------- */
+/* ---------- Valuation flow (espace/valorisation) ---------- */
 nav.etapes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 nav.etapes a { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--trait-nuit); color: var(--creme); text-decoration: none; font-size: .95rem; }
 nav.etapes a[aria-current] { background: var(--creme); color: var(--espresso); }
@@ -409,11 +409,11 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .tableau-resultat tr.total th, .tableau-resultat tr.total td { font-weight: 600; }
 .tableau-resultat tr.fort th, .tableau-resultat tr.fort td { border-top: 2px solid var(--espresso); }
 .carte.vide { display: grid; gap: 14px; justify-items: start; }
-.resultat-tete > *, .resultat-detail > *, .reglages-grille > *, .decote > * { min-width: 0; } /* les tableaux larges défilent au lieu d'élargir la page */
+.resultat-tete > *, .resultat-detail > *, .reglages-grille > *, .decote > * { min-width: 0; } /* wide tables scroll instead of widening the page */
 .tableau-resultat tbody th { font-weight: 400; }
 @media (max-width: 700px) { .carte { padding: 20px; } .valeur-centrale { white-space: normal; } }
 
-/* ---------- Documents imprimables (teaser, mémorandum) ---------- */
+/* ---------- Printable documents (teaser, memorandum) ---------- */
 .document-zone { padding: 120px 0 72px; }
 .document-outils { display: grid; gap: 16px; margin-bottom: 28px; }
 .document-actions { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -455,7 +455,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .doc-tableau { margin: 8px 0 14px; }
 @media print { .memo-couverture { min-height: 60vh; break-after: page; } .memo-sommaire { break-after: page; } .doc-section { break-inside: auto; } }
 
-/* ---------- Mémorandum en diapositives 16:9 (format PowerPoint 33,87 × 19,05 cm) ---------- */
+/* ---------- Memorandum as 16:9 slides (PowerPoint format 33.87 × 19.05 cm) ---------- */
 .feuille-document.memo { background: transparent; box-shadow: none; padding: 0; max-width: 1100px; container-type: inline-size; }
 .diapo { position: relative; aspect-ratio: 16 / 9; background: #fff; color: var(--espresso); box-shadow: 0 18px 50px rgba(35, 30, 24, .14); border-radius: 4px; margin: 0 0 14px; overflow: hidden;
   display: grid; grid-template-rows: auto 1fr auto; padding: 3.2cqw 4.4cqw 2.4cqw; font-size: 1.3cqw; line-height: 1.5; page: diapo; }
@@ -473,7 +473,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
   .feuille-document.memo { margin: 0; }
 }
 
-/* ---------- Mémorandum « banque d'affaires » : bandeau latéral, photos, graphiques ---------- */
+/* ---------- "Investment bank" memorandum: side band, photos, charts ---------- */
 .photo-choisie { display: grid; gap: 4px; justify-items: center; }
 .photo-choisie img, .photo-choix img { width: 120px; height: 80px; object-fit: cover; border-radius: 8px; }
 .photo-choix { width: auto; height: auto; padding: 3px; }
@@ -481,7 +481,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .regions-choix { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 14px; }
 .regions-choix legend, .regions-choix .aide-q { grid-column: 1 / -1; }
 
-/* ---------- Mémorandum : indicateurs à pictogrammes, carte, graphiques, logo Passation ---------- */
+/* ---------- Memorandum: indicators with pictograms, map, charts, Passation logo ---------- */
 .dp-logo-passation { display: inline-flex; align-items: center; gap: .45cqw; font-weight: 600; font-size: 1cqw; color: var(--espresso); letter-spacing: -.01em; }
 .dp-logo-passation svg { width: 1.7cqw; height: 1.7cqw; }
 .dp-logo-passation.clair { color: var(--creme); }
@@ -493,7 +493,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .dp-region.siege { fill: var(--vert); }
 .dp-carte-siege { fill: var(--cuivre-clair); stroke: #fff; stroke-width: 4; }
 .dp-region, .dp-carte-siege { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-/* ---------- Parcours guidé (/espace/demarrer/) ---------- */
+/* ---------- Guided steps (/espace/demarrer/) ---------- */
 .guide { padding: 120px 0 80px; min-height: 80vh; }
 .guide-etapes { list-style: none; padding: 0; margin: 10px 0 12px; display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: .8rem; color: #696155; }
 .guide-etapes li { display: inline-flex; align-items: center; gap: 6px; }
@@ -524,11 +524,11 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 @media (max-width: 600px) { .guide-ligne { grid-template-columns: 1fr; } }
 .guide-champ { display: grid; gap: 8px; border: 0; padding: 0; margin: 0; }
 .guide-lib { font-weight: 500; margin: 0; }
-/* « Déjà fait » : ce que Passation sait avant toute saisie */
+/* "Already done": what Passation knows before any entry */
 .guide-deja { display: grid; gap: 6px; padding: 16px 20px; background: #E3EBE6; }
 .guide-deja ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .guide-deja li::before { content: "✓"; color: var(--vert); font-weight: 600; margin-right: 8px; }
-/* Saisie de l'essentiel : deux groupes, un champ par ligne */
+/* Entry of the essentials: two groups, one field per line */
 .saisie-groupe { display: grid; gap: 16px; border: 1px solid var(--trait-fort); border-radius: var(--r-carte); padding: 18px 20px 22px; margin: 0; }
 .saisie-groupe legend { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: #696155; padding: 0 6px; }
 .saisie-champ { gap: 4px; }
@@ -570,11 +570,11 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 
 
-/* ---------- Mémorandum « banque d'affaires » (17/11/2026) : pleine largeur, titres qui affirment, sources ---------- */
-/* Couverture au nom de code ; sommaire paginé */
+/* ---------- "Investment bank" memorandum (17/11/2026): full width, titles that make a claim, sources ---------- */
+/* Cover with the code name; paginated contents */
 .dp-outils input[type="text"] { width: 100%; min-height: 40px; border-radius: 10px; border: 1px solid var(--trait-fort); padding: 0 12px; font: inherit; }
 
-/* Parcours guidé : cinq premiers clients */
+/* Guided steps: top five customers */
 .top-clients { display: grid; gap: 8px; }
 .top-clients-tete, .top-clients-ligne { display: grid; grid-template-columns: 80px 120px 120px minmax(0, 1fr); gap: 10px; align-items: center; }
 .top-clients-tete { font-size: .85rem; color: #696155; }
@@ -586,28 +586,28 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
   .top-clients-rang { grid-column: 1 / -1; }
   .top-clients-ligne > input { grid-column: 1 / -1; }
 }
-/* Marché : structure du secteur, cartes de faits sourcés */
+/* Market: industry structure, cards of sourced facts */
 .theme-reglementation { border-top-color: var(--cuivre); }
 .theme-concurrence { border-top-color: #6E9A82; }
 
-/* Panneau de l'étude de marché (page du mémorandum) */
+/* Market research panel (memorandum page) */
 #marche .fait strong { color: var(--vert); }
-/* Parcours guidé, 17/11/2026 : tâches en attente d'une réponse, chronomètre, réponses indispensables */
+/* Guided steps, 17/11/2026: tasks awaiting an answer, timer, required answers */
 .guide-taches li.attente { opacity: .55; }
 .guide-chrono { display: block; margin: -6px 0 10px; font-variant-numeric: tabular-nums; color: #696155; min-height: 1.2em; }
 .requis-note { color: #8B4A22; }
 .guide-todo .btn { margin-top: 10px; justify-content: space-between; text-align: left; }
 .guide-todo p.petit { margin: 4px 0 6px; }
 
-/* Espace : fil d'Ariane des pages de documents, et barre du haut sur petit écran (une seule action à côté du logo) */
-/* Fil d'Ariane des pages de documents */
+/* Owner's space: breadcrumb of the document pages, and top bar on small screens (a single action next to the logo) */
+/* Breadcrumb of the document pages */
 .ariane { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px; margin-top: 4px; margin-bottom: 14px; }
 .ariane a { color: var(--vert); font-weight: 600; text-underline-offset: 3px; min-height: 32px; display: inline-flex; align-items: center; }
 .ariane-sep { color: var(--pierre-texte); }
 
 @media (max-width: 420px) { .page-dossier .nav-actions #lien-dossier, body:not(.page-dossier) .nav-actions #btn-deconnexion { display: none; } }
 
-/* ---------------------------------------------------------------- Teaser : une page A4, visuels anonymes */
+/* ---------------------------------------------------------------- Teaser: one A4 page, anonymous visuals */
 .teaser { --tsr-donnee: var(--vert); --tsr-vide: #EFE7D8; --tsr-encre-2: #696155; }
 .teaser .doc-tete { margin-bottom: 22px; }
 .teaser .doc-titre { margin-bottom: 8px; }
@@ -674,17 +674,17 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 @media print { .tsr-courbe { max-height: 32mm; } .teaser { font-size: 10.5pt; } }
 .teaser .doc-section p, .teaser .doc-section li { text-align: justify; hyphens: auto; }
 
-/* Aide sous « Télécharger en PDF » : le bouton ouvre la fenêtre d'impression du navigateur (audit, point 10) */
+/* Help under "Download as PDF": the button opens the browser's print dialog (audit, point 10) */
 .aide-pdf { flex-basis: 100%; margin: 4px 0 0; font-size: 13px; color: var(--pierre-texte); }
 #btn-imprimer[hidden] ~ .aide-pdf { display: none; }
 
-/* Sélecteur de langue (en-tête de toutes les pages, à droite ; sur téléphone, à côté du bouton de menu) */
+/* Language switcher (header of all pages, on the right; on phones, next to the menu button) */
 .langues { display: inline-flex; align-items: center; flex: none; font-size: 0.93rem; font-weight: 500; }
 .langues a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; border-radius: var(--r-pilule); color: var(--pierre-texte); text-decoration: none; letter-spacing: 0.04em; }
 .langues a:hover { background: var(--sable); color: var(--espresso); }
 .langues a[aria-current="true"] { color: var(--espresso); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 5px; }
 .langues-sep { color: var(--pierre); }
-/* Téléphone : le sélecteur tient dans la barre à côté du bouton ; le logo garde son symbole (nom dans aria-label) */
+/* Phone: the switcher fits in the bar next to the button; the logo keeps its symbol (name in aria-label) */
 .nav-actions .btn { white-space: nowrap; }
 @media (max-width: 430px) {
   .langues a { min-width: 38px; }

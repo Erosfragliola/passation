@@ -1,10 +1,10 @@
-/* Mémorandum d'information, typologie « banque d'affaires » (17/11/2026).
-   Conventions reprises (rien de copié) : numéro de page « 1.1 » en accent, titre en petites capitales, phrase-message,
-   puces carrées, encadrés à bandeau plein, tableaux en k€, pied de page avec sources, notes, date et numéro. */
+/* Information memorandum, "investment bank" typology (17/11/2026).
+   Conventions adopted (nothing copied): page number "1.1" in the accent color, title in small capitals, key sentence,
+   square bullets, boxes with a solid band, tables in k€, footer with sources, notes, date and number. */
 
 @font-face { font-family: "Big Shoulders"; font-weight: 700; font-display: swap; src: url("/fonts/big-shoulders-bold.woff2") format("woff2"); }
 @font-face { font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/instrument-serif-italic.woff2") format("woff2"); }
-/* Direction artistique bento (18/11/2026) : couleurs Passation, conventions banque d'affaires */
+/* Bento art direction (18/11/2026): Passation colors, investment-bank conventions */
 .feuille-document.memo {
   --im-encre: #1E3A2E; --im-accent: #A8653A; --im-acier: #2B5040; --im-acier-2: #9DB8A8;
   --im-pale: #EFE5D3; --im-pale-2: #FAF5EB; --im-gris: #6A6256; --im-trait: #E4DACA; --im-accent-pale: #F5E7D6;
@@ -20,14 +20,14 @@
 .diapo.im-page { display: flex; flex-direction: column; padding: 0; font-size: 1.07cqw; line-height: 1.4; background: #fff; }
 .im-page h3, .im-page h4, .im-page h5, .im-page p { margin: 0; }
 
-/* En-tête : numéro, titre en petites capitales, filet gris et trait d'accent */
+/* Header: number, title in small capitals, gray rule and accent stroke */
 .im-entete { position: relative; display: flex; align-items: baseline; gap: 1cqw; padding: 2cqw 2.4cqw .85cqw 1.7cqw; border-bottom: .16cqw solid #ECEFF2; }
 .im-entete::after { content: ""; position: absolute; left: 0; bottom: -.16cqw; width: 4.8cqw; height: .2cqw; background: var(--im-accent); }
 .im-num { color: var(--im-accent); font-weight: 700; font-size: 1.9cqw; line-height: 1; }
 .im-entete h3 { font-size: 1.9cqw; line-height: 1.05; font-weight: 700; color: var(--im-encre); font-variant: small-caps; letter-spacing: .005em; }
 .im-message { color: var(--im-accent); font-size: 1.38cqw; line-height: 1.3; padding: .85cqw 3cqw 0 5.6cqw; }
 
-/* Zone de contenu */
+/* Content area */
 .im-zone { flex: 1 1 0; min-height: 0; overflow: hidden; padding: 1.3cqw 1.7cqw .9cqw; display: flex; flex-direction: column; gap: 1.1cqw; }
 .im-grille { display: grid; gap: 1.6cqw; min-height: 0; flex: 1 1 auto; align-items: stretch; }
 .im-pile { display: flex; flex-direction: column; gap: 1.1cqw; min-height: 0; }
@@ -42,7 +42,7 @@
 .im-g-tableau { grid-template-columns: 54cqw minmax(0, 1fr); align-items: start; }
 .im-g-operation { grid-template-columns: minmax(0, 1fr) 46cqw; }
 
-/* Texte : puces carrées, intertitres, gras du fait clé */
+/* Text: square bullets, subheadings, bold key fact */
 .im-puces { list-style: none; margin: 0; padding: 0; display: grid; gap: .65cqw; align-content: start; }
 .im-puces > li { position: relative; padding-left: 1.25cqw; text-align: justify; hyphens: auto; }
 .im-puces > li::before { content: ""; position: absolute; left: .1cqw; top: .48cqw; width: .42cqw; height: .42cqw; background: var(--im-accent); }
@@ -56,21 +56,21 @@
 .im-carre.petit { min-width: 1.1cqw; height: 1.1cqw; font-size: .7cqw; margin-right: .5cqw; }
 .im-page .a-rediger { color: var(--im-accent); font-style: italic; }
 
-/* Encadré à bandeau plein */
+/* Box with a solid band */
 .im-page section, .im-encadre { padding: 0; }
 .im-encadre { border: 1px solid var(--im-trait); display: flex; flex-direction: column; min-height: 0; background: #fff; }
 .im-bandeau { background: var(--im-encre); color: #fff; font-variant: small-caps; font-weight: 700; font-size: .98cqw; text-align: center; padding: .42cqw 1cqw; letter-spacing: .02em; }
 .im-encadre-corps { padding: .85cqw 1cqw; min-height: 0; flex: 1; display: flex; flex-direction: column; gap: .7cqw; justify-content: flex-start; }
 .im-legende-graph { font-style: italic; font-weight: 700; color: var(--im-encre); text-align: center; font-size: .86cqw; }
 
-/* Bandeau de conclusion et encart d'information */
+/* Conclusion band and information box */
 .im-message-cle { margin: 0 1.7cqw .8cqw; background: var(--im-accent-pale); padding: .75cqw 1.4cqw; border-left: .3cqw solid var(--im-accent); }
 .im-message-cle p { color: var(--im-accent); font-weight: 700; text-align: center; font-size: 1.04cqw; }
 .im-info { display: flex; gap: .8cqw; align-items: flex-start; background: var(--im-accent-pale); padding: .55cqw 1cqw; }
 .im-info-i { flex: none; width: 1.25cqw; height: 1.25cqw; border-radius: 50%; background: var(--im-accent); color: #fff; font: italic 700 .8cqw/1 Georgia, serif; display: grid; place-items: center; margin-top: .05cqw; }
 .im-info p { color: var(--im-accent); font-style: italic; font-size: .9cqw; }
 
-/* Pied de page */
+/* Footer */
 .im-pied { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto 2.4cqw; align-items: center; gap: 1.6cqw; padding: .5cqw 1.2cqw .6cqw 1.4cqw; border-top: .12cqw solid #ECEFF2; font-size: .7cqw; color: var(--im-gris); }
 .im-pied::after { content: ""; position: absolute; right: 0; top: -.12cqw; width: 3.6cqw; height: .2cqw; background: var(--im-accent); }
 .im-pied .dp-logo-passation { font-family: var(--im-police); font-size: .95cqw; color: var(--im-encre); }
@@ -80,7 +80,7 @@
 .im-pied-date { white-space: nowrap; }
 .im-page-num { color: var(--im-accent); font-weight: 700; font-size: .95cqw; text-align: right; }
 
-/* Chiffres clés */
+/* Key figures */
 .im-colonne-chiffres { background: var(--im-pale-2); display: flex; flex-direction: column; justify-content: space-evenly; padding: .8cqw .5cqw; text-align: center; gap: .5cqw; }
 .im-cc { display: grid; justify-items: center; gap: .15cqw; }
 .im-cc-icone { width: 2.9cqw; height: 2.9cqw; border-radius: 50%; border: .14cqw solid var(--im-encre); background: #fff; display: grid; place-items: center; margin-bottom: .15cqw; }
@@ -95,7 +95,7 @@
 .im-table-cles th { text-align: left; font-weight: 700; color: var(--im-encre); padding: .38cqw .5cqw; border-bottom: 1px dashed var(--im-trait); width: 46%; vertical-align: top; }
 .im-table-cles td { padding: .38cqw .5cqw; border-bottom: 1px dashed var(--im-trait); }
 
-/* Tableaux financiers */
+/* Financial tables */
 .im-tableau { width: 100%; border-collapse: collapse; font-size: .95cqw; font-variant-numeric: tabular-nums; }
 .im-tableau thead th { background: var(--im-encre); color: #fff; font-weight: 700; padding: .34cqw .6cqw; text-align: left; border-right: .18cqw solid #fff; }
 .im-tableau thead th:last-child { border-right: 0; }
@@ -113,7 +113,7 @@
 .im-part-barre { height: .9cqw; background: var(--im-encre); display: block; min-width: .3cqw; max-width: 9cqw; flex: none; }
 .im-part strong { color: var(--im-encre); }
 
-/* Graphiques */
+/* Charts */
 .im-chevron-titre { background: var(--im-encre); color: #fff; font-weight: 700; text-align: center; padding: .45cqw; font-size: .98cqw; margin-left: 15cqw;
   clip-path: polygon(0 0, calc(100% - 1.2cqw) 0, 100% 50%, calc(100% - 1.2cqw) 100%, 0 100%); }
 .im-ligne-graph { display: grid; grid-template-columns: 13.6cqw minmax(0, 1fr); gap: 1.4cqw; flex: 1 1 0; min-height: 0; }
@@ -147,7 +147,7 @@
 .im-bh.accent .im-bh-val, .im-bh.accent .im-bh-lib { color: var(--im-accent); }
 .im-bh-val { font-weight: 700; color: var(--im-encre); white-space: nowrap; }
 
-/* Carte et photos */
+/* Map and photos */
 .im-carte { margin: 0; display: grid; gap: .4cqw; justify-items: center; }
 .im-page .dp-carte-svg { width: 100%; height: auto; max-height: 13cqw; display: block; }
 .im-page .dp-region { stroke: #fff; stroke-width: 2.2; }
@@ -163,7 +163,7 @@
 .im-photo img { width: 100%; height: 100%; max-height: 17cqw; object-fit: cover; display: block; }
 .im-photo figcaption { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, .85); color: var(--im-encre); font-weight: 700; font-style: italic; text-align: center; font-size: .82cqw; padding: .3cqw; }
 
-/* Frise historique */
+/* Historical timeline */
 .im-bloc-frise { display: grid; grid-template-columns: 2.4cqw minmax(0, 1fr); background: var(--im-pale-2); }
 .im-etiquette-v { background: var(--im-encre); color: #fff; display: grid; place-items: center; }
 .im-etiquette-v span { writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 700; font-size: .95cqw; }
@@ -175,7 +175,7 @@
 .im-frise .haut .im-frise-txt { grid-row: 1; align-self: end; margin-bottom: .55cqw; }
 .im-frise .bas .im-frise-txt { grid-row: 3; align-self: start; margin-top: .55cqw; }
 
-/* Marché : bande verticale de chiffres, moteurs numérotés, tuiles */
+/* Market: vertical band of figures, numbered drivers, tiles */
 .im-moteurs { list-style: none; margin: 0; padding: 0 0 0 .4cqw; display: grid; gap: .7cqw; grid-auto-rows: minmax(min-content, 1fr); }
 .im-moteurs > li { display: grid; grid-template-columns: 3.6cqw minmax(0, 1fr); align-items: center; background: linear-gradient(90deg, var(--im-pale), var(--im-pale-2) 60%, #fff); padding: .55cqw 1cqw .55cqw 0; }
 .im-rond { width: 3cqw; height: 3cqw; border-radius: 50%; background: var(--im-acier); color: #fff; display: grid; place-items: center; font-size: 1.5cqw; font-style: italic; margin-left: -.4cqw; box-shadow: 0 0 0 .18cqw #fff, 0 0 0 .3cqw var(--im-acier-2); }
@@ -189,7 +189,7 @@
 .im-tuile span { font-size: .92cqw; color: var(--im-acier); }
 .im-tuile em { font-size: .74cqw; color: var(--im-gris); }
 
-/* Considérations clés d'investissement */
+/* Key investment considerations */
 .im-considerations { display: grid; grid-auto-rows: minmax(0, 1fr); gap: .45cqw; flex: 1 1 auto; min-height: 0; }
 .im-cons { display: grid; grid-template-columns: 17cqw minmax(0, 1fr); gap: .35cqw; min-height: 0; }
 .im-cons-tete { background: var(--im-encre); color: #fff; display: flex; align-items: center; gap: 1cqw; padding: 0 1.2cqw; font-size: 1.05cqw; }
@@ -197,11 +197,11 @@
 .im-cons-tete .im-carre { background: #fff; color: var(--im-encre); flex: none; }
 .im-voir { font-size: .8cqw; color: var(--im-gris); white-space: nowrap; text-decoration: none; font-style: italic; }
 
-/* Renvois numérotés (EBE retraité) */
+/* Numbered references (adjusted EBITDA) */
 .im-renvois { list-style: none; margin: 0; padding: 0; display: grid; gap: .55cqw; }
 .im-renvois li { display: grid; grid-template-columns: 1.4cqw minmax(0, 1fr); gap: .8cqw; align-items: start; text-align: justify; }
 
-/* Organigramme juridique */
+/* Legal structure chart */
 .im-org { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 1.4cqw; align-items: end; padding: .4cqw .6cqw; }
 .im-org-col { display: grid; justify-items: center; }
 .im-org-boite { min-width: 11cqw; max-width: 15cqw; padding: .75cqw 1.2cqw; text-align: center; display: grid; gap: .1cqw; color: #fff; font-size: .95cqw; }
@@ -222,7 +222,7 @@
 .im-org-legende li::before { content: ""; width: 1.4cqw; height: .9cqw; }
 .im-org-legende .personne::before { background: var(--im-encre); } .im-org-legende .holding::before { background: var(--im-acier); } .im-org-legende .societe::before { background: var(--im-acier-2); }
 
-/* Processus en chevrons */
+/* Process in chevrons */
 .im-chevrons { list-style: none; margin: .4cqw 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .25cqw; flex: 1 1 auto; }
 .im-chevrons li { display: grid; grid-template-rows: auto 1fr; gap: .9cqw; }
 .im-chev { color: #fff; font-weight: 700; font-variant: small-caps; font-size: 1.02cqw; padding: .9cqw 1.8cqw .9cqw 2.2cqw; min-height: 3.6cqw; display: flex; align-items: center; gap: .7cqw;
@@ -247,7 +247,7 @@
 .im-g-synthese .dp-carte-svg { max-height: 19cqw; }
 .im-g-synthese .im-encadre:first-child .im-encadre-corps { justify-content: center; }
 
-/* Couverture */
+/* Cover */
 .diapo.im-couverture { display: block; padding: 0; background: var(--im-encre); color: #fff; position: relative; overflow: hidden; }
 .im-motif { position: absolute; inset: 0; width: 100%; height: 100%; }
 .im-motif path { fill: none; stroke: rgba(255, 255, 255, .075); stroke-width: 2; }
@@ -259,12 +259,12 @@
 .im-couv-bas > :last-child { justify-self: end; }
 .im-couverture .dp-logo-passation { font-family: var(--im-police); font-size: 1.25cqw; color: #fff; }
 
-/* Pages d'ouverture de partie */
+/* Part opening pages */
 .diapo.im-ouverture { display: block; padding: 0; background: #fff; position: relative; }
 .im-ouv-cadre { position: absolute; inset: 2.6cqw 3cqw; background: var(--im-encre); overflow: hidden; }
 .im-ouv-photo { position: absolute; inset: 0; background-size: cover; background-position: center; }
 .im-ouv-num { position: absolute; left: 4cqw; top: 1cqw; margin: 0; font-size: 17cqw; font-weight: 700; line-height: 1; color: #fff; letter-spacing: -.02em; text-shadow: 0 .3cqw 1.4cqw rgba(0, 0, 0, .25); }
-/* Sommaire, glossaire, avertissement */
+/* Contents, glossary, disclaimer */
 .im-som { list-style: none; margin: 0; padding: 0 4cqw 0 3cqw; display: grid; gap: .8cqw; align-content: start; }
 .im-som-partie { display: grid; grid-template-columns: 3.4cqw minmax(0, 1fr) auto; align-items: baseline; border-bottom: 1px solid var(--im-trait); padding-bottom: .25cqw; }
 .im-som-num { color: var(--im-accent); font-weight: 700; font-size: 1.8cqw; }
@@ -315,12 +315,12 @@
 .im-graph-croissance { font-size: 13px; font-weight: 700; fill: var(--im-accent); font-family: var(--im-police); }
 .im-graph-val { font-family: var(--im-police); }
 
-/* Encoche crème (cartes posées dans un cadre vert) */
+/* Cream notch (cards placed in a green frame) */
 .im-encoche-carte { position: absolute; right: 2.4cqw; bottom: 2.4cqw; background: var(--im-creme); border-radius: 1.8cqw; padding: 1.6cqw 1.8cqw; box-shadow: 0 0 0 1.1cqw #fff; z-index: 3; color: var(--im-texte); display: grid; gap: .6cqw; }
 .im-encoche-titre { margin: 0; font-size: .72cqw; text-transform: uppercase; letter-spacing: .1em; color: var(--im-accent); font-weight: 700; }
 .im-pilule { justify-self: start; border: 1px solid var(--im-trait); border-radius: 99px; padding: .25cqw .9cqw; font-size: .78cqw; color: var(--im-gris); }
 
-/* Couverture */
+/* Cover */
 .diapo.im-couverture { background: #fff; }
 .im-couv-cadre { position: absolute; inset: 1.6cqw; border-radius: 2.4cqw; background: var(--im-encre); overflow: hidden; }
 .im-couv-titre { position: absolute; left: 5cqw; bottom: auto; top: 50%; transform: translateY(-50%); }
@@ -333,7 +333,7 @@
 .im-couv-encoche .dp-logo-passation { font-family: var(--im-police); font-size: 1.3cqw; color: var(--im-encre); }
 .im-couv-encoche .dp-logo-passation svg { width: 1.8cqw; height: 1.8cqw; }
 
-/* Pages d'ouverture de partie */
+/* Part opening pages */
 .im-ouv-cadre { inset: 1.6cqw; border-radius: 2.4cqw; background: var(--im-encre); }
 .im-ouv-photo { filter: sepia(.12) saturate(.85) brightness(.55); }
 .im-ouv-titre { position: absolute; left: 4.4cqw; top: 50%; transform: translateY(-58%); color: #fff; z-index: 2; }
@@ -347,7 +347,7 @@
 .im-ouv-encoche li:last-child { border-bottom: 0; padding-bottom: 0; }
 .im-ouv-encoche .im-som-sous { font-family: var(--im-affiche); color: var(--im-accent); font-size: 1.15cqw; }
 
-/* Synthèse */
+/* Summary */
 .im-g-synthese { grid-template-columns: minmax(0, 1fr) 40cqw; }
 .im-synthese-droite { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: .9cqw; min-height: 0; }
 .im-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7cqw; }
@@ -365,7 +365,7 @@
 .im-operation-mini .im-table-cles { font-size: .82cqw; }
 .im-operation-mini .im-table-cles th, .im-operation-mini .im-table-cles td { padding: .2cqw .3cqw; }
 
-/* Considérations clés d'investissement : grille de cartes */
+/* Key investment considerations: grid of cards */
 .im-considerations { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: .9cqw; }
 .im-cons { grid-template-columns: none; display: flex; flex-direction: column; gap: .45cqw; border-radius: 1.4cqw; background: var(--im-pale-2); border: 1px solid var(--im-trait); padding: 1.1cqw 1.3cqw; overflow: hidden; }
 .im-cons-tete { background: none; padding: 0; justify-content: space-between; }
@@ -380,7 +380,7 @@
 .im-cons.vert .im-cons-theme, .im-cons.vert .im-cons-texte, .im-cons.vert .im-voir { color: #C9D6CD; }
 .im-cons.sable { background: var(--im-pale); border-color: transparent; }
 
-/* Marché : cercles emboîtés */
+/* Market: nested circles */
 .im-g-marche { grid-template-columns: minmax(0, 1fr) 21cqw 34cqw; }
 .im-cercles-zone { margin: 0; border-radius: 1.3cqw; background: var(--im-pale-2); padding: .9cqw; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: .4cqw; min-height: 0; }
 .im-cercles { width: 100%; height: 100%; min-height: 0; }
@@ -398,7 +398,7 @@
 .im-tuile strong { font-family: var(--im-affiche); font-style: normal; font-weight: 700; color: var(--im-encre); }
 .im-tuile span { color: var(--im-encre); }
 
-/* Perspectives : piliers */
+/* Outlook: pillars */
 .im-piliers { list-style: none; margin: 0; padding: 0; display: grid; gap: .9cqw; flex: 1 1 auto; min-height: 0; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); }
 .im-piliers > li { border-radius: 1.4cqw; background: var(--im-pale-2); border: 1px solid var(--im-trait); border-top: .35cqw solid var(--im-encre); padding: 1.1cqw 1.2cqw; display: flex; flex-direction: column; gap: .5cqw; overflow: hidden; }
 .im-piliers > li:nth-child(2) { border-top-color: var(--im-accent); } .im-piliers > li:nth-child(3) { border-top-color: var(--im-acier-2); } .im-piliers > li:nth-child(4) { border-top-color: var(--im-acier); }
@@ -407,7 +407,7 @@
 .im-piliers h5 strong { color: inherit; }
 .im-piliers p { margin: 0; font-size: .92cqw; color: var(--im-texte); }
 
-/* Processus et organigramme */
+/* Process and structure chart */
 .im-chev { clip-path: none !important; border-radius: 99px; padding: .7cqw 1.2cqw !important; min-height: 0; margin-right: .6cqw; font-variant: normal; text-transform: uppercase; letter-spacing: .03em; font-size: .9cqw; }
 .im-chev b { font-family: var(--im-affiche); font-style: normal; font-weight: 700; font-size: 1.4cqw; }
 .im-chevrons li:nth-child(2) .im-chev { background: var(--im-acier); }
@@ -420,7 +420,7 @@
 .im-org-boite { border-radius: .9cqw; }
 .im-org-perimetre, .im-org-hors { border-radius: 1.2cqw; }
 
-/* Sommaire, glossaire, frise */
+/* Contents, glossary, timeline */
 .im-som-num { font-family: var(--im-affiche); font-size: 2.2cqw; }
 .im-som-partie strong { font-family: var(--im-affiche); text-transform: uppercase; font-size: 1.5cqw; letter-spacing: .01em; color: var(--im-encre); font-weight: 700; }
 .im-gloss th { background: var(--im-pale-2); }
@@ -441,7 +441,7 @@
 .im-page[data-section="perspectives"] .im-piliers > li { min-height: 17cqw; }
 .im-page[data-section="operation"] .im-couloir { min-height: 15cqw; }
 
-/* v5 : faits à pictogramme, introduction, finances denses */
+/* v5: facts with pictograms, introduction, dense financials */
 .im-puces.pictos { gap: .75cqw; }
 .im-puces.pictos > li { padding-left: 2.6cqw; min-height: 1.9cqw; }
 .im-puces.pictos > li::before { display: none; }
@@ -472,7 +472,7 @@
 .im-puce-picto { width: 2cqw; height: 2cqw; }
 .im-puce-picto .im-picto { width: 1.25cqw; height: 1.25cqw; stroke-width: 1.8; }
 
-/* Remplissage des pages (remplirPages) : le texte courant suit le coefficient --k */
+/* Page filling (remplirPages): body text follows the --k coefficient */
 .diapo.im-page { font-size: calc(1.07cqw * var(--k, 1)); }
 .im-puces.pictos { gap: calc(.75cqw * var(--k, 1)); }
 .im-chapeau-texte { font-size: calc(1.12cqw * var(--k, 1)); }
@@ -485,7 +485,7 @@
 .im-cons-titre { font-size: calc(1.1cqw * var(--k, 1)); }
 .im-frise-txt { font-size: calc(.8cqw * var(--k, 1)); }
 .im-avert { font-size: calc(1.02cqw * var(--k, 1)); }
-/* Graphiques qui prennent la hauteur libre */
+/* Charts that take the free height */
 .im-zone > .im-encadre:has(.im-pont) { flex: 1 1 auto; min-height: 0; }
 .im-encadre:has(.im-pont) .im-encadre-corps { justify-content: stretch; }
 .im-pont { height: auto; flex: 1 1 auto; min-height: 12cqw; }
