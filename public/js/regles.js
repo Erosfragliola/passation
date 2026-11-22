@@ -6,7 +6,7 @@ import { t as tr, nombre } from "./i18n.js";
  * Tranches d'effectif salarié de la nomenclature INSEE (variable « tranche d'effectif salarié » du
  * répertoire Sirene, reprise par recherche-entreprises.api.gouv.fr). NN = unité non employeuse.
  */
-const TRANCHES = {
+export const TRANCHES = {
   NN: { min: 0, max: 0 },
   "00": { min: 0, max: 0 },
   "01": { min: 1, max: 2 },

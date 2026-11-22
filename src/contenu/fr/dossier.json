@@ -130,7 +130,12 @@
       "titre_premiere": "Ajouter une photo de l'atelier ou des produits",
       "detail_premiere": "Recommandation du mémorandum : elle rend la page « Savoir-faire » vivante",
       "titre_seconde": "Ajouter une photo de l'équipe ou du site",
-      "detail_seconde": "Recommandation du mémorandum, page « Équipe »"
+      "detail_seconde": "Recommandation du mémorandum, page « Équipe »",
+      "titre_choisir": {
+        "one": "Choisir votre photo : 1 trouvée sur votre site",
+        "other": "Choisir vos photos : {n} trouvées sur votre site"
+      },
+      "detail_choisir": "Elles illustrent la couverture, l'activité et l'équipe du mémorandum."
     },
     "a_completer": {
       "titre": {
@@ -161,7 +166,9 @@
     "completer": "Compléter",
     "deposer": "Déposer",
     "ouvrir": "Ouvrir",
-    "excel": "Télécharger l'Excel"
+    "excel": "Télécharger l'Excel",
+    "choisir": "Choisir",
+    "relire_envoyer": "Relire et envoyer"
   },
   "relire_envoyer": "Relire et envoyer votre dossier",
   "documents": {
@@ -210,5 +217,7 @@
     "nd": "n.d.",
     "exercice": "exercice {annee}",
     "exercices": "exercices {de} à {a}"
-  }
+  },
+  "relire_detail": "Vos documents sont rédigés. Relisez le mémorandum, puis choisissez à qui l'envoyer.",
+  "relire_detail_non_redige": "Voyez ce qui est prêt et ce qui reste avant l'envoi."
 }

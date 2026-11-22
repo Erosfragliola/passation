@@ -1,6 +1,5 @@
 {
   "_lisez_moi": "Textes de la page /espace/demarrer/ (posés par le Worker, src/routes/pages.js). Mêmes clés dans src/contenu/en/demarrer.json.",
-  "nom_sous_lequel_circulera_votre": "<span class=\"guide-code\" id=\"guide-code\"></span><span class=\"guide-code-aide\">nom sous lequel circulera votre dossier</span>",
   "votre_dossier": "Votre dossier",
   "etapes": "Étapes",
   "avancement": "Avancement",
@@ -64,7 +63,8 @@
       "autre_exercice": "Saisir un autre exercice",
       "autre_liasse": "Déposer une autre liasse",
       "mode_detaille": "Mode détaillé (toutes les lignes)",
-      "montant_lisible": "Indiquez un montant lisible."
+      "montant_lisible": "Indiquez un montant lisible.",
+      "valider_ligne": "Valider"
     },
     "continuer": "Continuer ",
     "clients": {
@@ -107,11 +107,35 @@
       "lire": "Lire ce site ",
       "lecture": "Lecture de votre site en cours…",
       "retenu_titre": "Ce que nous avons retenu de votre site",
-      "retenu_aide": "Tout est coché : décochez ce qui est inexact. Seuls les faits cochés seront utilisés dans le mémorandum.",
+      "retenu_aide": "{n} faits, classés par thème. Retirez ce qui est faux ou daté : seul ce qui reste sera utilisé.",
       "faits": "Faits relevés",
       "votre_logo": "Votre logo",
       "choix_logo": "Choix du logo",
-      "aucun_logo": "Aucun"
+      "aucun_logo": "Aucun",
+      "usage": "Nous y relevons votre activité, votre logo et vos photos pendant les deux questions suivantes. Vous validerez chaque élément.",
+      "retirer": "Retirer",
+      "remettre": "Remettre",
+      "tranche": "{min} à {max} salariés",
+      "a_verifier": "À vérifier",
+      "conflit_creation": "Date de création",
+      "conflit_effectif": "Effectif",
+      "conflit_aide": "Votre site et les registres ne disent pas la même chose. Ce fait n'est pas utilisé tant que vous n'avez pas tranché.",
+      "selon_site": "Votre site : « {fait} »",
+      "selon_registres": "Registres publics (registre national des entreprises)",
+      "les_deux": "Les deux sont vrais",
+      "les_deux_aide": "Par exemple : activité familiale plus ancienne, société actuelle créée à la date des registres.",
+      "voir_autres": "Voir les {n} autres faits",
+      "themes": {
+        "activite": "Activité",
+        "savoir_faire": "Savoir-faire et équipements",
+        "clients_zone": "Clients et zone",
+        "histoire": "Histoire et équipe",
+        "autre": "Autres"
+      },
+      "lu": "Votre site · {site} · {n} pages lues",
+      "plus_tard": "Plus tard",
+      "valider_faits": "Valider ces faits",
+      "usage_faits": "Ces faits nourrissent l'histoire, l'activité, l'équipe et les clients du mémorandum, présentés comme des affirmations de l'entreprise."
     },
     "recap": {
       "valider": {
@@ -130,7 +154,13 @@
       "passer": "Passer",
       "il_manque": "Il manque {liste} : c'est indispensable pour rédiger le mémorandum.",
       "exact_continuer": "C'est exact, continuer ",
-      "ou_va": "Où va votre réponse"
+      "ou_va": "Où va votre réponse",
+      "ajouter": "Ajouter",
+      "choix_max": "{n} sur {max} au plus.",
+      "choix_max_atteint": "{n} sur {max} : décochez un choix pour en changer.",
+      "preparee_court": "Réponses préparées par Passation, {source} : vérifiez-les avant de continuer.",
+      "nourrit": "Votre réponse nourrit",
+      "propose": "proposé"
     },
     "redaction": {
       "sections": {
@@ -173,7 +203,88 @@
       "photos": ". Pour ajouter des photos au mémorandum : ",
       "page_memo": "page du mémorandum",
       "modifier": ". Pour modifier une réponse : ",
-      "revoir": "revoir vos réponses"
+      "revoir": "revoir vos réponses",
+      "types": {
+        "pdf": "PDF",
+        "xlsx": "XLSX",
+        "web": "WEB"
+      },
+      "relire_memo": "Relire le mémorandum",
+      "memo_aide": {
+        "zero": "C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre. Ajoutez une photo pour l'illustrer.",
+        "one": "Avec votre photo. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre.",
+        "other": "Avec vos {photos} photos. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre."
+      },
+      "revoir_reponses": "Revoir vos réponses"
+    },
+    "montants": {
+      "non_renseigne": "non renseigné",
+      "propose_court": "proposé, non enregistré",
+      "raison_neutre": "le même montant, donc aucun retraitement",
+      "propose": "Proposé : {valeur} ({raison}). Pas encore enregistré.",
+      "confirmer": "C'est mon estimation"
+    },
+    "dates": {
+      "date": "Date",
+      "evenement": "Événement",
+      "precision": "Précision (facultatif)",
+      "exemple_date": "ex. 2016",
+      "date_n": "Date de l'événement {n} : année, mois/année ou date complète",
+      "evenement_n": "Type de l'événement {n}",
+      "precision_n": "Précision, événement {n}",
+      "retirer_n": "Retirer l'événement {n}",
+      "ajouter": "+ Ajouter une date",
+      "formats": "Formats acceptés : 2016, 03/2016 ou 15/03/2016.",
+      "illisible": "Date illisible : « {date} ». Écrivez 2016, 03/2016 ou 15/03/2016."
+    },
+    "photos": {
+      "titre": "Votre logo et vos photos",
+      "aide": "Un mémorandum illustré se lit mieux. Voici ce que nous avons trouvé sur votre site.",
+      "compte": {
+        "zero": "Aucune photo choisie, {max} au plus",
+        "one": "{n} photo choisie sur {max} au plus",
+        "other": "{n} photos choisies sur {max} au plus"
+      },
+      "utiliser": {
+        "one": "Utiliser cette photo",
+        "other": "Utiliser ces {n} photos"
+      },
+      "sans_photo": "Continuer sans photo",
+      "photo_n": "Photo {n} de votre site",
+      "deposee": "Photo déposée",
+      "cochez_droits": "Cochez d'abord la case : ces photos appartiennent à l'entreprise, ou vous avez le droit de les utiliser.",
+      "aucun_logo": "Aucun logo",
+      "logo_aide": "Il figurera sur la couverture et en pied de page du mémorandum.",
+      "logo_aucun_aide": "Aucun logo retenu : le mémorandum n'affichera que son titre.",
+      "changer": "Changer",
+      "enregistrement": "Enregistrement de vos choix…",
+      "echecs": {
+        "one": "Un élément n'a pas pu être récupéré depuis votre site : vous pouvez le déposer vous-même.",
+        "other": "{n} éléments n'ont pas pu être récupérés depuis votre site : vous pouvez les déposer vous-même."
+      },
+      "cliquez": "Cliquez sur les photos à utiliser",
+      "usage": "{max} au plus. La première sert de couverture ; les suivantes illustrent l'activité et l'équipe.",
+      "aucune": "Nous n'avons pas trouvé de photo utilisable sur votre site (les icônes, bandeaux et petites images sont écartés).",
+      "droits": "Ces photos appartiennent à l'entreprise, ou j'ai le droit de les utiliser.",
+      "deposer": "Déposer mes propres photos",
+      "formats": "(PNG, JPEG ou WebP, 3 Mo au plus)",
+      "ou_va": "Le logo va sur la couverture et le pied de page ; les photos sur la couverture, l'activité et l'équipe."
+    },
+    "accueil": {
+      "surtitre": "Analyse approfondie · une vingtaine de minutes",
+      "titre": "On démarre l'analyse approfondie de votre entreprise",
+      "chapo": "À la fin, vous aurez une valorisation argumentée et les trois documents qu'un repreneur demande : le datapack Excel, le teaser anonyme et le mémorandum.",
+      "chiffres_titre": "Vos chiffres",
+      "chiffres": "Votre liasse fiscale en PDF, ou l'essentiel de vos comptes en quelques montants.",
+      "chiffres_publics": "Votre liasse fiscale en PDF, ou l'essentiel de vos comptes en quelques montants. Nous avons déjà les comptes publiés de {annees}.",
+      "reponses_titre": "Vos réponses",
+      "reponses": "{n} questions, surtout des choix à cocher. Nous préparons les réponses à partir de votre site et des registres ; vous corrigez.",
+      "redaction_titre": "La rédaction de vos documents",
+      "redaction": "Passation calcule et rédige en quelques minutes. Vous relisez avant tout envoi.",
+      "commencer": "Commencer",
+      "reprise": "Vous pouvez vous arrêter à tout moment : tout est enregistré.",
+      "deja": "Déjà fait :",
+      "deja_estimation": "estimation express de {fourchette}."
     }
   }
 }

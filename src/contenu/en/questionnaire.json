@@ -70,6 +70,9 @@
         "role_dirigeant": {
           "libelle": "What you alone handle today (customers, production, management)",
           "aide": "Used to assess how much the company depends on you personally."
+        },
+        "anciennete_equipe": {
+          "libelle": "Average employee length of service"
         }
       }
     },

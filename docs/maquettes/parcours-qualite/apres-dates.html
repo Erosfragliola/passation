@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D. Les dates clés</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .dates { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--trait); }
+  .dates li { display: grid; grid-template-columns: 120px 230px minmax(0, 1fr) 28px; gap: 10px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--trait); }
+  .dates input.annee { text-align: center; font-variant-numeric: tabular-nums; }
+  .dates .texte-court { padding: 9px 12px; font-size: 15px; }
+  .dates select.texte-court { width: 100%; }
+  .dates .x { width: 28px; height: 28px; border-radius: 50%; border: 0; background: none; color: var(--pierre-texte); cursor: pointer; font-size: 18px; }
+  .dates .x:hover { background: var(--sable-doux); }
+  .dates .source { grid-column: 2 / 4; margin-top: -4px; }
+  .entetes { display: grid; grid-template-columns: 120px 230px minmax(0, 1fr) 28px; gap: 10px; font-size: 12.5px; color: var(--pierre-texte); padding-bottom: 6px; }
+  @media (max-width: 860px) {
+    .entetes { display: none; }
+    .dates li { grid-template-columns: 96px minmax(0, 1fr) 28px; }
+    .dates li .precision { grid-column: 1 / 3; }
+    .dates .source { grid-column: 1 / 3; }
+  }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav><a href="#">Mon dossier</a><a href="#">FR</a></nav></div></header>
+<div class="parcours">
+  <ol class="fil-etapes" aria-label="Étapes">
+    <li class="fait"><span class="p"></span>Estimation</li>
+    <li class="fait"><span class="p"></span>Vos chiffres</li>
+    <li aria-current="step"><span class="p"></span>Vos réponses</li>
+    <li><span class="p"></span>Rédaction</li>
+    <li><span class="p"></span>Relecture et envoi</li>
+  </ol>
+  <main class="colonne">
+    <div class="progression"><span>Question 4 sur 10</span><span class="jauge" aria-hidden="true"><span style="width:40%"></span></span></div>
+    <h1 class="q">Les dates clés de votre entreprise</h1>
+    <p class="chapo">Les registres nous donnent déjà deux dates. Ajoutez les étapes qui comptent : reprise, agrandissement, nouveau métier, recrutement clé.</p>
+
+    <div class="entetes" aria-hidden="true"><span>Année</span><span>Événement</span><span>Précision (facultatif)</span><span></span></div>
+    <ul class="dates">
+      <li>
+        <input class="texte-court annee" value="1998" aria-label="Date de l'événement 1 : année, mois/année ou date complète">
+        <select class="texte-court" aria-label="Type de l'événement 1"><option selected>Création</option></select>
+        <input class="texte-court precision" value="à Exempleville" aria-label="Précision, événement 1">
+        <button class="x" type="button" aria-label="Retirer l'événement 1" data-retirer>×</button>
+        <span class="source">registre national des entreprises</span>
+      </li>
+      <li>
+        <input class="texte-court annee" value="06/2011" aria-label="Date de l'événement 2">
+        <select class="texte-court" aria-label="Type de l'événement 2"><option selected>Transfert de siège</option></select>
+        <input class="texte-court precision" value="zone artisanale d'Exempleville" aria-label="Précision, événement 2">
+        <button class="x" type="button" aria-label="Retirer l'événement 2" data-retirer>×</button>
+        <span class="source">BODACC, annonce du 14/06/2011</span>
+      </li>
+      <li>
+        <input class="texte-court annee" placeholder="ex. 2016" aria-label="Date de l'événement 3">
+        <select class="texte-court" aria-label="Type de l'événement 3">
+          <option>Choisir…</option><option>Création</option><option>Reprise</option><option>Transfert de siège</option><option selected>Agrandissement</option><option>Nouveau métier</option><option>Nouvelle certification</option><option>Recrutement clé</option><option>Nouvel équipement</option><option>Autre</option>
+        </select>
+        <input class="texte-court precision" placeholder="ex. atelier porté à 1 800 m²" aria-label="Précision, événement 3">
+        <button class="x" type="button" aria-label="Retirer l'événement 3" data-retirer>×</button>
+      </li>
+    </ul>
+    <p style="margin-top:14px"><button type="button" class="btn contour mini">+ Ajouter une date</button></p>
+    <p class="tres-petit">Formats acceptés : 2016, 03/2016 ou 15/03/2016.</p>
+
+    <div class="nav-q"><a class="lien" href="apres-distinctions.html">Retour</a><a class="btn" href="apres-montant.html">Continuer →</a></div>
+    <p class="ou-va">Votre réponse nourrit <strong>2.1 Histoire et identité</strong> (frise chronologique).</p>
+  </main>
+</div>
+<script src="maquettes.js"></script>
+</body>
+</html>

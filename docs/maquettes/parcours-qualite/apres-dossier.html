@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G. Page du dossier allégée</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 24px 64px; }
+  .fil { display: flex; align-items: center; gap: 0; list-style: none; margin: 0 0 28px; padding: 0; font-size: 14px; color: var(--pierre-texte); flex-wrap: wrap; row-gap: 8px; }
+  .fil li { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .fil li + li::before { content: ""; width: 28px; height: 1px; background: var(--trait-fort); margin: 0 10px; }
+  .fil .ok { width: 18px; height: 18px; border-radius: 50%; background: var(--vert); color: #fff; display: grid; place-items: center; font-size: 11px; }
+  .fil .fait { color: var(--espresso); }
+  .tete { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .verte { padding: 30px 32px; border-radius: 22px; }
+  .verte .code { color: #E9C9A4; font-weight: 600; font-size: 18px; margin: 0; }
+  .verte h1 { font-size: 46px; margin: 2px 0 22px; }
+  .verte .lib { font-size: 13.5px; color: #CFD8D2; margin: 0; }
+  .verte .val { font-family: var(--affiche); font-weight: 700; font-size: 58px; line-height: 1; margin: 4px 0 10px; }
+  .verte p.une { margin: 0; font-size: 14.5px; color: #DCE4DF; }
+  .verte a { color: #F6F1E6; font-size: 14.5px; }
+  .action { display: flex; flex-direction: column; gap: 14px; justify-content: space-between; }
+  .principal { padding: 24px; }
+  .principal .pastille { margin-bottom: 10px; }
+  .principal h2 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 6px; }
+  .principal p { margin: 0 0 18px; font-size: 14.5px; color: var(--pierre-texte); }
+  .principal .btn { width: 100%; }
+  .taches { padding: 18px 22px; }
+  .taches h3 { font-size: 13.5px; font-weight: 600; color: var(--pierre-texte); margin: 0 0 8px; }
+  .taches ul { list-style: none; margin: 0; padding: 0; }
+  .taches li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--trait); font-size: 14.5px; }
+  .taches li a { white-space: nowrap; font-size: 14px; }
+  h2.sec { font-size: 15.5px; font-weight: 600; margin: 40px 0 12px; }
+  .docs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--trait); border-radius: 18px; background: var(--papier); overflow: hidden; }
+  .doc { padding: 16px 18px; display: grid; gap: 4px; text-decoration: none; }
+  .doc + .doc { border-left: 1px solid var(--trait); }
+  .doc strong { font-weight: 600; font-size: 15px; }
+  .doc .nat { font-size: 12.5px; color: var(--pierre-texte); }
+  .doc .pastille { justify-self: start; margin-top: 6px; }
+  .bas { display: flex; justify-content: space-between; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--trait); font-size: 14px; color: var(--pierre-texte); }
+  @media (max-width: 860px) {
+    main { padding: 18px 16px 48px; }
+    .fil { font-size: 12.5px; } .fil li + li::before { width: 10px; margin: 0 6px; }
+    .tete { grid-template-columns: 1fr; }
+    .verte { padding: 22px; } .verte h1 { font-size: 34px; } .verte .val { font-size: 44px; }
+    .docs { grid-template-columns: 1fr 1fr; } .doc:nth-child(3) { border-left: 0; } .doc:nth-child(n+3) { border-top: 1px solid var(--trait); }
+  }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="#">Passation</a><nav><a href="#">Mon dossier</a><a href="#">Se déconnecter</a><a href="#">FR</a></nav></div></header>
+<main>
+  <ol class="fil" aria-label="Avancement du dossier : 100 %">
+    <li class="fait"><span class="ok">✓</span>Estimation</li>
+    <li class="fait"><span class="ok">✓</span>Vos chiffres</li>
+    <li class="fait"><span class="ok">✓</span>Vos réponses</li>
+    <li class="fait"><span class="ok">✓</span>Rédaction</li>
+    <li class="fait" aria-current="step"><span class="ok" style="background:var(--cuivre)">5</span>Relecture et envoi</li>
+  </ol>
+
+  <div class="tete">
+    <section class="carte verte" aria-labelledby="nom">
+      <p class="code">Projet Chêne</p>
+      <h1 id="nom" class="affiche">Menuiserie Exemple</h1>
+      <p class="lib">Valeur de vos titres</p>
+      <p class="val">1,4 – 2,4 M€</p>
+      <p class="une">Multiples d'EBE et DCF, comptes 2024 et 2025 confirmés. <a href="#">Voir le détail →</a></p>
+    </section>
+    <div class="action">
+      <section class="carte principal">
+        <span class="pastille">Dossier complet</span>
+        <h2>Relire et envoyer votre dossier</h2>
+        <p>Vos quatre documents sont rédigés. Relisez le mémorandum, puis choisissez à qui l'envoyer.</p>
+        <a class="btn" href="#">Relire et envoyer →</a>
+      </section>
+      <section class="carte taches" aria-labelledby="pf">
+        <h3 id="pf">Pour l'améliorer (facultatif)</h3>
+        <ul>
+          <li><span>Choisir vos photos : 12 trouvées sur votre site</span><a href="apres-photos.html">Choisir</a></li>
+          <li><span>Compléter 4 points du mémorandum</span><a href="#">Compléter</a></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <h2 class="sec">Vos documents</h2>
+  <div class="docs">
+    <a class="doc" href="#"><strong>Mémorandum</strong><span class="nat">Présentation, 24 pages</span><span class="pastille alerte">4 points à compléter</span></a>
+    <a class="doc" href="#"><strong>Teaser</strong><span class="nat">PDF d'une page, anonyme</span><span class="pastille">Prêt</span></a>
+    <a class="doc" href="#"><strong>Datapack</strong><span class="nat">Excel, 9 onglets</span><span class="pastille">Prêt</span></a>
+    <a class="doc" href="#"><strong>Valorisation</strong><span class="nat">Page web, 3 méthodes</span><span class="pastille">Prêt</span></a>
+  </div>
+
+  <div class="bas"><a href="#">Pièces à réunir · 4 sur 21</a><a href="#">Gérer mon dossier</a></div>
+</main>
+</body>
+</html>

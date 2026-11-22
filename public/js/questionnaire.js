@@ -47,6 +47,8 @@ export const ETAPES = [
       { cle: "remuneration_dirigeant_reelle", type: "euros", libelle: T, aide: T },
       { cle: "remuneration_normative", type: "euros", libelle: T, aide: T },
       { cle: "role_dirigeant", type: "texte", libelle: T, aide: T },
+      // Retirée du parcours guidé le 20/11/2026 (moins de questions) : facultative, dans « Pour aller plus loin »
+      { cle: "anciennete_equipe", type: "choix", libelle: T, options: ["Moins de 3 ans", "3 à 10 ans", "Plus de 10 ans"] },
     ],
   },
   {

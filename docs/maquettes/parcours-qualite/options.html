@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcours d'analyse : options à choisir</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  main { max-width: 1180px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1.affiche { font-size: 48px; color: var(--vert); margin: 8px 0 10px; }
+  h2.affiche { font-size: 30px; margin: 48px 0 6px; color: var(--vert); }
+  .intro { margin: 0 0 14px; color: var(--pierre-texte); max-width: 860px; }
+  .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+  .option { display: grid; gap: 10px; align-content: start; padding: 18px; }
+  .option.reco { box-shadow: inset 0 0 0 2px var(--cuivre); }
+  .option h3 { margin: 0; font-size: 16px; }
+  .option p { margin: 0; font-size: 14px; }
+  .reco-mot { color: var(--cuivre-texte); font-weight: 600; }
+  .croquis { background: var(--creme); border: 1px solid var(--trait); border-radius: 12px; padding: 12px; min-height: 120px; display: grid; gap: 6px; align-content: start; font-size: 12.5px; }
+  .croquis .b { border: 1px dashed var(--trait-fort); border-radius: 8px; padding: 6px 8px; }
+  .croquis .v { background: var(--vert); color: #F6F1E6; border: 0; }
+  .croquis .l { display: flex; gap: 6px; } .croquis .l > * { flex: 1; }
+  .croquis .pc { display: inline-block; border: 1px solid var(--trait-fort); border-radius: 999px; padding: 1px 7px; margin: 1px; }
+  .croquis .pc.on { background: var(--vert); color: #fff; border-color: var(--vert); }
+  .liens a { margin-right: 14px; }
+  .constats { display: grid; gap: 10px; margin-top: 12px; }
+  .constat { padding: 14px 18px; font-size: 14.5px; }
+  .constat strong { display: block; margin-bottom: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; background: var(--papier); border-radius: 14px; overflow: hidden; margin-top: 12px; }
+  th, td { border-bottom: 1px solid var(--trait); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--sable-doux); font-weight: 600; }
+  td.n { white-space: nowrap; color: var(--pierre-texte); }
+  .retire { color: var(--pierre-texte); text-decoration: line-through; }
+  .avant { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+  .avant figure { margin: 0; } .avant img { width: 100%; border-radius: 10px; border: 1px solid var(--trait); display: block; }
+  .avant figcaption { font-size: 13px; color: var(--pierre-texte); margin-top: 4px; }
+  .question { background: var(--cuivre-doux); border-radius: 14px; padding: 14px 18px; margin-top: 12px; font-size: 14.5px; }
+  @media (max-width: 900px) { .options, .avant { grid-template-columns: 1fr; } main { padding: 20px 16px 60px; } h1.affiche { font-size: 34px; } table { font-size: 13px; display: block; overflow-x: auto; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="petit">Pull Request « Parcours d'analyse : plus guidé, plus précis, photos du site dans le mémorandum » · phase 1 (brouillon) · 20/11/2026</p>
+  <h1 class="affiche">Options à choisir</h1>
+  <p class="intro">Pour chaque écran, deux ou trois options. Celle que je recommande est encadrée en cuivre, et c'est elle que montrent les maquettes « après ». Toutes les données sont fictives (Projet Chêne, Menuiserie Exemple, chiffres inventés). Les maquettes sont des pages statiques : les curseurs, la limite de trois réponses et les photos réagissent au clic, mais rien n'est enregistré.</p>
+  <p class="liens petit">Maquettes : <a href="apres-accueil.html">A. accueil</a><a href="apres-question.html">C. activité</a><a href="apres-distinctions.html">C. distinctions</a><a href="apres-dates.html">D. dates</a><a href="apres-montant.html">B. montants</a><a href="apres-site.html">E. site</a><a href="apres-photos.html">F. photos</a><a href="apres-dossier.html">G. dossier</a><a href="apres-final.html">H. écran final</a></p>
+
+  <h2 class="affiche">Ce que j'ai vérifié dans le code</h2>
+  <div class="constats">
+    <div class="carte constat"><strong>Photos : trouvées, mais jamais proposées dans le parcours.</strong>La lecture du site garde jusqu'à 12 images (<code>photos_candidates</code>), sans filtre de taille ni de forme. Elles ne sont proposées que sur la page du mémorandum, et il faut cocher la case de droits <em>avant</em> de cliquer une photo, sinon rien ne se passe. Le parcours guidé ne les montre pas.</div>
+    <div class="carte constat"><strong>Logo de l'entreprise : enregistré, mais absent du mémorandum.</strong>Le logo choisi est stocké, mais la couverture et les pieds de page n'affichent que le logo Passation (<code>public/js/memo.js</code>, fonction <code>logoPassation</code>). À corriger en phase 2.</div>
+    <div class="carte constat"><strong>« Une à trois réponses » n'est appliqué nulle part.</strong>L'aide le dit, mais l'écran accepte les 6 choix. La proposition du serveur en coche 3 au plus, d'après les faits du site. Les six choix cochés que vous avez vus viennent donc probablement d'une réponse déjà enregistrée, par exemple depuis le questionnaire complet. Je ne l'ai pas reproduit : ce sera fait en phase 2, avec un test.</div>
+    <div class="carte constat"><strong>Libellé d'activité : c'est déjà la division NAF.</strong>Le brouillon utilise <code>secteurDe</code> (division NAF, comme le teaser). « Commerce et réparation d'automobiles et de motocycles » est justement le libellé de la division 45 : il reste trop large pour un garage. Le libellé de la section n'est utilisé que pour l'étude de marché. Voir l'option C2 ci-dessous.</div>
+    <div class="carte constat"><strong>47 points contre 51 : une seule fonction, deux lectures.</strong>La page du dossier et l'écran final comptent déjà avec la même fonction (<code>pointsACompleter</code>). L'écart ne vient donc pas du calcul, mais des données lues : mon hypothèse est que le mémorandum est relu à deux moments différents (pendant et après la rédaction des chapitres). Je ne l'ai pas encore reproduit : ce sera fait en phase 2, avec un test qui compare les deux écrans sur le même dossier.</div>
+  </div>
+
+  <h2 class="affiche">Captures « avant »</h2>
+  <p class="intro">Faites en local le 20/11/2026 sur le dossier fictif, en 1440 et 390 px, en français et en anglais. Toutes les captures sont dans <code>captures/</code>.</p>
+  <div class="avant">
+    <figure><img src="captures/avant-1-activite-fr-1440.webp" alt="Avant : question activité, champ de texte libre pleine largeur"><figcaption>Activité : texte libre, brouillon des registres, pleine largeur.</figcaption></figure>
+    <figure><img src="captures/avant-2-distinctions-fr-1440.webp" alt="Avant : six grandes tuiles à pictogramme"><figcaption>Distinctions : grandes tuiles, sans limite de trois.</figcaption></figure>
+    <figure><img src="captures/avant-3-dates-fr-1440.webp" alt="Avant : dates clés dans un champ de texte"><figcaption>Dates clés : « une ligne par date » dans un champ de texte.</figcaption></figure>
+    <figure><img src="captures/avant-7-site-fr-1440.webp" alt="Avant : liste de quatorze phrases cochées"><figcaption>Site : 14 phrases cochées, ni thème ni contrôle, aucune photo.</figcaption></figure>
+    <figure><img src="captures/avant-8-dossier-fr-1440.webp" alt="Avant : page du dossier chargée"><figcaption>Dossier : fil tronqué (« Relecture et e… »), tâche facultative en action principale.</figcaption></figure>
+    <figure><img src="captures/avant-9-final-fr-1440.webp" alt="Avant : quatre tuiles identiques"><figcaption>Écran final : quatre tuiles de même poids.</figcaption></figure>
+  </div>
+
+  <!-- ============================================================ A -->
+  <h2 class="affiche">A. Entrée et gabarit du parcours</h2>
+  <p class="intro">Un écran d'accueil avant la première question, puis le même gabarit pour tous les écrans : colonne de 720 px, une question, progression fine en haut, un seul bouton principal, « Où va votre réponse » sur une ligne.</p>
+  <div class="options">
+    <article class="carte option reco"><h3>A1. Accueil en trois étapes numérotées, fil à gauche en points</h3><div class="croquis"><span>Analyse approfondie · 20 min</span><strong style="font-size:15px">On démarre l'analyse approfondie</strong><div class="b">1 Vos chiffres</div><div class="b">2 Vos réponses (10 questions)</div><div class="b">3 Rédaction de vos documents</div><span class="pc on" style="justify-self:start">Commencer →</span></div><p><span class="reco-mot">Recommandée.</span> Trois lignes sobres séparées par des traits fins, pas de cartes. Le fil à gauche devient une liste de points (pas de gros bloc) ; sur téléphone, une barre de 5 segments. <a href="apres-accueil.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>A2. Accueil plein écran sur fond vert</h3><div class="croquis"><div class="b v" style="min-height:90px">On démarre l'analyse approfondie<br>1 · 2 · 3<br><u>Commencer</u></div></div><p>Plus « affiche » et plus entraînant, mais il casse la continuité avec les écrans suivants (crème) et rappelle les grands blocs verts qu'on veut alléger.</p></article>
+    <article class="carte option"><h3>A3. Pas d'écran d'accueil : un bandeau au-dessus de la 1re question</h3><div class="croquis"><div class="b">Analyse approfondie · 3 étapes · 20 min</div><strong>Déposez votre liasse</strong><div class="b">zone de dépôt</div></div><p>Un clic de moins, mais on perd le moment « on démarre » demandé, et le bandeau s'ajoute à un écran déjà chargé.</p></article>
+  </div>
+  <div class="options">
+    <article class="carte option reco"><h3>En-tête : nom de code et nom sur une ligne, dans la barre</h3><div class="croquis"><div class="b"><b>Passation</b> │ <b>Projet Chêne</b> · Menuiserie Exemple</div></div><p><span class="reco-mot">Recommandée.</span> Taille du texte courant, en espresso. Même ligne sur la page du dossier, où le grand bloc vert garde seul le nom en affiche.</p></article>
+    <article class="carte option"><h3>En-tête au-dessus de la colonne, petit et gris</h3><div class="croquis"><span style="color:#8E5530">Projet Chêne</span><span>MENUISERIE EXEMPLE (14 px)</span></div><p>Garde la place actuelle, en plus discret. Prend une ligne de hauteur sur chaque écran.</p></article>
+    <article class="carte option"><h3>Nom de code seul, nom réel au survol</h3><div class="croquis"><div class="b"><b>Projet Chêne</b> ⓘ</div></div><p>Le plus discret, mais le dirigeant ne voit plus le nom de son entreprise en travaillant : moins rassurant.</p></article>
+  </div>
+
+  <!-- ============================================================ B -->
+  <h2 class="affiche">B. Montants et nombres : champ formaté et curseur</h2>
+  <p class="intro">Pour tous les montants du parcours (rémunération, loyers, éléments exceptionnels, comptes saisis) et les nombres (part du premier client, croissance). Le champ affiche « 96 000 € » en français et « €96,000 » en anglais ; la valeur enregistrée reste un nombre brut. Une valeur proposée n'est jamais enregistrée sans action du dirigeant.</p>
+  <div class="options">
+    <article class="carte option reco"><h3>B1. Champ à gauche, curseur à droite, repère en dessous</h3><div class="croquis"><div class="l"><div class="b" style="text-align:right">96 000 €</div><div class="b">━━━━●──────</div></div><span style="color:#8E5530">Proposé : même montant que votre rémunération. Pas encore enregistré.</span><span class="pc" style="justify-self:start">C'est mon estimation</span></div><p><span class="reco-mot">Recommandée.</span> On tape ou on glisse, les deux restent alignés. La proposition est en italique cuivre tant qu'elle n'est pas confirmée. <a href="apres-montant.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>B2. Curseur seul avec repères, champ au clic</h3><div class="croquis"><div class="b">━━━━●────── <b>96 000 €</b></div><span>│ médiane secteur │ votre valeur</span></div><p>Très rapide pour des ordres de grandeur, mais imprécis pour un montant exact (comptes), et il faut des repères sourcés que nous n'avons pas pour tout.</p></article>
+    <article class="carte option"><h3>B3. Champ formaté seul, avec puces rapides</h3><div class="croquis"><div class="b" style="text-align:right">96 000 €</div><div><span class="pc">60 k€</span><span class="pc">80 k€</span><span class="pc on">100 k€</span><span class="pc">120 k€</span></div></div><p>Simple et accessible, mais les puces sont des valeurs arbitraires : risque de réponse « au plus proche » plutôt que réelle.</p></article>
+  </div>
+  <div class="question"><strong>À trancher : d'où vient la position de départ du curseur ?</strong> Je propose, dans l'ordre : la donnée publique (comptes INPI) ; sinon une valeur neutre déduite de vos chiffres (rémunération de remplacement = rémunération actuelle, donc aucune correction ; loyer de marché = loyer payé ; part du premier client = vide, curseur au milieu sans valeur enregistrée). Aucune médiane sectorielle n'est inventée ; si vous voulez des repères de rémunération par secteur, il faut une source citée, à ajouter dans <code>src/data/</code>.</div>
+
+  <!-- ============================================================ C -->
+  <h2 class="affiche">C. Moins de questions, des choix à cocher</h2>
+  <p class="intro">Chaque question doit permettre d'écrire une phrase précise du mémorandum. Exemple ci-dessous pour « Que fait votre entreprise ? » et pour « Ce qui vous distingue ».</p>
+  <div class="options">
+    <article class="carte option reco"><h3>C1. Puces pré-cochées et phrase rédigée sous les yeux</h3><div class="croquis"><div><span class="pc on">Escaliers</span><span class="pc on">Portes</span><span class="pc">Parquets</span><span class="pc">+ Autre</span></div><div><span class="pc on">Particuliers</span><span class="pc on">Architectes</span></div><div class="b">« Menuiserie Exemple conçoit et fabrique… »</div></div><p><span class="reco-mot">Recommandée.</span> Les métiers sont pré-cochés depuis les faits du site (point cuivre = « lu sur votre site ») et le code NAF ; la phrase se met à jour à chaque coche, sans appel à Claude (simple assemblage). Une précision libre reste possible, repliée. <a href="apres-question.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>C2. Comme C1, avec le libellé NAF le plus fin</h3><div class="croquis"><span>Code 16.23Z : « Fabrication de charpentes et d'autres menuiseries »</span><div><span class="pc on">Escaliers</span><span class="pc on">Portes</span></div></div><p>Remplace le libellé de division (« Travail du bois… », « Commerce et réparation d'automobiles… ») par celui de la sous-classe. Il faut ajouter la nomenclature NAF officielle de l'INSEE dans <code>src/data/</code> (≈ 730 libellés, avec la source et la date), en français et en anglais. Peut se cumuler avec C1.</p></article>
+    <article class="carte option"><h3>C3. Garder le texte libre, avec des puces d'aide au-dessus</h3><div class="croquis"><div><span class="pc">Escaliers</span><span class="pc">Portes</span></div><div class="b" style="min-height:40px">texte libre…</div></div><p>Le moins de changement, mais la qualité reste celle de ce que le dirigeant tape : c'est le point qu'on veut corriger.</p></article>
+  </div>
+  <div class="options">
+    <article class="carte option reco"><h3>Distinctions : grille de 3 colonnes, icône fine, 3 au plus</h3><div class="croquis"><div class="l"><span class="b">☆ Qualité</span><span class="b">✎ Sur mesure</span><span class="b">◷ Délais</span></div><div class="l"><span class="b v">▤ Équipements ✓</span><span class="b v">⛉ Certifications ✓</span><span class="b">⇄ Relation</span></div><span>2 sur 3 au plus</span></div><p><span class="reco-mot">Recommandée.</span> Icône de 18 px au trait fin, coche ronde à droite. Au troisième choix, les autres se grisent (il faut en décocher un). Seuls les choix appuyés par un fait du site sont pré-cochés, avec l'étiquette « lu sur votre site ». <a href="apres-distinctions.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>Distinctions : classement de 1 à 3</h3><div class="croquis"><span>1. Équipements</span><span>2. Certifications</span><span>3. …</span></div><p>Donne un ordre utile à la rédaction (le 1er devient le premier point fort), mais demande un geste de plus et passe mal au clavier sur téléphone.</p></article>
+    <article class="carte option"><h3>Distinctions : puces sans icône</h3><div class="croquis"><div><span class="pc on">Équipements</span><span class="pc on">Certifications</span><span class="pc">Qualité</span></div></div><p>Le plus compact, mais vous avez dit aimer les icônes sur les choix à cocher.</p></article>
+  </div>
+
+  <h3 style="margin:28px 0 0">Questions avant / après (option recommandée : 14 écrans → 10)</h3>
+  <table>
+    <thead><tr><th>#</th><th>Avant (14 écrans, 28 champs)</th><th>Après</th><th>Section du mémorandum nourrie</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>Site internet</td><td>Site internet (inchangé), suivi de deux écrans de validation : « Ce que nous avons retenu » et « Votre logo et vos photos »</td><td>Toutes (faits sourcés), couverture (logo, photos)</td></tr>
+      <tr><td class="n">2</td><td>Que fait votre entreprise ? (texte libre)</td><td>Que fait votre entreprise ? <b>Puces métiers + types de clients</b> (type de clientèle déplacé ici), phrase proposée, précision facultative</td><td>2.2 Activité et savoir-faire ; 3.3 Clients ; synthèse</td></tr>
+      <tr><td class="n">3</td><td>Ce qui vous distingue (6 tuiles) + certifications (texte)</td><td>Ce qui vous distingue, <b>1 à 3</b> + certifications en puces</td><td>2.2 Activité ; points forts de la synthèse</td></tr>
+      <tr><td class="n">4</td><td>Dates clés (texte « une ligne par date »)</td><td>Dates clés en <b>lignes année / événement / précision</b>, pré-remplies (registres, BODACC)</td><td>2.1 Histoire et identité</td></tr>
+      <tr><td class="n">5</td><td>Équipe : encadrement, votre rôle, <span class="retire">ancienneté moyenne</span></td><td>Équipe : encadrement, votre rôle. L'ancienneté passe dans « Pour aller plus loin »</td><td>2.3 Organisation et équipe</td></tr>
+      <tr><td class="n">6</td><td>Vos clients : type, part du 1er client, zone, régions<br>+ Vos cinq premiers clients (écran séparé)</td><td>Vos clients : <b>part du 1er client (curseur %)</b>, zone. Les régions sont pré-remplies (région du siège) ; les 5 premiers clients deviennent un détail replié, facultatif, sur le même écran</td><td>3.3 Clients (concentration, ancienneté)</td></tr>
+      <tr><td class="n">7</td><td>Votre rémunération (2 montants)<br>+ Charge ou produit exceptionnel (écran séparé)</td><td>« Ce qu'il faut corriger dans vos comptes » : <b>2 montants (champ + curseur)</b> et oui / non exceptionnel, sur un écran</td><td>4.3 EBE retraité ; datapack « Retraitements »</td></tr>
+      <tr><td class="n">8</td><td>Comment détenez-vous les parts ?<br>+ À qui appartiennent les murs ? (écran séparé)</td><td>« Le périmètre de la cession » : détention et murs sur un écran ; loyers (montants) seulement si les murs sont à vous</td><td>5.2 Organigramme juridique ; 4.3 (loyer)</td></tr>
+      <tr><td class="n">9</td><td>Que souhaitez-vous céder, et quand ?<br>+ Comment voyez-vous la transmission ? (écran séparé)</td><td>« Votre projet de cession » : part cédée (indispensable), calendrier, motif, accompagnement, repreneur souhaité : cinq lignes de puces</td><td>5.2 Opération envisagée ; teaser</td></tr>
+      <tr><td class="n">10</td><td>Les 5 prochaines années : croissance (5 puces), axes (6 tuiles)</td><td>Croissance en <b>curseur %</b> (pré-placé sur la croissance passée de vos comptes) ; axes : <b>3 au plus</b></td><td>5.1 Axes de développement ; DCF</td></tr>
+    </tbody>
+  </table>
+  <p class="petit">Aucune réponse n'est perdue : les champs retirés du parcours restent dans « Pour aller plus loin » et dans le questionnaire complet. Rien n'est supprimé de la base.</p>
+  <div class="options">
+    <article class="carte option reco"><h3>Q1. 10 écrans (tableau ci-dessus)</h3><p><span class="reco-mot">Recommandée.</span> Fusionne les écrans qui parlent de la même chose ; chaque réponse gardée a une section du mémorandum en face.</p></article>
+    <article class="carte option"><h3>Q2. 7 écrans</h3><p>Va plus loin : distinctions dans l'activité, dates clés dans la validation du site, perspectives dans le projet de cession. Plus court, mais certains écrans redeviennent chargés (5 à 7 blocs).</p></article>
+    <article class="carte option"><h3>Q3. 13 écrans, mêmes questions en choix à cocher</h3><p>Garde la liste actuelle et ne change que la forme. Moins de risque, mais ne répond pas à « moins de questions ».</p></article>
+  </div>
+
+  <!-- ============================================================ D -->
+  <h2 class="affiche">D. Dates clés</h2>
+  <div class="options">
+    <article class="carte option reco"><h3>D1. Lignes : date, type d'événement, précision</h3><div class="croquis"><div class="l"><span class="b">1998</span><span class="b">Création ▾</span><span class="b">à Exempleville</span></div><span>· registre national des entreprises</span><div class="l"><span class="b">06/2011</span><span class="b">Transfert ▾</span><span class="b">…</span></div><span class="pc" style="justify-self:start">+ Ajouter une date</span></div><p><span class="reco-mot">Recommandée.</span> Une saisie unique accepte 2016, 03/2016 ou 15/03/2016. Les événements des registres et du BODACC arrivent pré-remplis, avec leur source. <a href="apres-dates.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>D2. Frise horizontale cliquable</h3><div class="croquis"><div class="b">1998 ●───── 2011 ●───── + ───── 2026</div></div><p>Plus visuelle, mais difficile au clavier et sur téléphone, et peu lisible au-delà de 6 dates.</p></article>
+    <article class="carte option"><h3>D3. Sélecteurs séparés jour / mois / année</h3><div class="croquis"><div class="l"><span class="b">—</span><span class="b">mars</span><span class="b">2016</span><span class="b">Reprise ▾</span></div></div><p>Pas d'erreur de format possible, mais trois listes par ligne : lourd pour un usage où l'année seule suffit le plus souvent.</p></article>
+  </div>
+
+  <!-- ============================================================ E -->
+  <h2 class="affiche">E. Ce que nous avons retenu de votre site</h2>
+  <div class="options">
+    <article class="carte option reco"><h3>E1. Contradictions d'abord, puis 4 faits essentiels, le reste replié par thème</h3><div class="croquis"><div class="b" style="background:#F6E9DC">À vérifier : créée en 1982 (site) ou 1998 (registres) ?</div><div class="b">Fabrique des escaliers…</div><div class="b">Atelier de 1 800 m²…</div><span class="pc" style="justify-self:start">Voir les 9 autres faits</span></div><p><span class="reco-mot">Recommandée.</span> Faits courts, bouton « Retirer » au lieu de cases à décocher. Un fait contredit par les registres n'est pas utilisé tant que le dirigeant n'a pas choisi (ou gardé les deux dates). <a href="apres-site.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>E2. Quatre colonnes par thème, petites cartes</h3><div class="croquis"><div class="l"><span class="b">Activité<br>3 faits</span><span class="b">Savoir-faire<br>2</span><span class="b">Clients<br>3</span><span class="b">Histoire<br>2</span></div></div><p>Tout est visible d'un coup ; mais quatre colonnes de cartes, c'est l'effet « cartes identiques » à éviter, et tout s'empile sur téléphone.</p></article>
+    <article class="carte option"><h3>E3. Faits validés un par un (carrousel)</h3><div class="croquis"><div class="b">Fait 3 sur 14<br>« Atelier de 1 800 m² »<br>[Exact] [Faux]</div></div><p>Très clair, mais 14 clics : trop long.</p></article>
+  </div>
+  <div class="question"><strong>Détection des contradictions (proposition).</strong> Code testé, sans IA : on compare les faits du site aux registres sur ce qu'on sait vérifier : année de création, ville du siège, effectif (tranche INSEE), forme juridique. En cas d'écart, le fait est marqué « à vérifier », avec les deux sources, et exclu de la rédaction jusqu'au choix du dirigeant.</div>
+
+  <!-- ============================================================ F -->
+  <h2 class="affiche">F. Logo et photos</h2>
+  <div class="options">
+    <article class="carte option reco"><h3>F1. Écran dédié juste après les faits du site</h3><div class="croquis"><div class="b">Logo trouvé ✓ [Changer]</div><div class="l"><span class="b v">1 ✓</span><span class="b v">2 ✓</span><span class="b v">3 ✓</span></div><div class="l"><span class="b">·</span><span class="b">·</span><span class="b">·</span></div><span>☐ Ces photos appartiennent à l'entreprise…</span></div><p><span class="reco-mot">Recommandée.</span> Logo présélectionné, photos cliquables (6 au plus, la 1re en couverture), une case de droits pour toute la sélection, « Déposer mes propres photos ». <a href="apres-photos.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>F2. Photos sur l'écran des faits du site</h3><div class="croquis"><div class="b">faits…</div><div class="l"><span class="b">ph</span><span class="b">ph</span><span class="b">ph</span></div></div><p>Un écran de moins, mais il devient long, et on mélange deux décisions différentes (vérifier des faits, choisir des images).</p></article>
+    <article class="carte option"><h3>F3. Choix automatique, modifiable ensuite</h3><div class="croquis"><div class="b">Nous avons retenu 3 photos. [Modifier]</div></div><p>Le plus rapide, mais il faudrait cocher la case de droits sans voir les photos : contraire à l'esprit de l'attestation.</p></article>
+  </div>
+  <div class="question"><strong>Filtre des photos à la lecture du site (proposition, testé sur un HTML fictif).</strong> Écartées : SVG, images dont le nom ou la classe évoque un logo, une icône ou un pictogramme ; largeur connue &lt; 600 px ; rapport largeur / hauteur &gt; 3 (bandeaux) ; doublons (même fichier en plusieurs tailles, <code>srcset</code> compris : on garde la plus grande). Gardées en priorité : images du contenu principal, avec un texte alternatif ou un nom de fichier qui évoque l'atelier, les réalisations ou l'équipe. Dans le mémorandum : le logo sur la couverture et en pied de page ; les photos sur la couverture (1re), « Activité » (2e et 3e) et « Équipe » (4e).</div>
+
+  <!-- ============================================================ G -->
+  <h2 class="affiche">G. Page du dossier</h2>
+  <div class="options">
+    <article class="carte option reco"><h3>G1. Bloc vert + carte d'action unique, documents en une rangée</h3><div class="croquis"><div class="l"><div class="b v">Projet Chêne<br><b>MENUISERIE EXEMPLE</b><br>1,4 – 2,4 M€</div><div><div class="b">Relire et envoyer →</div><div class="b">Facultatif : photos · 4 points</div></div></div><div class="b">Mémorandum │ Teaser │ Datapack │ Valorisation</div></div><p><span class="reco-mot">Recommandée.</span> Le bouton principal vient d'une règle : la première tâche <em>indispensable</em>, sinon « Relire et envoyer votre dossier ». Les tâches facultatives (2 au plus) sont à part, en petit. Le fil des étapes ne porte plus le bouton, donc plus de libellé tronqué. <a href="apres-dossier.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>G2. Une seule colonne étroite</h3><div class="croquis"><div class="b v">Projet Chêne · 1,4 – 2,4 M€</div><div class="b">Relire et envoyer</div><div class="b">Documents (liste)</div></div><p>Très lisible, cohérent avec le parcours ; mais la page est plus longue à l'écran d'ordinateur et la valeur perd de sa présence.</p></article>
+    <article class="carte option"><h3>G3. Garder la mise en page, réduire le texte</h3><div class="croquis"><div class="l"><div class="b v">…</div><div class="b">À faire (2)</div></div><div class="l"><span class="b">doc</span><span class="b">doc</span><span class="b">doc</span><span class="b">doc</span></div></div><p>Le moins de changement. Corrige le bouton et la troncature, mais garde quatre blocs de même poids.</p></article>
+  </div>
+
+  <!-- ============================================================ H -->
+  <h2 class="affiche">H. Écran final du parcours</h2>
+  <div class="options">
+    <article class="carte option reco"><h3>H1. Mémorandum en vedette avec sa couverture, autres documents en liste</h3><div class="croquis"><div class="l"><div class="b v" style="flex:.4">couv.</div><div class="b">Mémorandum · 4 points à compléter<br>[Relire →]</div></div><div class="b">PDF Teaser · Prêt</div><div class="b">XLSX Datapack · Prêt</div><div class="b">WEB Valorisation · Prêt</div><span>Pour aller plus loin (facultatif)…</span></div><p><span class="reco-mot">Recommandée.</span> Titre selon l'état réel (« Votre dossier est prêt » ou « Votre dossier est rédigé » + ce qui reste). La nature de chaque document (PDF, Excel, page web) se voit à gauche. <a href="apres-final.html">Maquette</a>.</p></article>
+    <article class="carte option"><h3>H2. Liste de contrôle avant envoi</h3><div class="croquis"><span>☑ Valorisation</span><span>☑ Datapack</span><span>☐ Mémorandum : 4 points</span><span class="pc" style="justify-self:start">Envoyer</span></div><p>Très clair sur ce qui reste, mais les documents ne se voient plus ; moins valorisant après 20 minutes de travail.</p></article>
+    <article class="carte option"><h3>H3. Aperçu des quatre documents en vignettes</h3><div class="croquis"><div class="l"><span class="b v">memo</span><span class="b">teaser</span><span class="b">xlsx</span><span class="b">valo</span></div></div><p>Joli, mais on retombe sur quatre blocs de même taille.</p></article>
+  </div>
+
+  <h2 class="affiche">Après votre choix</h2>
+  <p class="intro">Répondez simplement, par exemple : « A1, B1, C1+C2, Q1, D1, E1, F1, G1, H1 », ou modifiez une option. La phase 2 met en œuvre les options retenues sur cette même branche. Elle ajoute les tests (formatage FR / EN, limite de trois, filtre des photos, contradictions, décompte unique, bouton principal jamais facultatif) et les captures avant / après en anglais et en français. Si la PR devient trop grosse, elle sera découpée : A à F d'abord, puis G et H.</p>
+</main>
+</body>
+</html>

@@ -70,6 +70,9 @@
         "role_dirigeant": {
           "libelle": "Ce que vous faites seul aujourd'hui (clients, production, gestion)",
           "aide": "Sert à apprécier la dépendance de l'entreprise à votre personne."
+        },
+        "anciennete_equipe": {
+          "libelle": "Ancienneté moyenne des salariés"
         }
       }
     },
