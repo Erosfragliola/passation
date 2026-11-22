@@ -167,7 +167,8 @@
     "deposer": "Upload",
     "ouvrir": "Open",
     "excel": "Download Excel",
-    "choisir": "Choose"
+    "choisir": "Choose",
+    "relire_envoyer": "Review and send"
   },
   "relire_envoyer": "Review and send your file",
   "documents": {
@@ -216,5 +217,7 @@
     "nd": "n/a",
     "exercice": "fiscal year {annee}",
     "exercices": "fiscal years {de} to {a}"
-  }
+  },
+  "relire_detail": "Your documents are written. Review the memorandum, then choose who to send it to.",
+  "relire_detail_non_redige": "See what’s ready and what’s left before sending."
 }

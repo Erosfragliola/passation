@@ -203,7 +203,19 @@
       "photos": ". Pour ajouter des photos au mémorandum : ",
       "page_memo": "page du mémorandum",
       "modifier": ". Pour modifier une réponse : ",
-      "revoir": "revoir vos réponses"
+      "revoir": "revoir vos réponses",
+      "types": {
+        "pdf": "PDF",
+        "xlsx": "XLSX",
+        "web": "WEB"
+      },
+      "relire_memo": "Relire le mémorandum",
+      "memo_aide": {
+        "zero": "C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre. Ajoutez une photo pour l'illustrer.",
+        "one": "Avec votre photo. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre.",
+        "other": "Avec vos {photos} photos. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre."
+      },
+      "revoir_reponses": "Revoir vos réponses"
     },
     "montants": {
       "non_renseigne": "non renseigné",

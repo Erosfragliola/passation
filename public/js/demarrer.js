@@ -13,6 +13,7 @@ import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { rangPhoto } from "/js/memo-format.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
 import { contradictions, nomLisible, faitsEssentiels, faitsParTheme, limiterChoix, lireDate, lignesDates, phraseActivite, TYPES_EVENEMENT } from "/js/faits-site.js";
@@ -1020,20 +1021,46 @@ async function redaction() {
 async function pret() {
   const e = (await rafraichirEtat()) || etatParcours(S.dossier, null);
   const f = ecranFinal(e), v = e.valeur;
+  const memo = await api(`${base}/documents/memo`).catch(() => null);
+  const doc = (cle) => e.documents.find((x) => x.cle === cle);
+  const restent = f.reste.filter((x) => !x.facultatif), facultatives = f.reste.filter((x) => x.facultatif);
+  const lienTache = (x) => (x.pieces ? lien(`/espace/?dossier=${id}#checklist`) : x.href.startsWith("#") ? lien(`/espace/?dossier=${id}${x.href}`) : x.href);
+  const etatDoc = (d) => el("span", { class: `etat etat-${d.etat}`, text: d.badge || t(`espace.js.etats.${d.etat}`) });
+  // Le mémorandum, document principal : miniature de sa couverture (nom de code, logo et photo choisis)
+  const m = doc("memo");
+  const photo = memo?.photos?.length ? `${base}/documents/memo/photos/${rangPhoto("couverture", memo.photos.length)}` : null;
+  const couverture = el("div", { class: "fin-couverture", "aria-hidden": "true" },
+    photo ? el("span", { class: "fin-couv-photo", style: `background-image:url('${photo}')` }) : null,
+    memo?.logo ? el("img", { class: "fin-couv-logo", src: `${base}/documents/memo/logo`, alt: "" }) : null,
+    el("span", { class: "fin-couv-titre", text: S.dossier?.nom_de_code || t("memo.memorandum_information") }),
+    el("span", { class: "fin-couv-sous", text: t("memo.memorandum_information") }));
+  const principal = m.actions.find((a) => a.principal);
+  const pdf = m.actions.find((a) => !a.principal);
+  // Les autres documents : leur nature (PDF, Excel, page web) et leur état
+  const TYPES = { teaser: "pdf", datapack: "xlsx", valorisation: "web" };
+  const autres = ["teaser", "datapack", "valorisation"].map(doc).map((d) => {
+    const a = d.actions.find((x) => x.principal);
+    return el("li", { class: `fin-doc doc-${d.etat}` },
+      el("span", { class: `fin-type fin-type-${TYPES[d.cle]}`, text: t(`demarrer.js.pret.types.${TYPES[d.cle]}`) }),
+      el("div", {}, el("strong", { text: d.titre }), el("span", { class: "petit", text: t(`espace.js.natures.${d.cle}`) })),
+      etatDoc(d),
+      a ? el("a", { class: "fin-ouvrir", href: a.href, download: a.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: a.libelle, objet: d.titre }) }, a.libelle) : el("span"));
+  });
   remplir(...titre(f.titre, f.aide),
-    v.bas != null && v.haut != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: v.etiquette }),
-      el("p", { class: "valeur-centrale chiffre", text: fourchette(v.bas, v.haut) }), el("p", { class: "petit", text: v.base }), v.ecart ? el("p", { class: "petit", text: v.ecart }) : null) : null,
-    f.reste.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: f.resteTitre }),
-      el("ul", {}, ...f.reste.map((x) => el("li", {}, x.pieces
-        ? el("a", { href: lien(`/espace/?dossier=${id}#checklist`), text: x.titre })
-        : el("a", { href: x.href.startsWith("#") ? lien(`/espace/?dossier=${id}${x.href}`) : x.href, text: x.titre }), el("span", { class: "petit", text: ` · ${x.detail}` }))))) : null,
-    el("div", { class: "guide-docs" },
-      ...[[t("demarrer.js.pret.valo_titre"), t("demarrer.js.pret.valo_detail"), lien(`/espace/valorisation/?dossier=${id}#valorisation`)],
-        [t("dossier.documents.datapack"), t("demarrer.js.pret.datapack_detail"), `${base}/documents/datapack`, true],
-        [t("dossier.documents.teaser"), t("demarrer.js.pret.teaser_detail"), lien(`/espace/documents/teaser/?dossier=${id}`)],
-        [t("memo.memorandum_information"), t("demarrer.js.pret.memo_detail"), lien(`/espace/documents/memo/?dossier=${id}`)]]
-        .map(([titre, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: titre }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
-    el("p", { class: "petit" }, t("demarrer.js.pret.affiner"), el("a", { href: lien(`/espace/valorisation/?dossier=${id}#valorisation`), text: t("demarrer.js.pret.reglages") }), t("demarrer.js.pret.photos"), el("a", { href: lien(`/espace/documents/memo/?dossier=${id}`), text: t("demarrer.js.pret.page_memo") }), t("demarrer.js.pret.modifier"), el("a", { href: lien(`/espace/demarrer/?dossier=${id}&etape=questions`), text: t("demarrer.js.pret.revoir") }), "."));
+    v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), el("a", { href: v.lien.href, text: v.lien.texte })) : null,
+    restent.length ? el("div", { class: "fin-reste" }, el("h2", { text: f.resteTitre }),
+      el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }), x.detail ? el("span", { class: "petit", text: ` · ${x.detail}` }) : null)))) : null,
+    el("section", { class: "fin-memo", "aria-labelledby": "fin-memo-titre" }, couverture,
+      el("div", { class: "fin-memo-texte" }, etatDoc(m),
+        el("h2", { id: "fin-memo-titre", text: t("memo.memorandum_information") }),
+        el("p", { class: "petit", text: t("demarrer.js.pret.memo_aide", { n: memo?.photos?.length || 0, photos: memo?.photos?.length || 0 }) }),
+        el("div", { class: "fin-memo-actions" },
+          principal ? el("a", { class: "btn btn-vert", href: principal.href }, principal.libelle === t("dossier.actions.ouvrir") ? t("demarrer.js.pret.relire_memo") : principal.libelle, fleche()) : null,
+          pdf ? el("a", { class: "btn btn-contour", href: pdf.href }, pdf.libelle) : null))),
+    el("ul", { class: "fin-docs" }, ...autres),
+    facultatives.length ? el("div", { class: "fin-facultatif" }, el("p", { text: t("dossier.final.plus_loin") }),
+      el("ul", {}, ...facultatives.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }))))) : null,
+    el("p", { class: "q-usage" }, el("a", { href: lien(`/espace/demarrer/?dossier=${id}&etape=questions`), text: t("demarrer.js.pret.revoir_reponses") })));
 }
 
 // ================================================================== Chargement

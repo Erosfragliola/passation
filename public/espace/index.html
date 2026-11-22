@@ -19,44 +19,38 @@
   </nav>
 </header>
 <main id="contenu" class="espace espace-bento dossier-parcours" aria-busy="true">
-  <div class="bande-parcours">
-    <div class="conteneur bande-int">
-      <ol class="fil" id="fil" data-t-attr="aria-label=votre_parcours"></ol>
-      <a class="btn btn-principal" id="cta" href="/espace/demarrer/" data-t-html="continuer"></a>
-    </div>
-  </div>
+  <div class="conteneur dossier-leger">
+    <ol class="fil-leger" id="fil" data-t-attr="aria-label=votre_parcours"></ol>
 
-  <div class="conteneur">
-    <div class="bento-espace">
+    <div class="dossier-tete">
       <section class="tuile tuile-vert tuile-dossier" aria-labelledby="dossier-nom">
-        <div class="dossier-haut">
-          <div>
-            <p class="nom-code" id="nom-code"></p>
-            <h1 class="affiche" id="dossier-nom" data-t-html="commun.chargement"></h1>
-            <p class="dossier-meta" id="dossier-meta"></p>
-          </div>
-          <div class="anneau" id="anneau" role="img" aria-label="">
-            <svg viewBox="0 0 80 80" aria-hidden="true"><circle class="fond" cx="40" cy="40" r="32"/><circle class="val" id="anneau-val" cx="40" cy="40" r="32" stroke-dasharray="0 201"/></svg>
-            <div aria-hidden="true" data-t-html="parcours"></div>
-          </div>
-        </div>
+        <p class="nom-code" id="nom-code"></p>
+        <h1 class="affiche" id="dossier-nom" data-t-html="commun.chargement"></h1>
         <div class="dossier-valeur">
           <p class="valeur-etiquette" id="valeur-etiquette" data-t-html="valorisation"></p>
           <p class="valeur-montant" id="valeur-montant">–</p>
-          <p class="valeur-base" id="valeur-base"></p>
-          <p class="valeur-base valeur-ecart" id="valeur-ecart" hidden></p>
-          <a class="valeur-lien" id="valeur-lien" href="/espace/valorisation/"></a>
+          <p class="valeur-base"><span id="valeur-base"></span> <a class="valeur-lien" id="valeur-lien" href="/espace/valorisation/"></a></p>
         </div>
       </section>
 
-      <section class="tuile tuile-afaire" aria-labelledby="titre-afaire">
-        <h2 class="affiche" id="titre-afaire" data-t-html="faire_maintenant"></h2>
-        <div id="afaire"></div>
-      </section>
+      <div class="dossier-action">
+        <section class="tuile action-principale" aria-labelledby="action-titre">
+          <span class="etat" id="action-etat" hidden></span>
+          <h2 id="action-titre"></h2>
+          <p class="petit" id="action-detail"></p>
+          <a class="btn btn-principal" id="cta" href="/espace/demarrer/" data-t-html="continuer"></a>
+        </section>
+        <section class="tuile taches-secondaires" id="secondaires" aria-labelledby="titre-secondaires" hidden>
+          <h2 id="titre-secondaires"></h2>
+          <ul class="taches-liste" id="afaire"></ul>
+        </section>
+      </div>
+    </div>
 
-      <div class="section-titre"><h2 class="affiche" id="titre-docs" data-t-html="commun.documents.vos_documents"></h2><p class="petit" id="docs-resume"></p></div>
-      <div class="docs" id="docs"></div>
+    <h2 class="titre-sobre" id="titre-docs" data-t-html="commun.documents.vos_documents"></h2>
+    <div class="docs-rangee" id="docs"></div>
 
+    <div class="bento-espace">
       <section class="tuile pieces-zone" id="checklist" aria-labelledby="titre-pieces">
         <div class="pieces-resume">
           <h2 id="titre-pieces" class="affiche" data-t-html="pieces_reunir"></h2>

@@ -712,3 +712,112 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .depot-zone { grid-template-columns: 44px minmax(0, 1fr); grid-template-areas: "ico titre" "ico aide" "ico ajout"; }
   .depot-zone > .depot-choisir { justify-self: start; }
 }
+
+/* ---------- Page du dossier allégée (20/11/2026, option G1) ----------
+   Fil léger sans bouton (libellés jamais tronqués), bloc vert réduit à l'essentiel, une carte d'action dont le bouton
+   n'est jamais une tâche facultative, deux tâches au plus, documents en une rangée. */
+.dossier-leger { max-width: 1040px; display: grid; gap: 22px; }
+.fil-leger { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; row-gap: 8px; font-size: 14px; color: var(--pierre-texte); }
+.fil-leger li { display: flex; align-items: center; white-space: nowrap; }
+.fil-leger li + li::before { content: ""; width: 26px; height: 1px; background: var(--trait-fort); margin: 0 10px; }
+.fil-leger a, .fil-leger .etape { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: inherit; }
+.fil-leger .num { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--trait-fort); display: grid; place-items: center; font-size: 11px; font-weight: 600; }
+.fil-leger .fait a { color: var(--espresso); }
+.fil-leger .fait .num { background: var(--vert); border-color: var(--vert); color: #fff; }
+.fil-leger .actuelle { color: var(--vert); font-weight: 600; }
+.fil-leger .actuelle .num { background: var(--cuivre); border-color: var(--cuivre); color: #fff; }
+.dossier-tete { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.dossier-leger .tuile-dossier { display: grid; gap: 4px; padding: 30px 32px; border-radius: 24px; }
+.dossier-leger .tuile-dossier h1 { margin: 2px 0 18px; font-size: clamp(36px, 4vw, 52px); }
+.dossier-leger .dossier-valeur { padding-top: 0; border-top: 0; gap: 4px; }
+.dossier-leger .valeur-etiquette { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 500; color: #CFD8D2; }
+.dossier-leger .valeur-base { font-size: 14.5px; max-width: none; }
+.dossier-leger .valeur-lien { font-weight: 500; white-space: nowrap; }
+.dossier-action { display: grid; gap: 14px; }
+.dossier-leger .action-principale { display: grid; gap: 8px; padding: 24px; border-radius: 22px; background: var(--d-papier, #FFFDF8); border: 1px solid var(--trait); }
+.action-principale h2 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; color: var(--espresso); font-family: var(--b-serif); text-transform: none; }
+.action-principale .etat { justify-self: start; }
+.action-principale .petit { margin: 0 0 8px; }
+.action-principale .btn { justify-content: center; min-height: 48px; font-weight: 600; white-space: normal; text-align: center; }
+.dossier-leger .taches-secondaires { padding: 16px 22px; border-radius: 22px; background: var(--d-papier, #FFFDF8); border: 1px solid var(--trait); }
+.taches-secondaires h2 { margin: 0 0 6px; font: 600 13.5px var(--b-serif); text-transform: none; letter-spacing: 0; color: var(--pierre-texte); }
+.taches-liste { list-style: none; margin: 0; padding: 0; }
+.taches-liste li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; border-top: 1px solid var(--trait); font-size: 14.5px; }
+.taches-liste a, .taches-liste .lien-simple { white-space: nowrap; font-size: 14px; }
+.tache-facultatif { color: var(--pierre-texte); font-size: 13px; }
+.titre-sobre { margin: 18px 0 -8px; font: 600 15.5px var(--b-serif); text-transform: none; letter-spacing: 0; color: var(--espresso); }
+.docs-rangee { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--trait); border-radius: 18px; background: #FFFDF8; overflow: hidden; }
+.doc-cellule { padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.doc-cellule + .doc-cellule { border-left: 1px solid var(--trait); }
+.doc-cellule h3 { margin: 0; font: 600 15.5px var(--b-serif); text-transform: none; }
+.doc-cellule h3 a { text-decoration: none; color: var(--espresso); }
+.doc-cellule h3 a:hover { text-decoration: underline; }
+.doc-nature { margin: 0; font-size: 13px; color: var(--pierre-texte); }
+.doc-cellule .etat { justify-self: start; margin-top: 6px; font-weight: 500; font-size: 12.5px; }
+.doc-liens { margin: 4px 0 0; font-size: 13.5px; }
+.doc-a-venir h3 { color: var(--pierre-texte); }
+.dossier-leger .bento-espace { margin-top: 10px; }
+@media (max-width: 900px) {
+  .dossier-tete { grid-template-columns: minmax(0, 1fr); }
+  .docs-rangee { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .doc-cellule:nth-child(3) { border-left: 0; }
+  .doc-cellule:nth-child(n+3) { border-top: 1px solid var(--trait); }
+}
+@media (max-width: 760px) {
+  .fil-leger li:not(.actuelle) .lib { display: none; }
+  .fil-leger li + li::before { width: 14px; margin: 0 6px; }
+  .dossier-leger .tuile-dossier { padding: 22px; }
+  .dossier-leger .action-principale .btn { display: none; } /* bouton collant en bas (.cta-tel) */
+}
+
+/* ---------- Écran final du parcours (20/11/2026, option H1) : le mémorandum en vedette, les autres documents par
+   nature, le facultatif à part */
+.fin-valeur { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0; font-size: 15px; color: var(--pierre-texte); }
+.fin-valeur strong { font: 700 32px/1 var(--b-affiche); color: var(--vert); }
+.fin-valeur a { font-size: 13.5px; }
+.fin-reste { padding: 14px 18px; border-radius: 16px; background: var(--g-cuivre-pale, #F6E9DC); }
+.fin-reste h2 { margin: 0 0 6px; font: 600 15px var(--b-serif); text-transform: none; letter-spacing: 0; color: var(--espresso); }
+.fin-reste ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.fin-memo { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 24px; align-items: center; padding: 22px; border-radius: 22px; background: #FFFDF8; border: 1px solid var(--trait); }
+.fin-couverture { position: relative; aspect-ratio: 210 / 297; border-radius: 6px; overflow: hidden; background: var(--vert); color: #F6F1E6; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; padding: 14px; box-shadow: 0 10px 24px rgba(35, 30, 24, .16); }
+.fin-couv-photo { position: absolute; inset: 0 0 48% 0; background-size: cover; background-position: center; }
+.fin-couv-logo { position: absolute; top: 10px; left: 10px; max-width: 70px; max-height: 28px; object-fit: contain; background: #fff; padding: 3px 5px; border-radius: 3px; }
+.fin-couv-titre { position: relative; font: 700 22px/1 var(--b-affiche); text-transform: uppercase; }
+.fin-couv-sous { position: relative; font-size: 9px; color: #E9C9A4; }
+.fin-memo-texte { display: grid; gap: 8px; justify-items: start; }
+.fin-memo-texte h2 { margin: 0; font: 600 22px var(--b-serif); letter-spacing: -.01em; text-transform: none; color: var(--espresso); }
+.fin-memo-texte .petit { margin: 0; }
+.fin-memo-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.fin-docs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--trait); }
+.fin-doc { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--trait); }
+.fin-doc strong { display: block; font-weight: 600; font-size: 15px; }
+.fin-doc .petit { margin: 0; }
+.fin-type { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; }
+.fin-type-pdf { background: #F6E9DC; color: #8E5530; }
+.fin-type-xlsx { background: #E6EEE8; color: var(--vert); }
+.fin-type-web { background: #F3EBDD; color: var(--pierre-texte); }
+.fin-ouvrir { font-size: 14px; white-space: nowrap; }
+.fin-facultatif { font-size: 14px; color: var(--pierre-texte); }
+.fin-facultatif p { margin: 0 0 4px; }
+.fin-facultatif ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+@media (max-width: 760px) {
+  .fin-memo { grid-template-columns: minmax(0, 1fr); }
+  .fin-couverture { width: 150px; }
+  .fin-doc { grid-template-columns: 42px minmax(0, 1fr) auto; }
+  .fin-doc .etat { grid-column: 2; grid-row: 2; justify-self: start; }
+}
+/* Corrections d'héritage (règles de l'ancienne page du dossier) */
+.dossier-leger .dossier-tete > .tuile-dossier { grid-column: auto; }
+.dossier-leger .fil-leger li > a, .dossier-leger .fil-leger li > .etape { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; min-height: 0; padding: 0; background: none; border-radius: 0; color: inherit; font-size: 14px; overflow: visible; }
+.dossier-leger .fil-leger .actuelle > .etape { color: var(--vert); font-weight: 600; background: none; }
+.doc-cellule .etat, .fin-memo .etat, .fin-doc .etat, .action-principale .etat { text-transform: none; letter-spacing: 0; }
+.dossier-leger .docs-rangee .doc-cellule { border: 0; background: none; border-radius: 0; }
+.dossier-leger .docs-rangee .doc-cellule + .doc-cellule { border-left: 1px solid var(--trait); }
+@media (max-width: 900px) {
+  .dossier-leger .docs-rangee .doc-cellule:nth-child(3) { border-left: 0; }
+  .dossier-leger .docs-rangee .doc-cellule:nth-child(n+3) { border-top: 1px solid var(--trait); }
+}
+.fin-doc .etat, .fin-memo .etat { padding: 4px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+.fin-doc .etat-pret, .fin-memo .etat-pret { background: #E6EEE8; color: var(--vert); }
+.fin-doc .etat-a-relire, .fin-doc .etat-incomplet, .fin-memo .etat-a-relire, .fin-memo .etat-incomplet { background: #F6E9DC; color: #8E5530; }
+.fin-doc .etat-a-venir, .fin-memo .etat-a-venir { background: #F3EBDD; color: var(--pierre-texte); }

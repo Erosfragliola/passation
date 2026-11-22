@@ -203,7 +203,19 @@
       "photos": ". To add photos to the memorandum: ",
       "page_memo": "memorandum page",
       "modifier": ". To change an answer: ",
-      "revoir": "review your answers"
+      "revoir": "review your answers",
+      "types": {
+        "pdf": "PDF",
+        "xlsx": "XLSX",
+        "web": "WEB"
+      },
+      "relire_memo": "Review the memorandum",
+      "memo_aide": {
+        "zero": "It’s the document the buyer will read in full: review it chapter by chapter. Add a photo to illustrate it.",
+        "one": "With your photo. It’s the document the buyer will read in full: review it chapter by chapter.",
+        "other": "With your {photos} photos. It’s the document the buyer will read in full: review it chapter by chapter."
+      },
+      "revoir_reponses": "Review your answers"
     },
     "montants": {
       "non_renseigne": "not entered",

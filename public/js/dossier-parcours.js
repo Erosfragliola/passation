@@ -25,6 +25,8 @@ export const NB_PIECES = CHECKLIST.reduce((n, g) => n + g.items.length, 0);
 /** Seuil des questions (en %) à partir duquel la rédaction peut être lancée. */
 const SEUIL_REDACTION = 40;
 const MAX_TACHES = 3;
+/** Page du dossier : au plus 2 tâches sous l'action principale (« trop d'information tue l'information »). */
+export const MAX_SECONDAIRES = 2;
 
 /** « 2024 » ; « 2023 et 2024 » ; « 2022 à 2024 » (consécutifs) ; « 2019, 2021 et 2024 ». */
 export function listeAnnees(annees = []) {
@@ -213,10 +215,14 @@ export function etatParcours(d, memo = null, teaser = null) {
   }
   const affichees = taches.slice(0, MAX_TACHES);
 
-  // ---------- Action principale : exactement la première tâche (même libellé, même lien)
-  const action = affichees.length
-    ? { texte: affichees[0].titre, href: affichees[0].href, cle: affichees[0].cle, pieces: Boolean(affichees[0].pieces) }
-    : { texte: t("dossier.relire_envoyer"), href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
+  // ---------- Action principale : la première tâche indispensable (même libellé, même lien) ; jamais une tâche
+  // facultative (20/11/2026) : sans tâche indispensable, « Relire et envoyer votre dossier » (écran final).
+  const indispensable = taches.find((x) => !x.facultatif);
+  const action = indispensable
+    ? { texte: indispensable.titre, detail: indispensable.detail, bouton: indispensable.action, href: indispensable.href, cle: indispensable.cle, pieces: Boolean(indispensable.pieces) }
+    : { texte: t("dossier.relire_envoyer"), detail: redige ? t("dossier.relire_detail") : t("dossier.relire_detail_non_redige"), bouton: t("dossier.actions.relire_envoyer"), href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
+  // Tâches montrées sous l'action principale : deux au plus, sans répéter l'action
+  const secondaires = taches.filter((x) => x !== indispensable).slice(0, MAX_SECONDAIRES);
 
   // ---------- Avancement : 100 % si et seulement si tout l'indispensable est fait
   const brut = avancement({
@@ -242,7 +248,7 @@ export function etatParcours(d, memo = null, teaser = null) {
     { cle: "memo", titre: t("dossier.documents.memo"), ...(docs.memo
       ? m?.nonRedigees.length
         ? { etat: "incomplet", detail: t("dossier.documents.chapitres_a_rediger", { n: m.nonRedigees.length, total: (memo?.sections || []).length }), actions: [{ libelle: t("dossier.actions.rediger"), href: liens.memo, principal: true }] }
-        : { etat: memoARelire ? "a-relire" : "pret", detail: `${t("dossier.documents.redige_le", { date: dateCourte(docs.memo.le) })}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: t("dossier.actions.ouvrir"), href: liens.memo, principal: true }, { libelle: t("commun.documents.pdf"), href: `${liens.memo}&imprimer=1` }] }
+        : { etat: memoARelire ? "a-relire" : "pret", badge: m?.nbACompleter ? libellePoints(m.nbACompleter) : null, detail: `${t("dossier.documents.redige_le", { date: dateCourte(docs.memo.le) })}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: t("dossier.actions.ouvrir"), href: liens.memo, principal: true }, { libelle: t("commun.documents.pdf"), href: `${liens.memo}&imprimer=1` }] }
       : venir(t("dossier.documents.redige_redaction"))) },
   ];
 
@@ -265,7 +271,7 @@ export function etatParcours(d, memo = null, teaser = null) {
   }
 
   return {
-    etapes, actuelle, fait, pret, redige, avancement: pct, action, taches: affichees, documents, valeur,
+    etapes, actuelle, fait, pret, redige, avancement: pct, action, taches: affichees, secondaires, documents, valeur,
     questions: { faits: q.faits || 0, total: q.total || 0, restantes },
     pieces: { fournies, total: NB_PIECES, ouvert: actuelle === "relecture" && manquantes > 0 && affichees.length > 0 && affichees.every((t) => t.cle === "pieces") },
   };
