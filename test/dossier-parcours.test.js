@@ -180,8 +180,10 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     expect(e.taches[1].href).toBe(`/espace/documents/memo/?dossier=${ID}#section-organisation`);
     expect(e.taches[0].href).toBe(`/espace/documents/memo/?dossier=${ID}#donnees`);
   });
-  it("action principale = la première tâche (plus de « relire le mémorandum » contredit par la liste)", () => {
-    expect(e.action).toMatchObject({ texte: "Ajouter une photo de l'atelier ou des produits", href: `/espace/documents/memo/?dossier=${ID}#donnees` });
+  // 20/11/2026 : le bouton principal n'est jamais une tâche facultative ; à 100 %, « Relire et envoyer votre dossier »
+  it("action principale : dossier prêt, tâches toutes facultatives → « Relire et envoyer votre dossier » (écran final)", () => {
+    expect(e.action).toMatchObject({ texte: "Relire et envoyer votre dossier", bouton: "Relire et envoyer", href: `/espace/demarrer/?dossier=${ID}&etape=pret`, cle: "relecture" });
+    expect(e.secondaires.map((x) => x.titre)).toEqual(["Ajouter une photo de l'atelier ou des produits", "Compléter 2 points du mémorandum"]); // 2 au plus
   });
   it("mémorandum à relire, les trois autres prêts, avec leurs dates", () => {
     expect(e.documents.map((x) => x.etat)).toEqual(["pret", "pret", "pret", "a-relire"]);
@@ -250,10 +252,11 @@ describe("un seul état pour le parcours guidé et la page du dossier", () => {
     expect(ecranFinal(e).resteTitre).toBeNull();
   });
   it("sans date de valorisation : « Prête »", () => expect(etatParcours(toutFait(), memoComplet).documents[0].detail).toBe("Prête"));
-  it("s'il ne manque que des pièces : le bouton principal ouvre le dépôt, qui s'ouvre aussi de lui-même", () => {
+  it("s'il ne manque que des pièces (facultatif) : le dépôt s'ouvre de lui-même, le bouton principal reste « Relire et envoyer »", () => {
     const f = etatParcours(toutFait({ checklist: CHECKLIST_COMPLETE.slice(0, 20) }), memoComplet);
     expect(f.taches.map((t) => t.titre)).toEqual(["Déposer 1 pièce manquante"]);
-    expect(f.action).toMatchObject({ texte: "Déposer 1 pièce manquante", href: "#checklist", pieces: true });
+    expect(f.action).toMatchObject({ texte: "Relire et envoyer votre dossier", cle: "relecture", pieces: false });
+    expect(f.secondaires.map((x) => x.titre)).toEqual(["Déposer 1 pièce manquante"]);
     expect(f.pieces.ouvert).toBe(true);
   });
   it("une clé de checklist inconnue n'est pas comptée", () => {
@@ -265,11 +268,12 @@ describe("un seul état pour le parcours guidé et la page du dossier", () => {
     ["rédaction à lancer", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100 } } }), null],
     ["teaser manquant", toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet],
     ["prêt avec recommandations", toutFait({ checklist: [] }), { photos: [], sections: [section("a", "A", { a_completer: ["x"] })] }],
-  ])("prochaine action = première tâche (%s)", (_, d, memo) => {
+  ])("prochaine action = première tâche indispensable, sinon « Relire et envoyer » (%s)", (_, d, memo) => {
     const e = etatParcours(d, memo);
     expect(e.taches.length).toBeGreaterThan(0);
-    expect(e.action.texte).toBe(e.taches[0].titre);
-    expect(e.action.href).toBe(e.taches[0].href);
+    const indispensable = e.taches.find((x) => !x.facultatif);
+    expect(e.action.texte).toBe(indispensable ? indispensable.titre : "Relire et envoyer votre dossier");
+    expect(e.action.href).toBe(indispensable ? indispensable.href : `/espace/demarrer/?dossier=${ID}&etape=pret`);
   });
   it("teaser manquant : « Terminer la rédaction », vers l'étape Rédaction du parcours guidé", () => {
     const e = etatParcours(toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet);
@@ -389,5 +393,34 @@ describe("photos trouvées sur le site", () => {
   it("sans photo trouvée : la tâche reste « Ajouter une photo » (dépôt)", () => {
     const e = etatParcours(d, { photos: [], site: { photos_candidates: [] }, sections: [section("synthese", "Synthèse")] });
     expect(e.taches.find((x) => x.cle === "photo").titre).toBe("Ajouter une photo de l'atelier ou des produits");
+  });
+});
+
+// Règle de la PR « Parcours d'analyse » (20/11/2026) : le bouton principal n'est jamais une tâche facultative, et la
+// page du dossier, la tâche et l'écran final comptent les mêmes points à compléter.
+describe("bouton principal jamais facultatif ; un seul décompte des points", () => {
+  const memo47 = { photos: [], sections: [section("synthese", "Synthèse", { a_completer: Array.from({ length: 40 }, (_, k) => `p${k}`) }), section("marche", "Marché", { a_completer: Array.from({ length: 7 }, (_, k) => `m${k}`) })] };
+  const etats = [
+    dossier(),
+    dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 6, total: NB_QUESTIONS, pct: 60 } } }),
+    toutFait({ checklist: [] }),
+    toutFait({ checklist: CHECKLIST_COMPLETE }),
+    toutFait({ checklist: CHECKLIST_COMPLETE.slice(0, 3), parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [2023] }) } }),
+  ];
+  it.each(etats.map((d, k) => [k, d]))("état %s : l'action principale n'est jamais une tâche facultative", (_, d) => {
+    for (const memo of [null, memoComplet, memo47]) {
+      const e = etatParcours(d, memo);
+      const facultatives = new Set(e.taches.filter((x) => x.facultatif).map((x) => x.cle));
+      expect(facultatives.has(e.action.cle)).toBe(false);
+      if (e.pret) expect(e.action.texte).toBe("Relire et envoyer votre dossier");
+      expect(e.secondaires.length).toBeLessThanOrEqual(2);
+      expect(e.secondaires).not.toContain(e.taches.find((x) => x.cle === e.action.cle));
+    }
+  });
+  it("47 points : même nombre dans le document, la tâche et l'écran final (une seule fonction de décompte)", () => {
+    const e = etatParcours(toutFait({ checklist: CHECKLIST_COMPLETE }), memo47);
+    expect(e.documents.find((x) => x.cle === "memo").badge).toBe("47 points à compléter");
+    expect(e.taches.find((x) => x.cle === "a-completer").titre).toBe("Compléter 47 points du mémorandum");
+    expect(ecranFinal(e).reste.find((x) => x.cle === "a-completer").titre).toBe("Compléter 47 points du mémorandum");
   });
 });

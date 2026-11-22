@@ -29,21 +29,6 @@ const el = (tag, attrs = {}, ...enfants) => {
 };
 /** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
-const ICONES = {
-  chiffres: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
-  exercices: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
-  questions: '<path d="M4 5h16v11H9l-5 4z"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.4"/>',
-  redaction: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
-  chapitres: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
-  photo: '<path d="M3 7h4l2-2h6l2 2h4v12H3z"/><circle cx="12" cy="13" r="3.5"/>',
-  "a-completer": '<path d="M6 3h8.5L19 7.5V21H6z"/><path d="M9 13h6M12 10v6"/>',
-  pieces: '<path d="M3 6h7l2 2h9v11H3z"/>',
-  valorisation: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
-  datapack: '<path d="M4 4h16v16H4zM4 10h16M10 4v16"/>',
-  teaser: '<path d="M6 3h8.5L19 7.5V21H6zM14 3v5h5M9 12.5h7M9 16.5h5"/>',
-  memo: '<path d="M4 5h16v12H4zM8 21h8M12 17v4"/>',
-};
-const icone = (k) => el("span", { class: "ico", "aria-hidden": "true", html: `<svg viewBox="0 0 24 24">${ICONES[k] || ""}</svg>` });
 const libelleEtat = (etat) => t(`espace.js.etats.${etat}`);
 
 async function charger() {
@@ -68,55 +53,54 @@ function afficher({ checklist = true } = {}) {
   document.title = t("espace.js.titre_page", { nom: e.nom || t("espace.js.votre_dossier") });
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
 
-  // Fil du parcours : étapes faites cliquables, l'actuelle mise en avant
+  // Fil du parcours : léger, libellés jamais tronqués (le bouton principal n'y est plus), étapes faites cliquables
   remplacer($("#fil"), ...etat.etapes.map((x, i) => {
     const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(i + 1) }), el("span", { class: "lib", text: x.libelle })];
     if (x.etat === "fait") return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": t("espace.js.etape_faite", { etape: x.libelle }) }, contenu));
     if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_en_cours") })));
     return el("li", {}, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_a_venir") })));
   }));
-  // Action principale = première tâche de « À faire maintenant » (même libellé, même lien ; les pièces ouvrent le dépôt)
-  for (const a of [$("#cta"), $("#cta-tel")]) {
-    a.textContent = etat.action.texte; a.href = etat.action.href;
-    a.onclick = etat.action.pieces ? (ev) => { ev.preventDefault(); ouvrirPieces(true); } : null;
-  }
 
-  // En-tête : nom de code, raison sociale, avancement, valeur et sa base
+  // En-tête vert : nom de code, nom, fourchette, une seule ligne d'explication (le détail derrière « Voir le détail »)
   $("#nom-code").textContent = dossier.nom_de_code || "";
   $("#dossier-nom").textContent = e.nom || t("espace.js.votre_entreprise");
-  $("#dossier-meta").textContent = [e.ville, `SIREN ${dossier.siren.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}`, e.date_creation ? t("espace.js.depuis", { annee: e.date_creation.slice(0, 4) }) : null].filter(Boolean).join(" · ");
-  const g = etat.avancement; // même calcul que l'écran final du parcours guidé (etatParcours)
-  $("#avancement-global").textContent = t("espace.js.pct", { n: g });
-  $("#anneau").setAttribute("aria-label", t("espace.js.anneau", { n: g }));
-  $("#anneau-val").setAttribute("stroke-dasharray", `${((2 * Math.PI * 32 * g) / 100).toFixed(1)} 201`);
   const v = etat.valeur;
   $("#valeur-etiquette").textContent = v.etiquette;
   $("#valeur-montant").textContent = v.bas != null && v.haut != null ? fourchette(v.bas, v.haut) : t("espace.js.a_affiner");
   $("#valeur-base").textContent = v.base;
-  $("#valeur-ecart").textContent = v.ecart || ""; $("#valeur-ecart").hidden = !v.ecart;
   $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
 
-  // À faire maintenant
-  remplacer($("#afaire"), etat.taches.length
-    ? el("ul", { class: "taches" }, ...etat.taches.map((x) => el("li", { class: "tache" },
-      icone(x.cle),
-      el("span", { class: "tache-txt" }, el("strong", { text: x.titre }), el("span", { class: "petit", text: x.detail })),
-      x.pieces ? el("button", { type: "button", class: "btn btn-contour btn-petit", onclick: () => ouvrirPieces(true) }, x.action)
-        : el("a", { class: "btn btn-contour btn-petit", href: x.href, "aria-label": t("espace.js.action_de", { action: x.action, objet: x.titre }) }, x.action))))
-    : el("div", { class: "bravo" }, el("p", { class: "affiche", text: t("espace.js.bravo_titre") }),
-      el("p", { text: t("espace.js.bravo_texte") })));
+  // Action principale : jamais facultative (première tâche indispensable, sinon « Relire et envoyer »)
+  const a = etat.action;
+  $("#action-titre").textContent = a.texte;
+  $("#action-detail").textContent = a.detail || ""; $("#action-detail").hidden = !a.detail;
+  $("#action-etat").hidden = !etat.pret; $("#action-etat").textContent = etat.pret ? t("espace.js.dossier_complet") : "";
+  $("#action-etat").className = "etat etat-pret";
+  for (const [lienAction, texte] of [[$("#cta"), `${a.bouton} →`], [$("#cta-tel"), a.texte]]) {
+    if (!lienAction) continue;
+    lienAction.textContent = texte; lienAction.href = a.href;
+    lienAction.onclick = a.pieces ? (ev) => { ev.preventDefault(); ouvrirPieces(true); } : null;
+  }
 
-  // Documents
-  const prets = etat.documents.filter((x) => x.etat !== "a-venir").length;
-  $("#docs-resume").textContent = t("espace.js.docs_resume", { n: prets, total: etat.documents.length });
-  remplacer($("#docs"), ...etat.documents.map((x) => el("article", { class: `tuile doc doc-${x.etat}`, "aria-labelledby": `doc-titre-${x.cle}` },
-    el("div", { class: "doc-haut" }, icone(x.cle), el("span", { class: `etat etat-${x.etat}`, text: libelleEtat(x.etat) })),
-    el("h3", { id: `doc-titre-${x.cle}`, text: x.titre }),
-    el("p", { class: "petit", text: x.detail }),
-    x.actions.length ? el("div", { class: "doc-actions" }, ...x.actions.map((a) => el("a", {
-      class: `btn btn-petit ${a.principal ? "btn-principal" : "btn-contour"}`, href: a.href, download: a.telecharger ? "" : null,
-      "aria-label": a.principal ? null : t("espace.js.action_de", { action: a.libelle, objet: x.titre }),
-    }, a.libelle))) : null)));
+  // Deux tâches au plus sous l'action : titre seul, marquées « facultatif » le cas échéant
+  const sec = etat.secondaires;
+  $("#secondaires").hidden = !sec.length;
+  $("#titre-secondaires").textContent = sec.every((x) => x.facultatif) ? t("espace.js.pour_ameliorer") : t("espace.js.ensuite");
+  remplacer($("#afaire"), ...sec.map((x) => el("li", {},
+    el("span", { class: "tache-titre" }, x.titre, x.facultatif && !sec.every((y) => y.facultatif) ? el("span", { class: "tache-facultatif", text: ` · ${t("espace.js.facultatif")}` }) : null),
+    x.pieces ? el("button", { type: "button", class: "lien-simple", onclick: () => ouvrirPieces(true) }, x.action)
+      : el("a", { href: x.href, "aria-label": t("espace.js.action_de", { action: x.action, objet: x.titre }) }, x.action))));
+
+  // Documents : une rangée légère, la nature de chaque document et son état
+  remplacer($("#docs"), ...etat.documents.map((x) => {
+    const principal = x.actions.find((y) => y.principal);
+    const autres = x.actions.filter((y) => !y.principal);
+    return el("article", { class: `doc-cellule doc-${x.etat}`, "aria-labelledby": `doc-titre-${x.cle}` },
+      el("h3", { id: `doc-titre-${x.cle}` }, principal ? el("a", { href: principal.href, download: principal.telecharger ? "" : null, text: x.titre }) : x.titre),
+      el("p", { class: "doc-nature", text: t(`espace.js.natures.${x.cle}`) }),
+      el("span", { class: `etat etat-${x.etat}`, text: x.badge || libelleEtat(x.etat) }),
+      autres.length ? el("p", { class: "doc-liens" }, ...autres.map((y, k) => [k ? " · " : null, el("a", { href: y.href, download: y.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: y.libelle, objet: x.titre }) }, y.libelle)])) : null);
+  }));
 
   // Pièces : résumé, et dépôt replié sauf quand c'est l'étape en cours (ou ouvert par le dirigeant)
   const { fournies, total } = etat.pieces;
