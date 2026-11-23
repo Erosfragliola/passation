@@ -2,16 +2,22 @@
    Conventions reprises (rien de copié) : numéro de page « 1.1 » en accent, titre en petites capitales, phrase-message,
    puces carrées, encadrés à bandeau plein, tableaux en k€, pied de page avec sources, notes, date et numéro. */
 
-@font-face { font-family: "Big Shoulders"; font-weight: 700; font-display: swap; src: url("/fonts/big-shoulders-bold.woff2") format("woff2"); }
-@font-face { font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/instrument-serif-italic.woff2") format("woff2"); }
+/* Police unique (23/11/2026) : Geist, fichier variable déclaré dans styles.css (geist-var.woff2, graisses 100 à 900),
+   embarqué tel quel à l'impression. */
 /* Direction artistique bento (18/11/2026) : couleurs Passation, conventions banque d'affaires */
 .feuille-document.memo {
   --im-encre: #1E3A2E; --im-accent: #A8653A; --im-acier: #2B5040; --im-acier-2: #9DB8A8;
   --im-pale: #EFE5D3; --im-pale-2: #FAF5EB; --im-gris: #6A6256; --im-trait: #E4DACA; --im-accent-pale: #F5E7D6;
   --im-texte: #231E18; --im-creme: #FFFDF8;
   --im-police: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --im-affiche: "Big Shoulders", "Arial Narrow", sans-serif;
-  --im-serif: "Instrument Serif", Georgia, serif;
+  /* Titres : une seule police, graisse 500, interlettrage -0.05em, interligne serré. Échelle 44 / 32 / 24 / 18 px pour
+     une page de 1100 px de large (largeur du mémorandum à l'écran), en unités de conteneur pour suivre l'impression. */
+  --titre-police: "Geist", sans-serif;
+  --titre-graisse: 500;
+  --titre-interlettrage: -0.05em;
+  --titre-interligne: .94;
+  --titre-1: 4cqw; --titre-2: 2.9cqw; --titre-3: 2.2cqw; --titre-4: 1.64cqw;
+  --im-affiche: var(--titre-police);
 }
 .diapo.im-page, .diapo.im-couverture, .diapo.im-ouverture {
   font-family: var(--im-police); color: var(--im-texte); border-radius: 0; box-shadow: 0 8px 28px rgba(16, 41, 74, .13);
@@ -67,7 +73,7 @@
 .im-message-cle { margin: 0 1.7cqw .8cqw; background: var(--im-accent-pale); padding: .75cqw 1.4cqw; border-left: .3cqw solid var(--im-accent); }
 .im-message-cle p { color: var(--im-accent); font-weight: 700; text-align: center; font-size: 1.04cqw; }
 .im-info { display: flex; gap: .8cqw; align-items: flex-start; background: var(--im-accent-pale); padding: .55cqw 1cqw; }
-.im-info-i { flex: none; width: 1.25cqw; height: 1.25cqw; border-radius: 50%; background: var(--im-accent); color: #fff; font: italic 700 .8cqw/1 Georgia, serif; display: grid; place-items: center; margin-top: .05cqw; }
+.im-info-i { flex: none; width: 1.25cqw; height: 1.25cqw; border-radius: 50%; background: var(--im-accent); color: #fff; font: italic 600 .8cqw/1 var(--im-police); display: grid; place-items: center; margin-top: .05cqw; }
 .im-info p { color: var(--im-accent); font-style: italic; font-size: .9cqw; }
 
 /* Pied de page */
@@ -326,7 +332,6 @@
 .im-couv-titre { position: absolute; left: 5cqw; bottom: auto; top: 50%; transform: translateY(-50%); }
 .im-couv-titre::before { display: none; }
 .im-couv-etiquette { font-family: var(--im-affiche); text-transform: uppercase; font-variant: normal !important; font-size: 1.9cqw !important; letter-spacing: .04em; color: #E9C9A4; margin: 0 0 .6cqw !important; }
-.im-couv-titre h2 { font-family: var(--im-serif); font-style: italic; font-weight: 400; font-variant: normal; font-size: 8.6cqw; letter-spacing: -.01em; line-height: .95; }
 .im-couv-sous { font-size: 1.25cqw !important; }
 .im-couv-encoche { right: 1.6cqw; bottom: 1.6cqw; border-radius: 2.4cqw 0 2.4cqw 0; min-width: 22cqw; padding: 1.8cqw 2.2cqw; }
 .im-couv-encoche strong { font-size: 1.4cqw; }
@@ -455,7 +460,7 @@
 .im-g-finances > .im-pile:first-child { display: flex; flex-direction: column; gap: 1cqw; }
 .im-charges { display: grid; grid-template-columns: 9.5cqw minmax(0, 1fr); gap: 1cqw; align-items: center; }
 .im-anneau-charges { width: 100%; height: auto; }
-.im-anneau-val { font: 700 19px "Big Shoulders", "Arial Narrow", sans-serif; fill: var(--im-encre); }
+.im-anneau-val { font: 500 19px var(--titre-police); letter-spacing: var(--titre-interlettrage); fill: var(--im-encre); }
 .im-anneau-lib { font: 400 10px var(--im-police); fill: var(--im-gris); }
 .im-charges-legende { list-style: none; margin: 0; padding: 0; display: grid; gap: .35cqw; }
 .im-charges-legende li { display: grid; grid-template-columns: .8cqw minmax(0, 1fr) auto; gap: .5cqw; align-items: center; font-size: .82cqw; }
@@ -502,3 +507,29 @@
 .im-couv-logo { max-width: 14cqw; max-height: 5cqw; object-fit: contain; justify-self: start; }
 .im-pied-logos { display: inline-flex; align-items: center; gap: 1cqw; }
 .im-logo-entreprise { max-height: 1.6cqw; max-width: 8cqw; object-fit: contain; }
+
+/* ============================================ Police unique Geist, titres en 500 / -0.05em (23/11/2026)
+   Plus de capitales étroites ni de serif italique : les titres passent en casse normale, sur l'échelle --titre-1 à 4.
+   Les étiquettes (confidentiel, « Dans cette partie », thèmes) restent des étiquettes, pas des titres. */
+.im-couv-titre h2, .im-ouv-titre h2, .im-entete h3, .im-num, .im-couv-etiquette, .im-som-num, .im-som-partie strong,
+.im-ouv-num, .im-bandeau, .im-carte-graph-titre, .im-ligne-lib, .im-chev, .im-moteurs h5, .im-couloir .im-couloir-lib,
+.im-intertitre, .im-piliers h5, .im-cons-titre {
+  font-family: var(--titre-police); font-weight: var(--titre-graisse); font-style: normal; font-variant: normal;
+  text-transform: none; letter-spacing: var(--titre-interlettrage); line-height: var(--titre-interligne);
+}
+.im-couv-titre h2, .im-ouv-titre h2 { font-size: var(--titre-1); }
+.im-couv-titre h2 { margin-top: .4cqw; }
+.im-couv-etiquette { font-size: var(--titre-4) !important; }
+.im-entete h3, .im-num, .im-som-num { font-size: var(--titre-3); }
+.im-som-partie strong { font-size: calc(var(--titre-4) * var(--k, 1)); }
+.im-ouv-num { line-height: .8; }
+.im-ouv-titre h2 { margin-top: 1.4cqw; }
+/* Petits titres (bandeaux, encadrés, étapes) : même style, taille réduite, interligne un peu plus ouvert sur deux lignes */
+.im-bandeau, .im-ligne-lib, .im-chev, .im-moteurs h5, .im-couloir .im-couloir-lib, .im-carte-graph-titre { font-size: 1.05cqw; line-height: 1.05; }
+.im-intertitre, .im-piliers h5 { line-height: 1.05; }
+/* Chiffres mis en avant (autrefois en capitales étroites) : même police et même graisse que les titres */
+.im-tuile-kpi strong, .im-bc strong, .im-ratio strong, .im-cons-num, .im-pilier-num, .im-frise-an, .im-cercle-val,
+.im-cercles-legende strong, .im-charges-legende strong, .im-rond, .im-tuile strong, .im-chev b, .im-ouv-encoche .im-som-sous {
+  font-family: var(--titre-police); font-weight: var(--titre-graisse); font-style: normal; letter-spacing: var(--titre-interlettrage);
+}
+

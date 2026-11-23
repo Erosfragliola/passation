@@ -13,21 +13,30 @@ const xml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 export const S = { normal: 0, titre: 1, entete: 2, euros: 3, eurosGras: 4, pct: 5, saisieEuros: 6, saisiePct: 7, petit: 8, pct2: 9, nombre: 10, gras: 11, saisieNombre: 12, sousTitre: 13, eurosTotal: 14, saisieTexte: 15, confidentiel: 16, section: 17, lien: 18, titreCouverture: 19, unite: 20, sectionNumero: 21, enteteDroite: 22, controle: 23, note: 24 };
 export const COULEURS = { creme: "FBF6EC", espresso: "231E18", sable: "EADFCB", vert: "1E3A2E", cuivre: "A8653A", cuivreTexte: "8E5530", pierreTexte: "696155", vertPale: "E3EBE6" };
 const C = (h) => `FF${h}`;
+// Police du datapack (23/11/2026) : Excel n'embarque pas de police web, et un lecteur qui n'a pas Geist verrait la police
+// par défaut de son tableur. On garde donc Arial, présente partout ; « Geist » est une option d'une ligne (ici).
+// Tailles alignées sur l'échelle des titres des autres livrables (44 / 32 / 24 / 18 px), divisée par deux en points :
+// couverture 22, titre d'onglet 16, sous-titre 12, texte 10, notes 9. Excel ne connaît que le normal et le gras :
+// les titres (graisse 500 ailleurs) restent en gras, le texte courant en normal.
+export const POLICE_DATAPACK = "Arial";
+export const TAILLES_DATAPACK = { couverture: 22, titre: 16, sousTitre: 12, texte: 10, note: 9 };
+const T = TAILLES_DATAPACK;
+const police = (attrs, taille, couleur) => `<font>${attrs}<sz val="${taille}"/><color rgb="${C(couleur)}"/><name val="${POLICE_DATAPACK}"/></font>`;
 const ZERO = "&quot;–&quot;";
 const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
 <numFmts count="4"><numFmt numFmtId="164" formatCode="#,##0;\\(#,##0\\);${ZERO}"/><numFmt numFmtId="165" formatCode="0.0%;\\(0.0%\\);${ZERO}"/><numFmt numFmtId="166" formatCode="0.00%;\\(0.00%\\);${ZERO}"/><numFmt numFmtId="167" formatCode="#,##0.000;\\(#,##0.000\\);${ZERO}"/></numFmts>
 <fonts count="10">
-<font><sz val="10"/><color rgb="${C(COULEURS.espresso)}"/><name val="Arial"/></font>
-<font><b/><sz val="10"/><color rgb="${C(COULEURS.espresso)}"/><name val="Arial"/></font>
-<font><b/><sz val="16"/><color rgb="${C(COULEURS.vert)}"/><name val="Arial"/></font>
-<font><i/><sz val="9"/><color rgb="${C(COULEURS.pierreTexte)}"/><name val="Arial"/></font>
-<font><b/><sz val="12"/><color rgb="${C(COULEURS.vert)}"/><name val="Arial"/></font>
-<font><b/><sz val="10"/><color rgb="${C(COULEURS.cuivreTexte)}"/><name val="Arial"/></font>
-<font><sz val="10"/><color rgb="${C(COULEURS.cuivreTexte)}"/><name val="Arial"/></font>
-<font><b/><sz val="10"/><color rgb="${C(COULEURS.creme)}"/><name val="Arial"/></font>
-<font><u/><sz val="10"/><color rgb="${C(COULEURS.cuivreTexte)}"/><name val="Arial"/></font>
-<font><b/><sz val="22"/><color rgb="${C(COULEURS.espresso)}"/><name val="Arial"/></font>
+${police("", T.texte, COULEURS.espresso)}
+${police("<b/>", T.texte, COULEURS.espresso)}
+${police("<b/>", T.titre, COULEURS.vert)}
+${police("<i/>", T.note, COULEURS.pierreTexte)}
+${police("<b/>", T.sousTitre, COULEURS.vert)}
+${police("<b/>", T.texte, COULEURS.cuivreTexte)}
+${police("", T.texte, COULEURS.cuivreTexte)}
+${police("<b/>", T.texte, COULEURS.creme)}
+${police("<u/>", T.texte, COULEURS.cuivreTexte)}
+${police("<b/>", T.couverture, COULEURS.espresso)}
 </fonts>
 <fills count="7"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>
 <fill><patternFill patternType="solid"><fgColor rgb="${C(COULEURS.sable)}"/><bgColor indexed="64"/></patternFill></fill>

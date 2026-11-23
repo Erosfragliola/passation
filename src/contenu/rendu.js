@@ -4,7 +4,7 @@
 // typographiés, recopiés tels quels des pages).
 //
 // Conventions du fichier de contenu :
-//   *mot*      mot-clé en italique (Instrument Serif) ;
+//   *mot*      mot-clé mis en avant (balise <em>, en Geist) ;
 //   {cle}      valeur de « cles » (prix, téléphone…) ;
 //   valeur vide (ou {cle} vide) : l'élément est retiré de la page ;
 //   liste de textes : un paragraphe par élément.

@@ -1,19 +1,14 @@
 /* Page d'accueil (refonte) : polices, échelle typographique et sections. Chargée après styles.css, sur cette
    page seulement ; l'Espace dirigeant garde styles.css seul.
    Règles : aucun texte sous 14 px, texte courant à 18 px (17 px sur téléphone), pas de capitales espacées sous
-   13 px, chiffres tabulaires pour les montants, Instrument Serif italique pour 1 à 3 mots-clés en grand. */
-
-@font-face {
-  font-family: "Instrument Serif"; font-style: italic; font-weight: 400; font-display: swap;
-  src: url("/fonts/instrument-serif-italic.woff2") format("woff2");
-}
+   13 px, chiffres tabulaires pour les montants. Police unique Geist (serif italique retiré le 23/11/2026 : plus utilisé). */
 
 :root {
   --tampon: #B23A28;          /* tampon « Projet … » */
   --ocre: #A8653A;            /* = cuivre : mots-clés en grand seulement (4,2:1 sur crème) */
   --ocre-texte: #8E5530;      /* petits textes ocre sur crème (5,6:1) et sur sable (4,6:1) */
   --ocre-nuit: #E9C9A4;       /* ocre sur fond sombre (10,5:1) */
-  --mot-cle: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --mot-cle: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
   --t-texte: 18px;
   --t-petit: 16px;
   --t-chapo: clamp(1.15rem, 1.4vw, 1.3rem);
