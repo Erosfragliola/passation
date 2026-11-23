@@ -652,3 +652,12 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   français. Référencement : `hreflang`, `canonical`, `og:locale`, `sitemap.xml`, `robots.txt`. Pages françaises
   comparées au pixel près à chaque étape. Tests : 485.
 
+- **23/11/2026, branche `livrables-police-geist`** (PR non fusionnée, non déployée) : une seule police, Geist, dans
+  les livrables. Titres en 500 / -0.05em / interligne 0.94, réglages dans des variables (`--titre-police`,
+  `--titre-graisse`, `--titre-interlettrage`, `--titre-interligne`, échelle `--titre-1` à `--titre-4` = 44 / 32 / 24 /
+  18 px, en `cqw` dans le mémorandum pour une page de 1100 px) ; titres en casse normale ; texte courant en Geist 400.
+  Mémorandum (`memo-im.css`), teaser (`styles.css`), business plan et présentation du cours (PDF régénérés, 7 et 10
+  pages). Datapack : Arial gardée (Excel n'embarque pas de police web), tailles 22 / 16 / 12 / 10 / 9 pt centralisées
+  (`POLICE_DATAPACK`, `TAILLES_DATAPACK`), deux colonnes élargies (aucune cellule tronquée, FR et EN). Instrument Serif
+  n'était plus rendue nulle part : police, licence et mention légale retirées. Big Shoulders reste sur le site.
+  Tests : 543.

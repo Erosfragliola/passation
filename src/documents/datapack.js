@@ -90,7 +90,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   cv.fusionner(`B${rc + 1}:E${rc + 1}`); cv.hauteur(rc, 30);
 
   // ------------------------------------------------------------ 2. Comptes
-  const cp = wb.feuille(NOMS.comptes, { largeurs: [64, ...annees.map(() => 16), 60], onglet: couleurOnglet("comptes"), paysage: true });
+  const cp = wb.feuille(NOMS.comptes, { largeurs: [78, ...annees.map(() => 16), 60], onglet: couleurOnglet("comptes"), paysage: true });
   const colA = (i) => 1 + i;                      // colonne de l'année i
   const dernier = colA(nA - 1);
   cp.ecrire(0, 0, tr("serveur.datapack.comptes_valides"), S.titre); tete(cp);
@@ -125,7 +125,7 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   const CPx = (rr, i) => `${X("comptes")}${cp.ref(rr, colA(i))}`;
 
   // ------------------------------------------------------------ 4. Hypothèses (avant les onglets qui les lisent)
-  const hy = wb.feuille(NOMS.hypotheses, { largeurs: [72, 14, 70, 14], onglet: couleurOnglet("hypotheses"), paysage: true });
+  const hy = wb.feuille(NOMS.hypotheses, { largeurs: [98, 14, 70, 14], onglet: couleurOnglet("hypotheses"), paysage: true });
   hy.ecrire(0, 0, tr("serveur.datapack.hypotheses"), S.titre); tete(hy, tr("serveur.datapack.unite_euros_pct"));
   hy.ecrire(1, 0, tr("serveur.datapack.cellules_cuivre_sur_fond"), S.petit);
   hy.ecrire(3, 0, tr("serveur.datapack.parametre"), S.entete); hy.ecrire(3, 1, tr("serveur.datapack.valeur"), S.enteteDroite); hy.ecrire(3, 2, tr("serveur.datapack.source"), S.entete); hy.ecrire(3, 3, tr("serveur.datapack.date"), S.entete);
