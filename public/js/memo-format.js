@@ -57,3 +57,13 @@ export function periodeExercices(annees = []) {
   if (!annees.length) return "";
   return annees.length === 1 || annees[0] === annees.at(-1) ? t("dossier.formats.exercice", { annee: annees.at(-1) }) : t("dossier.formats.exercices", { de: annees[0], a: annees.at(-1) });
 }
+
+/** Rang de la photo de chaque page du mémorandum, d'après l'ordre choisi par le dirigeant (n photos) : la 1re en
+ *  couverture, la 2e pour l'activité (la 1re s'il n'y en a qu'une), la 4e pour l'équipe (la 3e s'il n'y en a que
+ *  trois ; aucune sinon, pour ne pas répéter la couverture). null : pas de photo pour cette page. */
+export function rangPhoto(usage, n) {
+  if (usage === "couverture") return n >= 1 ? 0 : null;
+  if (usage === "activite") return n >= 2 ? 1 : n === 1 ? 0 : null;
+  if (usage === "equipe") return n >= 4 ? 3 : n === 3 ? 2 : null;
+  return null;
+}

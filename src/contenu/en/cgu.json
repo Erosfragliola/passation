@@ -12,9 +12,11 @@
   "4_responsabilites_utilisateur": "4. User responsibilities",
   "utilisateur_garantit_qu_il_est": "The user warrants that they are authorized to share the information they enter or upload.",
   "5_limites_usage": "5. Usage limits",
-  "limites_usage_appliquent_pour_garantir": "Usage limits apply to ensure the quality of the service. To be completed: description.",
+  "limites_usage_appliquent_pour_garantir": "To control costs and prevent abuse: 10 quick valuations per hour from the same connection; 10 files per account; 60 automated tasks per day per account (reading tax returns or a website, writing the teaser and the memorandum, market research); per file, 6 tax return readings (3 files of 10 MB at most) and 3 market studies.",
   "6_tarifs": "6. Pricing",
-  "completer": "To be completed.",
+  "tarifs": "Passation currently has no paid offer: the service is free.",
+  "droit_applicable": "These terms are governed by French law.",
   "7_droit_applicable": "7. Governing law",
-  "meta_description": "Terms of use of Passation, a service that helps business owners prepare the sale of their company."
+  "meta_description": "Terms of use of Passation, a service that helps business owners prepare the sale of their company.",
+  "completer": "To be completed."
 }

@@ -6,7 +6,7 @@ import { t as tr, nombre } from "./i18n.js";
  * Employee headcount bands of the INSEE classification ("tranche d'effectif salarié" variable of the
  * Sirene register, used by recherche-entreprises.api.gouv.fr). NN = non-employing unit.
  */
-const TRANCHES = {
+export const TRANCHES = {
   NN: { min: 0, max: 0 },
   "00": { min: 0, max: 0 },
   "01": { min: 1, max: 2 },

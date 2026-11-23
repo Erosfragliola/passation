@@ -25,6 +25,8 @@ export const NB_PIECES = CHECKLIST.reduce((n, g) => n + g.items.length, 0);
 /** Threshold of the questions (in %) from which drafting can be launched. */
 const SEUIL_REDACTION = 40;
 const MAX_TACHES = 3;
+/** Page du dossier : au plus 2 tâches sous l'action principale (« trop d'information tue l'information »). */
+export const MAX_SECONDAIRES = 2;
 
 /** "2024"; "2023 and 2024"; "2022 to 2024" (consecutive); "2019, 2021 and 2024". */
 export function listeAnnees(annees = []) {
@@ -64,6 +66,7 @@ export function lectureMemo(memo) {
     aCompleter,
     nbACompleter: pointsACompleter(memo).length,
     photos: (memo.photos || []).length,
+    photosTrouvees: (memo.site?.photos_candidates || []).length,
   };
 }
 
@@ -195,7 +198,10 @@ export function etatParcours(d, memo = null, teaser = null) {
     taches.push({ cle: "exercices", facultatif: true, titre: t("dossier.taches.exercices.titre", { annees: annees.length > 1 ? t("dossier.annees.liste", { debut: annees.slice(0, -1).join(", "), fin: annees.at(-1) }) : annees[0] }),
       detail: t("dossier.taches.exercices.detail", { annee: ex.dernier }), action: t("dossier.actions.ajouter"), href: `${liens.demarrer}&etape=exercice` });
   }
-  if (m && m.photos < 2) {
+  if (m && m.photos === 0 && m.photosTrouvees > 0) {
+    // Photos trouvées sur le site : on propose de les choisir (écran « Votre logo et vos photos » du parcours)
+    taches.push({ cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_choisir", { n: m.photosTrouvees }), detail: t("dossier.taches.photo.detail_choisir"), action: t("dossier.actions.choisir"), href: `${liens.demarrer}&etape=photos` });
+  } else if (m && m.photos < 2) {
     taches.push(m.photos === 0
       ? { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_premiere"), detail: t("dossier.taches.photo.detail_premiere"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` }
       : { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_seconde"), detail: t("dossier.taches.photo.detail_seconde"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` });
@@ -238,7 +244,7 @@ export function etatParcours(d, memo = null, teaser = null) {
     { cle: "memo", titre: t("dossier.documents.memo"), ...(docs.memo
       ? m?.nonRedigees.length
         ? { etat: "incomplet", detail: t("dossier.documents.chapitres_a_rediger", { n: m.nonRedigees.length, total: (memo?.sections || []).length }), actions: [{ libelle: t("dossier.actions.rediger"), href: liens.memo, principal: true }] }
-        : { etat: memoARelire ? "a-relire" : "pret", detail: `${t("dossier.documents.redige_le", { date: dateCourte(docs.memo.le) })}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: t("dossier.actions.ouvrir"), href: liens.memo, principal: true }, { libelle: t("commun.documents.pdf"), href: `${liens.memo}&imprimer=1` }] }
+        : { etat: memoARelire ? "a-relire" : "pret", badge: m?.nbACompleter ? libellePoints(m.nbACompleter) : null, detail: `${t("dossier.documents.redige_le", { date: dateCourte(docs.memo.le) })}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: t("dossier.actions.ouvrir"), href: liens.memo, principal: true }, { libelle: t("commun.documents.pdf"), href: `${liens.memo}&imprimer=1` }] }
       : venir(t("dossier.documents.redige_redaction"))) },
   ];
 
@@ -261,7 +267,7 @@ export function etatParcours(d, memo = null, teaser = null) {
   }
 
   return {
-    etapes, actuelle, fait, pret, redige, avancement: pct, action, taches: affichees, documents, valeur,
+    etapes, actuelle, fait, pret, redige, avancement: pct, action, taches: affichees, secondaires, documents, valeur,
     questions: { faits: q.faits || 0, total: q.total || 0, restantes },
     pieces: { fournies, total: NB_PIECES, ouvert: actuelle === "relecture" && manquantes > 0 && affichees.length > 0 && affichees.every((t) => t.cle === "pieces") },
   };

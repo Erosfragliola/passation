@@ -18,7 +18,7 @@ import { compterSecteur, structureSecteur } from "../sources/secteur.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
 import { MARCHE, CLAUDE_QUOTAS } from "../config.js";
 import { quotaClaude } from "../lib/ratelimit.js";
-import { lireSite, adressePublique } from "../documents/site.js";
+import { lireSite, adressePublique, fetchPublic } from "../documents/site.js";
 import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
 import { termesInterdits, verifierAnonymat, regionDe, SECTEURS_NAF } from "../documents/anonymat.js";
 import { faitsTeaser, visuelsTeaser, montantsSensibles, enSections, SECTIONS_TEASER } from "../documents/teaser.js";
@@ -174,7 +174,7 @@ async function lireMemo(env, row) {
     deverrouille: memoDeverrouille(reponses),
     entreprise: entreprise.nom ?? null,
     profil: profilMemo(entreprise, reponses, row.code_name),
-    photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "" })),
+    photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "", origine: p.origine || null })),
     site, logo: Boolean(site?.logo),
     marche: reponses.marche ? { ...reponses.marche, essais_restants: Math.max(0, MARCHE.etudesMaxParDossier - (reponses.marche.essais || 0)) } : { essais_restants: MARCHE.etudesMaxParDossier },
     // Figures calculated by the code: income statement, adjusted EBITDA, debt, customers, scope, sources
@@ -257,6 +257,7 @@ async function lireSiteRoute(request, env, row) {
   const site = {
     url: lecture.url, lu_le: maintenant(), pages: lecture.pages.map((p) => p.url),
     faits: (faits.faits || []).slice(0, 40).map((f, i) => ({ id: i + 1, ...f, valide: false })),
+    metiers: (faits.metiers || []).map((x) => String(x).trim().slice(0, 60)).filter(Boolean).slice(0, 10),
     termes: (faits.termes_identifiants || []).slice(0, 60),
     logos: lecture.logos, logo: ancien.logo ?? null,
     photos_candidates: lecture.photos || [], photos: ancien.photos || [],
@@ -278,7 +279,7 @@ async function deposerLogo(request, env, row) {
     const u = adressePublique(corps?.url || "");
     if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
     try {
-      const r = await fetch(u, { signal: AbortSignal.timeout(8000) });
+      const r = await fetchPublic(u, { signal: AbortSignal.timeout(8000) });
       if (!r.ok || Number(r.headers.get("content-length") || 0) > 1_000_000) throw new Error("image");
       octets = new Uint8Array(await r.arrayBuffer());
       if (octets.length > 1_000_000) throw new Error("image");
@@ -304,7 +305,7 @@ async function servirLogo(env, row) {
 // Company photos: 6 at most, 3 MB each, PNG/JPEG/WebP, with the owner's statement.
 const PHOTOS_MAX = 6;
 async function ajouterPhoto(request, env, row) {
-  let octets, attestation = false, legende = "";
+  let octets, attestation = false, legende = "", origine = null;
   if ((request.headers.get("content-type") || "").startsWith("multipart/form-data")) {
     const fd = await request.formData();
     const f = fd.get("fichier");
@@ -317,8 +318,9 @@ async function ajouterPhoto(request, env, row) {
     attestation = corps?.attestation === true; legende = String(corps?.legende || "").slice(0, 120);
     const u = adressePublique(corps?.url || "");
     if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
+    origine = u.href; // photo choisie sur le site : son adresse, pour la retrouver dans la grille du parcours
     try {
-      const r = await fetch(u, { signal: AbortSignal.timeout(10_000) });
+      const r = await fetchPublic(u, { signal: AbortSignal.timeout(10_000) });
       octets = new Uint8Array(await r.arrayBuffer());
       if (!r.ok || octets.length > 3_000_000) throw new Error("image");
     } catch { return json({ erreur: "image_injoignable", message: tr("serveur.documents.image_introuvable_ou_trop_2") }, 422); }
@@ -331,7 +333,7 @@ async function ajouterPhoto(request, env, row) {
   if (site.photos.length >= PHOTOS_MAX) return json({ erreur: "trop_de_photos", message: tr("serveur.documents.photos_max", { n: PHOTOS_MAX }) }, 400);
   const cle = `dossiers/${row.id}/photos/${crypto.randomUUID()}.${ext}`;
   await env.FILES.put(cle, octets, { httpMetadata: { contentType: MIME[ext] } });
-  site.photos.push({ cle, type: MIME[ext], legende, attestee_le: maintenant() });
+  site.photos.push({ cle, type: MIME[ext], legende, attestee_le: maintenant(), ...(origine ? { origine } : {}) });
   await enregistrerSite(env, row, site);
   return json(await lireMemo(env, row));
 }

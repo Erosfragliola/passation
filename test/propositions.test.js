@@ -23,6 +23,8 @@ describe("proposed answers", () => {
   });
   it("a file without a website: sourced proposals, no invented distinctive feature", () => {
     const p = propositions({ entreprise: menuiserie, tcam: 0.067, reponses: {} });
+    // Métier : l'intitulé INSEE de la sous-classe 43.32A (naf-sous-classes.json), pas celui de la division 43
+    expect(p.activite.valeurs).toEqual({ "activite.metiers": ["Travaux de menuiserie bois et PVC"], "clients.type_clientele": ["Entreprises"] });
     expect(p.activite.source).toBe(SOURCES_PROPOSITION.registres);
     expect(p.activite.valeurs["activite.description"]).toMatch(/^Entreprise du secteur « Travaux de construction spécialisés » créée en 1995 à Nantes/);
     expect(p.activite.a_completer).toBe(true);                                // simple starting point: never approved in one click
@@ -46,7 +48,7 @@ describe("proposed answers", () => {
       const q = QUESTIONS.find((x) => x.id === id);
       expect(q, id).toBeTruthy();
       expect(source).toBeTruthy();
-      const champs = new Set(q.champs.map((c) => `${c.etape}.${c.cle}`));
+      const champs = new Set([...q.champs, ...(q.suite?.champs || [])].map((c) => `${c.etape}.${c.cle}`));
       for (const k of Object.keys(valeurs)) expect(champs.has(k), `${id} ${k}`).toBe(true);
     }
   });

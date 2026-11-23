@@ -2,27 +2,44 @@
   "_lisez_moi": "Textes des questions du parcours guidé (public/js/parcours.js). Mêmes clés dans src/contenu/en/parcours.json.",
   "questions": {
     "activite": {
-      "titre": "En quelques phrases, que fait votre entreprise ?",
-      "aide": "Nous avons préparé un brouillon : corrigez-le librement.",
+      "titre": "Que fait votre entreprise ?",
+      "aide": "Cochez vos métiers et vos clients. Nous en tirons la phrase d'ouverture du mémorandum ; vous la relisez juste en dessous.",
       "pourquoi": "C'est la première chose qu'un repreneur lit : vos métiers, vos produits ou services, vos clients.",
-      "chapitre": "2.2 Activité et savoir-faire",
+      "chapitre": "2.2 Activité et savoir-faire ; 3.3 Clients",
       "champs": {
+        "metiers": {
+          "libelle": "Vos métiers et prestations",
+          "aide": "Pré-cochés d'après votre site et votre code d'activité. Décochez ce qui est faux.",
+          "ajouter": "Autre métier"
+        },
+        "type_clientele": {
+          "libelle": "Vos clients sont surtout"
+        },
         "description": {
+          "libelle": "La phrase proposée pour le mémorandum",
+          "aide": "Rédigée à partir de vos choix : modifiez-la librement.",
           "requis": "la description de votre activité"
         }
       }
     },
     "distinctions": {
       "titre": "Qu'est-ce qui vous distingue de vos concurrents ?",
-      "aide": "Une à trois réponses.",
-      "pourquoi": "Un repreneur cherche ce qui rend l'entreprise difficile à copier. Sans réponse, le chapitre affiche « À compléter ».",
-      "chapitre": "2.2 Activité et savoir-faire",
+      "aide": "Une à trois réponses. Un repreneur cherche ce qui rend l'entreprise difficile à copier.",
+      "pourquoi": "Sans réponse, le chapitre affiche « À compléter ».",
+      "chapitre": "2.2 Activité et savoir-faire ; points forts de la synthèse",
       "champs": {
         "certifications": {
-          "libelle": "Certifications ou qualifications (facultatif)",
-          "exemple": "ex. Qualibat, RGE, ISO 9001"
+          "libelle": "Vos certifications et qualifications",
+          "aide": "Facultatif. Citées telles quelles dans le mémorandum.",
+          "ajouter": "Ajouter (Qualibat, ISO 9001, label…)"
         }
       }
+    },
+    "histoire": {
+      "titre": "Les dates clés de votre entreprise",
+      "aide": "Les registres nous donnent déjà certaines dates. Ajoutez les étapes qui comptent : reprise, agrandissement, nouveau métier, recrutement clé.",
+      "pourquoi": "La frise historique du mémorandum : elle montre la continuité de l'entreprise.",
+      "chapitre": "2.1 Histoire et identité"
     },
     "equipe": {
       "titre": "Votre équipe peut-elle tourner sans vous au quotidien ?",
@@ -34,60 +51,63 @@
         },
         "role_dirigeant": {
           "libelle": "Ce que vous faites vous-même"
-        },
-        "anciennete_equipe": {
-          "libelle": "Ancienneté moyenne des salariés"
         }
       }
     },
-    "histoire": {
-      "titre": "Les dates clés de votre entreprise",
-      "aide": "Une ligne par date : « année : ce qui s'est passé ». Ajoutez ce qui manque (agrandissement, nouveau métier, reprise).",
-      "pourquoi": "La frise historique du mémorandum : elle montre la continuité de l'entreprise.",
-      "chapitre": "2.1 Histoire et identité"
-    },
-    "operation": {
-      "titre": "Que souhaitez-vous céder, et quand ?",
-      "pourquoi": "Le périmètre et le calendrier de l'opération, présentés sans aucun prix.",
-      "chapitre": "5.2 Opération envisagée",
+    "clients": {
+      "titre": "Vos clients",
+      "pourquoi": "La concentration et la récurrence de la clientèle sont regardées de près par tout repreneur.",
+      "chapitre": "3.3 Clients",
       "champs": {
-        "part_cedee": {
-          "libelle": "Part du capital",
-          "requis": "la part du capital cédée"
+        "part_premier_client": {
+          "libelle": "Part du premier client dans le chiffre d'affaires",
+          "aide": "Une estimation suffit."
         },
-        "motif": {
-          "libelle": "Motif"
+        "zone": {
+          "libelle": "Zone commerciale"
         },
-        "calendrier": {
-          "libelle": "Calendrier souhaité"
+        "regions": {
+          "libelle": "Régions de vos principaux clients",
+          "replie": "Préciser les régions de vos clients"
+        },
+        "principaux": {
+          "libelle": "Vos cinq premiers clients, sans aucun nom",
+          "replie": "Détailler vos cinq premiers clients (facultatif)"
         }
       }
     },
     "remuneration": {
-      "titre": "Votre rémunération",
-      "aide": "Pour comparer avec ce que coûterait un dirigeant salarié. Charges sociales comprises, par an.",
-      "pourquoi": "L'écart avec une rémunération normale est un retraitement de l'EBE, donc de la valeur.",
-      "chapitre": "4.3 EBE retraité",
+      "titre": "Ce qu'il faut corriger dans vos comptes",
+      "aide": "Un repreneur raisonne sur un résultat « normal » : votre rémunération au prix du marché, sans les événements qui ne se reproduiront pas.",
+      "pourquoi": "L'écart avec une rémunération normale et les éléments exceptionnels sont des retraitements de l'EBE, donc de la valeur.",
+      "chapitre": "4.3 EBE retraité ; datapack « Retraitements »",
       "champs": {
         "remuneration_dirigeant_reelle": {
-          "libelle": "Ce que vous coûtez à l'entreprise"
+          "libelle": "Ce que vous coûtez à l'entreprise par an",
+          "aide": "Salaire et charges sociales, ou rémunération de gérance et cotisations."
         },
         "remuneration_normative": {
-          "libelle": "Ce que coûterait un directeur pour vous remplacer (laissez vide si vous ne savez pas)"
+          "libelle": "Ce que coûterait un directeur pour vous remplacer",
+          "aide": "Si vous ne savez pas, gardez la proposition : elle ne change pas la valorisation."
+        },
+        "exceptionnel_signale": {
+          "libelle": "Une charge ou un produit exceptionnel a-t-il pesé sur vos derniers comptes ?",
+          "aide": "Par exemple : un litige, un sinistre, une subvention ponctuelle."
         }
       }
     },
     "detention": {
-      "titre": "Comment détenez-vous les parts de l'entreprise ?",
-      "pourquoi": "L'organigramme juridique et le périmètre de cession.",
-      "chapitre": "5.2 Organigramme juridique"
-    },
-    "locaux": {
-      "titre": "À qui appartiennent les murs de l'entreprise ?",
-      "aide": "Un repreneur pose toujours la question : achète-t-il aussi les murs, ou devient-il locataire ?",
-      "pourquoi": "Les murs sont dans le périmètre ou hors périmètre ; un loyer anormal est retraité.",
-      "chapitre": "5.2 Organigramme juridique",
+      "titre": "Le périmètre de la cession",
+      "aide": "Un repreneur pose toujours deux questions : à qui achète-t-il les parts, et achète-t-il aussi les murs ?",
+      "pourquoi": "L'organigramme juridique et le périmètre ; un loyer anormal est retraité.",
+      "chapitre": "5.2 Organigramme juridique ; 4.3 EBE retraité",
       "champs": {
+        "detention": {
+          "libelle": "Comment détenez-vous les parts de l'entreprise ?"
+        },
+        "murs": {
+          "libelle": "À qui appartiennent les murs de l'entreprise ?"
+        },
         "murs_cession": {
           "libelle": "Les murs font-ils partie de la cession ?"
         },
@@ -95,60 +115,26 @@
           "libelle": "Loyer annuel payé par l'entreprise"
         },
         "loyer_marche": {
-          "libelle": "Loyer annuel de marché pour des locaux équivalents"
+          "libelle": "Loyer annuel de marché pour des locaux équivalents",
+          "aide": "Si vous ne savez pas, gardez la proposition : aucun retraitement."
         }
       }
     },
-    "exceptionnel": {
-      "titre": "Une charge ou un produit exceptionnel a-t-il pesé sur vos derniers comptes ?",
-      "aide": "Par exemple : un litige, un sinistre, une subvention ponctuelle.",
-      "pourquoi": "Un élément qui ne se répétera pas est neutralisé dans l'EBE retraité.",
-      "chapitre": "4.3 EBE retraité"
-    },
-    "clients": {
-      "titre": "Vos clients",
-      "pourquoi": "La concentration et la récurrence de la clientèle sont regardées de près par tout repreneur.",
-      "chapitre": "3.3 Clients",
+    "operation": {
+      "titre": "Votre projet de cession",
+      "pourquoi": "Le périmètre, le calendrier et l'accompagnement, présentés sans aucun prix. L'accompagnement rassure sur la reprise des clients et du savoir-faire.",
+      "chapitre": "5.2 Opération envisagée ; teaser",
       "champs": {
-        "type_clientele": {
-          "libelle": "Vos clients sont surtout"
+        "part_cedee": {
+          "libelle": "Part du capital",
+          "requis": "la part du capital cédée"
         },
-        "part_premier_client": {
-          "libelle": "Part du premier client dans le chiffre d'affaires"
+        "calendrier": {
+          "libelle": "Calendrier souhaité"
         },
-        "zone": {
-          "libelle": "Zone commerciale"
+        "motif": {
+          "libelle": "Motif"
         },
-        "regions": {
-          "libelle": "Régions de vos principaux clients"
-        }
-      }
-    },
-    "principaux_clients": {
-      "titre": "Vos cinq premiers clients",
-      "aide": "Sans aucun nom : ils apparaîtront comme « Client 1 » à « Client 5 ». Une estimation suffit ; laissez vide ce que vous ne savez pas.",
-      "pourquoi": "Le tableau des cinq premiers clients, anonymisés.",
-      "chapitre": "3.3 Clients"
-    },
-    "perspectives": {
-      "titre": "Comment voyez-vous les 5 prochaines années ?",
-      "aide": "Une estimation annuelle moyenne suffit.",
-      "pourquoi": "Les relais de croissance qu'un repreneur pourrait poursuivre ; présentés comme votre estimation.",
-      "chapitre": "5.1 Axes de développement",
-      "champs": {
-        "croissance": {
-          "libelle": "Croissance annuelle du chiffre d'affaires"
-        },
-        "axes": {
-          "libelle": "Axes de développement possibles"
-        }
-      }
-    },
-    "cession": {
-      "titre": "Comment voyez-vous la transmission ?",
-      "pourquoi": "L'accompagnement proposé rassure le repreneur sur la reprise des clients et du savoir-faire.",
-      "chapitre": "5.2 Opération envisagée",
-      "champs": {
         "accompagnement": {
           "libelle": "Accompagnement du repreneur"
         },
@@ -156,6 +142,39 @@
           "libelle": "Repreneur souhaité"
         }
       }
+    },
+    "perspectives": {
+      "titre": "Comment voyez-vous les 5 prochaines années ?",
+      "aide": "Une estimation annuelle moyenne suffit ; elle est présentée comme la vôtre.",
+      "pourquoi": "Les relais de croissance qu'un repreneur pourrait poursuivre.",
+      "chapitre": "5.1 Axes de développement",
+      "champs": {
+        "croissance": {
+          "libelle": "Croissance annuelle du chiffre d'affaires",
+          "aide": "Le curseur part de la croissance moyenne de vos comptes, quand elle est connue."
+        },
+        "axes": {
+          "libelle": "Axes de développement possibles (trois au plus)"
+        }
+      }
     }
+  },
+  "phrase": {
+    "entreprise": "L'entreprise",
+    "avec_clients": "{nom} : {metiers}, pour {clients}.",
+    "sans_clients": "{nom} : {metiers}.",
+    "client_article": "des {client}",
+    "client_autres": "d'{client}"
+  },
+  "evenements": {
+    "creation": "Création",
+    "reprise": "Reprise",
+    "transfert_siege": "Transfert de siège",
+    "agrandissement": "Agrandissement",
+    "nouveau_metier": "Nouveau métier",
+    "certification": "Nouvelle certification",
+    "recrutement": "Recrutement clé",
+    "equipement": "Nouvel équipement",
+    "autre": "Autre"
   }
 }

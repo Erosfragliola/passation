@@ -14,7 +14,7 @@ const exo = (x = {}) => ({ dernier: 2024, dernier_complet: false, recommandes: [
 const dossier = (x = {}) => ({
   id: ID, estimation: { statut: "ok", exercice: 2024, methode: "multiple_ebe", agregat: 80_000, bas: 310_000, haut: 520_000 }, checklist: [], documents: {},
   ...x,
-  parcours: { exercices: exo(), exercices_complets: 0, questions: { faits: 0, total: 14, pct: 0 }, valorisation: null, ...(x.parcours || {}) },
+  parcours: { exercices: exo(), exercices_complets: 0, questions: { faits: 0, total: NB_QUESTIONS, pct: 0 }, valorisation: null, ...(x.parcours || {}) },
 });
 const valo = { bas: 420_000, haut: 560_000, annees: [2024], ebe_normatif: 80_000, dette_nette: -110_000, facteur_decotes: 1, ecart_bfr: 0, hors_exploitation: 0 };
 // 18/11/2026 at 10:00 Paris time (UTC+1) = 09:00 UTC: 1,794,960,000 s at midnight UTC + 9 × 3,600 = 1,794,992,400 s
@@ -24,7 +24,7 @@ const section = (cle, court, x = {}) => ({ cle, court, titre: court, redigee: tr
 const CHECKLIST_COMPLETE = ["statuts", "kbis", "pv-ag", "capital", "liasses", "situation", "emprunts", "balances", "organigramme", "registre", "contrats-cles", "accords", "clients", "contrats", "cgv", "baux", "equipements", "marques", "assurances", "litiges", "autorisations"];
 const memoComplet = { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("organisation", "Équipe")] };
 const toutFait = (x = {}) => dossier({ documents: tousDocs, checklist: CHECKLIST_COMPLETE, ...x,
-  parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), exercices_complets: 3, questions: { faits: 14, total: 14, pct: 100 }, valorisation: valo, ...(x.parcours || {}) } });
+  parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), exercices_complets: 3, questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100 }, valorisation: valo, ...(x.parcours || {}) } });
 
 describe("constants: a single list of steps", () => {
   it("21 expected documents (4 legal, 4 financial, 4 employment, 3 commercial, 6 assets and risks)", () => expect(NB_PIECES).toBe(21));
@@ -33,7 +33,9 @@ describe("constants: a single list of steps", () => {
   });
   it('each screen of the guided steps belongs to a step of this list; the website is a question of "Your answers"', () => {
     const cles = new Set(ETAPES_PARCOURS.map(([k]) => k));
-    expect(Object.keys(ETAPE_DE_L_ECRAN).sort()).toEqual(["chiffres", "comptes", "pret", "questions", "redaction", "saisie", "site"]);
+    expect(Object.keys(ETAPE_DE_L_ECRAN).sort()).toEqual(["accueil", "chiffres", "comptes", "photos", "pret", "questions", "redaction", "saisie", "site"]);
+    expect(ETAPE_DE_L_ECRAN.accueil).toBe("chiffres"); // l'accueil ouvre l'étape « Vos chiffres »
+    expect(ETAPE_DE_L_ECRAN.photos).toBe("reponses");  // logo et photos : juste après la lecture du site
     for (const e of Object.values(ETAPE_DE_L_ECRAN)) expect(cles.has(e)).toBe(true);
     expect(ETAPE_DE_L_ECRAN.site).toBe("reponses");
     expect(ETAPE_DE_L_ECRAN.comptes).toBe(ETAPE_DE_L_ECRAN.chiffres); // "Your accounts" and "Your figures" merged
@@ -251,7 +253,8 @@ describe("a single state for the guided steps and the file page", () => {
   it("if only documents are missing: the main button opens the upload area, which also opens by itself", () => {
     const f = etatParcours(toutFait({ checklist: CHECKLIST_COMPLETE.slice(0, 20) }), memoComplet);
     expect(f.taches.map((t) => t.titre)).toEqual(["Déposer 1 pièce manquante"]);
-    expect(f.action).toMatchObject({ texte: "Déposer 1 pièce manquante", href: "#checklist", pieces: true });
+    expect(f.action).toMatchObject({ texte: "Relire et envoyer votre dossier", cle: "relecture", pieces: false });
+    expect(f.secondaires.map((x) => x.titre)).toEqual(["Déposer 1 pièce manquante"]);
     expect(f.pieces.ouvert).toBe(true);
   });
   it("an unknown checklist key is not counted", () => {
@@ -260,14 +263,15 @@ describe("a single state for the guided steps and the file page", () => {
   it.each([
     ["nouveau", dossier(), null],
     ["à moitié", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 6, total: 14, pct: 43 } } }), null],
-    ["rédaction à lancer", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 14, total: 14, pct: 100 } } }), null],
+    ["rédaction à lancer", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100 } } }), null],
     ["teaser manquant", toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet],
     ["prêt avec recommandations", toutFait({ checklist: [] }), { photos: [], sections: [section("a", "A", { a_completer: ["x"] })] }],
-  ])("prochaine action = première tâche (%s)", (_, d, memo) => {
+  ])("prochaine action = première tâche indispensable, sinon « Relire et envoyer » (%s)", (_, d, memo) => {
     const e = etatParcours(d, memo);
     expect(e.taches.length).toBeGreaterThan(0);
-    expect(e.action.texte).toBe(e.taches[0].titre);
-    expect(e.action.href).toBe(e.taches[0].href);
+    const indispensable = e.taches.find((x) => !x.facultatif);
+    expect(e.action.texte).toBe(indispensable ? indispensable.titre : "Relire et envoyer votre dossier");
+    expect(e.action.href).toBe(indispensable ? indispensable.href : `/espace/demarrer/?dossier=${ID}&etape=pret`);
   });
   it('teaser missing: "Finish drafting", to the Drafting step of the guided steps', () => {
     const e = etatParcours(toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet);
@@ -370,4 +374,51 @@ describe("single count of the points to complete", () => {
   });
   it("same number for the file page (lectureMemo) and the tasks", () => expect(lectureMemo(memo).nbACompleter).toBe(pointsACompleter(memo).length));
   it("same wording", () => { expect(libellePoints(1)).toBe("1 point à compléter"); expect(libellePoints(4)).toBe("4 points à compléter"); });
+});
+
+// 20/11/2026 : les photos trouvées sur le site sont proposées (« Choisir vos photos : 12 trouvées »), pas seulement
+// « Ajouter une photo » ; le lien mène à l'écran « Votre logo et vos photos » du parcours guidé.
+describe("photos trouvées sur le site", () => {
+  const d = toutFait({ checklist: CHECKLIST_COMPLETE, parcours: { valorisation_le: LE } });
+  const candidates = Array.from({ length: 12 }, (_, k) => `https://exemple.fr/p${k}.jpg`);
+  it("aucune photo choisie, 12 trouvées : « Choisir vos photos : 12 trouvées sur votre site », vers le parcours", () => {
+    const e = etatParcours(d, { photos: [], site: { photos_candidates: candidates }, sections: [section("synthese", "Synthèse")] });
+    const t = e.taches.find((x) => x.cle === "photo");
+    expect(t.titre).toBe("Choisir vos photos : 12 trouvées sur votre site");
+    expect(t.href).toBe(`/espace/demarrer/?dossier=${ID}&etape=photos`);
+    expect(t.facultatif).toBe(true);
+  });
+  it("sans photo trouvée : la tâche reste « Ajouter une photo » (dépôt)", () => {
+    const e = etatParcours(d, { photos: [], site: { photos_candidates: [] }, sections: [section("synthese", "Synthèse")] });
+    expect(e.taches.find((x) => x.cle === "photo").titre).toBe("Ajouter une photo de l'atelier ou des produits");
+  });
+});
+
+// Règle de la PR « Parcours d'analyse » (20/11/2026) : le bouton principal n'est jamais une tâche facultative, et la
+// page du dossier, la tâche et l'écran final comptent les mêmes points à compléter.
+describe("bouton principal jamais facultatif ; un seul décompte des points", () => {
+  const memo47 = { photos: [], sections: [section("synthese", "Synthèse", { a_completer: Array.from({ length: 40 }, (_, k) => `p${k}`) }), section("marche", "Marché", { a_completer: Array.from({ length: 7 }, (_, k) => `m${k}`) })] };
+  const etats = [
+    dossier(),
+    dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 6, total: NB_QUESTIONS, pct: 60 } } }),
+    toutFait({ checklist: [] }),
+    toutFait({ checklist: CHECKLIST_COMPLETE }),
+    toutFait({ checklist: CHECKLIST_COMPLETE.slice(0, 3), parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [2023] }) } }),
+  ];
+  it.each(etats.map((d, k) => [k, d]))("état %s : l'action principale n'est jamais une tâche facultative", (_, d) => {
+    for (const memo of [null, memoComplet, memo47]) {
+      const e = etatParcours(d, memo);
+      const facultatives = new Set(e.taches.filter((x) => x.facultatif).map((x) => x.cle));
+      expect(facultatives.has(e.action.cle)).toBe(false);
+      if (e.pret) expect(e.action.texte).toBe("Relire et envoyer votre dossier");
+      expect(e.secondaires.length).toBeLessThanOrEqual(2);
+      expect(e.secondaires).not.toContain(e.taches.find((x) => x.cle === e.action.cle));
+    }
+  });
+  it("47 points : même nombre dans le document, la tâche et l'écran final (une seule fonction de décompte)", () => {
+    const e = etatParcours(toutFait({ checklist: CHECKLIST_COMPLETE }), memo47);
+    expect(e.documents.find((x) => x.cle === "memo").badge).toBe("47 points à compléter");
+    expect(e.taches.find((x) => x.cle === "a-completer").titre).toBe("Compléter 47 points du mémorandum");
+    expect(ecranFinal(e).reste.find((x) => x.cle === "a-completer").titre).toBe("Compléter 47 points du mémorandum");
+  });
 });

@@ -356,7 +356,7 @@ describe("memorandum photos", () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(false) })).status).toBe(400);
     const m = await (await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(true) })).json();
-    expect(m.photos).toEqual([{ n: 0, legende: "L'atelier" }]);
+    expect(m.photos).toEqual([{ n: 0, legende: "L'atelier", origine: null }]); // déposée : pas d'adresse d'origine
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie })).headers.get("content-type")).toBe("image/jpeg");
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie: b.cookie })).status).toBe(404);

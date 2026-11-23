@@ -11,9 +11,8 @@ const MOTS_EXCLUS = ["contact", "mentions", "legal", "cgv", "cgu", "confidential
 export function adressePublique(brut) {
   let u;
   try { u = new URL(/^https?:\/\//i.test(String(brut).trim()) ? String(brut).trim() : `https://${String(brut).trim()}`); } catch { return null; }
-  if (!["http:", "https:"].includes(u.protocol)) return null;
+  if (!hoteSur(u)) return null;
   const h = u.hostname.toLowerCase();
-  if (!h.includes(".") || /^[\d.]+$/.test(h) || h.includes(":") || h.endsWith(".local") || h.endsWith(".internal") || h === "localhost") return null;
   if (/(^|\.)(facebook|instagram|linkedin|twitter|x|tiktok|youtube|google|societe|pappers|infogreffe)\.[a-z]+$/.test(h)) return null;
   u.hash = "";
   return u;
@@ -80,7 +79,7 @@ function candidatsPhotos(html, base) {
     if ((l && l < 300) || (h && h < 200)) continue;
     try { const u = new URL(src, base); if (/^https?:$/.test(u.protocol) && !res.includes(u.href)) res.push(u.href); } catch { /* ignored */ }
   }
-  return res;
+  return [...vues.values()].sort((a, b) => b.score - a.score || a.rang - b.rang).map((x) => x.url);
 }
 
 /** robots.txt: is the path allowed for all robots ("User-agent: *")? */
@@ -100,8 +99,24 @@ export function robotsAutorise(robots, chemin) {
   return plusLong(autorises) >= plusLong(interdits);
 }
 
+export const REDIRECTIONS_MAX = 5;
+/** fetch d'une adresse fournie par l'utilisateur (audit SEC-05) : les redirections sont suivies ici, une à une, et
+ *  chaque nouvelle adresse doit passer hoteSur ; sinon erreur « adresse_refusee ». Le moteur Workers ne joint pas le
+ *  réseau privé de Cloudflare ; ce contrôle empêche en plus qu'une redirection vise une IP ou un nom interne. */
+export async function fetchPublic(url, options = {}, f = fetch) {
+  let u = new URL(url);
+  for (let i = 0; i <= REDIRECTIONS_MAX; i++) {
+    if (!hoteSur(u)) throw new Error("adresse_refusee");
+    const r = await f(u.href, { ...options, redirect: "manual" });
+    const vers = r.status >= 300 && r.status < 400 ? r.headers.get("location") : null;
+    if (!vers) return r;
+    u = new URL(vers, u);
+  }
+  throw new Error("trop_de_redirections");
+}
+
 async function lire(url, f) {
-  const r = await f(url, { headers: { "user-agent": USER_AGENT, accept: "text/html,application/xhtml+xml" }, redirect: "follow", signal: AbortSignal.timeout(10_000) });
+  const r = await fetchPublic(url, { headers: { "user-agent": USER_AGENT, accept: "text/html,application/xhtml+xml" }, signal: AbortSignal.timeout(10_000) }, f);
   if (!r.ok) return null;
   if (!/text\/html|application\/xhtml/i.test(r.headers.get("content-type") || "")) return null;
   const texte = await r.text();

@@ -24,17 +24,27 @@
 </header>
 <main id="contenu" class="page-texte">
   <div class="conteneur">
-    <p class="etiquette" data-t-html="commun.brouillon"></p>
+    <p class="etiquette" data-t-html="commun.brouillon" data-sinon="legal.relu_le"></p>
     <h1 data-t-html="mentions_legales"></h1>
-    <p class="a-remplir" data-t-html="brouillon_chaque_information_ci_dessous"></p>
+    <p class="a-remplir" data-t-html="brouillon_chaque_information_ci_dessous" data-sinon="legal.relu_le"></p>
     <h2 data-t-html="editeur_site"></h2>
-    <p data-t-html="raison_sociale_completer_forme_juridique"></p>
+    <!-- Identité lue dans src/contenu/cles.json (rubrique « legal ») : une ligne vide disparaît -->
+    <ul class="liste-legale">
+      <li data-t="editeur_raison_sociale"></li>
+      <li data-t="editeur_forme"></li>
+      <li data-t="editeur_capital"></li>
+      <li data-t="editeur_siege"></li>
+      <li data-t="editeur_rcs"></li>
+      <li data-t="editeur_directeur"></li>
+      <li data-t="editeur_contact"></li>
+    </ul>
+    <p class="a-remplir" data-t-html="editeur_a_completer" data-sinon="legal.raison_sociale"></p>
     <h2 data-t-html="hebergement"></h2>
-    <p data-t-html="cloudflare_inc_completer_adresse_exacte"></p>
+    <p data-t-html="hebergeur"></p>
     <h2 data-t-html="avertissement"></h2>
     <p data-t-html="estimations_documents_produits_par_passation"></p>
     <h2 data-t-html="propriete_intellectuelle"></h2>
-    <p data-t-html="textes_illustrations_passation_polices_geist"></p>
+    <p data-t-html="polices_et_illustrations"></p>
   </div>
 </main>
 <footer class="pied">

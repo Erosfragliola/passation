@@ -16,3 +16,6 @@ public/img/source/
 
 # Landing page redesign kit (references and sources, not published)
 /_refonte/
+
+# Vidéos de démonstration (scripts/video-demo.mjs)
+passation-demo-*.webm

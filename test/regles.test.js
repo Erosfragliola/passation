@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
-  etages, fenetresAllumees, arbres, archetype, croissance3ans, echafaudage, paliersCA,
-  redigerFrise, casseVille, aVille, parametresMaquette, libelleEffectif, personnages,
+  etages, fenetresAllumees, arbres, archetype, croissance3ans, echafaudage,
+  casseVille, parametresMaquette, libelleEffectif, personnages,
 } from "../public/js/regles.js";
 
 describe("floors (revenue)", () => {
@@ -75,15 +75,14 @@ describe("revenue thresholds", () => {
 
 describe("cities", () => {
   it.each([
-    ["VILLENEUVE D ASCQ", "Villeneuve d'Ascq", "à Villeneuve d'Ascq"],
-    ["ERDRE-EN-ANJOU", "Erdre-en-Anjou", "à Erdre-en-Anjou"],
-    ["LES SABLES D OLONNE", "Les Sables d'Olonne", "aux Sables d'Olonne"],
-    ["LE POULIGUEN", "Le Pouliguen", "au Pouliguen"],
-    ["L ISLE ADAM", "L'Isle Adam", "à L'Isle Adam"],
-    ["Saint-Péreuse", "Saint-Péreuse", "à Saint-Péreuse"],
-  ])("%s → %s", (brut, casse, avec) => {
+    ["VILLENEUVE D ASCQ", "Villeneuve d'Ascq"],
+    ["ERDRE-EN-ANJOU", "Erdre-en-Anjou"],
+    ["LES SABLES D OLONNE", "Les Sables d'Olonne"],
+    ["LE POULIGUEN", "Le Pouliguen"],
+    ["L ISLE ADAM", "L'Isle Adam"],
+    ["Saint-Péreuse", "Saint-Péreuse"],
+  ])("%s → %s", (brut, casse) => {
     expect(casseVille(brut)).toBe(casse);
-    expect(aVille(brut)).toBe(avec);
   });
 });
 

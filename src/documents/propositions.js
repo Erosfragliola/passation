@@ -14,8 +14,7 @@ const annee = (d) => (d ? Number(String(d).slice(0, 4)) || null : null);
 /** Proposed growth: the option closest to the past compound annual growth. */
 export function croissanceProposee(tcam) {
   if (!ok(tcam)) return null;
-  const options = [-0.05, 0, 0.05, 0.1, 0.15];
-  return options.reduce((m, o) => (Math.abs(o - tcam) < Math.abs(m - tcam) ? o : m), options[0]);
+  return Math.min(0.3, Math.max(-0.2, Math.round(tcam * 100) / 100));
 }
 
 /** Type of customers based on the NAF section (retail trade, accommodation, personal services: individuals). */
@@ -35,16 +34,19 @@ const DISTINCTIONS = [
 /** Key dates: creation, then public events (transfers, name change, acquisition of a business). */
 export function datesCles(entreprise) {
   const lignes = [];
+  const source = SOURCES_PROPOSITION.registres;
   const c = annee(entreprise.date_creation);
-  if (c) lignes.push(entreprise.ville ? tr("serveur.propositions.dates.creation_ville", { annee: c, ville: entreprise.ville }) : tr("serveur.propositions.dates.creation", { annee: c }));
+  if (c) lignes.push({ date: String(c), type: "creation", precision: entreprise.ville ? tr("serveur.propositions.precisions.creation_ville", { ville: entreprise.ville }) : "", source });
   for (const e of entreprise.evenements || []) {
     const a = annee(e.date);
     if (!a) continue;
-    if (e.type === "transfert_siege") lignes.push(e.detail ? tr("serveur.propositions.dates.transfert_ville", { annee: a, ville: e.detail }) : tr("serveur.propositions.dates.transfert", { annee: a }));
-    else if (e.type === "denomination") lignes.push(tr("serveur.propositions.dates.denomination", { annee: a }));
-    else if (e.type === "reprise_fonds") lignes.push(e.detail ? tr("serveur.propositions.dates.reprise_ville", { annee: a, ville: e.detail }) : tr("serveur.propositions.dates.reprise", { annee: a }));
+    const mois = /^\d{4}-(\d{2})/.exec(String(e.date))?.[1];
+    const date = mois ? `${mois}/${a}` : String(a);
+    if (e.type === "transfert_siege") lignes.push({ date, type: "transfert_siege", precision: e.detail ? tr("serveur.propositions.precisions.ville", { ville: e.detail }) : "", source });
+    else if (e.type === "denomination") lignes.push({ date, type: "autre", precision: tr("serveur.propositions.precisions.denomination"), source });
+    else if (e.type === "reprise_fonds") lignes.push({ date, type: "reprise", precision: e.detail ? tr("serveur.propositions.precisions.reprise_ville", { ville: e.detail }) : tr("serveur.propositions.precisions.reprise"), source });
   }
-  return lignes.slice(0, 6);
+  return lignes.slice(0, 8);
 }
 
 /**
@@ -55,12 +57,12 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   const p = {};
   const ajouter = (id, valeurs, source) => {
     const v = Object.fromEntries(Object.entries(valeurs).filter(([, x]) => x != null && x !== "" && !(Array.isArray(x) && !x.length)));
-    if (Object.keys(v).length) p[id] = { valeurs: v, source };
+    if (Object.keys(v).length) p[id] = { ...(p[id] || {}), valeurs: { ...(p[id]?.valeurs || {}), ...v }, source: p[id]?.source || source };
   };
-  const faits = (reponses.site?.faits || []).filter((f) => f.valide !== false);
+  const site = reponses.site || {};
+  // Faits du site : ceux que le dirigeant n'a pas retirés, sans contradiction non tranchée avec les registres
+  const faits = faitsUtilisables(site.faits || [], entreprise);
   const texteSite = faits.map((f) => f.fait).join(" ");
-  const secteur = secteurDe(entreprise.naf);
-  const effectif = libelleEffectif(entreprise.tranche_effectif?.code);
   const codeEff = String(entreprise.tranche_effectif?.code || "NN");
 
   // Business: website facts, otherwise a sentence drawn from the registries (to be completed by the owner)
@@ -81,18 +83,21 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   const encadrement = codeEff >= "11" && codeEff !== "NN" ? "Oui, un ou plusieurs responsables" : ["01", "02", "03"].includes(codeEff) ? "En partie" : null;
   ajouter("equipe", { "dirigeant.encadrement": encadrement, "dirigeant.role_dirigeant": ["Commercial", "Gestion"] }, encadrement ? tr("serveur.propositions.sources.effectif") : SOURCES_PROPOSITION.frequent);
 
-  ajouter("histoire", { "activite.dates_cles": datesCles(entreprise).join("\n") }, SOURCES_PROPOSITION.registres);
+  ajouter("histoire", { "activite.dates_cles": datesCles(entreprise) }, SOURCES_PROPOSITION.registres);
 
-  ajouter("detention", { "operation.detention": "En direct, à titre personnel" }, SOURCES_PROPOSITION.frequent);
-  ajouter("exceptionnel", { "retraitements.exceptionnel_signale": "Non" }, SOURCES_PROPOSITION.frequent);
+  // Équipe : encadrement estimé d'après l'effectif (à confirmer). Aucun choix multiple pré-coché sans source.
+  const encadrement = codeEff >= "11" && codeEff !== "NN" ? "Oui, un ou plusieurs responsables" : ["01", "02", "03"].includes(codeEff) ? "En partie" : null;
+  ajouter("equipe", { "dirigeant.encadrement": encadrement }, tr("serveur.propositions.sources.effectif"));
 
   const region = regionDe(entreprise.code_postal);
   const locale = /^47|^56|^96/.test(entreprise.naf || "");
-  ajouter("clients", { "activite.zone": locale ? "Locale" : "Régionale", "clients.regions": region ? [region] : null, "clients.type_clientele": clienteleDuSecteur(entreprise.naf, entreprise.section_naf) }, SOURCES_PROPOSITION.secteur);
+  ajouter("clients", { "activite.zone": locale ? "Locale" : "Régionale", "clients.regions": region ? [region] : null }, SOURCES_PROPOSITION.secteur);
+
+  ajouter("remuneration", { "retraitements.exceptionnel_signale": "Non" }, SOURCES_PROPOSITION.frequent);
+  ajouter("detention", { "operation.detention": "En direct, à titre personnel" }, SOURCES_PROPOSITION.frequent);
+  ajouter("operation", { "operation.part_cedee": "100 %", "operation.calendrier": "6 à 12 mois", "operation.accompagnement": "6 mois" }, SOURCES_PROPOSITION.frequent);
 
   const c = croissanceProposee(tcam);
   if (c != null) ajouter("perspectives", { "perspectives.croissance": c }, SOURCES_PROPOSITION.comptes);
-
-  ajouter("cession", { "operation.accompagnement": "6 mois", "operation.repreneur": ["Indifférent"] }, SOURCES_PROPOSITION.frequent);
   return p;
 }

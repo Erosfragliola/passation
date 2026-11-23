@@ -58,6 +58,16 @@
     "fournie": "Fournie",
     "je_l_ai_de": "Je l'ai : {piece}",
     "je_l_ai_coche": "Je l'ai ✓",
-    "je_l_ai": "Je l'ai"
+    "je_l_ai": "Je l'ai",
+    "dossier_complet": "Dossier complet",
+    "pour_ameliorer": "Pour l'améliorer (facultatif)",
+    "ensuite": "Ensuite",
+    "facultatif": "facultatif",
+    "natures": {
+      "valorisation": "Page web, 3 méthodes",
+      "datapack": "Excel, 9 onglets",
+      "teaser": "PDF d'une page, anonyme",
+      "memo": "Présentation à relire et imprimer"
+    }
   }
 }

@@ -127,7 +127,7 @@ export async function redigerTeaser(env, faits, corrections = []) {
 
 // ---------------------------------------------------------------- Website → sourced facts
 const SCHEMA_SITE = {
-  type: "object", additionalProperties: false, required: ["faits", "termes_identifiants"],
+  type: "object", additionalProperties: false, required: ["faits", "metiers", "termes_identifiants"],
   properties: {
     faits: {
       type: "array",
@@ -140,11 +140,13 @@ const SCHEMA_SITE = {
         },
       },
     },
+    metiers: { type: "array", items: { type: "string" }, description: "Métiers, produits ou prestations de l'entreprise, en libellés courts (2 à 5 mots, sans article)" },
     termes_identifiants: { type: "array", items: { type: "string" }, description: "Marques, noms de produits, noms de personnes, lieux précis cités sur le site" },
   },
 };
 const CONSIGNE_SITE = `Tu lis les pages du site internet d'une PME française, pour préparer son mémorandum de cession.
-Relève au plus 25 faits utiles à un repreneur (activité, produits, clients, marché, histoire, équipe, implantation, qualité), un par phrase.
+Relève au plus 25 faits utiles à un repreneur (activité, produits, clients, marché, histoire, équipe, implantation, qualité), un par phrase courte (15 mots au plus), sans le nom de l'entreprise en sujet quand ce n'est pas nécessaire.
+Liste aussi les métiers, produits ou prestations de l'entreprise (3 à 8), en libellés courts (2 à 5 mots, sans article, par exemple « Escaliers sur mesure »), tels que le site les présente.
 Règles : uniquement ce que les pages affirment ; aucune déduction, aucune exagération ; indique pour chaque fait l'adresse exacte de la page.
 N'inclus aucune donnée personnelle (téléphone, adresse électronique, nom de salarié). Ignore les mentions légales et les cookies.
 Liste aussi les termes identifiants (marques, noms de produits, noms propres, lieux précis) : ils seront exclus du teaser anonyme.`;

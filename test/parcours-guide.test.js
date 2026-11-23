@@ -11,7 +11,7 @@ describe("guided steps", () => {
   it('question answered if all its fields are, or if the screen has been seen ("skip" answer)', () => {
     const q = QUESTIONS.find((x) => x.id === "operation");
     expect(questionRepondue(q, { operation: { part_cedee: "100 %" } })).toBe(false);
-    expect(questionRepondue(q, { operation: { part_cedee: "100 %", motif: "Autre", calendrier: "6 à 12 mois" } })).toBe(true);
+    expect(questionRepondue(q, { operation: { part_cedee: "100 %", motif: "Autre", calendrier: "6 à 12 mois", accompagnement: "6 mois", repreneur: ["Indifférent"] } })).toBe(true);
     expect(questionRepondue(q, { operation: { part_cedee: "100 %" } }, ["operation"])).toBe(true);
   });
   // 17/11/2026: a screen "seen" but without the required answer led to a drafting failure with no way out

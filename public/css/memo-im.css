@@ -494,3 +494,11 @@
 .im-som ul li { font-size: calc(.95cqw * var(--k, 1)); padding-block: calc(.12cqw * var(--k, 1)); }
 .im-gloss { font-size: calc(.9cqw * var(--k, 1)); }
 .im-gloss th, .im-gloss td { padding-block: calc(.32cqw * var(--k, 1)); }
+
+/* Logo de l'entreprise et photo de couverture (20/11/2026 : ce que le dirigeant choisit dans le parcours) */
+.im-couv-photo { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.im-couv-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20, 30, 40, .78) 0%, rgba(20, 30, 40, .45) 55%, rgba(20, 30, 40, .15) 100%); }
+.im-couv-titre { z-index: 2; }
+.im-couv-logo { max-width: 14cqw; max-height: 5cqw; object-fit: contain; justify-self: start; }
+.im-pied-logos { display: inline-flex; align-items: center; gap: 1cqw; }
+.im-logo-entreprise { max-height: 1.6cqw; max-width: 8cqw; object-fit: contain; }

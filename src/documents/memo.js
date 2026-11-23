@@ -4,6 +4,8 @@
 // figures, without producing new ones. 100% Passation presentation; only the company's logo appears.
 import { secteurDe, anciennete, regionDe } from "./anonymat.js";
 import { libelleEffectif } from "../../public/js/regles.js";
+import { faitsUtilisables } from "../../public/js/faits-site.js";
+import { activiteFine } from "./naf.js";
 import { DETENTION, MURS, MURS_CESSION } from "../../public/js/parcours.js";
 import { montant, pourcent, multiple } from "../../public/js/memo-format.js";
 import { projet } from "./nom-de-code.js";
@@ -228,11 +230,12 @@ export function chiffresMemo({ entreprise = {}, entree, resultat, reponses = {},
 /** Data sent to Claude for a section (only what the section needs). */
 export function donneesSection(section, { entreprise, entree, resultat, reponses = {}, lignesChiffres = {} }) {
   const site = reponses.site || {};
-  const faitsValides = (site.faits || []).filter((f) => f.valide);
+  // Faits validés, sauf ceux que les registres contredisent tant que le dirigeant n'a pas tranché
+  const faitsValides = faitsUtilisables((site.faits || []).filter((f) => f.valide), entreprise);
   const ch = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres });
   const d = {};
   for (const cle of section.donnees) {
-    if (cle === "entreprise") d.entreprise = { nom: entreprise.nom, ville: entreprise.ville, date_creation: entreprise.date_creation, anciennete: anciennete(entreprise.date_creation), secteur: secteurDe(entreprise.naf), code_naf: entreprise.naf, effectif: libelleEffectif(entreprise.tranche_effectif?.code) };
+    if (cle === "entreprise") d.entreprise = { nom: entreprise.nom, ville: entreprise.ville, date_creation: entreprise.date_creation, anciennete: anciennete(entreprise.date_creation), secteur: secteurDe(entreprise.naf), activite_naf: activiteFine(entreprise.naf), code_naf: entreprise.naf, effectif: libelleEffectif(entreprise.tranche_effectif?.code) };
     else if (cle === "frise") d.frise_publique = (entreprise.evenements || []).map((e) => ({ date: e.date, type: e.type, detail: e.detail ?? (e.nouveau ? `${e.ancien ?? ""} → ${e.nouveau}` : null) }));
     else if (cle === "activite") d.activite = reponses.activite || {};
     else if (cle === "atouts") d.atouts = reponses.atouts || {};

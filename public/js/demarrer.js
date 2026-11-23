@@ -13,7 +13,10 @@ import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { rangPhoto } from "/js/memo-format.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
+import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
+import { contradictions, nomLisible, faitsEssentiels, faitsParTheme, limiterChoix, lireDate, lignesDates, phraseActivite, TYPES_EVENEMENT } from "/js/faits-site.js";
 
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -61,12 +64,15 @@ const exercicesComplets = () => Object.entries(S.chiffres?.manquants || {}).filt
 const dernierConfirme = () => exercicesAttendus(S.chiffres?.exercices).dernier_complet;
 const aDesChiffresAValider = () => Object.values(S.chiffres?.exercices || {}).some((l) => Object.values(l).some((x) => x.valeur != null && x.source !== "inpi"));
 function etapeCourante() {
+  // Accueil de l'analyse approfondie : une fois, avant toute saisie
+  if (!S.vues.includes("accueil") && !dernierConfirme() && !aDesChiffresAValider() && !S.complet) return "accueil";
   if (!dernierConfirme()) return aDesChiffresAValider() ? "chiffres" : "comptes";
   if (siteARepondre() && !S.complet && !S.reponses.suivi?.pret_envoye) { S.q = -1; return "questions"; }
+  // Site lu : ses faits, puis son logo et ses photos, avant les questions restantes
+  if (siteAValider()) return "site";
+  if (photosAChoisir()) return "photos";
   const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues));
   if (iq >= 0) { S.q = iq; return "questions"; }
-  const site = S.reponses.site || {};
-  if (site.url && !site.confirme && ((site.faits || []).length || (site.logos || []).length)) return "site";
   if (!S.reponses.suivi?.pret_envoye && !S.complet) return "redaction";
   return "pret";
 }
@@ -81,6 +87,7 @@ function etapeDemandee() {
     if (siteARepondre()) { S.q = -1; return "questions"; }
     const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues)); S.q = Math.max(0, iq); return "questions";
   }
+  if (e === "photos") return S.reponses.site?.url ? "photos" : null;
   if (e === "redaction" || e === "pret") return e;
   return null;
 }
@@ -113,7 +120,7 @@ async function rafraichirEtat() {
 function aller(etape) {
   if (etape === "questions" && S.etape !== "questions") { S.aPoser = null; rafraichirPropositions().then(() => { if (S.etape === "questions" && S.q >= 0) questions(); }); }
   S.etape = etape; dessinerEtapes(); rafraichirEtat();
-  ({ comptes, saisie, chiffres, questions, site, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
+  ({ accueil, comptes, saisie, chiffres, questions, site, photos, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
 }
 const titre = (texte, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: texte }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
@@ -197,13 +204,21 @@ function saisie() {
     el("span", { role: "tooltip", id: "aide-ebe-saisie", text: texteAideEbe() }));
   const champ = (cle) => {
     const c = CHAMPS.find((x) => x.cle === cle), cell = l[cle];
-    const input = el("input", { type: "text", inputmode: "decimal", id: `s-${cle}`, "data-cle": cle, value: brut(cle), autocomplete: "off" });
-    input.addEventListener("input", () => { S.saisie.valeurs[cle] = input.value; });
+    // Champ formaté + curseur (option B1) : borne haute déduite du chiffre d'affaires (tapé ou publié), jamais une
+    // valeur inventée ; la donnée publique (INPI) pré-remplit le champ, comme avant
+    const ca = lireNombre(brut("chiffre_affaires"));
+    const max = cle === "chiffre_affaires" ? Math.max(5e6, 2 * (Number.isFinite(ca) ? ca : 0)) : Number.isFinite(ca) && ca > 0 ? ca : 5e6;
+    const actuel = lireNombre(brut(cle));
+    const comp = champMontant({ id: `s-${cle}`, libelle: cle === "ebe" ? t("demarrer.js.saisie.ebe") : libelleEcran(c), unite: "€", min: ["resultat_net", "ebe", "capitaux_propres"].includes(cle) ? Math.min(-Math.round(max / 2), Number.isFinite(actuel) ? actuel : 0) : 0, max, // peut être négatif
+      valeur: Number.isFinite(actuel) ? actuel : null });
+    comp.classList.add("montant-empile");
+    comp.champ.dataset.cle = cle;
+    comp.addEventListener("input", () => { S.saisie.valeurs[cle] = comp.champ.value; });
     const aide = cell?.source === "inpi" ? t("demarrer.js.saisie.repris_inpi") : aideEcran(c);
     return el("div", { class: "guide-champ saisie-champ" },
       el("label", { class: "guide-lib", for: `s-${cle}` }, cle === "ebe" ? [t("demarrer.js.saisie.ebe"), aideEbe()] : libelleEcran(c), FACULTATIFS.has(cle) ? el("span", { class: "facultatif", text: t("demarrer.js.saisie.facultatif") }) : null),
       el("p", { class: "petit", text: aide }),
-      el("div", { class: "champ-unite" }, input, el("span", { class: "unite", text: "€" })));
+      comp);
   };
   /** Reads the amounts of the given keys: { valeurs } or an error message (unreadable field or empty required field). */
   const lire = (cles) => {
@@ -305,13 +320,14 @@ function chiffres() {
 function ligneAVerifier(annee, cle, cellule) {
   const c = CHAMPS.find((x) => x.cle === cle);
   const input = el("input", { type: "text", inputmode: "decimal", value: cellule?.valeur != null ? fmt.format(cellule.valeur) : "", "aria-label": `${libelleEcran(c)}, ${annee}` });
+  input.addEventListener("input", () => { input.value = formaterSaisie(input.value); }); // séparateurs de milliers en direct
   return el("div", { class: "guide-ligne" }, el("label", { text: libelleEcran(c) || cle }), input,
     el("button", { type: "button", class: "btn btn-mini", onclick: async () => {
       const v = lireNombre(input.value);
       if (v === null || Number.isNaN(v)) { message(t("demarrer.js.chiffres.montant_lisible"), true); input.focus(); return; }
       try { S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs: { [cle]: v }, valider: true }) }); message(""); chiffres(); }
       catch (e) { message(e.message, true); }
-    } }, "Valider"));
+    } }, t("demarrer.js.chiffres.valider_ligne")));
 }
 
 // ================================================================== 3. Questions (one per screen)
@@ -325,7 +341,45 @@ function brouillonActivite() {
 }
 /** Passation's proposal for this field, as long as the owner has saved nothing. */
 const proposition = (q, c) => (S.reponses[c.etape]?.[c.cle] == null ? S.propositions[q.id]?.valeurs?.[`${c.etape}.${c.cle}`] : undefined);
-function champ(c, q) {
+const valeurDe = (chemin) => { const [e, k] = chemin.split("."); return S.reponses[e]?.[k]; };
+const idChamp = (c) => `q-${c.etape}-${c.cle}`;
+/** Libellé (et aide) d'un champ ; `pour` relie le libellé au champ, sinon c'est un texte (légende d'un groupe). */
+const entete = (c, pour = null) => [
+  c.libelle ? el(pour ? "label" : "p", { class: "guide-lib", for: pour, id: `${idChamp(c)}-lib` }, c.libelle) : null,
+  c.aide ? el("p", { class: "guide-aide", text: c.aide }) : null,
+];
+
+/** Puces à cocher (métiers, certifications) : propositions sourcées + réponses déjà données + ajouts du dirigeant. */
+function champEtiquettes(c, q) {
+  const enregistre = Array.isArray(S.reponses[c.etape]?.[c.cle]) ? S.reponses[c.etape][c.cle] : typeof S.reponses[c.etape]?.[c.cle] === "string" ? S.reponses[c.etape][c.cle].split(/[,;\n]/).map((x) => x.trim()).filter(Boolean) : null;
+  const propose = Array.isArray(proposition(q, c)) ? proposition(q, c) : [];
+  const coches = new Set(enregistre ?? propose);
+  const autres = S.reponses[c.etape]?.[c.cle] == null ? S.propositions[q.id]?.autres?.[`${c.etape}.${c.cle}`] || [] : [];
+  const libelles = [...new Set([...propose, ...(enregistre || []), ...autres])];
+  const source = S.propositions[q.id]?.source;
+  const zone = el("div", { class: "puces etiquettes", role: "group", "aria-labelledby": `${idChamp(c)}-lib`, "data-etape": c.etape, "data-cle": c.cle, "data-type": "etiquettes" });
+  const puce = (lib, coche, proposee) => {
+    const cb = el("input", { type: "checkbox", value: lib, checked: coche });
+    cb.addEventListener("change", () => zone.dispatchEvent(new Event("change", { bubbles: true })));
+    return el("label", { class: "puce-case" }, cb, proposee ? el("span", { class: "src", title: source || "", "aria-hidden": "true" }) : null, el("span", { text: lib }));
+  };
+  const ajout = el("input", { type: "text", class: "puce-ajout", maxlength: "60", "aria-label": c.ajouter, placeholder: c.ajouter });
+  const ajouter = () => {
+    const v = ajout.value.trim();
+    if (!v) return;
+    if (![...zone.querySelectorAll("input[type=checkbox]")].some((x) => x.value.toLowerCase() === v.toLowerCase())) zone.insertBefore(puce(v, true, false), formAjout);
+    ajout.value = ""; ajout.focus();
+    zone.dispatchEvent(new Event("change", { bubbles: true }));
+  };
+  ajout.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); ajouter(); } });
+  const formAjout = el("span", { class: "puce-ajout-zone" }, ajout, el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: ajouter }, t("demarrer.js.question.ajouter")));
+  zone.append(...libelles.map((x) => puce(x, coches.has(x), propose.includes(x))), formAjout);
+  return el("div", { class: "guide-champ" }, ...entete(c), zone,
+    propose.length && source ? el("p", { class: "guide-source" }, el("span", { class: "src", "aria-hidden": "true" }), source) : null);
+}
+
+/** Choix à icône, plusieurs réponses ; `max` réellement appliqué (au-delà, les autres choix se grisent). */
+function champMulti(c, q) {
   const v = S.reponses[c.etape]?.[c.cle] ?? proposition(q, c);
   const lib = c.libelle ? el("p", { class: "guide-lib", text: c.libelle }) : null;
   if (c.type === "texte") {
@@ -397,32 +451,53 @@ function champ(c, q) {
     const dessiner = () => remplacer(zone, ...liste.map((x, k) => el("div", { class: "exc" },
       el("input", { type: "text", value: x.annee ?? "", "aria-label": t("demarrer.js.exc.exercice"), inputmode: "numeric", onchange: (e) => { x.annee = Number(e.target.value); } }),
       el("input", { type: "text", value: x.libelle, placeholder: t("demarrer.js.exc.libelle"), "aria-label": t("demarrer.js.exc.libelle"), onchange: (e) => { x.libelle = e.target.value; } }),
-      el("input", { type: "text", inputmode: "decimal", value: x.montant != null ? fmt.format(x.montant) : "", placeholder: t("demarrer.js.exc.montant_euros"), "aria-label": t("demarrer.js.exc.montant"), onchange: (e) => { x.montant = lireNombre(e.target.value); } }),
+      montant,
       el("input", { type: "text", value: x.justification, placeholder: t("demarrer.js.exc.pourquoi"), "aria-label": t("demarrer.js.exc.justification"), onchange: (e) => { x.justification = e.target.value; } }),
-      el("button", { type: "button", class: "lien-simple", onclick: () => { liste.splice(k, 1); dessiner(); } }, t("espace.js.retirer")))),
-      el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => { liste.push({ annee: liste.at(-1)?.annee ?? null, libelle: "", montant: null, justification: "" }); dessiner(); } }, t("demarrer.js.exc.ajouter")));
-    zone.dataset.etape = c.etape; zone.dataset.cle = c.cle; zone.dataset.type = "exceptionnels"; zone._liste = liste;
-    dessiner();
-    return zone;
-  }
-  return null;
+      el("button", { type: "button", class: "lien-simple", onclick: () => { liste.splice(k, 1); dessiner(); } }, t("espace.js.retirer")));
+  }),
+  el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => { liste.push({ annee: liste.at(-1)?.annee ?? null, libelle: "", montant: null, justification: "" }); dessiner(); } }, t("demarrer.js.exc.ajouter")));
+  zone.dataset.etape = c.etape; zone.dataset.cle = c.cle; zone.dataset.type = "exceptionnels"; zone._liste = liste;
+  dessiner();
+  return zone;
+}
+
+function champ(c, q) {
+  const rendu = { etiquettes: champEtiquettes, multi: champMulti, phrase: champPhrase, montant: champNombre, pourcentage: champNombre, dates: champDates, choix: champChoix, regions: champRegions, top_clients: champTopClients, exceptionnels: champExceptionnels }[c.type];
+  const n = rendu ? rendu(c, q) : null;
+  // Bloc facultatif replié sous un lien (régions, cinq premiers clients)
+  return n && c.replie ? el("details", { class: "guide-replie" }, el("summary", { text: c.replie }), n) : n;
 }
 /** Approves the screen: the proposed choices that the owner kept as they are get saved. */
 async function validerPropositions(q) {
   for (const c of [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])]) {
-    if (!["choix", "valeurs", "regions"].includes(c.type)) continue;
+    if (!["choix", "regions"].includes(c.type)) continue;
     const pv = proposition(q, c);
     if (pv !== undefined) await enregistrer(c.etape, c.cle, pv);
   }
 }
 async function enregistrerEcran() {
   for (const n of $("#ecran").querySelectorAll("[data-cle]")) {
+    if (n.closest("[hidden]")) continue; // suite masquée (par exemple : murs qui ne sont pas à vous)
     const { etape, cle, type } = n.dataset;
-    if (n.tagName === "TEXTAREA" || type === "ligne") { if (n.value.trim()) await enregistrer(etape, cle, n.value.trim()); }
-    else if (type === "multi") await enregistrer(etape, cle, [...n.querySelectorAll('[aria-pressed="true"]')].map((b) => b.dataset.valeur));
-    else if (type === "euros") { const x = lireNombre(n.value); if (Number.isNaN(x)) throw new Error(t("demarrer.js.erreurs.montant_illisible")); await enregistrer(etape, cle, x); }
-    else if (type === "curseur") await enregistrer(etape, cle, Number(n.value) / 100);
-    else if (type === "exceptionnels") await enregistrer(etape, cle, n._liste.filter((x) => Number.isFinite(x.montant) && x.montant !== 0));
+    if (type === "phrase") { if (n.value.trim()) await enregistrer(etape, cle, n.value.trim().slice(0, 2000)); }
+    else if (type === "etiquettes") await enregistrer(etape, cle, [...n.querySelectorAll("input[type=checkbox]:checked")].map((x) => x.value));
+    else if (type === "multi") {
+      const c = QUESTIONS.flatMap((q) => [...q.champs, ...(q.suite?.champs || [])]).find((x) => x.etape === etape && x.cle === cle);
+      await enregistrer(etape, cle, limiterChoix([...n.querySelectorAll('[aria-pressed="true"]')].map((b) => b.dataset.valeur), c?.max));
+    } else if (type === "nombre") {
+      const { valeur, illisible } = n.lire();
+      if (illisible) { n.champ.focus(); throw new Error(t("demarrer.js.erreurs.montant_illisible")); }
+      if (valeur != null) await enregistrer(etape, cle, valeur / Number(n.dataset.facteur || 1));
+    } else if (type === "dates") {
+      const lignes = [];
+      for (const x of n._lignes) {
+        if (!x.date && !x.precision.trim()) continue;
+        const d = lireDate(x.date);
+        if (!d) { n.querySelectorAll(".dates-date")[n._lignes.indexOf(x)]?.focus(); throw new Error(t("demarrer.js.dates.illisible", { date: x.date || "…" })); }
+        lignes.push({ date: d.texte, type: x.type, precision: x.precision.trim().slice(0, 120), source: x.source || null });
+      }
+      await enregistrer(etape, cle, lignes.sort((a, b) => lireDate(a.date).annee - lireDate(b.date).annee));
+    } else if (type === "exceptionnels") await enregistrer(etape, cle, n._liste.filter((x) => Number.isFinite(x.montant) && x.montant !== 0));
     else if (type === "top_clients") {
       const lignes = [];
       for (const l of n.querySelectorAll(".top-clients-ligne")) {
@@ -433,16 +508,16 @@ async function enregistrerEcran() {
         lignes.push({ part: part / 100, anciennete: anc == null ? null : Math.round(anc), secteur: l.querySelector('[data-col="secteur"]').value.trim().slice(0, 40) || null });
       }
       if (lignes.reduce((a, x) => a + x.part, 0) > 1.0001) throw new Error(t("demarrer.js.erreurs.parts_total"));
-      await enregistrer(etape, cle, lignes);
+      if (lignes.length || Array.isArray(S.reponses[etape]?.[cle])) await enregistrer(etape, cle, lignes);
     }
   }
 }
 /** Screen seen: saved ("Skip" counts as an answer), so that the file page counts the same way. */
 function marquerVue(qid) {
-  if (S.vues.includes(qid)) return;
+  if (S.vues.includes(qid)) return Promise.resolve();
   S.vues.push(qid);
   S.reponses.parcours = { ...(S.reponses.parcours || {}), vues: [...S.vues] };
-  api(`${base}/answers/parcours`, { method: "PUT", body: JSON.stringify({ data: S.reponses.parcours }) }).then(() => rafraichirEtat()).catch(() => null);
+  return api(`${base}/answers/parcours`, { method: "PUT", body: JSON.stringify({ data: S.reponses.parcours }) }).then(() => rafraichirEtat()).catch(() => null);
 }
 /** "Question N of M" counter: M = questions still to show when arriving at the questions (those already
  *  answered, approved in the summary or skipped are not included); it does not change from one screen to the next. */
@@ -452,7 +527,7 @@ function compteur() {
   const cle = cleEcran();
   if (cle && !S.aPoser.includes(cle)) S.aPoser = [...S.aPoser, cle].sort((a, b) => ordre(a) - ordre(b)); // came back by itself ("Back")
   const n = S.aPoser.indexOf(cle) + 1, total = S.aPoser.length;
-  return el("div", { class: "q-tete" }, el("p", { class: "etiquette", text: t("demarrer.js.question_n", { n, total }) }),
+  return el("div", { class: "q-tete" }, el("p", { class: "q-compteur", text: t("demarrer.js.question_n", { n, total }) }),
     el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round((n / total) * 100)}%` })));
 }
 const ordre = (cle) => (cle === "site" ? -1 : QUESTIONS.findIndex((q) => q.id === cle));
@@ -463,6 +538,9 @@ function precedente() {
   if (prec == null) { aller("chiffres"); return; }
   S.q = ordre(prec); questions();
 }
+/** Le site vient d'être lu : ses faits, son logo et ses photos sont à valider (juste après la lecture). */
+const siteAValider = () => { const s = S.reponses.site || {}; return Boolean(s.url && !s.confirme && ((s.faits || []).length || (s.logos || []).length)); };
+const photosAChoisir = () => { const s = S.reponses.site || {}; return Boolean(s.url && s.confirme && !S.vues.includes("photos") && ((s.photos_candidates || []).length || (s.logos || []).length)); };
 function suivante(q) {
   marquerVue(q.id);
   // Came from drafting to complete a required answer: go back there as soon as everything is filled in
@@ -493,13 +571,14 @@ function questionSite() {
     } }, t("demarrer.js.site.aucun"))),
     el("div", { class: "q-nav" },
       el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, t("demarrer.js.retour")),
-      el("button", { type: "button", class: "btn btn-noir", onclick: () => {
+      el("button", { type: "button", class: "btn btn-vert", onclick: () => {
         const url = input.value.trim();
         if (!url) { message(t("demarrer.js.site.indiquez"), true); input.focus(); return; }
         lancerLectureSite(url);
         S.reponses.site = { ...(S.reponses.site || {}), url, aucun: undefined };
         suivanteQ();
-      } }, proposition ? t("demarrer.js.site.oui_lire") : t("demarrer.js.site.lire"), fleche())));
+      } }, proposition ? t("demarrer.js.site.oui_lire") : t("demarrer.js.site.lire"), fleche())),
+    el("p", { class: "q-usage", text: t("demarrer.js.site.usage") }));
 }
 // ---- Summary: all the prepared answers on one screen, approved in one click (the rest is asked afterwards)
 const cleRecap = `passation-recap-${id}`;
@@ -509,12 +588,10 @@ const clesEnAttente = (q) => Object.keys(S.propositions[q.id]?.valeurs || {}).fi
 const questionsPreparees = () => QUESTIONS.filter((q) => clesEnAttente(q).length && !S.propositions[q.id]?.a_completer && !questionRepondue(q, S.reponses, S.vues));
 /** Proposed value in plain words (choice label, percentage, list, shortened text). */
 function libelleValeur(q, cle, v) {
-  const c = [...q.champs, ...(q.suite?.champs || [])].find((x) => `${x.etape}.${x.cle}` === cle);
-  if (c?.type === "valeurs") { const lib = c.options.find(([, val]) => val === v)?.[0]; return lib == null ? String(v) : langue() === "fr" ? lib : lib.replace(/\s%/, "%"); }
+  const c = champDeCle(q, cle);
   if (c?.type === "choix") return libelleOption(c.cle, v);
-  if (Array.isArray(v)) return (c ? v.map((x) => libelleOption(c.cle, x)) : v).join(", ");
-  const x = String(v).replace(/\s+/g, " ");
-  return x.length > 170 ? `${x.slice(0, 168).replace(/\s+\S*$/, "")}…` : x;
+  if (Array.isArray(v)) return v.join(", ");
+  return String(v);
 }
 function recapitulatif() {
   const liste = questionsPreparees();
@@ -532,7 +609,7 @@ function recapitulatif() {
     } catch (e) { message(e.message, true); bouton.disabled = false; }
   });
   remplir(
-    el("p", { class: "etiquette", text: t("demarrer.js.recap.preparees", { n: liste.length }) }),
+    el("p", { class: "q-compteur", text: t("demarrer.js.recap.preparees", { n: liste.length }) }),
     ...titre(t("demarrer.js.recap.titre"), t("demarrer.js.recap.aide")),
     el("ul", { class: "recap-liste" }, ...liste.map((q) => {
       const cb = el("input", { type: "checkbox", id: `recap-${q.id}`, checked: true });
@@ -552,20 +629,19 @@ function questions() {
   if (!recapVu() && questionsPreparees().length >= 3) return recapitulatif();
   if (S.q < 0) return questionSite();
   const q = QUESTIONS[S.q];
-  const champs = [...q.champs, ...(q.suite?.si(S.reponses) ? q.suite.champs : [])];
   const prop = S.propositions[q.id];
   const aValider = prop && Object.keys(prop.valeurs).some((k) => { const [e, c] = k.split("."); return S.reponses[e]?.[c] == null; });
-  const seulChoix = !aValider && q.champs.length === 1 && ["choix", "valeurs"].includes(q.champs[0].type) && !q.suite?.si(S.reponses);
+  const seulChoix = !aValider && q.champs.length === 1 && q.champs[0].type === "choix" && !q.suite?.si(S.reponses);
   remplir(
     compteur(),
-    aValider ? el("p", { class: "proposition-bandeau" }, el("strong", { text: t("demarrer.js.question.preparee") }), t("demarrer.js.question.preparee_suite", { source: prop.source })) : null,
     ...titre(q.titre, q.aide),
-    q.champs.some((c) => c.requis) ? el("p", { class: "petit requis-note", text: t("demarrer.js.question.indispensable", { liste: q.champs.filter((c) => c.requis).map((c) => c.requis).join(", ") }) }) : null,
-    ...champs.map((c) => champ(c, q)),
+    aValider ? el("p", { class: "proposition-bandeau" }, t("demarrer.js.question.preparee_court", { source: prop.source })) : null,
+    ...q.champs.map((c) => champ(c, q)),
+    q.suite ? el("div", { class: "guide-suite", "data-suite": "1", hidden: !q.suite.si(S.reponses) }, ...q.suite.champs.map((c) => champ(c, q))) : null,
     el("div", { class: "q-nav" },
       el("button", { type: "button", class: "lien-simple", onclick: () => precedente() }, t("demarrer.js.retour")),
       seulChoix ? el("button", { type: "button", class: "lien-simple", onclick: () => suivante(q) }, t("demarrer.js.question.passer"))
-        : el("button", { type: "button", class: `btn ${aValider ? "btn-vert" : "btn-noir"}`, onclick: async (ev) => {
+        : el("button", { type: "button", class: "btn btn-vert", onclick: async (ev) => {
           const bouton = ev.currentTarget;
           bouton.disabled = true;
           try {
@@ -575,37 +651,185 @@ function questions() {
             if (manque.length) { message(t("demarrer.js.question.il_manque", { liste: manque.length > 1 ? t("dossier.annees.liste", { debut: manque.slice(0, -1).join(", "), fin: manque.at(-1) }) : manque[0] }), true); bouton.disabled = false; $("#ecran").querySelector("textarea, .puces-choix .puce")?.focus(); return; }
             message(""); suivante(q);
           } catch (e) { message(e.message, true); bouton.disabled = false; }
-        } }, aValider ? t("demarrer.js.question.exact_continuer") : t("demarrer.js.continuer"), fleche())),
-    q.chapitre ? el("aside", { class: "q-usage" }, el("p", { class: "etiquette", text: t("demarrer.js.question.ou_va") }), el("strong", { text: q.chapitre }), q.pourquoi ? el("p", { class: "petit", text: q.pourquoi }) : null) : null);
+        } }, t("demarrer.js.continuer"), fleche())),
+    ouVa(q));
+  // Montant proposé d'après un autre montant de l'écran : il suit la saisie tant qu'il n'est pas confirmé
+  for (const c of [...q.champs, ...(q.suite?.champs || [])].filter((x) => x.propose)) {
+    const [e, k] = c.propose.split(".");
+    const source = $(`#ecran [data-etape="${e}"][data-cle="${k}"][data-type=nombre]`), cible = $(`#ecran [data-etape="${c.etape}"][data-cle="${c.cle}"][data-type=nombre]`);
+    if (source && cible?.suivre) source.champ.addEventListener("input", () => cible.suivre(source.lire().valeur));
+  }
+  // Phrase d'activité : mise à jour à chaque coche (métiers, clients), tant que le dirigeant ne l'a pas modifiée
+  const phrase = $("#ecran [data-type=phrase]");
+  if (phrase) { $("#ecran").addEventListener("change", () => phrase.proposer()); queueMicrotask(() => phrase.proposer()); }
 }
 
 // ================================================================== 4. Your website
 async function site() {
   if (S.lectureSite) { message(t("demarrer.js.site.lecture")); await S.lectureSite; message(""); }
   const s = S.reponses.site || {};
-  if (!s.url || !((s.faits || []).length || (s.logos || []).length)) { aller(etapeCourante() === "site" ? "redaction" : etapeCourante()); return; }
-  const faits = (s.faits || []).map((f) => ({ ...f, valide: f.valide || !s.confirme }));
-  let logo = s.logos?.[0]?.url ?? null;
-  remplir(...titre(t("demarrer.js.site.retenu_titre"), t("demarrer.js.site.retenu_aide")),
-    el("fieldset", { class: "faits" }, el("legend", { class: "visuellement-cache", text: t("demarrer.js.site.faits") }),
-      ...faits.map((f) => { const cb = el("input", { type: "checkbox", id: `f-${f.id}`, checked: f.valide }); cb.addEventListener("change", () => { f.valide = cb.checked; }); return el("label", { class: "fait", for: `f-${f.id}` }, cb, el("span", { text: f.fait })); })),
-    (s.logos || []).length ? el("div", {}, el("p", { class: "guide-lib", text: t("demarrer.js.site.votre_logo") }),
-      el("div", { class: "logos-liste", role: "radiogroup", "aria-label": t("demarrer.js.site.choix_logo") }, ...s.logos.map((l, k) => {
-        const r = el("input", { type: "radio", name: "logo", id: `logo-${k}`, checked: k === 0, class: "visuellement-cache" });
-        r.addEventListener("change", () => { logo = l.url; });
-        return el("label", { class: "logo-choix", for: `logo-${k}` }, r, el("img", { src: l.url, alt: l.origine, referrerpolicy: "no-referrer" }));
-      }), el("label", { class: "logo-choix logo-aucun", for: "logo-aucun" }, (() => { const r = el("input", { type: "radio", name: "logo", id: "logo-aucun", class: "visuellement-cache" }); r.addEventListener("change", () => { logo = null; }); return r; })(), t("demarrer.js.site.aucun_logo")))) : null,
-    el("button", { type: "button", class: "btn btn-vert", onclick: async (ev) => {
-      const bouton = ev.currentTarget;
-      bouton.disabled = true;
-      try {
-        if (logo) await api(`${base}/documents/memo/logo`, { method: "POST", body: JSON.stringify({ url: logo }) }).catch(() => null);
-        const site = { ...(S.reponses.site || {}), faits, confirme: true };
-        await api(`${base}/answers/site`, { method: "PUT", body: JSON.stringify({ data: site }) });
-        S.reponses.site = site;
-        aller("redaction");
-      } catch (e) { message(e.message, true); bouton.disabled = false; }
-    } }, t("demarrer.js.question.exact_continuer").trim()));
+  if (!s.url || !((s.faits || []).length || (s.logos || []).length)) { aller(photosAChoisir() ? "photos" : etapeCourante()); return; }
+  const faits = (s.faits || []).map((f) => ({ ...f, valide: s.confirme ? f.valide !== false : true }));
+  const conflits = contradictions(faits, S.dossier?.entreprise || {});
+  const enConflit = new Set(conflits.map((c) => c.id));
+  const choix = new Map(); // id du fait → « site » | « registre » | « deux »
+  const ligne = (f) => {
+    const li = el("li", { class: f.valide ? null : "retire" }, el("span", { class: "fait-txt", text: f.fait }));
+    const b = el("button", { type: "button", class: "lien-simple fait-action", "aria-label": null });
+    const maj = () => { li.classList.toggle("retire", !f.valide); b.textContent = f.valide ? t("demarrer.js.site.retirer") : t("demarrer.js.site.remettre"); b.setAttribute("aria-label", `${b.textContent} : ${f.fait}`); };
+    b.addEventListener("click", () => { f.valide = !f.valide; maj(); });
+    maj(); li.append(b);
+    return li;
+  };
+  const libres = faits.filter((f) => !enConflit.has(f.id));
+  const essentiels = faitsEssentiels(libres, 4);
+  const autres = libres.filter((f) => !essentiels.includes(f));
+  const blocConflit = (c) => {
+    const f = faits.find((x) => x.id === c.id);
+    const nom = `conflit-${c.id}`;
+    const registre = c.type === "creation" ? String(c.registre) : t("demarrer.js.site.tranche", { min: c.registre[0], max: Number.isFinite(c.registre[1]) ? c.registre[1] : "…" });
+    const option = (val, fort, texte) => {
+      const r = el("input", { type: "radio", name: nom, value: val });
+      r.addEventListener("change", () => choix.set(c.id, val));
+      return el("label", { class: "conflit-choix" }, r, el("span", {}, el("strong", { text: fort }), el("span", { text: texte })));
+    };
+    return el("fieldset", { class: "conflit" }, el("legend", {}, el("span", { class: "pastille-alerte", text: t("demarrer.js.site.a_verifier") }), t(`demarrer.js.site.conflit_${c.type}`)),
+      el("p", { class: "petit", text: t("demarrer.js.site.conflit_aide") }),
+      el("div", { class: "conflit-deux" },
+        option("site", String(c.site), t("demarrer.js.site.selon_site", { fait: f.fait })),
+        option("registre", registre, t("demarrer.js.site.selon_registres"))),
+      c.type === "creation" ? option("deux", t("demarrer.js.site.les_deux"), t("demarrer.js.site.les_deux_aide")) : null);
+  };
+  const plus = autres.length ? el("details", { class: "guide-replie faits-autres" }, el("summary", { text: t("demarrer.js.site.voir_autres", { n: autres.length }) }),
+    ...faitsParTheme(autres).map(([theme, l]) => el("section", { class: "faits-theme" }, el("h2", { text: t(`demarrer.js.site.themes.${theme}`) }), el("ul", { class: "faits-liste" }, ...l.map(ligne))))) : null;
+  remplir(
+    el("p", { class: "q-compteur", text: t("demarrer.js.site.lu", { site: new URL(s.url).hostname, n: (s.pages || []).length || 1 }) }),
+    ...titre(t("demarrer.js.site.retenu_titre"), t("demarrer.js.site.retenu_aide", { n: faits.length })),
+    ...conflits.map(blocConflit),
+    essentiels.length ? el("ul", { class: "faits-liste faits-essentiels" }, ...essentiels.map(ligne)) : null,
+    plus,
+    el("div", { class: "q-nav" },
+      el("button", { type: "button", class: "lien-simple", onclick: () => { S.q = Math.max(0, QUESTIONS.findIndex((x) => !questionRepondue(x, S.reponses, S.vues))); aller("questions"); } }, t("demarrer.js.site.plus_tard")),
+      el("button", { type: "button", class: "btn btn-vert", onclick: async (ev) => {
+        const bouton = ev.currentTarget;
+        bouton.disabled = true;
+        try {
+          // Contradiction tranchée : registres → fait écarté ; site ou les deux → fait gardé (« resolu »)
+          const final = faits.map((f) => (enConflit.has(f.id) && choix.has(f.id) ? { ...f, valide: choix.get(f.id) !== "registre", resolu: true } : f));
+          const memo = await api(`${base}/documents/memo`).catch(() => null); // photos et logo à jour (jamais écrasés)
+          const site = { ...(memo?.site || S.reponses.site || {}), faits: final, confirme: true };
+          await api(`${base}/answers/site`, { method: "PUT", body: JSON.stringify({ data: site }) });
+          S.reponses.site = site; S.memo = memo;
+          rafraichirPropositions();
+          aller(photosAChoisir() ? "photos" : etapeCourante());
+        } catch (e) { message(e.message, true); bouton.disabled = false; }
+      } }, t("demarrer.js.site.valider_faits"), fleche())),
+    el("p", { class: "q-usage", text: t("demarrer.js.site.usage_faits") }));
+}
+
+/** Logo et photos du site : le logo trouvé est présélectionné ; le dirigeant clique les photos à utiliser (6 au plus)
+ *  et coche une seule fois la case de droits. Ce qui est choisi va sur la couverture, l'activité et l'équipe. */
+const PHOTOS_MAX = 6;
+async function photos() {
+  const memo = S.memo?.site ? S.memo : await api(`${base}/documents/memo`).catch(() => null);
+  S.memo = memo;
+  const s = memo?.site || S.reponses.site || {};
+  const deja = memo?.photos || [];
+  const candidates = (s.photos_candidates || []).slice(0, 12);
+  const choisies = new Set(deja.map((p) => p.origine).filter((u) => candidates.includes(u)));
+  const propres = deja.filter((p) => !p.origine || !candidates.includes(p.origine)); // déposées par le dirigeant
+  const logos = s.logos || [];
+  let logo = memo?.logo ? "garde" : logos[0]?.url ?? null;
+  const compte = el("p", { class: "guide-compte", "aria-live": "polite" });
+  const bouton = el("button", { type: "button", class: "btn btn-vert" });
+  const grille = el("div", { class: "photos-grille", role: "group", "aria-labelledby": "photos-titre" });
+  const maj = () => {
+    const n = choisies.size + propres.length;
+    for (const b of grille.querySelectorAll(".photo-tuile")) b.disabled = b.getAttribute("aria-pressed") !== "true" && n >= PHOTOS_MAX;
+    compte.textContent = t("demarrer.js.photos.compte", { n, max: PHOTOS_MAX });
+    bouton.replaceChildren(n ? t("demarrer.js.photos.utiliser", { n }) : t("demarrer.js.photos.sans_photo"), fleche());
+  };
+  grille.append(...candidates.map((u, k) => el("button", { type: "button", class: "photo-tuile", "aria-pressed": String(choisies.has(u)), "aria-label": t("demarrer.js.photos.photo_n", { n: k + 1 }), onclick: (ev) => {
+    const b = ev.currentTarget, on = b.getAttribute("aria-pressed") !== "true";
+    b.setAttribute("aria-pressed", String(on));
+    if (on) choisies.add(u); else choisies.delete(u);
+    maj();
+  } }, el("img", { src: u, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.currentTarget.closest(".photo-tuile")?.remove() }), el("span", { class: "photo-coche", "aria-hidden": "true" }))),
+  ...propres.map((p) => el("figure", { class: "photo-tuile photo-propre", "aria-pressed": "true" }, el("img", { src: `${base}/documents/memo/photos/${p.n}?v=${Date.now()}`, alt: p.legende || t("demarrer.js.photos.deposee") }),
+    el("button", { type: "button", class: "lien-simple", onclick: async () => { try { S.memo = await api(`${base}/documents/memo/photos/${p.n}`, { method: "DELETE" }); photos(); } catch (e) { message(e.message, true); } } }, t("espace.js.retirer")))));
+  const droits = el("input", { type: "checkbox", id: "photos-droits" });
+  const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "photos-fichier", class: "visuellement-cache", multiple: true });
+  fichier.addEventListener("change", async () => {
+    if (!droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); fichier.value = ""; return; }
+    for (const f of [...fichier.files].slice(0, PHOTOS_MAX)) {
+      const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", "oui");
+      try { S.memo = await api(`${base}/documents/memo/photos`, { method: "POST", body: fd }); } catch (e) { message(e.message, true); break; }
+    }
+    photos();
+  });
+  // Logo : présélectionné ; « Changer » ouvre les autres candidats, le dépôt et « aucun »
+  const apercuLogo = () => (logo === "garde" ? `${base}/documents/memo/logo?v=${Date.now()}` : logo);
+  const zoneLogo = el("div", { class: "logo-ligne" });
+  const dessinerLogo = (ouvert = false) => remplacer(zoneLogo,
+    el("span", { class: "logo-apercu" }, apercuLogo() ? el("img", { src: apercuLogo(), alt: t("demarrer.js.site.votre_logo"), referrerpolicy: "no-referrer" }) : el("span", { class: "petit", text: t("demarrer.js.photos.aucun_logo") })),
+    el("div", { class: "logo-texte" }, el("strong", { text: t("demarrer.js.site.votre_logo") }), el("span", { class: "petit", text: logo ? t("demarrer.js.photos.logo_aide") : t("demarrer.js.photos.logo_aucun_aide") })),
+    logos.length > 1 || !logo ? el("button", { type: "button", class: "btn btn-contour btn-mini", "aria-expanded": String(ouvert), onclick: () => dessinerLogo(!ouvert) }, t("demarrer.js.photos.changer")) : null,
+    ouvert ? el("div", { class: "logos-liste", role: "radiogroup", "aria-label": t("demarrer.js.site.choix_logo") },
+      ...logos.map((l, k) => { const r = el("input", { type: "radio", name: "logo", id: `logo-${k}`, checked: logo === l.url, class: "visuellement-cache" }); r.addEventListener("change", () => { logo = l.url; dessinerLogo(true); }); return el("label", { class: "logo-choix", for: `logo-${k}` }, r, el("img", { src: l.url, alt: l.origine, referrerpolicy: "no-referrer" })); }),
+      (() => { const r = el("input", { type: "radio", name: "logo", id: "logo-aucun", class: "visuellement-cache", checked: !logo }); r.addEventListener("change", () => { logo = null; dessinerLogo(true); }); return el("label", { class: "logo-choix logo-aucun", for: "logo-aucun" }, r, t("demarrer.js.site.aucun_logo")); })()) : null);
+  dessinerLogo();
+  bouton.addEventListener("click", async () => {
+    const aAjouter = [...choisies].filter((u) => !deja.some((p) => p.origine === u));
+    if (aAjouter.length && !droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); return; }
+    bouton.disabled = true; message(t("demarrer.js.photos.enregistrement"));
+    const echecs = [];
+    try {
+      if (logo && logo !== "garde") await api(`${base}/documents/memo/logo`, { method: "POST", body: JSON.stringify({ url: logo }) }).catch(() => echecs.push("logo"));
+      // Photos du site décochées : retirées (de la dernière à la première, les numéros se décalent)
+      for (const p of [...deja].reverse()) if (p.origine && candidates.includes(p.origine) && !choisies.has(p.origine)) S.memo = await api(`${base}/documents/memo/photos/${p.n}`, { method: "DELETE" });
+      for (const u of aAjouter) {
+        try { S.memo = await api(`${base}/documents/memo/photos`, { method: "POST", body: JSON.stringify({ url: u, attestation: true }) }); }
+        catch { echecs.push(u); }
+      }
+      await marquerVue("photos");
+      message(echecs.length ? t("demarrer.js.photos.echecs", { n: echecs.length }) : "", Boolean(echecs.length));
+      aller(etapeCourante());
+    } catch (e) { message(e.message, true); bouton.disabled = false; }
+  });
+  maj();
+  remplir(
+    el("p", { class: "q-compteur", text: new URL(s.url).hostname }),
+    ...titre(t("demarrer.js.photos.titre"), t("demarrer.js.photos.aide")),
+    zoneLogo,
+    candidates.length || propres.length ? el("div", { class: "guide-champ" },
+      el("p", { class: "guide-lib", id: "photos-titre", text: t("demarrer.js.photos.cliquez") }),
+      el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max: PHOTOS_MAX }) }),
+      grille, compte) : el("p", { class: "petit", text: t("demarrer.js.photos.aucune") }),
+    el("label", { class: "photos-droits", for: "photos-droits" }, droits, el("span", { text: t("demarrer.js.photos.droits") })),
+    el("p", { class: "petit" }, el("label", { class: "lien-simple", for: "photos-fichier", tabindex: "0", onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fichier.click(); } } }, t("demarrer.js.photos.deposer")), fichier, " ", t("demarrer.js.photos.formats")),
+    el("div", { class: "q-nav" },
+      el("button", { type: "button", class: "lien-simple", onclick: () => aller("site") }, t("demarrer.js.retour")),
+      bouton),
+    el("p", { class: "q-usage", text: t("demarrer.js.photos.ou_va") }));
+}
+
+// ================================================================== 0. Accueil de l'analyse approfondie
+/** Écran d'accueil, une seule fois, avant tout : ce qui va se passer, en combien de temps, un seul bouton. */
+function accueil() {
+  const e = S.dossier?.entreprise || {}, est = S.dossier?.estimation;
+  const publics = Object.entries(S.chiffres?.exercices || {}).filter(([, l]) => Object.values(l).some((x) => x.source === "inpi" && x.valeur != null)).map(([a]) => a).sort();
+  remplir(
+    el("p", { class: "q-compteur accueil-sur", text: t("demarrer.js.accueil.surtitre") }),
+    el("h1", { class: "guide-titre accueil-titre", tabindex: "-1", text: t("demarrer.js.accueil.titre") }),
+    el("p", { class: "chapo-petit", text: t("demarrer.js.accueil.chapo") }),
+    el("ol", { class: "accueil-etapes" },
+      el("li", {}, el("strong", { text: t("demarrer.js.accueil.chiffres_titre") }), el("span", { text: publics.length ? t("demarrer.js.accueil.chiffres_publics", { annees: publics.join(", ") }) : t("demarrer.js.accueil.chiffres") })),
+      el("li", {}, el("strong", { text: t("demarrer.js.accueil.reponses_titre") }), el("span", { text: t("demarrer.js.accueil.reponses", { n: QUESTIONS.length + 1 }) })),
+      el("li", {}, el("strong", { text: t("demarrer.js.accueil.redaction_titre") }), el("span", { text: t("demarrer.js.accueil.redaction") }))),
+    el("div", { class: "accueil-depart" },
+      el("button", { type: "button", class: "btn btn-vert", onclick: async (ev) => { ev.currentTarget.disabled = true; await marquerVue("accueil"); aller(etapeCourante()); } }, t("demarrer.js.accueil.commencer"), fleche()),
+      el("span", { class: "petit", text: t("demarrer.js.accueil.reprise") })),
+    est?.statut === "ok" ? el("p", { class: "petit accueil-deja" }, el("strong", { text: t("demarrer.js.accueil.deja") }), " ", t("demarrer.js.accueil.deja_estimation", { fourchette: fourchette(est.bas, est.haut), nom: e.nom || "" })) : null);
 }
 
 // ================================================================== 5. Drafting (all in one go)
@@ -723,20 +947,46 @@ async function redaction() {
 async function pret() {
   const e = (await rafraichirEtat()) || etatParcours(S.dossier, null);
   const f = ecranFinal(e), v = e.valeur;
+  const memo = await api(`${base}/documents/memo`).catch(() => null);
+  const doc = (cle) => e.documents.find((x) => x.cle === cle);
+  const restent = f.reste.filter((x) => !x.facultatif), facultatives = f.reste.filter((x) => x.facultatif);
+  const lienTache = (x) => (x.pieces ? lien(`/espace/?dossier=${id}#checklist`) : x.href.startsWith("#") ? lien(`/espace/?dossier=${id}${x.href}`) : x.href);
+  const etatDoc = (d) => el("span", { class: `etat etat-${d.etat}`, text: d.badge || t(`espace.js.etats.${d.etat}`) });
+  // Le mémorandum, document principal : miniature de sa couverture (nom de code, logo et photo choisis)
+  const m = doc("memo");
+  const photo = memo?.photos?.length ? `${base}/documents/memo/photos/${rangPhoto("couverture", memo.photos.length)}` : null;
+  const couverture = el("div", { class: "fin-couverture", "aria-hidden": "true" },
+    photo ? el("span", { class: "fin-couv-photo", style: `background-image:url('${photo}')` }) : null,
+    memo?.logo ? el("img", { class: "fin-couv-logo", src: `${base}/documents/memo/logo`, alt: "" }) : null,
+    el("span", { class: "fin-couv-titre", text: S.dossier?.nom_de_code || t("memo.memorandum_information") }),
+    el("span", { class: "fin-couv-sous", text: t("memo.memorandum_information") }));
+  const principal = m.actions.find((a) => a.principal);
+  const pdf = m.actions.find((a) => !a.principal);
+  // Les autres documents : leur nature (PDF, Excel, page web) et leur état
+  const TYPES = { teaser: "pdf", datapack: "xlsx", valorisation: "web" };
+  const autres = ["teaser", "datapack", "valorisation"].map(doc).map((d) => {
+    const a = d.actions.find((x) => x.principal);
+    return el("li", { class: `fin-doc doc-${d.etat}` },
+      el("span", { class: `fin-type fin-type-${TYPES[d.cle]}`, text: t(`demarrer.js.pret.types.${TYPES[d.cle]}`) }),
+      el("div", {}, el("strong", { text: d.titre }), el("span", { class: "petit", text: t(`espace.js.natures.${d.cle}`) })),
+      etatDoc(d),
+      a ? el("a", { class: "fin-ouvrir", href: a.href, download: a.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: a.libelle, objet: d.titre }) }, a.libelle) : el("span"));
+  });
   remplir(...titre(f.titre, f.aide),
-    v.bas != null && v.haut != null ? el("div", { class: "carte synthese-valeur guide-valeur" }, el("p", { class: "etiquette", text: v.etiquette }),
-      el("p", { class: "valeur-centrale chiffre", text: fourchette(v.bas, v.haut) }), el("p", { class: "petit", text: v.base }), v.ecart ? el("p", { class: "petit", text: v.ecart }) : null) : null,
-    f.reste.length ? el("div", { class: "carte guide-todo" }, el("h2", { text: f.resteTitre }),
-      el("ul", {}, ...f.reste.map((x) => el("li", {}, x.pieces
-        ? el("a", { href: lien(`/espace/?dossier=${id}#checklist`), text: x.titre })
-        : el("a", { href: x.href.startsWith("#") ? lien(`/espace/?dossier=${id}${x.href}`) : x.href, text: x.titre }), el("span", { class: "petit", text: ` · ${x.detail}` }))))) : null,
-    el("div", { class: "guide-docs" },
-      ...[[t("demarrer.js.pret.valo_titre"), t("demarrer.js.pret.valo_detail"), lien(`/espace/valorisation/?dossier=${id}#valorisation`)],
-        [t("dossier.documents.datapack"), t("demarrer.js.pret.datapack_detail"), `${base}/documents/datapack`, true],
-        [t("dossier.documents.teaser"), t("demarrer.js.pret.teaser_detail"), lien(`/espace/documents/teaser/?dossier=${id}`)],
-        [t("memo.memorandum_information"), t("demarrer.js.pret.memo_detail"), lien(`/espace/documents/memo/?dossier=${id}`)]]
-        .map(([titre, d, href, dl]) => el("a", { class: "carte guide-doc", href, download: dl ? "" : null }, el("strong", { text: titre }), el("span", { class: "petit", text: d }), el("span", { class: "fleche", "aria-hidden": "true", text: dl ? "↓" : "→" })))),
-    el("p", { class: "petit" }, t("demarrer.js.pret.affiner"), el("a", { href: lien(`/espace/valorisation/?dossier=${id}#valorisation`), text: t("demarrer.js.pret.reglages") }), t("demarrer.js.pret.photos"), el("a", { href: lien(`/espace/documents/memo/?dossier=${id}`), text: t("demarrer.js.pret.page_memo") }), t("demarrer.js.pret.modifier"), el("a", { href: lien(`/espace/demarrer/?dossier=${id}&etape=questions`), text: t("demarrer.js.pret.revoir") }), "."));
+    v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), el("a", { href: v.lien.href, text: v.lien.texte })) : null,
+    restent.length ? el("div", { class: "fin-reste" }, el("h2", { text: f.resteTitre }),
+      el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }), x.detail ? el("span", { class: "petit", text: ` · ${x.detail}` }) : null)))) : null,
+    el("section", { class: "fin-memo", "aria-labelledby": "fin-memo-titre" }, couverture,
+      el("div", { class: "fin-memo-texte" }, etatDoc(m),
+        el("h2", { id: "fin-memo-titre", text: t("memo.memorandum_information") }),
+        el("p", { class: "petit", text: t("demarrer.js.pret.memo_aide", { n: memo?.photos?.length || 0, photos: memo?.photos?.length || 0 }) }),
+        el("div", { class: "fin-memo-actions" },
+          principal ? el("a", { class: "btn btn-vert", href: principal.href }, principal.libelle === t("dossier.actions.ouvrir") ? t("demarrer.js.pret.relire_memo") : principal.libelle, fleche()) : null,
+          pdf ? el("a", { class: "btn btn-contour", href: pdf.href }, pdf.libelle) : null))),
+    el("ul", { class: "fin-docs" }, ...autres),
+    facultatives.length ? el("div", { class: "fin-facultatif" }, el("p", { text: t("dossier.final.plus_loin") }),
+      el("ul", {}, ...facultatives.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }))))) : null,
+    el("p", { class: "q-usage" }, el("a", { href: lien(`/espace/demarrer/?dossier=${id}&etape=questions`), text: t("demarrer.js.pret.revoir_reponses") })));
 }
 
 // ================================================================== Loading

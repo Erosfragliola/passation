@@ -20,7 +20,10 @@
     "forme": "",
     "capital": "",
     "rcs": "",
-    "adresse": ""
+    "adresse": "",
+    "directeur_publication": "",
+    "contact": "",
+    "relu_le": ""
   },
   "videos_metiers": []
 }

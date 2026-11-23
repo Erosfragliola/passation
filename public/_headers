@@ -1,0 +1,6 @@
+# En-têtes des ressources statiques servies sans passer par le Worker (css, js, img, fonts, video).
+# Les pages et l'API reçoivent les leurs dans le Worker : src/lib/entetes.js (audit SEC-04).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
