@@ -27,7 +27,7 @@
   "vos_droits": "Your rights",
   "vous_disposez_droits_acces_rectification": "You have the rights of access, rectification, erasure, restriction, objection and portability. To exercise them, write to the address given under “Data controller”. You may also lodge a complaint with the CNIL, the French data protection authority (cnil.fr).",
   "cookies": "Cookies",
-  "seul_cookie_technique_necessaire_votre": "A single technical cookie, required for your session. No advertising or audience measurement cookies. Your browser also keeps, in local storage, the date of the last market research run for your file, with no personal data.",
-  "derniere_mise_jour": "Last updated: November 20, 2026.",
+  "cookies_techniques": "Two technical cookies: one, required for your sign-in session; the other, named “langue”, set only if you choose a language with the EN | FR switcher, so it’s remembered on your next visits (it holds “en” or “fr”, no personal data, and expires after one year). No advertising or audience measurement cookies. Your browser also keeps, in local storage, the date of the last market research run for your file, with no personal data.",
+  "derniere_mise_jour": "Last updated: November 23, 2026.",
   "meta_description": "How Passation handles your data: what we store, who it is shared with, how to delete it and what your rights are."
 }

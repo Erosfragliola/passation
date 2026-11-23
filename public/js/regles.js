@@ -136,8 +136,7 @@ export function parametresMaquette(d, totalFenetres = 24) {
 const sansAccents = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 export const memeVille = (a, b) => sansAccents(a) === sansAccents(b);
 
-// i18n:ignorer-debut : noms de villes et frise rédigée en français (redigerFrise), utilisés seulement par les
-// tests depuis le retrait de l'ancienne page d'accueil ; jamais affichés.
+// i18n:ignorer-debut : mots de liaison des noms de villes (casseVille), jamais affichés tels quels.
 const PETITS_MOTS = new Set(["de", "du", "des", "la", "le", "les", "en", "sur", "sous", "et", "lès", "lez", "aux", "au"]);
 /** « SAINT-LEONARD » → « Saint-Leonard », « ERDRE-EN-ANJOU » → « Erdre-en-Anjou ». */
 export function casseVille(v) {
@@ -147,35 +146,6 @@ export function casseVille(v) {
     .replace(/[^\s\-']+/g, (mot, i) => (i > 0 && PETITS_MOTS.has(mot) ? mot : mot.charAt(0).toUpperCase() + mot.slice(1)))
     // L'INSEE écrit « VILLENEUVE D ASCQ » : on rétablit l'élision devant une voyelle.
     .replace(/(^|[\s-])([DdLl])[\s-]+(?=[AEIOUYÉÈÂÎÔaeiouyéèâîô])/g, (_, avant, lettre) => `${avant}${avant ? lettre.toLowerCase() : lettre.toUpperCase()}'`);
-}
-
-/** « à Cannes », « au Pouliguen », « aux Sables-d'Olonne ». */
-export function aVille(ville) {
-  const v = casseVille(ville);
-  if (/^les\s/i.test(v)) return "aux " + v.slice(4);
-  if (/^le\s/i.test(v)) return "au " + v.slice(3);
-  return "à " + v;
-}
-
-const PALIERS = [500_000, 1_000_000, 2_000_000, 5_000_000, 10_000_000, 20_000_000, 50_000_000];
-function libelleMontant(m) {
-  return m >= 1_000_000 ? `${m / 1_000_000} M€` : `${m / 1000} k€`;
-}
-
-/** Premiers passages de paliers de CA observés (le palier doit être franchi entre deux exercices connus). */
-export function paliersCA(serie) {
-  const connus = (serie || []).filter((p) => Number.isFinite(p.valeur)).sort((a, b) => a.annee - b.annee);
-  const ev = [];
-  for (const palier of PALIERS) {
-    for (let i = 1; i < connus.length; i++) {
-      if (connus[i - 1].valeur < palier && connus[i].valeur >= palier) {
-        // On ne retient que le premier passage, et seulement si aucun exercice antérieur ne l'avait dépassé.
-        if (!connus.slice(0, i).some((p) => p.valeur >= palier)) ev.push({ annee: connus[i].annee, palier });
-        break;
-      }
-    }
-  }
-  return ev;
 }
 
 /** Personnages de maquette : 1 par tranche entamée de 10 salariés (borne basse INSEE), entre 1 et max. */
@@ -192,64 +162,4 @@ export function libelleEffectif(code) {
   return tr("regles.effectif.tranche", { min: nombre(t.min), max: nombre(t.max) });
 }
 
-/**
- * Rédige la frise (6 lignes au plus) à partir des données normalisées.
- * Règles : on parle de l'entreprise, jamais de « vous » ; aucun événement inventé ; aucun événement sensible
- * (les annonces sensibles sont déjà écartées par la normalisation BODACC, qui ne garde qu'une liste blanche).
- * Retourne [{ date, texte }] dans l'ordre chronologique.
- */
-export function redigerFrise(d, anneeCourante = new Date().getFullYear()) {
-  const nom = d.nom || "L'entreprise";
-  const anneeCreation = d.date_creation ? Number(d.date_creation.slice(0, 4)) : null;
-  const creation = {
-    date: anneeCreation ? String(anneeCreation) : "",
-    texte: d.ville_creation ? `${nom} voit le jour ${aVille(d.ville_creation)}.` : `${nom} voit le jour.`,
-    ordre: anneeCreation ?? 0,
-  };
-
-  const candidats = [];
-  const evts = d.evenements || [];
-
-  const transferts = evts.filter((e) => e.type === "transfert_siege");
-  transferts.forEach((e, i) => candidats.push({
-    date: e.date.slice(0, 4), ordre: Number(e.date.slice(0, 4)),
-    texte: `L'entreprise s'installe ${aVille(e.detail)}.`, score: i === transferts.length - 1 ? 3 : 1,
-  }));
-
-  for (const e of evts.filter((e) => e.type === "denomination")) {
-    candidats.push({ date: e.date.slice(0, 4), ordre: Number(e.date.slice(0, 4)), texte: `${e.ancien} devient ${e.nouveau}.`, score: 3 });
-  }
-
-  const reprises = evts.filter((e) => e.type === "reprise_fonds");
-  if (reprises.length === 1) {
-    const e = reprises[0];
-    candidats.push({ date: e.date.slice(0, 4), ordre: Number(e.date.slice(0, 4)), texte: `L'entreprise reprend un fonds ${aVille(e.detail)}.`, score: 4 });
-  } else if (reprises.length > 1) {
-    const a1 = reprises[0].date.slice(0, 4), a2 = reprises.at(-1).date.slice(0, 4);
-    candidats.push({
-      date: a1 === a2 ? a1 : `${a1}–${a2}`, ordre: Number(a1),
-      texte: `L'entreprise reprend ${reprises.length} fonds de commerce.`, score: 4,
-    });
-  }
-
-  const paliers = paliersCA(d.ca);
-  paliers.forEach((p, i) => candidats.push({
-    date: String(p.annee), ordre: p.annee,
-    texte: `Le chiffre d'affaires dépasse ${libelleMontant(p.palier)}.`, score: i === paliers.length - 1 ? 5 : 2,
-  }));
-
-  const eff = libelleEffectif(d.tranche_effectif?.code);
-  if (eff && d.tranche_effectif?.annee) {
-    candidats.push({ date: String(d.tranche_effectif.annee), ordre: d.tranche_effectif.annee + 0.5, texte: `Une équipe ${eff.startsWith("plus") ? "de " + eff : eff.startsWith("une") ? "d'" + eff : eff}.`, score: 2 });
-  }
-
-  const retenus = candidats
-    .filter((c) => !anneeCreation || c.ordre >= anneeCreation)
-    .sort((a, b) => b.score - a.score || b.ordre - a.ordre)
-    .slice(0, 4)
-    .sort((a, b) => a.ordre - b.ordre);
-
-  return [creation, ...retenus, { date: "Aujourd'hui", texte: "Il est temps de préparer la suite.", ordre: anneeCourante + 1 }]
-    .map(({ date, texte }) => ({ date, texte }));
-}
 // i18n:ignorer-fin
