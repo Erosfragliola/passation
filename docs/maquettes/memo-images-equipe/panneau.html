@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E et F. Panneau d'amélioration et relecture critique</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .studio { max-width: 1320px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+  .outils { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .outils .compteur { font-weight: 500; letter-spacing: -0.05em; font-size: 22px; }
+  .panneau { background: var(--papier); border: 1px solid var(--trait); border-radius: 22px; padding: 18px; position: sticky; top: 16px; }
+  .panneau h2 { font-size: 24px; margin: 0 0 4px; }
+  .panneau .sous { margin: 0 0 12px; font-size: 13.5px; color: var(--pierre-texte); display: flex; justify-content: space-between; gap: 8px; }
+  .relire { width: 100%; margin-bottom: 12px; }
+  .ameliorations { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .amel { border-radius: 14px; background: var(--sable-doux); }
+  .amel > h3 { margin: 0; }
+  .amel-titre { width: 100%; display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; border: 0; background: none; padding: 11px 12px; font: 500 14.5px/1.3 var(--sans); color: var(--espresso); cursor: pointer; border-radius: 14px; }
+  .amel-titre .pt { width: 8px; height: 8px; border-radius: 50%; background: var(--trait-fort); }
+  .amel.indispensable .pt { background: var(--cuivre); }
+  .amel-titre .pg { font-size: 12.5px; color: var(--pierre-texte); font-weight: 400; }
+  .amel-titre[aria-expanded="true"] { background: var(--vert-doux); }
+  .amel-corps { padding: 4px 12px 12px 32px; display: grid; gap: 10px; font-size: 14px; }
+  .amel-corps[hidden] { display: none; }
+  .amel-corps .pourquoi { margin: 0; color: var(--pierre-texte); }
+  .amel-corps fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 6px; }
+  .amel-corps legend { font-weight: 500; margin-bottom: 4px; padding: 0; }
+  .amel-corps textarea { width: 100%; min-height: 76px; border: 1px solid var(--trait-fort); border-radius: 12px; padding: 8px 10px; font: inherit; background: var(--papier); }
+  .amel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .amel.fait .amel-titre { color: var(--pierre-texte); }
+  .amel.fait .amel-titre .pt { background: var(--vert); }
+  .amel.fait .amel-titre .pg::after { content: " · Fait ✓"; color: var(--vert); font-weight: 600; }
+  .legende-pts { display: flex; gap: 14px; font-size: 12.5px; color: var(--pierre-texte); margin-top: 12px; }
+  .legende-pts i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; background: var(--trait-fort); } .legende-pts i.c { background: var(--cuivre); }
+  .maj { position: absolute; inset: 0; background: rgba(255, 253, 248, .78); display: grid; place-items: center; font-weight: 500; color: var(--vert); font-size: 1.6cqw; letter-spacing: -0.05em; }
+  .maj[hidden] { display: none; }
+  .diapo .surligne { background: #FFF1C2; transition: background 1.5s; }
+  .puces-d { list-style: none; margin: 0; padding: 0; display: grid; gap: 1cqw; align-content: start; font-size: 1.15cqw; }
+  .puces-d li { padding-left: 1.3cqw; position: relative; }
+  .puces-d li::before { content: ""; position: absolute; left: 0; top: .5cqw; width: .45cqw; height: .45cqw; background: var(--cuivre); }
+  .grille-org { display: grid; grid-template-columns: minmax(0, 1fr) 32cqw; gap: 1.6cqw; flex: 1; min-height: 0; }
+  .ph-eq { flex: 1; border-radius: .8cqw; background: center / cover; min-height: 10cqw; }
+  /* Option B */
+  .b-liste { display: grid; gap: 14px; }
+  .b-groupe h3 { margin: 0 0 6px; font-size: 13.5px; color: var(--pierre-texte); font-weight: 500; display: flex; justify-content: space-between; }
+  .b-groupe ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .b-groupe li { display: flex; gap: 8px; align-items: center; font-size: 14px; padding: 6px 8px; border-radius: 10px; background: var(--sable-doux); }
+  .b-groupe li input { accent-color: var(--vert); }
+  @media (max-width: 980px) { .studio { grid-template-columns: 1fr; padding: 16px; } .panneau { position: static; } }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="options.html">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Mémorandum</span><nav aria-label="Navigation principale"><a href="#">Mon dossier</a><a href="#">Se déconnecter</a></nav></div></header>
+<main>
+<h1 class="visuellement-cache">Panneau d'amélioration du mémorandum (maquette)</h1>
+<p class="petit" style="max-width: 1320px; margin: 16px auto 0; padding: 0 24px"><a href="options.html">← Options à choisir</a> · F. Panneau, option A (recommandée) · E. Remarques de relecture dans la même liste</p>
+<div class="studio">
+  <div>
+    <div class="outils"><button class="btn contour mini" type="button" aria-label="Page précédente">←</button><span class="compteur">Page 10 sur 22</span><button class="btn contour mini" type="button" aria-label="Page suivante">→</button></div>
+    <div class="diapo-cadre"><div class="diapo" id="page">
+      <div class="d-entete"><span class="d-num">2.3</span><h2>Organisation et équipe</h2></div>
+      <p class="d-message">Une organisation stable, prête à fonctionner sans le dirigeant fondateur</p>
+      <div class="d-zone">
+        <div class="grille-org">
+          <ul class="puces-d">
+            <li><strong>Encadrement en place</strong> : un directeur de production et une responsable administrative et financière.</li>
+            <li id="phrase-anc"><strong>Équipe expérimentée</strong> : les compagnons ont une ancienneté moyenne élevée ; un repreneur trouve une équipe formée et autonome.</li>
+            <li><strong>Rôle du dirigeant</strong> : il suit les devis importants et la relation avec les principaux clients professionnels.</li>
+            <li><strong>À organiser</strong> : la transmission de la relation commerciale pendant l'accompagnement de six mois.</li>
+          </ul>
+          <div class="d-encadre"><div class="tete">L'équipe</div><div class="corps" style="flex: 1; display: flex"><div class="ph-eq" id="ph-eq" style="background-image: url(img/realisation1.webp)" role="img" aria-label="Photo actuelle : des fenêtres (mal choisie)"></div></div></div>
+        </div>
+        <div class="d-bandeau-cle">Une menuiserie sur mesure rentable, avec une équipe autonome</div>
+      </div>
+      <div class="d-pied"><span class="logo">Passation</span><span class="src">Sources : registres publics (INSEE, INPI), dirigeant</span><span>Novembre 2026</span><span class="no">10</span></div>
+      <div class="maj" id="maj" hidden>Mise à jour…</div>
+    </div></div>
+  </div>
+
+  <aside class="panneau" aria-labelledby="p-titre">
+    <h2 class="titre" id="p-titre">À améliorer</h2>
+    <p class="sous"><span>6 améliorations · 2 indispensables</span><span>Relu le 23/11 à 14:05</span></p>
+    <button class="btn contour mini relire" type="button">Relecture critique</button>
+    <ul class="ameliorations" id="amels">
+      <li class="amel indispensable">
+        <h3><button class="amel-titre" type="button" aria-expanded="true" aria-controls="c1"><span class="pt"></span><span>Préciser l'ancienneté de l'équipe</span><span class="pg">p. 10</span></button></h3>
+        <div class="amel-corps" id="c1">
+          <p class="pourquoi">Relecture : « ancienneté moyenne élevée » n'est appuyé par aucune réponse. Un repreneur demandera le chiffre.</p>
+          <fieldset><legend>Ancienneté moyenne des salariés</legend>
+            <label class="case"><input type="radio" name="anc">Moins de 5 ans</label>
+            <label class="case"><input type="radio" name="anc">5 à 10 ans</label>
+            <label class="case"><input type="radio" name="anc" checked>10 à 20 ans</label>
+            <label class="case"><input type="radio" name="anc">Plus de 20 ans</label>
+          </fieldset>
+          <div class="amel-actions"><button class="btn mini" type="button" data-valider="anc">Valider</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+        </div>
+      </li>
+      <li class="amel indispensable">
+        <h3><button class="amel-titre" type="button" aria-expanded="false" aria-controls="c2"><span class="pt"></span><span>Ajouter la photo de l'équipe</span><span class="pg">p. 10</span></button></h3>
+        <div class="amel-corps" id="c2" hidden>
+          <p class="pourquoi">Relecture : l'encadré « L'équipe » montre des fenêtres. Votre photo « L'équipe de l'atelier » convient (catégorie équipe, 3 sur 5).</p>
+          <div class="amel-actions"><button class="btn mini" type="button" data-valider="photo">Utiliser « L'équipe de l'atelier »</button><button class="btn contour mini" type="button">Choisir une autre photo</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+        </div>
+      </li>
+      <li class="amel">
+        <h3><button class="amel-titre" type="button" aria-expanded="false" aria-controls="c3"><span class="pt"></span><span>Varier l'introduction des chapitres</span><span class="pg">p. 5, 10, 12</span></button></h3>
+        <div class="amel-corps" id="c3" hidden>
+          <p class="pourquoi">Relecture : la même introduction ouvre trois chapitres. Proposition pour la page 12, à corriger si besoin :</p>
+          <label class="visuellement-cache" for="t3">Introduction proposée</label>
+          <textarea id="t3">Le marché régional de la menuiserie compte 213 entreprises actives, dont 43 de 10 salariés et plus. L'entreprise se situe parmi ces dernières.</textarea>
+          <p class="tres-petit" style="margin: 0">Chiffres repris des registres publics déjà cités en page 12 ; aucun chiffre nouveau.</p>
+          <div class="amel-actions"><button class="btn mini" type="button" data-valider>Valider</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+        </div>
+      </li>
+      <li class="amel">
+        <h3><button class="amel-titre" type="button" aria-expanded="false" aria-controls="c4"><span class="pt"></span><span>Sourcer la barrière à l'entrée</span><span class="pg">p. 9</span></button></h3>
+        <div class="amel-corps" id="c4" hidden>
+          <p class="pourquoi">Relecture : « ce savoir-faire constitue une barrière à l'entrée » est une affirmation. Sur quoi repose-t-elle ?</p>
+          <fieldset><legend>Ce qui la justifie (plusieurs choix possibles)</legend>
+            <label class="case"><input type="checkbox">Qualification ou certification (RGE, Qualibat…)</label>
+            <label class="case"><input type="checkbox">Formation longue des compagnons</label>
+            <label class="case"><input type="checkbox">Machines spécifiques</label>
+            <label class="case"><input type="checkbox">Rien de précis : retirer la phrase</label>
+          </fieldset>
+          <div class="amel-actions"><button class="btn mini" type="button" data-valider>Valider</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+        </div>
+      </li>
+      <li class="amel">
+        <h3><button class="amel-titre" type="button" aria-expanded="false" aria-controls="c5"><span class="pt"></span><span>Vérifier l'emprunt de 2025</span><span class="pg">p. 17</span></button></h3>
+        <div class="amel-corps" id="c5" hidden>
+          <p class="pourquoi">Relecture : ce point touche un chiffre. Passation ne le modifie pas : il se corrige dans vos comptes, puis le mémorandum se met à jour.</p>
+          <div class="amel-actions"><a class="btn mini" href="#">Ouvrir vos comptes 2025</a><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+        </div>
+      </li>
+      <li class="amel">
+        <h3><button class="amel-titre" type="button" aria-expanded="false" aria-controls="c6"><span class="pt"></span><span>Joindre le carnet de commandes</span><span class="pg">p. 10</span></button></h3>
+        <div class="amel-corps" id="c6" hidden>
+          <p class="pourquoi">Le chapitre l'annonce « régulier » sans pièce. Déposez-le dans « Pièces à réunir » : il ne sera pas cité en chiffres sans votre accord.</p>
+          <div class="amel-actions"><a class="btn mini" href="#">Déposer la pièce</a><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+        </div>
+      </li>
+    </ul>
+    <p class="legende-pts"><span><i class="c"></i>Indispensable</span><span><i></i>Conseillé</span></p>
+  </aside>
+</div>
+
+<section class="page" style="padding-top: 0" aria-labelledby="option-b">
+  <h2 class="titre" id="option-b">Option B · liste à cocher par chapitre</h2>
+  <p class="intro">Les mêmes améliorations, regroupées par chapitre avec un compteur ; un clic ouvre la même réponse simple, mais sous la page affichée, sur toute la largeur. Plus lisible quand il y a beaucoup de points, moins direct quand on travaille page par page.</p>
+  <div class="carte" style="max-width: 520px">
+    <div class="b-liste">
+      <div class="b-groupe"><h3><span>2.3 Organisation et équipe</span><span>0 sur 3</span></h3><ul><li><input type="checkbox" aria-label="Fait">Préciser l'ancienneté de l'équipe</li><li><input type="checkbox" aria-label="Fait">Ajouter la photo de l'équipe</li><li><input type="checkbox" aria-label="Fait">Joindre le carnet de commandes</li></ul></div>
+      <div class="b-groupe"><h3><span>2.2 Activité et savoir-faire</span><span>0 sur 1</span></h3><ul><li><input type="checkbox" aria-label="Fait">Sourcer la barrière à l'entrée</li></ul></div>
+      <div class="b-groupe"><h3><span>4.3 Endettement net et BFR</span><span>0 sur 1</span></h3><ul><li><input type="checkbox" aria-label="Fait">Vérifier l'emprunt de 2025</li></ul></div>
+    </div>
+  </div>
+</section>
+</main>
+<script>
+  // Démonstration : déplier sur place, valider (page « Mise à jour… » puis nouveau texte, titre « Fait ✓ », focus au
+  // titre suivant), ignorer (retire le titre sans rien changer). Rien n'est enregistré.
+  const liste = document.getElementById("amels");
+  const titres = () => [...liste.querySelectorAll(".amel:not(.fait) .amel-titre")];
+  liste.addEventListener("click", (e) => {
+    const t = e.target.closest(".amel-titre");
+    if (t) { const o = t.getAttribute("aria-expanded") === "true"; for (const x of liste.querySelectorAll(".amel-titre")) { x.setAttribute("aria-expanded", "false"); document.getElementById(x.getAttribute("aria-controls")).hidden = true; } t.setAttribute("aria-expanded", String(!o)); document.getElementById(t.getAttribute("aria-controls")).hidden = o; return; }
+    const b = e.target.closest("button"); if (!b) return;
+    const li = b.closest(".amel"), titre = li.querySelector(".amel-titre");
+    const suivant = () => { const l = titres(); const i = l.indexOf(titre); (l[i + 1] || l[0])?.focus(); };
+    if (b.matches("[data-ignorer]")) { const l = titres(); const i = l.indexOf(titre); const s = l[i + 1] || l[i - 1]; li.remove(); s?.focus(); return; }
+    if (b.matches("[data-valider]")) {
+      const maj = document.getElementById("maj"); maj.hidden = false;
+      setTimeout(() => {
+        maj.hidden = true;
+        if (b.dataset.valider === "anc") { const p = document.getElementById("phrase-anc"); p.innerHTML = "<strong>Équipe expérimentée</strong> : l'ancienneté moyenne des salariés est de 10 à 20 ans selon le dirigeant ; un repreneur trouve une équipe formée."; p.classList.add("surligne"); setTimeout(() => p.classList.remove("surligne"), 1600); }
+        if (b.dataset.valider === "photo") { const ph = document.getElementById("ph-eq"); ph.style.backgroundImage = "url(img/equipe.webp)"; ph.setAttribute("aria-label", "Photo de l'équipe (illustration fictive)"); }
+        li.classList.add("fait"); titre.setAttribute("aria-expanded", "false"); document.getElementById(titre.getAttribute("aria-controls")).hidden = true; suivant();
+      }, 900);
+    }
+  });
+</script>
+</body>
+</html>

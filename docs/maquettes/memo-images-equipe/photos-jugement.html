@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A et B. Vos photos, jugées par Claude</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .colonne { max-width: 980px; }
+  .ph-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .ph { display: grid; grid-template-columns: 34px 168px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px; border: 1px solid var(--trait-moyen); border-radius: 18px; background: var(--papier); }
+  .ph.ignoree { opacity: .55; }
+  .ordre { display: grid; gap: 4px; justify-items: center; padding-top: 4px; }
+  .ordre .rang { font-weight: 600; color: var(--vert); font-size: 15px; }
+  .ordre button { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--trait-fort); background: var(--papier); cursor: pointer; font-size: 14px; }
+  .ordre button:disabled { opacity: .35; cursor: default; }
+  .vignette { aspect-ratio: 3 / 2; border-radius: 12px; background: #EFE5D3 center / cover; }
+  .jugement { display: grid; gap: 6px; min-width: 0; }
+  .ligne1 { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .note { display: inline-flex; gap: 2px; }
+  .note i { width: 9px; height: 9px; border-radius: 2px; background: var(--trait-moyen); }
+  .note i.on { background: var(--vert); }
+  .note-txt { font-size: 13px; color: var(--pierre-texte); }
+  .decrit { margin: 0; font-size: 14.5px; }
+  .propose { margin: 0; font-size: 14px; color: var(--pierre-texte); }
+  .propose strong { color: var(--espresso); font-weight: 500; }
+  .alertes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+  .applique { font-size: 13.5px; color: var(--vert); font-weight: 600; }
+  .ecartees { margin-top: 18px; }
+  .ecartees summary { cursor: pointer; font-weight: 500; }
+  .ecartees ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .ecartees li { font-size: 13px; color: var(--pierre-texte); }
+  .ecartees li .vignette { margin-bottom: 4px; filter: grayscale(.6); }
+  .compte { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 22px 0 10px; }
+  .logo-ligne { display: flex; align-items: center; gap: 16px; padding: 12px 16px; background: var(--papier); border: 1px solid var(--trait); border-radius: 16px; margin-bottom: 8px; }
+  .logo-ligne .lg { width: 120px; height: 56px; border-radius: 10px; background: #fff; border: 1px solid var(--trait); display: grid; place-items: center; font-weight: 600; letter-spacing: .06em; color: var(--vert); font-size: 13px; }
+  @media (max-width: 760px) {
+    .ph { grid-template-columns: 34px minmax(0, 1fr); }
+    .ph .jugement { grid-column: 1 / -1; }
+    .ecartees ul { grid-template-columns: 1fr 1fr; }
+    .logo-ligne { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="options.html">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav aria-label="Navigation principale"><a href="#">Mon dossier</a><a href="#">Se déconnecter</a></nav></div></header>
+<main class="colonne">
+  <p class="petit"><a href="options.html">← Options à choisir</a> · A. Jugement des photos, option A (recommandée) · B. 12 photos, réordonnables</p>
+  <h1 class="q">Votre logo et vos photos</h1>
+  <p class="chapo">Claude a regardé chaque photo : ce qu'elle montre, sa qualité et où la placer. Rien n'est appliqué sans vous.</p>
+
+  <div class="logo-ligne"><span class="lg">EXEMPLE</span><div style="flex: 1 1 220px; font-size: 14.5px"><strong>Votre logo</strong><br><span class="petit">Sur la couverture et en pied de page du mémorandum. Jamais dans le teaser.</span></div><button class="btn contour mini" type="button">Changer</button></div>
+
+  <div class="compte"><strong>6 photos choisies sur 12 au plus</strong><span class="tres-petit">Glissez ou utilisez les flèches pour changer l'ordre : à catégorie égale, la première passe devant.</span></div>
+  <ol class="ph-liste" id="liste">
+    <li class="ph">
+      <div class="ordre"><span class="rang">1</span><button type="button" aria-label="Monter" data-monter>↑</button><button type="button" aria-label="Descendre" data-descendre>↓</button></div>
+      <div class="vignette" style="background-image: url(img/locaux.webp)" role="img" aria-label="Bâtiment de l'entreprise (illustration fictive)"></div>
+      <div class="jugement">
+        <div class="ligne1"><span class="pastille">Locaux</span><span class="note" role="img" aria-label="Qualité 4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="note-txt">Nette, bien éclairée, assez grande pour une page entière</span></div>
+        <p class="decrit">Façade du bâtiment de production, vue de face.</p>
+        <p class="propose">Proposé : <strong>couverture</strong> · légende « Le site de production »</p>
+        <div class="alertes"><span class="pastille alerte">Pas pour le teaser : façade et enseigne reconnaissables</span></div>
+        <div class="actions"><button class="btn mini" type="button" data-utiliser>Utiliser comme proposé</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+      </div>
+    </li>
+    <li class="ph">
+      <div class="ordre"><span class="rang">2</span><button type="button" aria-label="Monter" data-monter>↑</button><button type="button" aria-label="Descendre" data-descendre>↓</button></div>
+      <div class="vignette" style="background-image: url(img/atelier.webp)" role="img" aria-label="Atelier (illustration fictive)"></div>
+      <div class="jugement">
+        <div class="ligne1"><span class="pastille">Atelier, production</span><span class="note" role="img" aria-label="Qualité 4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="note-txt">Lumière un peu sombre, cadrage correct</span></div>
+        <p class="decrit">Atelier avec stock de planches et machine de découpe.</p>
+        <p class="propose">Proposé : <strong>activité</strong> · légende « L'atelier de fabrication »</p>
+        <p class="applique">✓ Utilisée comme proposé</p>
+      </div>
+    </li>
+    <li class="ph">
+      <div class="ordre"><span class="rang">3</span><button type="button" aria-label="Monter" data-monter>↑</button><button type="button" aria-label="Descendre" data-descendre>↓</button></div>
+      <div class="vignette" style="background-image: url(img/equipe.webp)" role="img" aria-label="Équipe (illustration fictive, sans visage)"></div>
+      <div class="jugement">
+        <div class="ligne1"><span class="pastille">Équipe</span><span class="note" role="img" aria-label="Qualité 3 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="note-txt">Correcte en encadré, trop petite pour une page entière</span></div>
+        <p class="decrit">Cinq personnes de l'atelier posant ensemble.</p>
+        <p class="propose">Proposé : <strong>équipe</strong> · légende « L'équipe de l'atelier »</p>
+        <div class="alertes"><span class="pastille alerte">Pas pour le teaser : personnes reconnaissables</span></div>
+        <div class="actions"><button class="btn mini" type="button" data-utiliser>Utiliser comme proposé</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+      </div>
+    </li>
+    <li class="ph">
+      <div class="ordre"><span class="rang">4</span><button type="button" aria-label="Monter" data-monter>↑</button><button type="button" aria-label="Descendre" data-descendre>↓</button></div>
+      <div class="vignette" style="background-image: url(img/realisation1.webp)" role="img" aria-label="Fenêtres posées (illustration fictive)"></div>
+      <div class="jugement">
+        <div class="ligne1"><span class="pastille">Réalisations</span><span class="note" role="img" aria-label="Qualité 4 sur 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span class="note-txt">Nette, bien cadrée</span></div>
+        <p class="decrit">Deux fenêtres en bois posées sur une façade claire.</p>
+        <p class="propose">Proposé : <strong>réalisations</strong> · légende « Fenêtres sur mesure posées »</p>
+        <div class="actions"><button class="btn mini" type="button" data-utiliser>Utiliser comme proposé</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+      </div>
+    </li>
+    <li class="ph">
+      <div class="ordre"><span class="rang">5</span><button type="button" aria-label="Monter" data-monter>↑</button><button type="button" aria-label="Descendre" data-descendre>↓</button></div>
+      <div class="vignette" style="background-image: url(img/exterieur.webp)" role="img" aria-label="Extérieur (illustration fictive)"></div>
+      <div class="jugement">
+        <div class="ligne1"><span class="pastille">Extérieur</span><span class="note" role="img" aria-label="Qualité 2 sur 5"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="note-txt">Résolution faible (640 px) : en vignette seulement</span></div>
+        <p class="decrit">Bâtiment et cour vus de la rue.</p>
+        <p class="propose">Proposé : <strong>à éviter en grand</strong> · vignette possible dans « Histoire et identité »</p>
+        <div class="alertes"><span class="pastille danger">Trop petite pour une page entière</span></div>
+        <div class="actions"><button class="btn mini" type="button" data-utiliser>Utiliser comme proposé</button><button class="btn contour mini" type="button" data-ignorer>Ignorer</button></div>
+      </div>
+    </li>
+    <li class="ph">
+      <div class="ordre"><span class="rang">6</span><button type="button" aria-label="Monter" data-monter>↑</button><button type="button" aria-label="Descendre" data-descendre>↓</button></div>
+      <div class="vignette" style="background-image: url(img/ouvrage.webp)" role="img" aria-label="Meuble fabriqué (illustration fictive)"></div>
+      <div class="jugement">
+        <div class="ligne1"><span class="pastille attente">Analyse momentanément indisponible</span></div>
+        <p class="propose">La photo est utilisable telle quelle. Vous pourrez relancer l'analyse plus tard depuis la page du mémorandum.</p>
+      </div>
+    </li>
+  </ol>
+
+  <details class="ecartees">
+    <summary>3 images du site écartées automatiquement</summary>
+    <ul>
+      <li><div class="vignette" style="background-image: url(img/dessin.webp)"></div>Dessin ou pictogramme, pas une photo</li>
+      <li><div class="vignette" style="background-image: url(img/bandeau.webp); background-size: contain; background-repeat: no-repeat; background-color: #fff"></div>Bandeau très allongé avec du texte (« FRANCHISE »)</li>
+      <li><div class="vignette" style="background-image: url(img/atelier.webp)"></div>Même image que la photo 2, sous une autre adresse</li>
+    </ul>
+  </details>
+
+  <div class="nav-q"><a class="lien" href="#">Retour</a><button class="btn" type="button">Continuer</button></div>
+</main>
+<script>
+  // Démonstration : réordonner (boutons, clavier), utiliser ou ignorer un jugement. Rien n'est enregistré.
+  const liste = document.getElementById("liste");
+  const renum = () => [...liste.children].forEach((li, i, t) => { li.querySelector(".rang").textContent = i + 1; li.querySelector("[data-monter]").disabled = i === 0; li.querySelector("[data-descendre]").disabled = i === t.length - 1; });
+  liste.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return; const li = b.closest("li");
+    if (b.matches("[data-monter]") && li.previousElementSibling) { li.previousElementSibling.before(li); renum(); li.querySelector("[data-monter]:not(:disabled)")?.focus() || b.focus(); }
+    if (b.matches("[data-descendre]") && li.nextElementSibling) { li.nextElementSibling.after(li); renum(); b.focus(); }
+    if (b.matches("[data-utiliser]")) { const p = document.createElement("p"); p.className = "applique"; p.textContent = "✓ Utilisée comme proposé"; b.parentElement.replaceWith(p); }
+    if (b.matches("[data-ignorer]")) { li.classList.add("ignoree"); const p = document.createElement("p"); p.className = "tres-petit"; p.textContent = "Jugement ignoré : la photo reste, sans placement imposé."; b.parentElement.replaceWith(p); }
+  });
+  renum();
+</script>
+</body>
+</html>

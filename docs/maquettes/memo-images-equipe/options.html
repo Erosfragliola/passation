@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mémorandum : photos, équipe, pages, relecture : options à choisir</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .croquis { background: var(--creme); border: 1px solid var(--trait); border-radius: 12px; padding: 10px; display: grid; gap: 6px; font-size: 12px; min-height: 110px; align-content: start; }
+  .croquis .b { border: 1px dashed var(--trait-fort); border-radius: 8px; padding: 5px 7px; }
+  .croquis .v { background: var(--vert); color: #F6F1E6; border: 0; }
+  .croquis .s { background: var(--sable-doux); border: 0; }
+  .croquis .l { display: flex; gap: 6px; } .croquis .l > * { flex: 1; }
+  .liens { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14.5px; }
+  .appels td.n { text-align: right; white-space: nowrap; }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <p class="petit">Pull Request « Mémorandum : photos, équipe, pages et relecture » · phase 1 (brouillon) · 23/11/2026</p>
+    <h1 class="titre">Options à choisir</h1>
+    <p class="intro">Pour chaque sujet, deux ou trois options. Celle que je recommande est encadrée en cuivre, et c'est elle que montrent les maquettes détaillées. Toutes les données sont fictives : Projet Chêne, Menuiserie Exemple, personnes « … Exemple », illustrations originales sans visage. Les maquettes sont des pages statiques : les flèches, les cases et les boutons réagissent au clic, mais rien n'est enregistré. Rien n'est implémenté dans l'application à ce stade.</p>
+    <p class="liens">Maquettes : <a href="photos-jugement.html">A et B. Photos jugées par Claude</a><a href="equipe-saisie.html">C. Saisie de l'équipe</a><a href="equipe-page.html">C. Page « L'équipe dirigeante »</a><a href="pages-courtes.html">D. Pages courtes</a><a href="relecture.html">E. Relecture critique</a><a href="panneau.html">F. Panneau d'amélioration</a></p>
+  </header>
+
+  <h2 class="titre">Ce que j'ai vérifié dans le code</h2>
+  <div class="constats">
+    <div class="carte constat"><strong>La photo de l'équipe est choisie par son rang, pas par ce qu'elle montre.</strong><code>rangPhoto</code> (<code>public/js/memo-format.js</code>) prend la 1<sup>re</sup> photo pour la couverture, la 2<sup>e</sup> pour l'activité, la 4<sup>e</sup> pour l'équipe. Sur le dossier fictif, l'encadré « L'équipe » montre donc des fenêtres (capture ci-dessous).</div>
+    <div class="carte constat"><strong>6 photos au plus, écrit à deux endroits.</strong><code>PHOTOS_MAX = 6</code> dans <code>src/routes/documents.js</code> et dans <code>public/js/demarrer.js</code>. À passer à 12 dans <code>src/config.js</code>, lu par les deux.</div>
+    <div class="carte constat"><strong>Le filtre du site ne voit pas les images sans dimensions.</strong><code>candidatsPhotos</code> écarte déjà les SVG, les noms « logo, icon, picto… », et les images trop petites ou trop allongées, mais seulement si la page HTML donne leur largeur et leur hauteur. Un dessin, un bandeau « FRANCHISE » ou la même photo sous deux adresses passent quand ces attributs manquent. En phase 2 : lire les vraies dimensions dans les premiers octets de l'image, et repérer les doublons par empreinte.</div>
+    <div class="carte constat"><strong>Le logo apparaît bien sur la couverture et en pied de page.</strong><code>logoEntreprise</code> est appelé sur la couverture et dans chaque pied de page (corrigé depuis le 20/11). Je le revérifierai sur un vrai logo en phase 2.</div>
+    <div class="carte constat"><strong>« Crédit épuisé » s'affiche comme une panne passagère.</strong>Toute erreur de Claude autre qu'une clé refusée renvoie « La rédaction a échoué. Réessayez dans un instant. » (<code>redaction_echouee</code>). L'erreur 400 « credit balance is too low » n'est pas reconnue. Correction prévue, pour le mémorandum, le teaser et l'analyse des photos : « Analyse (ou rédaction) momentanément indisponible », sans « réessayez dans un instant ».</div>
+    <div class="carte constat"><strong>L'équipe n'est pas saisie aujourd'hui.</strong>Le chapitre « Organisation et équipe » ne reçoit que trois réponses générales (rôle du dirigeant, encadrement, ancienneté moyenne). Aucun nom, aucun parcours, aucune photo de personne.</div>
+    <div class="carte constat"><strong>La mesure de remplissage regarde le bas de la page, pas sa surface.</strong><code>remplirPages</code> agrandit le texte jusqu'à 1,3 fois, mais une page centrée paraît pleine. Mesuré par surface, deux pages du dossier fictif sont presque vides : « Axes de développement (suite) », qui ne porte qu'un axe (3 %), et « EBE retraité » (8 %). Détail dans la maquette <a href="pages-courtes.html">D</a>.</div>
+  </div>
+
+  <h2 class="titre">Captures « avant »</h2>
+  <p class="intro">Faites en local le 23/11/2026, sur le dossier fictif (6 photos déposées), en 1440 et 390 px.</p>
+  <div class="avant">
+    <figure><img src="captures/avant-parcours-photos-fr-1440.webp" alt="Avant : écran « Votre logo et vos photos », 6 photos au plus, sans jugement"><figcaption>Parcours : 6 photos au plus, ni catégorie ni qualité ; l'ordre décide de tout.</figcaption></figure>
+    <figure><img src="captures/avant-memo-organisation-panneau-fr-1440.webp" alt="Avant : page Organisation et équipe, l'encadré équipe montre des fenêtres ; panneau avec recommandations en phrases"><figcaption>Mémorandum : photo de fenêtres dans « L'équipe » ; panneau en phrases entières.</figcaption></figure>
+    <figure><img src="captures/avant-page-21.webp" alt="Avant : page Axes de développement (suite), un seul axe"><figcaption>Page « suite » avec un seul axe sur cinq.</figcaption></figure>
+    <figure><img src="captures/avant-parcours-photos-fr-390.webp" alt="Avant : écran photos sur téléphone"><figcaption>Le même écran sur téléphone (390 px).</figcaption></figure>
+  </div>
+
+  <h2 class="titre">A. Jugement de Claude sur chaque photo</h2>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">A1 · Fiche sous chaque photo</h3>
+      <div class="croquis"><div class="l"><div class="b s">photo</div><div class="b">Locaux · ■■■■□<br>« Façade du bâtiment »<br>Proposé : couverture<br><span style="color: var(--cuivre-texte)">Pas pour le teaser</span><br>[Utiliser] [Ignorer]</div></div></div>
+      <p>Tout est lisible d'un coup d'œil, sans clic. Fonctionne pareil sur téléphone (la fiche passe sous la photo). <a href="photos-jugement.html">Maquette</a></p></section>
+    <section class="carte option"><h3 class="titre">A2 · Pastilles sur la grille, détail au clic</h3>
+      <div class="croquis"><div class="l"><div class="b s">photo<br>Locaux ★4</div><div class="b s">photo<br>Équipe ★3 ⚠</div><div class="b s">photo<br>Atelier ★4</div></div><div class="b">détail de la photo cliquée</div></div>
+      <p>La grille reste compacte ; le jugement complet demande un clic par photo.</p></section>
+    <section class="carte option"><h3 class="titre">A3 · Un seul « plan de placement »</h3>
+      <div class="croquis"><div class="b v">Couverture ← photo 1</div><div class="b">Activité ← photos 2, 6</div><div class="b">Réalisations ← photos 4, 7, 8</div><div class="b">Équipe ← photo 3</div><div class="b">[Appliquer ce plan]</div></div>
+      <p>Une seule validation pour tout. Plus rapide, mais on valide en bloc ce qu'on n'a pas regardé.</p></section>
+  </div>
+  <div class="question"><strong>Modèle et coût de l'analyse</strong>1 appel par photo ajoutée, image réduite à 1 568 px de large au plus. Je propose <code>claude-haiku-5-5</code> (léger) si sa qualité suffit sur une dizaine de photos de test, sinon <code>claude-sonnet-5-5</code>. Chaque appel est compté dans les quotas existants. Sans clé, les photos restent utilisables, sans analyse.</div>
+
+  <h2 class="titre">B. Plus de photos, mieux placées</h2>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">B1 · Placement par catégorie, l'ordre départage</h3>
+      <p>Couverture : meilleure note parmi locaux, extérieur, atelier. Activité : production et produits. Page ou bandeau « Réalisations » dès 3 photos de réalisations. Équipe : la photo d'équipe validée. À catégorie égale, l'ordre choisi par le dirigeant décide. Jamais deux fois la même photo ; affichée en grand seulement si sa résolution le permet.</p></section>
+    <section class="carte option"><h3 class="titre">B2 · Le dirigeant attribue chaque emplacement</h3>
+      <p>Un menu « Où la placer ? » sous chaque photo. Contrôle total, mais une décision de plus par photo, et rien ne se passe s'il ne choisit pas.</p></section>
+  </div>
+  <p class="petit" style="margin-top: 8px">Limite portée à 12 photos (3 Mo chacune), dans <code>src/config.js</code>. Réordonnables par flèches (clavier) et par glisser.</p>
+
+  <h2 class="titre">C. L'équipe dirigeante</h2>
+  <h3 class="titre" style="margin-top: 14px">Écran de saisie dans le parcours</h3>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">C1 · Une carte repliable par personne</h3>
+      <div class="croquis"><div class="b v">▾ Bernard Exemple · Dirigeant fondateur · Complet</div><div class="b">nom, rôle · curseurs ancienneté et métier · formation (puces) · 1 à 3 expériences · après la cession · photo + consentement</div><div class="b s">▸ Nadia Exemple</div><div class="b s">▸ Lucas Exemple · à compléter</div><div class="b">+ Ajouter une personne (3 sur 4)</div></div>
+      <p>Tout sur un écran, on voit l'équipe entière. <a href="equipe-saisie.html">Maquette</a></p></section>
+    <section class="carte option"><h3 class="titre">C2 · Une personne par écran</h3>
+      <div class="croquis"><div class="b">Personne 1 sur 3</div><div class="b">même fiche</div><div class="b">[Personne suivante →]</div></div>
+      <p>Plus guidé, mais le dirigeant perd la vue d'ensemble et fait plus de clics.</p></section>
+    <section class="carte option"><h3 class="titre">C3 · Un tableau compact</h3>
+      <div class="croquis"><div class="b">Nom | Rôle | Ancienneté | Après</div><div class="b">… | … | … | …</div><div class="b">parcours et photo : ouverts dans une fenêtre</div></div>
+      <p>Rapide à remplir sur ordinateur, pénible sur téléphone.</p></section>
+  </div>
+  <h3 class="titre" style="margin-top: 24px">Page du mémorandum</h3>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">C-A · Une carte par personne</h3><p>Photo ou initiales, nom, rôle, parcours en 2 ou 3 lignes, ancienneté, place après la cession ; bandeau qui résume la transition. <a href="equipe-page.html">Maquette</a></p></section>
+    <section class="carte option"><h3 class="titre">C-B · Le dirigeant en grand</h3><p>Met en avant le cédant et la transition ; les autres passent au second plan.</p></section>
+    <section class="carte option"><h3 class="titre">C-C · Organigramme et tableau</h3><p>Sobre et dense, sans photo ; moins incarné.</p></section>
+  </div>
+  <div class="question"><strong>Consentement (RGPD)</strong>Une case par photo : « Cette personne a accepté que sa photo figure dans le mémorandum ». Sans elle, la photo n'est ni enregistrée ni affichée : la carte montre les initiales. Noms, parcours et photos sont supprimés avec le dossier. La politique de confidentialité (FR et EN) mentionnera l'analyse des photos par l'API Claude. Le teaser n'affiche jamais de nom, de photo ni de parcours ; au plus « une équipe de direction en place », phrase écrite par le code.</div>
+
+  <h2 class="titre">D. Plus de pages presque vides</h2>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">D1 · Fusion sous un tiers de page</h3><p>Mesure par surface couverte, dans un module pur et testé. Sous 16 % (un tiers d'une page pleine), la page est fusionnée avec sa voisine de la même partie si tout tient. Sommaire et numérotation recalculés (24 → 22 pages sur le dossier fictif). <a href="pages-courtes.html">Maquette</a></p></section>
+    <section class="carte option"><h3 class="titre">D2 · Agrandir plutôt que fusionner</h3><p>Garder les pages et pousser le coefficient de taille au-delà de 1,3. Pas de page vide, mais du texte très gros sur une page qui n'a rien à dire.</p></section>
+  </div>
+  <div class="question"><strong>Sections sans donnée : deux variantes (à choisir)</strong>1. « À compléter » reste sur place, comme aujourd'hui. 2. (Recommandée) Une seule page « Éléments à compléter » en fin de partie, qui regroupe les demandes des sections vides.</div>
+
+  <h2 class="titre">E. Relecture critique</h2>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">E1 · Dans le panneau, avec les autres améliorations</h3><p>Même liste de titres courts que F, triée par importance, point cuivre pour l'indispensable. <a href="panneau.html">Maquette</a></p></section>
+    <section class="carte option"><h3 class="titre">E2 · Rapport de relecture</h3><p>Liste complète avec texte avant et après, « Oui, corriger » et « Non ». <a href="relecture.html">Maquette</a></p></section>
+    <section class="carte option"><h3 class="titre">E3 · Repères sur les pages</h3><p>Pastilles numérotées sur la page, bulle au clic. <a href="relecture.html">Maquette</a></p></section>
+  </div>
+  <div class="question"><strong>Règles</strong>Au plus 10 remarques, en JSON validé par un schéma (page, type, correction proposée, importance). Claude ne modifie jamais un chiffre : une remarque sur un chiffre renvoie vers vos comptes ou la valorisation. « Oui, corriger » repasse le contrôle de concision (et d'anonymat pour le teaser). Modèle proposé : <code>claude-sonnet-5-5</code> (lecture de tout le document). Lancée une fois à la fin de la rédaction, puis à la demande.</div>
+
+  <h2 class="titre">F. Panneau d'amélioration</h2>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">F1 · Titres repliés, réponse dépliée sur place</h3>
+      <div class="croquis"><div class="b">● Préciser l'ancienneté de l'équipe · p. 10</div><div class="b s">○ 5 à 10 ans ● 10 à 20 ans … [Valider] [Ignorer]</div><div class="b">● Ajouter la photo de l'équipe · p. 10</div><div class="b">○ Varier l'introduction · Fait ✓</div></div>
+      <p>Une amélioration à la fois, à côté de la page qu'elle modifie ; la page affiche « Mise à jour… » puis le nouveau texte. <a href="panneau.html">Maquette</a></p></section>
+    <section class="carte option"><h3 class="titre">F2 · Liste à cocher par chapitre</h3>
+      <div class="croquis"><div class="b">2.3 Organisation · 0 sur 3</div><div class="b s">☐ Préciser l'ancienneté…</div><div class="b">4.3 Endettement · 0 sur 1</div></div>
+      <p>Vue d'avancement par chapitre ; la réponse s'ouvre sous la page. <a href="panneau.html#option-b">Maquette (bas de page)</a></p></section>
+  </div>
+  <div class="question"><strong>Comment la réponse modifie le mémo</strong>« Valider » enregistre la réponse dans les réponses du dossier (mêmes routes que le parcours guidé), met à jour la section visée, puis retire le titre ou le marque « Fait ✓ ». Une réponse proposée est pré-remplie par Passation à partir du dossier, pas par Claude. Une amélioration qui touche un chiffre renvoie vers les comptes ou la valorisation.</div>
+
+  <h2 class="titre">Appels à Claude par dossier (estimation)</h2>
+  <table tabindex="0" class="t appels">
+    <thead><tr><th>Usage</th><th>Modèle proposé</th><th>Appels</th></tr></thead>
+    <tbody>
+      <tr><td>Analyse d'une photo</td><td><code>claude-haiku-5-5</code>, à valider par un essai</td><td class="n">1 par photo, 12 au plus</td></tr>
+      <tr><td>Chapitre « Organisation et équipe » avec l'équipe</td><td><code>claude-sonnet-5-5</code> (inchangé)</td><td class="n">0 de plus</td></tr>
+      <tr><td>Relecture critique</td><td><code>claude-sonnet-5-5</code></td><td class="n">1 à la fin de la rédaction, puis 1 par demande</td></tr>
+      <tr><td>« Oui, corriger » ou « Valider » qui demande une rédaction</td><td><code>claude-sonnet-5-5</code></td><td class="n">1 par correction</td></tr>
+    </tbody>
+  </table>
+  <p class="petit" style="margin-top: 8px">Soit, pour un dossier typique (8 photos, une relecture, 4 corrections), 13 appels de plus qu'aujourd'hui, tous comptés dans <code>CLAUDE_QUOTAS</code>.</p>
+
+  <h2 class="titre">Découpage proposé pour la phase 2</h2>
+  <p class="intro">Trois PR, dans cet ordre : PR A, photos (A, B) ; PR B, équipe (C) ; PR C, pages, relecture et panneau (D, E, F). La correction du message « crédit épuisé » part dans la PR A (premier nouvel appel à Claude), pour toutes les rédactions.</p>
+</main>
+</body>
+</html>
