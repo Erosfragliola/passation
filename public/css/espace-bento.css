@@ -1,8 +1,7 @@
 /* Espace dirigeant et parcours guidé, direction « bento » (18/11/2026) : crème, vert, cuivre, tuiles arrondies,
    titres en capitales étroites. Chargée après styles.css sur les pages de l'espace. */
-@font-face { font-family: "Big Shoulders"; font-weight: 700; font-display: swap; src: url("/fonts/big-shoulders-bold.woff2") format("woff2"); }
-:root { --b-affiche: "Big Shoulders", "Arial Narrow", sans-serif; --b-serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; --b-cuivre-pale: #F5E7D6; --b-vif: #2E8A62; }
-.affiche { font-family: var(--b-affiche); font-weight: 700; text-transform: uppercase; letter-spacing: .005em; line-height: .95; }
+:root { --b-affiche: var(--titre-police); --b-serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; --b-cuivre-pale: #F5E7D6; --b-vif: #2E8A62; }
+.affiche { font-family: var(--titre-police); font-weight: var(--titre-graisse); text-transform: none; letter-spacing: var(--titre-interlettrage); line-height: var(--titre-interligne); }
 
 /* ---------- Parcours guidé (20/11/2026, PR « Parcours d'analyse : plus guidé, plus précis ») ----------
    Plus doux et plus aéré : pas de carte autour de l'écran, une colonne de lecture de 720 px, fil des étapes en points
@@ -245,11 +244,11 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .anneau .fond { stroke: rgba(246, 241, 230, .16); }
 .anneau .val { stroke: #E9C9A4; stroke-linecap: round; transition: stroke-dasharray .5s ease; }
 .anneau div { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
-.anneau strong { font: 700 24px/1 var(--b-affiche); }
+.anneau strong { font: 500 24px/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); }
 .anneau small { font-size: 11px; line-height: 1.2; color: #C9D6CD; }
 .dossier-valeur { display: grid; gap: 6px; padding-top: 18px; border-top: 1px solid rgba(246, 241, 230, .16); }
 .valeur-etiquette { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #E9C9A4; }
-.valeur-montant { margin: 0; font: 700 clamp(44px, 5vw, 72px)/1 var(--b-affiche); color: #F6F1E6; font-variant-numeric: tabular-nums; }
+.valeur-montant { margin: 0; font: 500 clamp(44px, 5vw, 72px)/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); color: #F6F1E6; font-variant-numeric: tabular-nums; }
 .valeur-base { margin: 0; max-width: 52ch; font-size: 15px; color: #DCE5DF; }
 .valeur-lien { justify-self: start; font-size: 15px; font-weight: 600; color: #F6F1E6; text-underline-offset: 3px; }
 
@@ -276,7 +275,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .dossier-parcours .doc { grid-column: span 3; padding: 22px; display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; }
 .dossier-parcours .doc-a-venir { background: transparent; border-style: dashed; border-color: var(--trait-fort); }
 .doc-haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.doc h3 { margin: 0; font: 700 26px/1 var(--b-affiche); text-transform: uppercase; }
+.doc h3 { margin: 0; font: 500 26px/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); text-transform: none; }
 .doc .petit { margin: 0; }
 .etat { font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
 .etat-pret { background: var(--d-vert-pale); color: var(--vert); }
@@ -390,7 +389,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .studio-vignettes { list-style: none; margin: 0; padding: 4px 2px 10px; display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; }
 .studio-vignettes li { flex: none; scroll-snap-align: center; }
 .studio-vignettes button { width: 132px; height: 76px; display: grid; grid-template-rows: auto 1fr; gap: 2px; text-align: left; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--trait-fort); background: #FFFDF8; font: inherit; color: var(--espresso); cursor: pointer; overflow: hidden; }
-.studio-vignettes button b { font: 700 15px/1 var(--b-affiche); color: #8E5530; }
+.studio-vignettes button b { font: 500 15px/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); color: #8E5530; }
 .studio-vignettes button span { font-size: 11.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .studio-vignettes button.partie { background: var(--vert); color: #F6F1E6; border-color: transparent; }
 .studio-vignettes button.partie b { color: #E9C9A4; }
@@ -448,7 +447,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .page-espace .valeur-etiquette { color: #E9C9A4; font-size: 15px; }
 .page-espace .panneau-bloc h3 { color: #8E5530; }
 .page-espace .etat, .page-espace .pastille-etat, .page-espace .piece-etat:not(.bouton) { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
-.page-espace :where(h1.affiche, h2.affiche) { color: var(--vert); letter-spacing: .005em; }
+.page-espace :where(h1.affiche, h2.affiche) { color: var(--vert); letter-spacing: var(--titre-interlettrage); }
 .page-espace .pied { padding: 18px 0; }
 
 /* Connexion (page et fenêtre de l'accueil) */
@@ -551,7 +550,7 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
 /* Valorisation, « Votre valorisation » : résumé sur un écran, détail et réglages repliés */
 .page-espace .resultat-tete { gap: 12px; }
 .page-espace .synthese-valeur { padding: 20px 22px; }
-.page-espace .synthese-valeur .valeur-centrale { font: 700 clamp(44px, 4.6vw, 64px)/1 var(--b-affiche); margin: 6px 0; }
+.page-espace .synthese-valeur .valeur-centrale { font: 500 clamp(44px, 4.6vw, 64px)/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); margin: 6px 0; }
 .page-espace .resultat-tete .carte h3 { font-size: 16px; margin: 0 0 4px; }
 .resultat-deplis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; align-items: start; }
 .resultat-deplis > details { margin: 0; padding: 14px 18px; }
@@ -773,7 +772,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
 /* ---------- Écran final du parcours (20/11/2026, option H1) : le mémorandum en vedette, les autres documents par
    nature, le facultatif à part */
 .fin-valeur { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0; font-size: 15px; color: var(--pierre-texte); }
-.fin-valeur strong { font: 700 32px/1 var(--b-affiche); color: var(--vert); }
+.fin-valeur strong { font: 500 32px/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); color: var(--vert); }
 .fin-valeur a { font-size: 13.5px; }
 .fin-reste { padding: 14px 18px; border-radius: 16px; background: var(--g-cuivre-pale, #F6E9DC); }
 .fin-reste h2 { margin: 0 0 6px; font: 600 15px var(--b-serif); text-transform: none; letter-spacing: 0; color: var(--espresso); }
@@ -782,7 +781,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .fin-couverture { position: relative; aspect-ratio: 210 / 297; border-radius: 6px; overflow: hidden; background: var(--vert); color: #F6F1E6; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px; padding: 14px; box-shadow: 0 10px 24px rgba(35, 30, 24, .16); }
 .fin-couv-photo { position: absolute; inset: 0 0 48% 0; background-size: cover; background-position: center; }
 .fin-couv-logo { position: absolute; top: 10px; left: 10px; max-width: 70px; max-height: 28px; object-fit: contain; background: #fff; padding: 3px 5px; border-radius: 3px; }
-.fin-couv-titre { position: relative; font: 700 22px/1 var(--b-affiche); text-transform: uppercase; }
+.fin-couv-titre { position: relative; font: 500 22px/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); text-transform: none; }
 .fin-couv-sous { position: relative; font-size: 9px; color: #E9C9A4; }
 .fin-memo-texte { display: grid; gap: 8px; justify-items: start; }
 .fin-memo-texte h2 { margin: 0; font: 600 22px var(--b-serif); letter-spacing: -.01em; text-transform: none; color: var(--espresso); }
