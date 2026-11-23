@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
-  etages, fenetresAllumees, arbres, archetype, croissance3ans, echafaudage, paliersCA,
-  redigerFrise, casseVille, aVille, parametresMaquette, libelleEffectif, personnages,
+  etages, fenetresAllumees, arbres, archetype, croissance3ans, echafaudage,
+  casseVille, parametresMaquette, libelleEffectif, personnages,
 } from "../public/js/regles.js";
 
 describe("étages (CA)", () => {
@@ -65,77 +65,22 @@ describe("croissance et échafaudage", () => {
   });
 });
 
-describe("paliers de CA", () => {
-  it("ne retient que les franchissements observés entre deux exercices", () => {
-    const s = [{ annee: 2018, valeur: 600_000 }, { annee: 2019, valeur: 1_100_000 }, { annee: 2021, valeur: 2_300_000 }];
-    // 500 k€ déjà dépassé au premier exercice : inconnu, donc ignoré
-    expect(paliersCA(s)).toEqual([{ annee: 2019, palier: 1_000_000 }, { annee: 2021, palier: 2_000_000 }]);
-  });
-});
-
 describe("villes", () => {
   it.each([
-    ["VILLENEUVE D ASCQ", "Villeneuve d'Ascq", "à Villeneuve d'Ascq"],
-    ["ERDRE-EN-ANJOU", "Erdre-en-Anjou", "à Erdre-en-Anjou"],
-    ["LES SABLES D OLONNE", "Les Sables d'Olonne", "aux Sables d'Olonne"],
-    ["LE POULIGUEN", "Le Pouliguen", "au Pouliguen"],
-    ["L ISLE ADAM", "L'Isle Adam", "à L'Isle Adam"],
-    ["Saint-Péreuse", "Saint-Péreuse", "à Saint-Péreuse"],
-  ])("%s → %s", (brut, casse, avec) => {
+    ["VILLENEUVE D ASCQ", "Villeneuve d'Ascq"],
+    ["ERDRE-EN-ANJOU", "Erdre-en-Anjou"],
+    ["LES SABLES D OLONNE", "Les Sables d'Olonne"],
+    ["LE POULIGUEN", "Le Pouliguen"],
+    ["L ISLE ADAM", "L'Isle Adam"],
+    ["Saint-Péreuse", "Saint-Péreuse"],
+  ])("%s → %s", (brut, casse) => {
     expect(casseVille(brut)).toBe(casse);
-    expect(aVille(brut)).toBe(avec);
   });
 });
 
-describe("frise « Vous avez bâti »", () => {
-  const base = {
-    nom: "ATELIER TEST", date_creation: "1994-03-01", ville_creation: "Annecy",
-    tranche_effectif: { code: "12", annee: 2024 },
-    ca: [{ annee: 2016, valeur: 800_000 }, { annee: 2018, valeur: 1_200_000 }, { annee: 2022, valeur: 2_500_000 }, { annee: 2024, valeur: 5_400_000 }],
-    evenements: [
-      { date: "2008-06-12", type: "transfert_siege", detail: "Seynod" },
-      { date: "2012-01-10", type: "denomination", ancien: "ATELIER ANCIEN", nouveau: "ATELIER TEST" },
-      { date: "2015-05-01", type: "reprise_fonds", detail: "Le Pouliguen" },
-    ],
-  };
-
-  it("commence par la création et finit par « Aujourd'hui »", () => {
-    const f = redigerFrise(base, 2026);
-    expect(f[0]).toEqual({ date: "1994", texte: "ATELIER TEST voit le jour à Annecy." });
-    expect(f.at(-1)).toEqual({ date: "Aujourd'hui", texte: "Il est temps de préparer la suite." });
-  });
-
-  it("6 lignes au plus, dans l'ordre chronologique", () => {
-    const f = redigerFrise(base, 2026);
-    expect(f.length).toBeLessThanOrEqual(6);
-    const annees = f.slice(0, -1).map((l) => Number(l.date.slice(0, 4)));
-    expect([...annees].sort((a, b) => a - b)).toEqual(annees);
-  });
-
-  it("garde les événements les plus marquants (palier le plus haut, reprise)", () => {
-    const textes = redigerFrise(base, 2026).map((l) => l.texte);
-    expect(textes).toContain("Le chiffre d'affaires dépasse 5 M€.");
-    expect(textes).toContain("L'entreprise reprend un fonds au Pouliguen.");
-  });
-
-  it("ne parle jamais du lecteur à la 2e personne", () => {
-    const tout = redigerFrise(base, 2026).map((l) => l.texte).join(" ");
-    expect(tout).not.toMatch(/\bvous\b|\bvotre\b|\bvos\b/i);
-  });
-
-  it("sans événement ni comptes : 2 lignes seulement (création, aujourd'hui)", () => {
-    const f = redigerFrise({ nom: "SOLO", date_creation: "2026-02-01", ca: [], evenements: [], tranche_effectif: { code: "NN", annee: 2025 } }, 2026);
-    expect(f).toEqual([{ date: "2026", texte: "SOLO voit le jour." }, { date: "Aujourd'hui", texte: "Il est temps de préparer la suite." }]);
-  });
-
-  it("plusieurs reprises sont regroupées en une ligne", () => {
-    const d = { ...base, evenements: [
-      { date: "2015-05-01", type: "reprise_fonds", detail: "Clisson" },
-      { date: "2019-03-01", type: "reprise_fonds", detail: "Pornic" },
-    ] };
-    expect(redigerFrise(d, 2026).map((l) => l.texte)).toContain("L'entreprise reprend 2 fonds de commerce.");
-  });
-
+// La frise « Vous avez bâti » (redigerFrise, aVille, paliersCA) a été retirée le 23/11/2026 : seuls les tests
+// l'utilisaient depuis le retrait de l'ancienne page d'accueil (PR #27, « à relire par le propriétaire »).
+describe("effectif", () => {
   it("libellés d'effectif", () => {
     expect(libelleEffectif("01")).toBe("une ou deux personnes");
     expect(libelleEffectif("53")).toMatch(/^plus de 10\s000 personnes$/); // espace fine insécable (typographie française)
