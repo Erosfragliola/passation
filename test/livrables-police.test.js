@@ -120,3 +120,25 @@ describe("Instrument Serif retirée du dépôt", () => {
     }
   });
 });
+
+// Le site entier en Geist (23/11/2026) : plus aucune police d'affiche dans les feuilles du site ni dans les pages
+describe("site : une seule police, Geist", () => {
+  const feuilles = readdirSync(join(racine, "public/css")).filter((f) => f.endsWith(".css"));
+  it("aucune feuille de public/css ne cite Big Shoulders ni Instrument Serif", () => {
+    for (const f of feuilles) expect(`${f} : ${INTERDITES.test(lire(`public/css/${f}`))}`).toBe(`${f} : false`);
+  });
+  it("aucune page ne précharge une ancienne police, et le fichier Big Shoulders est retiré", () => {
+    expect(lire("public/index.html")).not.toMatch(INTERDITES);
+    expect(existsSync(join(racine, "public/fonts/big-shoulders-bold.woff2"))).toBe(false);
+  });
+  it("les titres d'affiche du site utilisent les variables de titre (Geist 500, -0.05em)", () => {
+    const styles = lire("public/css/styles.css");
+    expect(styles).toMatch(/--titre-graisse:\s*500/);
+    expect(styles).toMatch(/--titre-interlettrage:\s*-0\.05em/);
+    for (const f of ["landing-bento.css", "espace-bento.css"]) {
+      const affiche = regles(lire(`public/css/${f}`)).find((r) => /(^|\s)\.affiche$/.test(r.selecteur));
+      expect(affiche.corps).toMatch(/var\(--titre-police\)/);
+      expect(affiche.corps).toMatch(/text-transform:\s*none/);
+    }
+  });
+});

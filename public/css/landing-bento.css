@@ -3,8 +3,8 @@
    Chargée après landing.css ; couleurs Passation (crème, vert, cuivre). */
 
 .landing .affiche {
-  font-family: "Big Shoulders", "Arial Narrow", "Helvetica Neue Condensed", sans-serif; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .005em; line-height: .94;
+  font-family: var(--titre-police); font-weight: var(--titre-graisse);
+  text-transform: none; letter-spacing: var(--titre-interlettrage); line-height: var(--titre-interligne);
 }
 .landing .affiche em { font-family: inherit; font-style: normal; font-weight: inherit; color: inherit; }
 
@@ -21,7 +21,7 @@
 
 /* Sources, sous le hero (registres, pas de logos de presse) */
 .sources-bande { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 36px; padding: 30px var(--gouttiere) 0; color: var(--pierre-texte); font-size: 16px; }
-.sources-bande b { font: 700 28px/1 "Big Shoulders", "Arial Narrow", sans-serif; letter-spacing: .03em; text-transform: uppercase; color: rgba(35, 30, 24, .5); }
+.sources-bande b { font: 500 26px/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); text-transform: none; color: rgba(35, 30, 24, .5); }
 
 /* ---------- Sections ---------- */
 .landing .dossier h2, .landing .comment h2, .landing .confid h2 { font-size: clamp(2.6rem, 5.2vw, 4.4rem); color: var(--vert); max-width: 18ch; }
@@ -63,7 +63,7 @@
 .confid-garanties strong::before { content: "✓"; color: var(--ocre-nuit); }
 
 /* Appel final */
-.landing .relance h2.affiche { font-size: clamp(2.8rem, 6vw, 5.4rem); font-weight: 700; letter-spacing: .005em; line-height: .95; max-width: 14ch; }
+.landing .relance h2.affiche { font-size: clamp(2.6rem, 5.4vw, 4.8rem); font-weight: var(--titre-graisse); letter-spacing: var(--titre-interlettrage); line-height: var(--titre-interligne); max-width: 14ch; }
 .landing .relance h2.affiche em { color: var(--ocre-nuit); }
 
 /* Tablette et téléphone */
@@ -94,7 +94,7 @@
 .analyse-etapes li.fait i::after { content: "✓"; }
 @keyframes tourne-analyse { to { transform: rotate(360deg); } }
 .landing .resultat .resultat-code { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; color: var(--ocre-nuit); }
-.landing .resultat .estimation-valeur { font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; font-size: clamp(3rem, 6vw, 5rem); letter-spacing: 0; line-height: 1; }
+.landing .resultat .estimation-valeur { font-family: var(--titre-police); font-weight: var(--titre-graisse); font-size: clamp(2.6rem, 5.2vw, 4.4rem); letter-spacing: var(--titre-interlettrage); line-height: 1; }
 @media (prefers-reduced-motion: reduce) { .analyse-etapes li.en-cours i { animation: none; } }
 .landing .floute { filter: blur(5px); user-select: none; -webkit-user-select: none; display: inline-block; padding: 0 2px; }
 
@@ -148,7 +148,7 @@
 .landing .pied { background: var(--vert); border-radius: 44px 44px 0 0; margin-top: 72px; }
 .landing .pied a:hover { color: #E9C9A4; }
 .pied-legal, .landing .pied-copyright { color: #BCCBC0; }
-.landing .pied-marque { margin: 18px 0 -0.14em; font: 700 22vw/0.8 "Big Shoulders", "Arial Narrow", sans-serif; text-transform: uppercase; text-align: center; letter-spacing: -.01em; color: #F6F1E6; white-space: nowrap; overflow: hidden; }
+.landing .pied-marque { margin: 18px 0 -0.14em; font: 500 19vw/0.8 var(--titre-police); text-transform: none; text-align: center; letter-spacing: var(--titre-interlettrage); color: #F6F1E6; white-space: nowrap; overflow: hidden; }
 
 /* Téléphone et tablette */
 @media (max-width: 900px) {
@@ -311,7 +311,7 @@
 .etapes-parcours { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .parcours-etape { position: relative; display: flex; flex-direction: column; gap: 12px; padding-top: 60px; min-width: 0; }
 .parcours-noeud { position: absolute; top: 0; left: 0; z-index: 1; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--vert); color: #F6F1E6; font: 700 18px/1 "Big Shoulders", "Arial Narrow", sans-serif; }
+  background: var(--vert); color: #F6F1E6; font: 500 17px/1 var(--titre-police); letter-spacing: -.02em; }
 .parcours-etape::before, .parcours-etape::after { content: ""; position: absolute; top: 20px; left: 50px; right: -16px; height: 2px; background: var(--trait-fort); }
 .parcours-etape::after { background: var(--vert); transform-origin: left center; }
 .parcours-etape:last-child::before, .parcours-etape:last-child::after { content: none; }
@@ -333,7 +333,7 @@
 .s-fleche { fill: none; stroke: #F6F1E6; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .s-libelle { font-size: 13px; font-weight: 500; fill: var(--pierre-texte); }
 .s-fictif { font-size: 11px; fill: var(--pierre-texte); }
-.scene-svg .s-valeur { font: 700 40px/1 "Big Shoulders", "Arial Narrow", sans-serif; fill: var(--vert); }
+.scene-svg .s-valeur { font: 500 34px/1 var(--titre-police); letter-spacing: -.04em; fill: var(--vert); }
 .scene-svg .s-valeur-droite { font-size: 30px; }
 .s-poste { font-size: 14px; fill: var(--espresso); }
 .s-montant { font-size: 14px; font-weight: 600; fill: var(--vert); font-variant-numeric: tabular-nums; }
@@ -344,9 +344,9 @@
 .s-borne { font-size: 12px; fill: var(--pierre-texte); }
 .s-grille { stroke: rgba(30, 58, 46, .2); stroke-width: 1; fill: none; }
 .s-lignes { stroke: rgba(30, 58, 46, .16); stroke-width: 5; stroke-linecap: round; fill: none; }
-.s-titre-doc { font: 700 15px "Big Shoulders", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .02em; fill: var(--vert); }
+.s-titre-doc { font: 500 14px var(--titre-police); text-transform: none; letter-spacing: -.03em; fill: var(--vert); }
 .s-mini-tampon { fill: none; stroke: var(--tampon); stroke-width: 2; }
-.s-mini-tampon-texte { font: 700 11px "Big Shoulders", "Arial Narrow", sans-serif; text-transform: uppercase; letter-spacing: .04em; fill: var(--tampon); }
+.s-mini-tampon-texte { font: 600 10px var(--titre-police); text-transform: uppercase; letter-spacing: .03em; fill: var(--tampon); }
 .s-frappe, .s-ligne, .s-resultat, .s-synthese, .s-repere, .s-doc { transform-box: fill-box; }
 .s-frappe { transform-origin: left center; }
 .s-repere { transform-origin: center; }
@@ -398,7 +398,7 @@
 .confid-ligne { display: block; height: 8px; border-radius: 4px; background: var(--sable); width: 100%; }
 .confid-ligne.courte { width: 62%; }
 .confid-tampon { position: absolute; right: 22px; top: 50%; translate: 0 -46%; rotate: -8deg; padding: 8px 18px 6px; border: 5px double var(--tampon); border-radius: 6px;
-  color: var(--tampon); font: 700 clamp(34px, 3.8vw, 52px)/1 "Big Shoulders", "Arial Narrow", sans-serif; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap;
+  color: var(--tampon); font: 600 clamp(30px, 3.3vw, 46px)/1 var(--titre-police); letter-spacing: .02em; text-transform: uppercase; white-space: nowrap;
   -webkit-mask: url("/img/landing/grunge.webp") center / 100% 100%; mask: url("/img/landing/grunge.webp") center / 100% 100%; }
 .landing .confid-fictif { margin: 0; font-size: 14px; color: #C9D6CD; }
 
@@ -425,7 +425,7 @@
 .landing .fiche #titre-resultat { margin: 0; }
 .landing .fiche .resultat-code { font-family: "Geist", system-ui, sans-serif; font-style: normal; font-weight: 600; font-size: clamp(2.2rem, 4.4vw, 3.1rem); line-height: 1.02; letter-spacing: -.03em; color: #FFFDF8; }
 .fiche-tampon { position: absolute; top: clamp(22px, 3vw, 30px); right: clamp(18px, 2.6vw, 28px); padding: 3px 10px; border: 3px double #F2A493; border-radius: 3px; color: #F2A493;
-  font: 700 15px/1.2 "Big Shoulders", "Arial Narrow", sans-serif; letter-spacing: .08em; text-transform: uppercase; transform: rotate(-8deg); }
+  font: 600 13px/1.2 var(--titre-police); letter-spacing: .06em; text-transform: uppercase; transform: rotate(-8deg); }
 .fiche-profil-liste { margin: 4px 0 0; display: grid; }
 .fiche-profil-liste div { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid rgba(243, 238, 228, .16); font-size: 15px; }
 .fiche-profil-liste dt { color: rgba(243, 238, 228, .74); }
@@ -436,7 +436,7 @@
 .fiche-prive svg { width: 15px; height: 15px; flex: none; }
 .landing .fiche .resultat-valeur { display: grid; gap: 8px; }
 .landing .fiche .resultat-libelle { margin: 0; font-size: 15px; font-weight: 500; color: var(--pierre-texte); }
-.landing .fiche .estimation-valeur { margin: 0; font: 700 clamp(3.2rem, 6.4vw, 5.2rem)/.92 "Big Shoulders", "Arial Narrow", sans-serif; color: var(--vert); white-space: nowrap; }
+.landing .fiche .estimation-valeur { margin: 0; font: 500 clamp(2.6rem, 5.4vw, 4.4rem)/.94 var(--titre-police); letter-spacing: var(--titre-interlettrage); color: var(--vert); white-space: nowrap; }
 .landing .fiche .resultat-methodes { margin: 8px 0 0; padding: 0; list-style: none; font-size: 15px; color: var(--pierre-texte); }
 .landing .fiche .resultat-methodes li::before { content: none; }
 .landing .fiche .resultat-note { margin: 0; font-size: 14px; color: var(--pierre-texte); }
@@ -460,7 +460,7 @@
 .landing .relance-livrables-titre { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
 .relance-livrables ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: livrable; }
 .relance-livrables li { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; counter-increment: livrable; }
-.relance-livrables li::before { content: counter(livrable, decimal-leading-zero); grid-row: span 2; font: 700 24px/1.1 "Big Shoulders", "Arial Narrow", sans-serif; }
+.relance-livrables li::before { content: counter(livrable, decimal-leading-zero); grid-row: span 2; font: 500 22px/1.1 var(--titre-police); letter-spacing: -.03em; }
 .relance-livrables strong { font-size: 17px; font-weight: 600; }
 .relance-livrables span { font-size: 15px; }
 .relance-garanties { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; font-size: 15px; }

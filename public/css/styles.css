@@ -26,6 +26,11 @@
   --serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
   --sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; /* police unique (18/11/2026) : plus de chasse fixe */
+  /* Titres du site et des livrables (23/11/2026) : Geist 500, interlettrage -0.05em, interligne 0.94 */
+  --titre-police: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --titre-graisse: 500;
+  --titre-interlettrage: -0.05em;
+  --titre-interligne: .94;
 
   --r-carte: 24px;
   --r-pilule: 999px;
@@ -320,8 +325,8 @@ dialog h2 { font-size: 1.6rem; margin-bottom: 12px; }
 .dialog-connexion { width: min(520px, calc(100vw - 32px)); max-width: none; position: relative; }
 .dialog-connexion .form-carte { margin-top: 18px; }
 /* Titre de la fenêtre de connexion (accueil) : même titre d'affiche que la page /connexion (19/11/2026) */
-.dialog-connexion h2.affiche { font-family: "Big Shoulders", "Arial Narrow", sans-serif; font-weight: 700; text-transform: uppercase;
-  font-size: clamp(36px, 5vw, 48px); line-height: .95; letter-spacing: .005em; color: var(--vert); margin: 0 40px 0 0; }
+.dialog-connexion h2.affiche { font-family: var(--titre-police); font-weight: var(--titre-graisse); text-transform: none;
+  font-size: clamp(32px, 4.4vw, 44px); line-height: var(--titre-interligne); letter-spacing: var(--titre-interlettrage); color: var(--vert); margin: 0 40px 0 0; }
 .dialog-fermer { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--trait-fort); background: transparent; color: var(--espresso); font-size: 1.4rem; line-height: 1; cursor: pointer; }
 .dialog-fermer:hover { background: var(--sable); }
 .champ-code { font-size: 1.7rem !important; letter-spacing: .45em; text-align: center; max-width: 280px; }

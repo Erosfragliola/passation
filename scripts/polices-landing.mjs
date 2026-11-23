@@ -9,7 +9,7 @@ import { brotliCompressSync, constants } from "node:zlib";
 const KIT = new URL("../_refonte/assets/fonts/", import.meta.url);
 const SORTIE = new URL("../public/fonts/", import.meta.url);
 const POLICES = [
-  ["BigShoulders-Bold.ttf", "big-shoulders-bold.woff2"],             // tampon « Projet … »
+  // Big Shoulders retirée le 23/11/2026 : le site entier est en Geist (public/fonts/geist-var.woff2).
 ];
 
 // Index des balises connues (norme WOFF2, § 5.1) ; les autres sont écrites en clair (index 63)
