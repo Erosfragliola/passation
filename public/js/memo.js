@@ -809,7 +809,10 @@ function appliquerPresentation() {
   $("#tout-afficher").textContent = pres.tout ? tr("memo.js.presentation.une_page") : tr("memo.voir_toutes_pages");
   l.forEach((x, k) => x.classList.toggle("courante", k === pres.idx));
   $("#vignettes").querySelectorAll("button").forEach((b, k) => b.setAttribute("aria-current", k === pres.idx ? "page" : "false"));
-  $("#vignettes").querySelectorAll("button")[pres.idx]?.scrollIntoView({ block: "nearest", inline: "center" });
+  // Centre la vignette courante dans la bande, sans faire défiler la page elle-même : scrollIntoView faisait descendre
+  // la page à l'ouverture, et la barre flottante recouvrait alors « ← Mon dossier » et le titre
+  const bande = $("#vignettes"), vignette = bande.querySelectorAll("button")[pres.idx];
+  if (vignette) bande.scrollLeft = Math.max(0, vignette.offsetLeft - (bande.clientWidth - vignette.offsetWidth) / 2);
   $("#page-compteur").textContent = tr("memo.js.presentation.compteur", { n: pres.idx + 1, total: l.length });
   $("#page-prec").disabled = pres.idx === 0; $("#page-suiv").disabled = pres.idx === l.length - 1;
   if (d) panneau(d);

@@ -87,6 +87,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .champ-montant.propose { border-style: dashed; border-color: var(--cuivre); }
 .champ-montant.propose input { color: var(--g-cuivre-texte); }
 .curseur-montant { display: grid; gap: 4px; }
+.montant.vide .curseur-montant input[type="range"] { opacity: .4; }
 .montant.montant-empile { grid-template-columns: minmax(0, 1fr); gap: 6px; }
 .curseur-montant input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 24px; background: transparent; margin: 0; }
 .curseur-montant input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: linear-gradient(to right, var(--vert) var(--p, 0%), var(--g-trait-moyen) var(--p, 0%)); }
@@ -372,7 +373,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 
 /* ---------- Mémorandum en mode présentation (18/11/2026) ---------- */
 /* Petits textes cuivrés en #8E5530 (« ocre texte » de l'accueil) : --cuivre n'atteint pas 4,5:1 (« jamais pour du texte ») */
-.memo-studio { background: var(--creme); padding: 96px 0 60px; }
+.memo-studio { background: var(--creme); padding: 120px 0 60px; } /* comme .document-zone : la barre flottante ne recouvre plus le fil d'Ariane */
 .studio-conteneur { max-width: 1380px; }
 .studio-tete { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
 .studio-tete h1 { margin: 0; font-size: clamp(30px, 3.4vw, 42px); }

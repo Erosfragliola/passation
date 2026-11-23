@@ -108,6 +108,7 @@
       "lecture": "Lecture de votre site en cours…",
       "retenu_titre": "Ce que nous avons retenu de votre site",
       "retenu_aide": "{n} faits, classés par thème. Retirez ce qui est faux ou daté : seul ce qui reste sera utilisé.",
+      "aucun_fait": "Nous n'avons trouvé sur ce site aucun fait utilisable pour le mémorandum. Ce n'est pas bloquant : vos réponses suffisent.",
       "faits": "Faits relevés",
       "votre_logo": "Votre logo",
       "choix_logo": "Choix du logo",

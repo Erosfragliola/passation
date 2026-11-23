@@ -35,7 +35,7 @@
       "other": "Optional lines ({total}, {n} filled in)"
     },
     "valider_remplies": "Approve the filled-in lines for {annee}",
-    "continuer_entreprise": "Continue: your company ",
+    "continuer_entreprise": "Continue: going further ",
     "a_confirmer": "{annee} to confirm",
     "lignes_a_completer": {
       "one": "{annee}: {n} line to complete or approve ({liste})",
