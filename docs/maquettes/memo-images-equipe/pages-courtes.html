@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D. Plus de pages presque vides</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .mesure td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .mesure tr.sous td { background: var(--cuivre-doux); }
+  .barre-r { display: inline-block; height: 8px; border-radius: 4px; background: var(--vert); vertical-align: middle; margin-right: 6px; }
+  tr.sous .barre-r { background: var(--cuivre); }
+  .deux-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 12px; align-items: start; }
+  .deux-col figure { margin: 0; } .deux-col img { width: 100%; border-radius: 8px; border: 1px solid var(--trait); }
+  .deux-col figcaption { font-size: 13px; color: var(--pierre-texte); margin-top: 4px; }
+  .piliers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .8cqw; }
+  .piliers li { background: #FAF5EB; border: 1px solid #E4DACA; border-top: .35cqw solid var(--vert); border-radius: 1.3cqw; padding: 1cqw; display: grid; gap: .4cqw; align-content: start; min-height: 15cqw; }
+  .piliers li:nth-child(2) { border-top-color: var(--cuivre); } .piliers li:nth-child(3) { border-top-color: #9DB8A8; } .piliers li:nth-child(4) { border-top-color: #2B5040; } .piliers li:nth-child(5) { border-top-color: #C9B89C; }
+  .piliers b { color: var(--cuivre-texte); font-weight: 500; letter-spacing: -0.05em; font-size: 2.4cqw; line-height: .9; }
+  .piliers strong { font-size: 1cqw; color: var(--vert); font-weight: 600; }
+  .piliers span { font-size: .9cqw; }
+  .cr { display: grid; grid-template-columns: minmax(0, 1fr) 30cqw; gap: 1.6cqw; }
+  .tab { width: 100%; border-collapse: collapse; font-size: .9cqw; }
+  .tab th { background: var(--vert); color: #fff; text-align: right; padding: .35cqw .6cqw; font-weight: 500; } .tab th:first-child { text-align: left; }
+  .tab td { padding: .3cqw .6cqw; border-bottom: 1px solid #E4DACA; text-align: right; } .tab td:first-child { text-align: left; }
+  .tab tr.t td { font-weight: 700; background: #EFE5D3; color: var(--vert); }
+  .tab tr.i td { font-style: italic; color: #6A6256; }
+  .info { background: var(--cuivre-doux); border-radius: .8cqw; padding: .6cqw .9cqw; font-size: .85cqw; color: var(--cuivre-texte); font-style: italic; }
+  .som { columns: 2; column-gap: 28px; font-size: 14px; margin: 0; padding: 0; list-style: none; }
+  .som li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dotted var(--trait-fort); padding: 3px 0; break-inside: avoid; }
+  .som .chg { color: var(--cuivre-texte); font-weight: 600; }
+  .som .retire { color: var(--pierre-texte); text-decoration: line-through; }
+  .ac-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8cqw; }
+  .ac-liste li { border: .12cqw dashed #CDBFA8; border-radius: 1cqw; padding: .8cqw 1cqw; display: grid; gap: .2cqw; font-size: .95cqw; }
+  .ac-liste li small { color: var(--cuivre-texte); font-weight: 600; font-size: .78cqw; }
+  @media (max-width: 760px) { .deux-col { grid-template-columns: 1fr; } .som { columns: 1; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <p class="petit"><a href="options.html">← Options à choisir</a> · D. Plus de pages presque vides</p>
+    <h1 class="titre">Plus de pages presque vides</h1>
+    <p class="intro">Sur le dossier fictif (24 pages), j'ai mesuré la part de chaque page réellement couverte par du texte, un tableau, un graphique ou une photo : une grille de 64 × 36 points posée sur la zone de contenu, un point compte s'il tombe sur une ligne de texte ou une image. Une page pleine couvre 45 à 55 %. Les pages d'ouverture, le sommaire, le glossaire et l'avertissement ne sont pas concernés.</p>
+  </header>
+
+  <h2 class="titre">Mesure sur le dossier fictif</h2>
+  <table tabindex="0" class="t mesure">
+    <thead><tr><th>Page</th><th>Titre</th><th>Surface couverte</th><th>Aujourd'hui, mesure de <code>remplirPages</code></th></tr></thead>
+    <tbody>
+      <tr><td>15</td><td>Chiffres clés financiers</td><td class="n"><span class="barre-r" style="width: 53px"></span>53 %</td><td class="n">98 %</td></tr>
+      <tr><td>9</td><td>Activité et savoir-faire</td><td class="n"><span class="barre-r" style="width: 48px"></span>48 %</td><td class="n">85 %</td></tr>
+      <tr><td>16</td><td>Compte de résultat 2024-2025</td><td class="n"><span class="barre-r" style="width: 31px"></span>31 %</td><td class="n">63 %</td></tr>
+      <tr><td>20</td><td>Axes de développement</td><td class="n"><span class="barre-r" style="width: 26px"></span>26 %</td><td class="n">84 %</td></tr>
+      <tr><td>23</td><td>Déroulement du processus</td><td class="n"><span class="barre-r" style="width: 21px"></span>21 %</td><td class="n">78 %</td></tr>
+      <tr><td>18</td><td>Endettement net et BFR</td><td class="n"><span class="barre-r" style="width: 18px"></span>18 %</td><td class="n">70 %</td></tr>
+      <tr class="sous"><td>17</td><td>EBE retraité</td><td class="n"><span class="barre-r" style="width: 8px"></span>8 %</td><td class="n">25 %</td></tr>
+      <tr class="sous"><td>21</td><td>Axes de développement (suite)</td><td class="n"><span class="barre-r" style="width: 3px"></span>3 %</td><td class="n">68 %</td></tr>
+    </tbody>
+  </table>
+  <p class="petit" style="margin-top: 8px">La mesure actuelle (<code>remplirPages</code>) ne regarde que le bas du dernier élément : une page centrée verticalement paraît pleine. La phase 2 remplacerait cette mesure par la surface couverte, dans un module pur et testé.</p>
+  <div class="question"><strong>Seuil proposé : moins d'un tiers d'une page pleine, soit moins de 16 % de surface couverte.</strong>Sur ce dossier, il retient les deux pages en couleur. Un seuil à 20 % y ajouterait « Endettement net et BFR » (18 %), qui a pourtant un vrai tableau : je ne le recommande pas.</div>
+  <div class="deux-col">
+    <figure><img src="captures/avant-page-21.webp" alt="Avant : page « Axes de développement (suite) » avec un seul axe"><figcaption>Avant, page 21 : la « suite » ne porte qu'un axe sur cinq.</figcaption></figure>
+    <figure><img src="captures/avant-page-17.webp" alt="Avant : page « EBE retraité » presque vide"><figcaption>Avant, page 17 : sans retraitement, la page tient en un tableau de quatre lignes.</figcaption></figure>
+  </div>
+
+  <h2 class="titre">Fusion avec la page suivante de la même partie</h2>
+  <p class="intro">Une page sous le seuil est fusionnée avec sa voisine de la même partie, si le contenu des deux tient sur une page (sinon, rien ne change). Le titre de la page fusionnée reprend les deux sujets ; le sommaire et la numérotation sont recalculés.</p>
+  <p class="etiquette-option">Pages 20 et 21 fusionnées : les cinq axes sur une page</p>
+  <div class="diapo-cadre"><div class="diapo">
+    <div class="d-entete"><span class="d-num">5.1</span><h3>Axes de développement</h3></div>
+    <p class="d-message">Des relais de croissance identifiés, sans investissement lourd</p>
+    <div class="d-zone" style="justify-content: center">
+      <ol class="piliers">
+        <li><b>01</b><strong>Savoir-faire reconnu</strong><span>L'atelier fabrique sur mesure portes, fenêtres et agencements.</span></li>
+        <li><b>02</b><strong>Production intégrée</strong><span>Conception, fabrication et pose réalisées en interne.</span></li>
+        <li><b>03</b><strong>Équipe expérimentée</strong><span>Un repreneur trouve une équipe formée et autonome.</span></li>
+        <li><b>04</b><strong>Carnet de commandes</strong><span>Régulier selon le dirigeant ; niveau à confirmer.</span></li>
+        <li><b>05</b><strong>Outil de production entretenu</strong><span>Parc renouvelé progressivement ; pas d'investissement majeur.</span></li>
+      </ol>
+    </div>
+    <div class="d-pied"><span class="logo">Passation</span><span class="src">Sources : dirigeant, chiffres transmis par le dirigeant 2024 et 2025</span><span>Novembre 2026</span><span class="no">19</span></div>
+  </div></div>
+  <p class="etiquette-option">Pages 16 et 17 fusionnées : « Compte de résultat et EBE retraité »</p>
+  <div class="diapo-cadre"><div class="diapo">
+    <div class="d-entete"><span class="d-num">4.2</span><h3>Compte de résultat et EBE retraité</h3></div>
+    <p class="d-message">Un EBE retraité de 380 k€ en 2025, soit 15,8 % du chiffre d'affaires</p>
+    <div class="d-zone">
+      <div class="cr">
+        <table tabindex="0" class="tab">
+          <thead><tr><th>En k€</th><th>2024</th><th>2025</th></tr></thead>
+          <tbody>
+            <tr class="t"><td>Chiffre d'affaires</td><td>2 200</td><td>2 400</td></tr>
+            <tr><td>Achats consommés</td><td>(880)</td><td>(960)</td></tr>
+            <tr class="t"><td>Marge brute</td><td>1 320</td><td>1 440</td></tr>
+            <tr><td>Charges externes</td><td>(320)</td><td>(340)</td></tr>
+            <tr><td>Impôts et taxes</td><td>(40)</td><td>(40)</td></tr>
+            <tr><td>Charges de personnel</td><td>(640)</td><td>(680)</td></tr>
+            <tr class="t"><td>EBE comptable</td><td>320</td><td>380</td></tr>
+            <tr class="t"><td>EBE retraité</td><td>320</td><td>380</td></tr>
+            <tr class="i"><td>Marge d'EBE retraitée</td><td>14,5 %</td><td>15,8 %</td></tr>
+          </tbody>
+        </table>
+        <div style="display: grid; gap: .8cqw; align-content: start">
+          <div class="d-encadre"><div class="tete">Retraitements</div><div class="corps"><span>Aucun retraitement déclaré : l'EBE retraité est égal à l'EBE comptable.</span><div class="info">EBE normatif retenu : 350 k€ (moyenne 2024, 2025).</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="d-pied"><span class="logo">Passation</span><span class="src">Sources : chiffres transmis par le dirigeant 2024 et 2025, retraitements déclarés par le dirigeant, calculs Passation</span><span>Novembre 2026</span><span class="no">16</span></div>
+  </div></div>
+  <p class="petit">Les montants ci-dessus sont ceux du dossier fictif, calculés par le code (chiffres de <code>docs/DEMO.md</code>) ; la fusion ne change aucun chiffre, seulement la mise en page.</p>
+
+  <h3 class="titre" style="margin-top: 28px">Sommaire recalculé : 24 → 22 pages</h3>
+  <ol class="som">
+    <li><span>4.1 Chiffres clés financiers</span><span>15</span></li>
+    <li><span class="chg">4.2 Compte de résultat et EBE retraité</span><span>16</span></li>
+    <li><span class="retire">4.3 EBE retraité</span><span class="retire">17</span></li>
+    <li><span>4.3 Endettement net et BFR</span><span class="chg">17 (était 18)</span></li>
+    <li><span>Partie 5 · Perspectives et opération</span><span class="chg">18 (était 19)</span></li>
+    <li><span>5.1 Axes de développement</span><span class="chg">19 (était 20)</span></li>
+    <li><span class="retire">5.1 Axes de développement (suite)</span><span class="retire">21</span></li>
+    <li><span>5.2 Contexte et opération envisagée</span><span class="chg">20 (était 22)</span></li>
+    <li><span>5.3 Déroulement du processus</span><span class="chg">21 (était 23)</span></li>
+    <li><span>Avertissement</span><span class="chg">22 (était 24)</span></li>
+  </ol>
+
+  <h2 class="titre">Sections sans donnée : deux variantes</h2>
+  <div class="options">
+    <section class="carte option">
+      <h3 class="titre">Variante 1 · « À compléter » sur place (aujourd'hui)</h3>
+      <p>Chaque page garde ses encadrés « À compléter » à l'endroit où l'information manque. Le repreneur voit le trou là où il le cherche, mais une section presque vide occupe une page entière.</p>
+    </section>
+    <section class="carte option reco">
+      <span class="reco-mot">Recommandée</span>
+      <h3 class="titre">Variante 2 · une page « Éléments à compléter » en fin de partie</h3>
+      <p>Une section sans donnée ne crée plus de page : ses demandes rejoignent une seule page en fin de partie (aperçu ci-dessous). Le sommaire l'annonce. Une section qui a des données mais quelques manques garde ses encadrés sur place.</p>
+    </section>
+  </div>
+  <p class="etiquette-option">Variante 2 : page de fin de partie (exemple, partie 3, demandes fictives)</p>
+  <div class="diapo-cadre"><div class="diapo">
+    <div class="d-entete"><span class="d-num">3.3</span><h3>Éléments à compléter</h3></div>
+    <p class="d-message">Ce qui manque encore à la partie « Marché et clients », pour la prochaine version</p>
+    <div class="d-zone">
+      <ul class="ac-liste">
+        <li><small>Marché</small>Données chiffrées sur le marché régional de la menuiserie (taille, évolution), avec leur source</li>
+        <li><small>Marché</small>Principaux concurrents locaux et positionnement de l'entreprise</li>
+        <li><small>Clients</small>Part du chiffre d'affaires réalisée avec les cinq premiers clients</li>
+        <li><small>Clients</small>Répartition entre particuliers et professionnels du bâtiment</li>
+      </ul>
+    </div>
+    <div class="d-pied"><span class="logo">Passation</span><span class="src">Demandes établies à partir des réponses manquantes du dossier</span><span>Novembre 2026</span><span class="no">14</span></div>
+  </div></div>
+</main>
+</body>
+</html>

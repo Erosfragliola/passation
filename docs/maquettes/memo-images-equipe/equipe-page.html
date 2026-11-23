@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C. Page « L'équipe dirigeante » du mémorandum</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  /* Option A : une carte par personne */
+  .eq-cartes { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 1.2cqw; flex: 1 1 auto; min-height: 0; }
+  .eq-carte { background: #FAF5EB; border: 1px solid #E4DACA; border-radius: 1.4cqw; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+  .eq-photo { aspect-ratio: 4 / 3; background: #EFE5D3 center / cover no-repeat; flex: none; }
+  .eq-initiales { aspect-ratio: 4 / 3; display: grid; place-items: center; background: var(--vert); color: #E9C9A4; font-weight: 500; letter-spacing: -0.05em; font-size: 4cqw; flex: none; }
+  .eq-corps { padding: 1cqw 1.2cqw; display: flex; flex-direction: column; gap: .45cqw; flex: 1; min-height: 0; }
+  .eq-nom { font-weight: 500; letter-spacing: -0.05em; line-height: .94; font-size: 1.64cqw; color: var(--vert); margin: 0; }
+  .eq-role { color: var(--cuivre-texte); font-weight: 600; font-size: .95cqw; margin: 0; }
+  .eq-parcours { margin: 0; font-size: .95cqw; line-height: 1.38; color: #231E18; }
+  .eq-chiffres { display: flex; gap: .5cqw; flex-wrap: wrap; margin-top: auto; }
+  .eq-chiffres span { background: #fff; border: 1px solid #E4DACA; border-radius: 99px; padding: .15cqw .7cqw; font-size: .8cqw; color: #4A4F57; }
+  .eq-chiffres b { font-weight: 600; color: var(--vert); }
+  .eq-apres { display: flex; align-items: center; gap: .5cqw; font-size: .85cqw; font-weight: 600; color: var(--vert); border-top: 1px solid #E4DACA; padding-top: .5cqw; }
+  .eq-apres i { width: .8cqw; height: .8cqw; border-radius: 50%; background: var(--vert); flex: none; }
+  .eq-apres.accompagne i { background: var(--cuivre); } .eq-apres.part i { background: #B9AE9C; }
+  /* Option B : le dirigeant en grand, les autres en liste */
+  .eq-b { display: grid; grid-template-columns: 24cqw minmax(0, 1fr) 30cqw; gap: 1.6cqw; flex: 1 1 auto; min-height: 0; }
+  .eq-b .grande { border-radius: 1.4cqw; background: #EFE5D3 center / cover no-repeat; }
+  .eq-b .texte { display: flex; flex-direction: column; gap: .7cqw; }
+  .eq-b .texte h3 { margin: 0; font-weight: 500; letter-spacing: -0.05em; line-height: .94; font-size: 2.2cqw; color: var(--vert); }
+  .eq-b .texte p { margin: 0; font-size: 1.05cqw; }
+  .eq-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: .8cqw; align-content: start; }
+  .eq-liste li { display: grid; grid-template-columns: 5cqw minmax(0, 1fr); gap: .9cqw; align-items: center; background: #FAF5EB; border-radius: 1.2cqw; padding: .7cqw; }
+  .eq-liste .mini { width: 5cqw; height: 5cqw; border-radius: .9cqw; background: var(--vert) center / cover; display: grid; place-items: center; color: #E9C9A4; font-weight: 500; font-size: 1.6cqw; letter-spacing: -0.05em; }
+  .eq-liste strong { display: block; font-weight: 500; letter-spacing: -0.05em; font-size: 1.3cqw; color: var(--vert); }
+  .eq-liste span { font-size: .85cqw; color: #4A4F57; display: block; }
+  .transition { display: flex; gap: .6cqw; }
+  .transition span { flex: 1; border-radius: 99px; padding: .35cqw .8cqw; font-size: .85cqw; font-weight: 600; text-align: center; background: var(--vert-doux); color: var(--vert); }
+  .transition span.acc { background: var(--cuivre-doux); color: var(--cuivre-texte); }
+  /* Option C : organigramme + tableau */
+  .org { display: grid; justify-items: center; gap: .9cqw; }
+  .org .boite { border-radius: .9cqw; padding: .55cqw 1.2cqw; background: var(--vert); color: #fff; font-size: 1cqw; text-align: center; min-width: 18cqw; }
+  .org .boite small { display: block; color: #C9D6CD; font-size: .8cqw; }
+  .org .ligne { display: flex; gap: 2cqw; } .org .ligne .boite { background: #FAF5EB; color: var(--vert); border: 1px solid #E4DACA; } .org .ligne .boite small { color: #6A6256; }
+  .tab { width: 100%; border-collapse: collapse; font-size: .92cqw; }
+  .tab th { text-align: left; background: var(--vert); color: #fff; font-weight: 500; padding: .45cqw .7cqw; }
+  .tab td { padding: .45cqw .7cqw; border-bottom: 1px solid #E4DACA; vertical-align: top; }
+  .tab td:first-child { font-weight: 600; color: var(--vert); white-space: nowrap; }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <p class="petit"><a href="options.html">← Options à choisir</a> · C. Page « L'équipe dirigeante »</p>
+    <h1 class="titre">Page « L'équipe dirigeante »</h1>
+    <p class="intro">Trois mises en page pour la même équipe fictive de trois personnes. Le texte du parcours serait rédigé par Claude <strong>uniquement</strong> à partir des réponses du dirigeant (formation, expériences choisies dans une liste, ancienneté). Les chiffres (années, mois) viennent tels quels des réponses. Une personne sans photo, ou sans consentement coché, apparaît avec ses initiales.</p>
+  </header>
+
+  <p class="etiquette-option">Option A (recommandée) · une carte par personne, de 1 à 4 cartes sur la largeur</p>
+  <div class="diapo-cadre"><div class="diapo">
+    <div class="d-entete"><span class="d-num">2.4</span><h2>L'équipe dirigeante</h2></div>
+    <p class="d-message">Une direction à trois, dont deux personnes restent en place après la cession</p>
+    <div class="d-zone">
+      <div class="eq-cartes" style="--n: 3">
+        <article class="eq-carte">
+          <div class="eq-photo" style="background-image: url(img/portrait-1.webp)" role="img" aria-label="Photo de Bernard Exemple (silhouette fictive)"></div>
+          <div class="eq-corps">
+            <h3 class="eq-nom">Bernard Exemple</h3>
+            <p class="eq-role">Dirigeant fondateur</p>
+            <p class="eq-parcours">CAP de menuisier, six ans de compagnonnage, puis chef d'atelier dans une menuiserie industrielle avant de créer l'entreprise.</p>
+            <div class="eq-chiffres"><span><b>28 ans</b> dans l'entreprise</span><span><b>34 ans</b> de métier</span></div>
+            <p class="eq-apres accompagne"><i></i>Accompagne le repreneur 6 mois</p>
+          </div>
+        </article>
+        <article class="eq-carte">
+          <div class="eq-photo" style="background-image: url(img/portrait-2.webp)" role="img" aria-label="Photo de Nadia Exemple (silhouette fictive)"></div>
+          <div class="eq-corps">
+            <h3 class="eq-nom">Nadia Exemple</h3>
+            <p class="eq-role">Responsable administrative et financière</p>
+            <p class="eq-parcours">BTS de comptabilité, six ans en cabinet d'expertise comptable ; suit la paie, la facturation et la relation avec la banque.</p>
+            <div class="eq-chiffres"><span><b>12 ans</b> dans l'entreprise</span><span><b>18 ans</b> de métier</span></div>
+            <p class="eq-apres"><i></i>Reste après la cession</p>
+          </div>
+        </article>
+        <article class="eq-carte">
+          <div class="eq-initiales" role="img" aria-label="Lucas Exemple, sans photo">LE</div>
+          <div class="eq-corps">
+            <h3 class="eq-nom">Lucas Exemple</h3>
+            <p class="eq-role">Directeur de production</p>
+            <p class="eq-parcours">Bac professionnel, chef d'équipe de pose dans une entreprise du bâtiment ; dirige l'atelier et les chantiers.</p>
+            <div class="eq-chiffres"><span><b>9 ans</b> dans l'entreprise</span><span><b>15 ans</b> de métier</span></div>
+            <p class="eq-apres"><i></i>Reste après la cession</p>
+          </div>
+        </article>
+      </div>
+      <div class="d-bandeau-cle">2 des 3 dirigeants restent ; le fondateur accompagne la transition pendant 6 mois</div>
+    </div>
+    <div class="d-pied"><span class="logo">Passation</span><span class="src">Source : dirigeant. Photos publiées avec l'accord des personnes.</span><span>Novembre 2026</span><span class="no">11</span></div>
+  </div></div>
+
+  <p class="etiquette-option">Option B · le dirigeant en grand, les autres en liste, la transition en bas</p>
+  <div class="diapo-cadre"><div class="diapo">
+    <div class="d-entete"><span class="d-num">2.4</span><h2>L'équipe dirigeante</h2></div>
+    <p class="d-message">Une direction à trois, dont deux personnes restent en place après la cession</p>
+    <div class="d-zone">
+      <div class="eq-b">
+        <div class="grande" style="background-image: url(img/portrait-1.webp)" role="img" aria-label="Photo de Bernard Exemple (silhouette fictive)"></div>
+        <div class="texte">
+          <h3>Bernard Exemple</h3>
+          <p style="color: var(--cuivre-texte); font-weight: 600">Dirigeant fondateur · 28 ans dans l'entreprise · 34 ans de métier</p>
+          <p>CAP de menuisier, six ans de compagnonnage, puis chef d'atelier dans une menuiserie industrielle avant de créer l'entreprise. Il pilote aujourd'hui les devis importants et la relation avec les principaux clients professionnels.</p>
+          <div class="d-encadre" style="margin-top: auto"><div class="tete">Après la cession</div><div class="corps"><div class="transition"><span class="acc">Bernard : 6 mois</span><span>Nadia : reste</span><span>Lucas : reste</span></div></div></div>
+        </div>
+        <ul class="eq-liste">
+          <li><span class="mini" style="background-image: url(img/portrait-2.webp)"></span><div><strong>Nadia Exemple</strong><span>Responsable administrative et financière · 12 ans</span><span>BTS de comptabilité, six ans en cabinet d'expertise comptable.</span></div></li>
+          <li><span class="mini">LE</span><div><strong>Lucas Exemple</strong><span>Directeur de production · 9 ans</span><span>Bac professionnel, chef d'équipe de pose dans le bâtiment.</span></div></li>
+        </ul>
+      </div>
+    </div>
+    <div class="d-pied"><span class="logo">Passation</span><span class="src">Source : dirigeant. Photos publiées avec l'accord des personnes.</span><span>Novembre 2026</span><span class="no">11</span></div>
+  </div></div>
+
+  <p class="etiquette-option">Option C · organigramme et tableau, sans photo (style « banque d'affaires » sobre)</p>
+  <div class="diapo-cadre"><div class="diapo">
+    <div class="d-entete"><span class="d-num">2.4</span><h2>L'équipe dirigeante</h2></div>
+    <p class="d-message">Une direction à trois, dont deux personnes restent en place après la cession</p>
+    <div class="d-zone">
+      <div class="org"><div class="boite">Bernard Exemple<small>Dirigeant fondateur</small></div><div class="ligne"><div class="boite">Nadia Exemple<small>Administration et finances</small></div><div class="boite">Lucas Exemple<small>Production et chantiers</small></div></div></div>
+      <table class="tab">
+        <thead><tr><th>Personne</th><th>Ancienneté</th><th>Métier</th><th>Formation et parcours</th><th>Après la cession</th></tr></thead>
+        <tbody>
+          <tr><td>Bernard Exemple</td><td>28 ans</td><td>34 ans</td><td>CAP de menuisier ; compagnonnage ; chef d'atelier en menuiserie industrielle</td><td>Accompagne 6 mois</td></tr>
+          <tr><td>Nadia Exemple</td><td>12 ans</td><td>18 ans</td><td>BTS de comptabilité ; cabinet d'expertise comptable</td><td>Reste</td></tr>
+          <tr><td>Lucas Exemple</td><td>9 ans</td><td>15 ans</td><td>Bac professionnel ; chef d'équipe de pose dans le bâtiment</td><td>Reste</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="d-pied"><span class="logo">Passation</span><span class="src">Source : dirigeant.</span><span>Novembre 2026</span><span class="no">11</span></div>
+  </div></div>
+
+  <div class="question"><strong>Dans le teaser</strong>Aucune de ces options n'y apparaît. Le teaser garde au plus une phrase générale, écrite par le code et non par Claude : « Une équipe de direction en place » si au moins une personne autre que le cédant reste. Le contrôle d'anonymat refusera tout nom, rôle nominatif ou parcours individuel.</div>
+</main>
+</body>
+</html>

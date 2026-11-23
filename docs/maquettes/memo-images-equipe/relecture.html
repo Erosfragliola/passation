@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E. Relecture critique : affichage des remarques</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .rapport { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: r; }
+  .rq { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; padding: 14px; border: 1px solid var(--trait-moyen); border-radius: 18px; background: var(--papier); }
+  .rq .vg { border-radius: 8px; border: 1px solid var(--trait); aspect-ratio: 16 / 9; background: #FFFDF8; display: grid; place-items: center; font-weight: 500; letter-spacing: -0.05em; color: var(--vert); font-size: 20px; }
+  .rq .vg small { display: block; font-size: 11px; letter-spacing: 0; color: var(--pierre-texte); font-weight: 400; text-align: center; }
+  .rq-corps { display: grid; gap: 6px; min-width: 0; }
+  .rq-tete { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .rq p { margin: 0; font-size: 14.5px; }
+  .rq .avant-txt { color: var(--pierre-texte); text-decoration: line-through; text-decoration-color: rgba(154, 52, 18, .5); }
+  .rq .apres-txt { background: var(--vert-doux); border-radius: 8px; padding: 6px 8px; }
+  .rq .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .rq.repondu { opacity: .6; }
+  .pins { position: absolute; inset: 0; pointer-events: none; }
+  .pin { position: absolute; width: 2.2cqw; height: 2.2cqw; border-radius: 50%; background: var(--cuivre); color: #fff; display: grid; place-items: center; font-weight: 600; font-size: 1cqw; box-shadow: 0 0 0 .3cqw rgba(168, 101, 58, .25); }
+  .bulle { position: absolute; right: 2cqw; top: 8cqw; width: 30cqw; background: #fff; border: 1px solid #E4DACA; border-radius: 1.2cqw; padding: 1cqw 1.2cqw; font-size: .95cqw; box-shadow: 0 1cqw 2cqw rgba(35, 30, 24, .12); display: grid; gap: .5cqw; }
+  .bulle .b { display: flex; gap: .5cqw; } .bulle .b span { border-radius: 99px; padding: .3cqw .9cqw; font-size: .85cqw; background: var(--vert); color: #fff; } .bulle .b span + span { background: none; color: var(--espresso); border: 1px solid #CDBFA8; }
+  @media (max-width: 760px) { .rq { grid-template-columns: 1fr; } .rq .vg { max-width: 160px; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <p class="petit"><a href="options.html">← Options à choisir</a> · E. Relecture critique</p>
+    <h1 class="titre">Relecture critique : « l'œil du banquier »</h1>
+    <p class="intro">Claude relit tout le mémorandum comme un repreneur exigeant et renvoie au plus 10 remarques, les plus importantes d'abord. « Oui, corriger » ne touche qu'au texte de la section : jamais à un chiffre (une remarque sur un chiffre renvoie vers vos comptes ou la valorisation), et les contrôles existants repassent (concision ; anonymat pour le teaser). Remarques fictives, sur le dossier fictif.</p>
+  </header>
+  <h2 class="titre">Trois façons d'afficher les remarques</h2>
+  <div class="options">
+    <section class="carte option reco"><span class="reco-mot">Recommandée</span><h3 class="titre">Option A · dans le panneau, avec les autres améliorations</h3><p>Une seule liste de titres courts à droite de la page (maquette <a href="panneau.html">F</a>). Les remarques indispensables portent le point cuivre. Rien de nouveau à apprendre pour le dirigeant.</p></section>
+    <section class="carte option"><h3 class="titre">Option B · un rapport de relecture</h3><p>Une liste complète, page par page, avec le texte avant et après. Montrée ci-dessous. Utile à la fin de la rédaction, plus lourde au quotidien.</p></section>
+    <section class="carte option"><h3 class="titre">Option C · des repères sur les pages</h3><p>Une pastille numérotée à l'endroit visé, une bulle au clic. Très visuel, mais les remarques d'ensemble (répétitions entre pages) s'y placent mal.</p></section>
+  </div>
+
+  <h2 class="titre">Option B : rapport de relecture</h2>
+  <div class="question" style="margin-bottom: 12px"><strong>Relecture terminée : 5 remarques, dont 2 indispensables.</strong>Lancée automatiquement à la fin de la rédaction. Vous pouvez la relancer depuis la page du mémorandum (1 appel à Claude, compté dans vos quotas).</div>
+  <ol class="rapport" id="rapport">
+    <li class="rq">
+      <div class="vg">p. 10<small>Organisation</small></div>
+      <div class="rq-corps">
+        <div class="rq-tete"><span class="pastille alerte">Indispensable</span><span class="pastille attente">Affirmation non sourcée</span></div>
+        <p>« Les compagnons ont une ancienneté moyenne élevée » : aucune réponse ne l'appuie.</p>
+        <p class="avant-txt">les compagnons ont une ancienneté moyenne élevée ; un repreneur trouve une équipe formée et autonome.</p>
+        <p class="apres-txt">l'équipe d'atelier est en place et formée ; l'ancienneté moyenne reste à préciser.</p>
+        <div class="actions"><button class="btn mini" type="button" data-oui>Oui, corriger</button><button class="btn contour mini" type="button" data-non>Non</button></div>
+      </div>
+    </li>
+    <li class="rq">
+      <div class="vg">p. 10<small>Organisation</small></div>
+      <div class="rq-corps">
+        <div class="rq-tete"><span class="pastille alerte">Indispensable</span><span class="pastille attente">Photo mal choisie</span></div>
+        <p>L'encadré « L'équipe » montre des fenêtres. Proposition : votre photo « L'équipe de l'atelier ».</p>
+        <div class="actions"><button class="btn mini" type="button" data-oui>Oui, corriger</button><button class="btn contour mini" type="button" data-non>Non</button></div>
+      </div>
+    </li>
+    <li class="rq">
+      <div class="vg">p. 5 · 10 · 12<small>3 chapitres</small></div>
+      <div class="rq-corps">
+        <div class="rq-tete"><span class="pastille attente">Répétition</span></div>
+        <p>La même introduction ouvre la synthèse, l'organisation et le marché. Proposition : réécrire l'introduction des pages 10 et 12 à partir de leurs propres faits.</p>
+        <div class="actions"><button class="btn mini" type="button" data-oui>Oui, corriger</button><button class="btn contour mini" type="button" data-non>Non</button></div>
+      </div>
+    </li>
+    <li class="rq">
+      <div class="vg">p. 9<small>Activité</small></div>
+      <div class="rq-corps">
+        <div class="rq-tete"><span class="pastille attente">Ton promotionnel</span></div>
+        <p>« Ce savoir-faire constitue une barrière à l'entrée » affirme sans démontrer.</p>
+        <p class="avant-txt">ce savoir-faire constitue une barrière à l'entrée pour un nouveau concurrent.</p>
+        <p class="apres-txt">ce savoir-faire demande une formation longue, selon le dirigeant.</p>
+        <div class="actions"><button class="btn mini" type="button" data-oui>Oui, corriger</button><button class="btn contour mini" type="button" data-non>Non</button></div>
+      </div>
+    </li>
+    <li class="rq">
+      <div class="vg">p. 17<small>Endettement</small></div>
+      <div class="rq-corps">
+        <div class="rq-tete"><span class="pastille attente">Incohérence avec les registres</span></div>
+        <p>L'emprunt de 2025 baisse de 40 k€ alors qu'aucun remboursement n'est mentionné. Passation ne modifie pas ce chiffre : vérifiez-le dans vos comptes.</p>
+        <div class="actions"><a class="btn contour mini" href="#">Ouvrir vos comptes 2025</a><button class="btn contour mini" type="button" data-non>Non, c'est juste</button></div>
+      </div>
+    </li>
+  </ol>
+
+  <h2 class="titre">Option C : repères sur les pages</h2>
+  <div class="diapo-cadre"><div class="diapo">
+    <div class="d-entete"><span class="d-num">2.3</span><h3>Organisation et équipe</h3></div>
+    <p class="d-message">Une organisation stable, prête à fonctionner sans le dirigeant fondateur</p>
+    <div class="d-zone"><div class="d-vide" style="flex: 1">(contenu de la page)</div></div>
+    <div class="d-pied"><span class="logo">Passation</span><span class="src">Sources : registres publics, dirigeant</span><span>Novembre 2026</span><span class="no">10</span></div>
+    <div class="pins"><span class="pin" style="left: 30cqw; top: 15cqw">1</span><span class="pin" style="left: 78cqw; top: 22cqw">2</span></div>
+    <div class="bulle"><strong>1 · Affirmation non sourcée</strong><span>« ancienneté moyenne élevée » : aucune réponse ne l'appuie.</span><div class="b"><span>Oui, corriger</span><span>Non</span></div></div>
+  </div></div>
+</main>
+<script>
+  for (const b of document.querySelectorAll("[data-oui], [data-non]")) b.addEventListener("click", () => { const li = b.closest(".rq"); li.classList.add("repondu"); b.parentElement.innerHTML = `<p class="tres-petit">${b.matches("[data-oui]") ? "✓ Corrigé : section mise à jour, contrôles repassés." : "Remarque écartée : rien n'a changé."}</p>`; });
+</script>
+</body>
+</html>

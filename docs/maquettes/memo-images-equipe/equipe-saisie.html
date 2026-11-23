@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C. Écran « Votre équipe dirigeante »</title>
+<link rel="stylesheet" href="maquettes.css">
+<style>
+  .personnes { display: grid; gap: 10px; }
+  .personne { border: 1px solid var(--trait-moyen); border-radius: 18px; background: var(--papier); }
+  .personne > summary { list-style: none; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 16px; cursor: pointer; }
+  .personne > summary::-webkit-details-marker { display: none; }
+  .personne .av { width: 44px; height: 44px; border-radius: 12px; background: var(--vert) center / cover; color: #E9C9A4; display: grid; place-items: center; font-weight: 500; letter-spacing: -0.05em; }
+  .personne summary strong { display: block; font-weight: 600; }
+  .personne summary small { color: var(--pierre-texte); font-size: 13.5px; }
+  .personne[open] > summary { border-bottom: 1px solid var(--trait); }
+  .fiche { padding: 16px; display: grid; gap: 18px; }
+  .deux { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .curseur-l { display: grid; gap: 2px; }
+  .curseur-l output { font-weight: 600; color: var(--vert); }
+  fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 8px; }
+  legend { font-size: 13.5px; font-weight: 500; padding: 0; margin-bottom: 6px; }
+  .experiences { display: grid; gap: 8px; }
+  .exp { display: grid; grid-template-columns: 220px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+  .photo-zone { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px; border-radius: 14px; background: var(--sable-doux); }
+  .photo-zone .ap { width: 96px; height: 120px; border-radius: 12px; background: #fff center / cover; border: 1px dashed var(--trait-fort); display: grid; place-items: center; font-size: 12.5px; color: var(--pierre-texte); text-align: center; }
+  .photo-zone .ap.masque { background-image: none !important; }
+  .ajouter { border: 1px dashed var(--trait-fort); border-radius: 18px; padding: 14px; background: none; font: 500 15px var(--sans); cursor: pointer; color: var(--vert); }
+  .ajouter:disabled { color: var(--pierre-texte); cursor: not-allowed; }
+  .rgpd { font-size: 13px; color: var(--pierre-texte); margin: 0; }
+  @media (max-width: 760px) { .deux { grid-template-columns: 1fr; } .exp { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="barre"><div class="barre-in"><a class="marque" href="options.html">Passation</a><span class="dossier-id"><strong>Projet Chêne</strong> · Menuiserie Exemple</span><nav aria-label="Navigation principale"><a href="#">Mon dossier</a><a href="#">Se déconnecter</a></nav></div></header>
+<main class="colonne">
+  <p class="petit"><a href="options.html">← Options à choisir</a> · C. Écran de saisie, option A (recommandée)</p>
+  <h1 class="q">Votre équipe dirigeante</h1>
+  <p class="chapo">Une à quatre personnes, vous compris. Le mémorandum en fera une page de présentation ; le teaser, lui, ne citera jamais de nom ni de parcours.</p>
+
+  <div class="personnes" id="personnes">
+    <details class="personne" open>
+      <summary><span class="av" style="background-image: url(img/portrait-1.webp)"></span><span><strong>Bernard Exemple</strong><small>Dirigeant fondateur · accompagne 6 mois</small></span><span class="pastille">Complet</span></summary>
+      <div class="fiche">
+        <div class="deux">
+          <label class="champ"><span>Prénom et nom</span><input type="text" value="Bernard Exemple"></label>
+          <label class="champ"><span>Rôle</span><select><option selected>Dirigeant fondateur</option><option>Cogérant</option><option>Directeur commercial</option><option>Directeur de production</option><option>Responsable administratif et financier</option><option>Autre</option></select></label>
+        </div>
+        <div class="deux">
+          <label class="curseur-l"><span class="tres-petit">Dans l'entreprise depuis</span><output>28 ans</output><input type="range" min="0" max="45" value="28" data-annees></label>
+          <label class="curseur-l"><span class="tres-petit">Expérience dans le métier</span><output>34 ans</output><input type="range" min="0" max="50" value="34" data-annees></label>
+        </div>
+        <fieldset><legend>Formation</legend>
+          <div class="puces">
+            <label class="puce"><input type="radio" name="f1" checked>CAP-BEP</label><label class="puce"><input type="radio" name="f1">Bac pro</label><label class="puce"><input type="radio" name="f1">BTS-DUT</label><label class="puce"><input type="radio" name="f1">Licence</label><label class="puce"><input type="radio" name="f1">Master, école</label><label class="puce"><input type="radio" name="f1">Autodidacte</label>
+          </div>
+        </fieldset>
+        <fieldset><legend>Expériences marquantes (1 à 3)</legend>
+          <div class="experiences" data-max="3">
+            <div class="exp"><select aria-label="Type d'expérience 1"><option selected>Formation ou compagnonnage</option><option>Même métier, autre entreprise</option><option>Encadrement d'équipe</option><option>Création ou reprise d'entreprise</option><option>Grand groupe</option><option>Autre</option></select><input class="champ" style="padding: 10px 12px; border: 1px solid var(--trait-fort); border-radius: 12px; font: inherit; background: var(--papier)" type="text" value="Compagnons du devoir, 6 ans" maxlength="60" aria-label="Précision courte 1"><button class="lien" type="button">Retirer</button></div>
+            <div class="exp"><select aria-label="Type d'expérience 2"><option>Formation ou compagnonnage</option><option selected>Encadrement d'équipe</option><option>Même métier, autre entreprise</option></select><input style="padding: 10px 12px; border: 1px solid var(--trait-fort); border-radius: 12px; font: inherit; background: var(--papier)" type="text" value="Chef d'atelier, menuiserie industrielle" maxlength="60" aria-label="Précision courte 2"><button class="lien" type="button">Retirer</button></div>
+            <button class="lien" type="button" style="justify-self: start">+ Ajouter une expérience</button>
+          </div>
+        </fieldset>
+        <fieldset><legend>Après la cession</legend>
+          <div class="puces"><label class="puce"><input type="radio" name="a1" value="reste">Reste</label><label class="puce"><input type="radio" name="a1" value="acc" checked>Accompagne le repreneur</label><label class="puce"><input type="radio" name="a1" value="part">Part</label></div>
+          <label class="curseur-l" data-mois><span class="tres-petit">Pendant</span><output>6 mois</output><input type="range" min="1" max="24" value="6" data-mois-curseur></label>
+        </fieldset>
+        <div class="photo-zone">
+          <div class="ap" id="ap1" style="background-image: url(img/portrait-1.webp)"></div>
+          <div style="display: grid; gap: 10px">
+            <span class="tres-petit">Photo facultative (portrait, 3 Mo au plus)</span>
+            <label class="case"><input type="checkbox" id="c1" checked data-consent="ap1"><span><strong>Cette personne a accepté que sa photo figure dans le mémorandum.</strong> Sans cette case, la photo n'est pas utilisée : la carte affiche les initiales.</span></label>
+            <button class="btn contour mini" type="button" style="justify-self: start">Changer la photo</button>
+          </div>
+        </div>
+      </div>
+    </details>
+    <details class="personne">
+      <summary><span class="av" style="background-image: url(img/portrait-2.webp)"></span><span><strong>Nadia Exemple</strong><small>Responsable administrative et financière · reste</small></span><span class="pastille">Complet</span></summary>
+      <div class="fiche"><p class="petit">(Même fiche que ci-dessus.)</p></div>
+    </details>
+    <details class="personne">
+      <summary><span class="av">LE</span><span><strong>Lucas Exemple</strong><small>Directeur de production · reste · sans photo</small></span><span class="pastille attente">Parcours à compléter</span></summary>
+      <div class="fiche"><p class="petit">(Même fiche que ci-dessus.)</p></div>
+    </details>
+    <button class="ajouter" type="button" id="ajouter">+ Ajouter une personne (3 sur 4)</button>
+  </div>
+  <p class="rgpd" style="margin-top: 14px">Les noms, parcours et photos ne servent qu'au mémorandum, remis après un accord de confidentialité. Ils sont supprimés avec votre dossier.</p>
+
+  <div class="nav-q"><a class="lien" href="#">Retour</a><button class="btn" type="button">Continuer</button></div>
+</main>
+<script>
+  // Démonstration : valeurs des curseurs, consentement qui masque la photo, durée d'accompagnement, limite de 4.
+  for (const r of document.querySelectorAll("input[data-annees]")) r.addEventListener("input", () => { r.previousElementSibling.textContent = `${r.value} an${r.value > 1 ? "s" : ""}`; });
+  for (const r of document.querySelectorAll("input[data-mois-curseur]")) r.addEventListener("input", () => { r.previousElementSibling.textContent = `${r.value} mois`; });
+  for (const c of document.querySelectorAll("[data-consent]")) c.addEventListener("change", () => { const ap = document.getElementById(c.dataset.consent); ap.classList.toggle("masque", !c.checked); ap.textContent = c.checked ? "" : "BE"; });
+  for (const n of document.querySelectorAll("input[name=a1]")) n.addEventListener("change", () => { document.querySelector("[data-mois]").hidden = n.value !== "acc"; });
+  let nb = 3; const aj = document.getElementById("ajouter");
+  aj.addEventListener("click", () => { nb++; aj.textContent = nb >= 4 ? "4 personnes au plus" : `+ Ajouter une personne (${nb} sur 4)`; aj.disabled = nb >= 4;
+    const d = document.createElement("details"); d.className = "personne"; d.open = true; d.innerHTML = `<summary><span class="av">?</span><span><strong>Nouvelle personne</strong><small>Rôle à choisir</small></span><span class="pastille attente">À compléter</span></summary><div class="fiche"><p class="petit">(Fiche vide.)</p></div>`; aj.before(d); });
+</script>
+</body>
+</html>
