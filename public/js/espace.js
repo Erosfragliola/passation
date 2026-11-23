@@ -99,7 +99,8 @@ function afficher({ checklist = true } = {}) {
       el("h3", { id: `doc-titre-${x.cle}` }, principal ? el("a", { href: principal.href, download: principal.telecharger ? "" : null, text: x.titre }) : x.titre),
       el("p", { class: "doc-nature", text: t(`espace.js.natures.${x.cle}`) }),
       el("span", { class: `etat etat-${x.etat}`, text: x.badge || libelleEtat(x.etat) }),
-      autres.length ? el("p", { class: "doc-liens" }, ...autres.map((y, k) => [k ? " · " : null, el("a", { href: y.href, download: y.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: y.libelle, objet: x.titre }) }, y.libelle)])) : null);
+      // Toutes les actions sous chaque carte, la principale en premier (« Ouvrir », « Rédiger »…) : même schéma pour les quatre documents
+      [principal, ...autres].filter(Boolean).length ? el("p", { class: "doc-liens" }, ...[principal, ...autres].filter(Boolean).map((y, k) => [k ? " · " : null, el("a", { href: y.href, download: y.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: y.libelle, objet: x.titre }) }, y.libelle)])) : null);
   }));
 
   // Pièces : résumé, et dépôt replié sauf quand c'est l'étape en cours (ou ouvert par le dirigeant)

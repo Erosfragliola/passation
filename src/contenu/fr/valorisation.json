@@ -35,7 +35,7 @@
       "other": "Lignes facultatives ({total}, dont {n} remplies)"
     },
     "valider_remplies": "Valider les lignes remplies de {annee}",
-    "continuer_entreprise": "Continuer : votre entreprise ",
+    "continuer_entreprise": "Continuer : pour aller plus loin ",
     "a_confirmer": "{annee} à confirmer",
     "lignes_a_completer": {
       "one": "{annee} : {n} ligne à compléter ou valider ({liste})",

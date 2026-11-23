@@ -43,7 +43,9 @@ export function bornesCurseur({ min = 0, max, valeur = null }) {
   const brut = (haut - min) / 200;
   const puissance = 10 ** Math.floor(Math.log10(Math.max(brut, 1e-9)));
   const pas = [1, 2, 5, 10].map((k) => k * puissance).find((p) => p >= brut) || puissance;
-  return { min, max: Math.ceil(haut / pas) * pas, pas: pas >= 1 ? Math.round(pas) : pas };
+  // Bornes « rondes » des deux côtés (une borne basse négative comme −557 927 € troublait le dirigeant)
+  const bas = min < 0 ? Math.floor(min / pas) * pas : min;
+  return { min: bas, max: Math.ceil(haut / pas) * pas, pas: pas >= 1 ? Math.round(pas) : pas };
 }
 
 // ------------------------------------------------------------------ Composant (navigateur)
@@ -73,7 +75,10 @@ export function champMontant(o) {
   if (unite === "€" && langue() === "en") boite.append(u, champ); else boite.append(champ, u);
   const curseur = document.createElement("input");
   Object.assign(curseur, { type: "range", min: String(b.min), max: String(b.max), step: String(b.pas) });
-  curseur.value = String(depart ?? b.min);
+  // Rien de saisi ni de proposé : le curseur se pose sur 0 (ou la borne la plus proche) et reste estompé, pour ne pas
+  // faire croire à une valeur ; il s'active dès que le dirigeant tape ou fait glisser
+  curseur.value = String(depart ?? Math.min(Math.max(0, b.min), b.max));
+  if (depart == null) racine.classList.add("vide");
   curseur.setAttribute("aria-label", o.libelle || "");
   const bornes = document.createElement("div");
   bornes.className = "bornes-curseur"; bornes.setAttribute("aria-hidden", "true");
@@ -89,7 +94,7 @@ export function champMontant(o) {
     const lu = lireMontant(champ.value);
     curseur.setAttribute("aria-valuetext", lu == null || Number.isNaN(lu) ? t("demarrer.js.montants.non_renseigne") : `${texteMontant(lu, unite)}${proposee ? ` (${t("demarrer.js.montants.propose_court")})` : ""}`);
   };
-  const confirmer = () => { confirmee = true; proposee = false; boite.classList.remove("propose"); racine.dispatchEvent(new CustomEvent("confirme")); };
+  const confirmer = () => { confirmee = true; proposee = false; boite.classList.remove("propose"); racine.classList.remove("vide"); racine.dispatchEvent(new CustomEvent("confirme")); };
   champ.addEventListener("input", () => {
     const fin = champ.value.length - (champ.selectionStart ?? champ.value.length);
     champ.value = formaterSaisie(champ.value, { decimales });

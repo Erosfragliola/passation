@@ -108,6 +108,7 @@
       "lecture": "Reading your website…",
       "retenu_titre": "What we picked up from your website",
       "retenu_aide": "{n} facts, grouped by theme. Remove what’s wrong or outdated: only what remains will be used.",
+      "aucun_fait": "We found nothing on this website that the memorandum can use. That's fine: your answers are enough.",
       "faits": "Facts found",
       "votre_logo": "Your logo",
       "choix_logo": "Logo choice",

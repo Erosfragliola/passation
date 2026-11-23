@@ -209,7 +209,7 @@ function saisie() {
     const ca = lireNombre(brut("chiffre_affaires"));
     const max = cle === "chiffre_affaires" ? Math.max(5e6, 2 * (Number.isFinite(ca) ? ca : 0)) : Number.isFinite(ca) && ca > 0 ? ca : 5e6;
     const actuel = lireNombre(brut(cle));
-    const comp = champMontant({ id: `s-${cle}`, libelle: cle === "ebe" ? t("demarrer.js.saisie.ebe") : libelleEcran(c), unite: "€", min: ["resultat_net", "ebe", "capitaux_propres"].includes(cle) ? Math.min(-Math.round(max / 2), Number.isFinite(actuel) ? actuel : 0) : 0, max, // peut être négatif
+    const comp = champMontant({ id: `s-${cle}`, libelle: cle === "ebe" ? t("demarrer.js.saisie.ebe") : libelleEcran(c), unite: "€", min: ["resultat_net", "ebe", "capitaux_propres"].includes(cle) ? Math.min(-Math.round(max / 4), Number.isFinite(actuel) ? actuel : 0) : 0, max, // peut être négatif
       valeur: Number.isFinite(actuel) ? actuel : null });
     comp.classList.add("montant-empile");
     comp.champ.dataset.cle = cle;
@@ -778,7 +778,7 @@ async function site() {
     ...faitsParTheme(autres).map(([theme, l]) => el("section", { class: "faits-theme" }, el("h2", { text: t(`demarrer.js.site.themes.${theme}`) }), el("ul", { class: "faits-liste" }, ...l.map(ligne))))) : null;
   remplir(
     el("p", { class: "q-compteur", text: t("demarrer.js.site.lu", { site: new URL(s.url).hostname, n: (s.pages || []).length || 1 }) }),
-    ...titre(t("demarrer.js.site.retenu_titre"), t("demarrer.js.site.retenu_aide", { n: faits.length })),
+    ...titre(t("demarrer.js.site.retenu_titre"), faits.length ? t("demarrer.js.site.retenu_aide", { n: faits.length }) : t("demarrer.js.site.aucun_fait")),
     ...conflits.map(blocConflit),
     essentiels.length ? el("ul", { class: "faits-liste faits-essentiels" }, ...essentiels.map(ligne)) : null,
     plus,
@@ -797,7 +797,7 @@ async function site() {
           rafraichirPropositions();
           aller(photosAChoisir() ? "photos" : etapeCourante());
         } catch (e) { message(e.message, true); bouton.disabled = false; }
-      } }, t("demarrer.js.site.valider_faits"), fleche())),
+      } }, faits.length ? t("demarrer.js.site.valider_faits") : t("demarrer.js.continuer"), fleche())),
     el("p", { class: "q-usage", text: t("demarrer.js.site.usage_faits") }));
 }
 
