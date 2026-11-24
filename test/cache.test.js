@@ -4,12 +4,12 @@ import { verifierDebit } from "../src/lib/ratelimit.js";
 
 const dbEnPanne = { prepare: () => ({ bind: () => ({ first: async () => { throw new Error("D1 en panne"); }, run: async () => { throw new Error("D1 en panne"); } }) }) };
 
-describe("robustesse si la base D1 ne répond pas", () => {
-  it("le cache renvoie null et l'écriture ne lève pas d'erreur", async () => {
+describe("robustness if the D1 database does not respond", () => {
+  it("the cache returns null and writing does not throw an error", async () => {
     expect(await lireCache(dbEnPanne, "x")).toBeNull();
     await expect(ecrireCache(dbEnPanne, "x", { a: 1 })).resolves.toBeUndefined();
   });
-  it("la limite de débit laisse passer", async () => {
+  it("the rate limit lets requests through", async () => {
     const r = await verifierDebit(dbEnPanne, new Request("http://x"), {}, "test", 5);
     expect(r.autorise).toBe(true);
   });

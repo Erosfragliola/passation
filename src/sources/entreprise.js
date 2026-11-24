@@ -1,5 +1,5 @@
-// Annuaire des entreprises (recherche-entreprises.api.gouv.fr) : identité, NAF, effectif, siège.
-// Normalisation construite sur des réponses réelles (voir test/fixtures/). Les dirigeants ne sont jamais conservés.
+// Business directory (recherche-entreprises.api.gouv.fr): identity, NAF, headcount, head office.
+// Normalization built on real responses (see test/fixtures/). Officers are never kept.
 
 import { requeteJson } from "../lib/requete.js";
 
@@ -10,7 +10,7 @@ export async function rechercherBrut(q, { fetch: f = fetch, parPage = 1, ...opti
   return requeteJson(url, "recherche-entreprises", { ...options, fetch: f });
 }
 
-/** Extrait la fiche du SIREN demandé (correspondance exacte) ; null si absente. */
+/** Extracts the record of the requested SIREN (exact match); null if missing. */
 export function normaliserEntreprise(brut, siren) {
   const r = (brut?.results || []).find((x) => x.siren === siren);
   if (!r) return null;
@@ -30,7 +30,7 @@ export function normaliserEntreprise(brut, siren) {
   };
 }
 
-/** Suggestions pour l'autocomplétion : nom, SIREN, ville, NAF. Aucune donnée personnelle. */
+/** Autocomplete suggestions: name, SIREN, city, NAF. No personal data. */
 export function normaliserSuggestions(brut) {
   return (brut?.results || []).map((r) => ({
     siren: r.siren,

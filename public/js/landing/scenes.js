@@ -1,13 +1,13 @@
-// Petites scènes animées de l'accueil (étapes de « Comment ça marche », tampon de la confidentialité) : chacune se
-// joue quand elle entre dans l'écran. Le CSS décrit l'état final par défaut (ce que l'on voit sans JavaScript ou avec
-// « réduire les animations ») ; « scene-attente » pose l'état de départ, « scene-joue » lance les animations, qui
-// finissent sur l'état final. Les scènes sœurs (les trois étapes) s'enchaînent : la suivante attend la fin de la
-// précédente, ce qui donne un parcours 1 → 2 → 3 sur ordinateur ; sur téléphone, elles entrent l'une après l'autre.
-const DUREE_SCENE = 2100; // ms : durée de l'animation d'une étape, trait de liaison compris
+// Small animated scenes of the home page (steps of "How it works", confidentiality stamp): each one
+// plays when it enters the screen. The CSS describes the final state by default (what is seen without JavaScript or with
+// "reduce motion"); "scene-attente" sets the starting state, "scene-joue" starts the animations, which
+// end on the final state. Sibling scenes (the three steps) follow each other: the next one waits for the end of the
+// previous one, which gives a 1 → 2 → 3 sequence on desktop; on phones, they enter one after the other.
+const DUREE_SCENE = 2100; // ms: duration of a step's animation, connecting line included
 
 const reduit = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/** Moment (ms, horloge `maintenant`) où chaque scène doit démarrer : pas avant la fin de la précédente du même groupe. */
+/** Moment (ms, `maintenant` clock) when each scene must start: not before the end of the previous one in the same group. */
 export function planifier(departs, maintenant, duree = DUREE_SCENE, libreA = 0) {
   return departs.map(() => {
     const debut = Math.max(maintenant, libreA);
@@ -16,19 +16,19 @@ export function planifier(departs, maintenant, duree = DUREE_SCENE, libreA = 0) 
   });
 }
 
-/** Rejoue une scène depuis son état de départ (au clic). */
+/** Replays a scene from its starting state (on click). */
 export function rejouer(scene) {
   if (reduit()) return;
   scene.classList.remove("scene-joue");
   scene.classList.add("scene-attente");
-  void scene.offsetWidth; // force le navigateur à repartir de l'état de départ
+  void scene.offsetWidth; // forces the browser to restart from the starting state
   scene.classList.replace("scene-attente", "scene-joue");
 }
 
 export function lancerScenes(racine = document) {
   const scenes = [...racine.querySelectorAll("[data-scene]")];
   if (!scenes.length || !("IntersectionObserver" in window) || reduit()) return;
-  const libre = new WeakMap(); // parent → moment où la scène suivante du groupe peut démarrer
+  const libre = new WeakMap(); // parent → moment when the next scene of the group can start
   const obs = new IntersectionObserver((entrees) => {
     const visibles = entrees.filter((e) => e.isIntersecting).map((e) => e.target)
       .sort((a, b) => scenes.indexOf(a) - scenes.indexOf(b));
@@ -43,7 +43,7 @@ export function lancerScenes(racine = document) {
   for (const s of scenes) { s.classList.add("scene-attente"); obs.observe(s); }
 }
 
-/** Étapes : l'argumentaire est replié ; un clic sur le titre (ou sur l'illustration) le déplie et rejoue la scène. */
+/** Steps: the pitch is collapsed; a click on the title (or on the illustration) expands it and replays the scene. */
 export function lancerEtapes(racine = document) {
   for (const etape of racine.querySelectorAll(".parcours-etape")) {
     const bouton = etape.querySelector(".parcours-ouvrir");

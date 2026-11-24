@@ -1,12 +1,12 @@
-// Connexion par code à 6 chiffres, en deux temps, sans quitter la page :
-//   1. l'adresse e-mail → un code est envoyé ;  2. le code → session ouverte, direction le dossier.
-// Utilisé par la fenêtre de connexion (landing) et par la page /connexion.
-// Les liens marqués data-connexion ouvrent la fenêtre ; sans JavaScript, ils mènent à /connexion.
+// Sign-in with a 6-digit code, in two stages, without leaving the page:
+//   1. the email address → a code is sent;  2. the code → session opened, on to the file.
+// Used by the sign-in window (landing) and by the /connexion page.
+// Links marked data-connexion open the window; without JavaScript, they lead to /connexion.
 import { lien, t } from "/js/i18n.js";
 
-const ATTENTE_RENVOI = 30; // secondes avant de pouvoir redemander un code
+const ATTENTE_RENVOI = 30; // seconds before a new code can be requested
 
-const formatSiren = (s) => s.replace(/(\d{3})(\d{3})(\d{3})/, "$1\u00a0$2\u00a0$3"); // espaces insécables
+const formatSiren = (s) => s.replace(/(\d{3})(\d{3})(\d{3})/, "$1\u00a0$2\u00a0$3"); // no-break spaces
 
 async function poster(chemin, corps) {
   let r;
@@ -20,7 +20,7 @@ async function poster(chemin, corps) {
   return d;
 }
 
-/** Construit le formulaire en deux temps dans `racine`. */
+/** Builds the two-stage form in `racine`. */
 export function monterConnexion(racine, { siren = "" } = {}) {
   const id = `cx${Math.random().toString(36).slice(2, 7)}`;
   racine.innerHTML = `
@@ -102,7 +102,7 @@ export function monterConnexion(racine, { siren = "" } = {}) {
     }
   });
 
-  // Saisie : chiffres seulement ; envoi automatique au 6e chiffre (copier-coller compris)
+  // Entry: digits only; automatic submission at the 6th digit (copy-paste included)
   champCode.addEventListener("input", () => {
     champCode.value = champCode.value.replace(/\D/g, "").slice(0, 6);
     if (champCode.value.length === 6) formCode.requestSubmit();
@@ -122,13 +122,13 @@ export function monterConnexion(racine, { siren = "" } = {}) {
   return { focus: () => (formEmail.hidden ? champCode : formEmail.email).focus() };
 }
 
-/** Déjà connecté ? Direction le dossier. Sinon, fenêtre de connexion par-dessus la page. */
+/** Already signed in? On to the file. Otherwise, sign-in window over the page. */
 export async function ouvrirConnexion({ siren = "" } = {}) {
   try {
     const r = await fetch("/api/me");
     await r.text();
     if (r.ok) { location.assign(lien(siren ? `/espace/?siren=${siren}` : "/espace/")); return; }
-  } catch { /* réseau : on tente quand même la fenêtre */ }
+  } catch { /* network: we try the window anyway */ }
 
   document.getElementById("dialog-connexion")?.remove();
   const d = document.createElement("dialog");
@@ -143,7 +143,7 @@ export async function ouvrirConnexion({ siren = "" } = {}) {
   document.body.append(d);
   const f = monterConnexion(d.querySelector(".cx-zone"), { siren });
   d.querySelector(".dialog-fermer").addEventListener("click", () => d.close());
-  d.addEventListener("click", (e) => { if (e.target === d) d.close(); }); // clic sur le fond
+  d.addEventListener("click", (e) => { if (e.target === d) d.close(); }); // click on the backdrop
   d.addEventListener("close", () => d.remove());
   d.showModal();
   f.focus();

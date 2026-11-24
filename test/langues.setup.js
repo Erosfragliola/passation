@@ -1,3 +1,3 @@
-// Installe les dictionnaires (src/contenu/<langue>/*.json) avant chaque fichier de test : les modules partagés avec
-// le navigateur lisent leurs textes avec t() (public/js/i18n.js). Sans langue de requête, t() rend le français.
+// Installs the dictionaries (src/contenu/<language>/*.json) before each test file: the modules shared with
+// the browser read their texts with t() (public/js/i18n.js). Without a request language, t() returns French.
 import "../src/i18n.js";

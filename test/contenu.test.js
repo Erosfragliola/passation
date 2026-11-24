@@ -1,38 +1,38 @@
-// Contenus de la page d'accueil : rendu (typographie, italiques, clés vides) et cohérence avec index.html.
+// Home page content: rendering (typography, italics, empty keys) and consistency with index.html.
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import accueil from "../src/contenu/fr/accueil.json";
 import CLES from "../src/contenu/cles.json";
 import commun from "../src/contenu/fr/commun.json";
-// Contenu de la page d'accueil tel que le Worker le compose : textes français et réglages communs.
+// Home page content as the Worker assembles it: French texts and shared settings.
 const contenu = { ...accueil, commun, cles: { ...CLES, ...accueil.cles } };
 import { typographier, enLigne, interpoler, html, texte, lire, estVide, condition, pourJs, jsonDansScript, clesVides, lireAttributs, valeurAttribut, identiteLegale, completer, legendeTemoignage } from "../src/contenu/rendu.js";
 
 const FINE = " ", INSEC = " ";
 const PAGE = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
 
-describe("typographie française", () => {
-  it("espace fine insécable avant ; : ! ? et dans les guillemets", () => {
+describe("French typography", () => {
+  it("narrow no-break space before ; : ! ? and inside quotation marks", () => {
     expect(typographier("Et la vôtre ?")).toBe(`Et la vôtre${FINE}?`);
     expect(typographier("Comptes confidentiels ? Deux chiffres suffisent.")).toBe(`Comptes confidentiels${FINE}? Deux chiffres suffisent.`);
     expect(typographier("Note : rien ; enfin !")).toBe(`Note${FINE}: rien${FINE}; enfin${FINE}!`);
     expect(typographier("le bouton « Supprimer mon dossier » efface")).toBe(`le bouton «${FINE}Supprimer mon dossier${FINE}» efface`);
     expect(typographier("«Projet»")).toBe(`«${FINE}Projet${FINE}»`);
   });
-  it("n'ajoute pas d'espace là où il n'y en avait pas (heures, adresses)", () => {
+  it("does not add a space where there was none (times, addresses)", () => {
     expect(typographier("mailto:x@y.fr")).toBe("mailto:x@y.fr");
     expect(typographier("8:00")).toBe("8:00");
   });
-  it("apostrophe typographique, points de suspension, unités et fourchettes insécables", () => {
+  it("typographic apostrophe, ellipsis, units and ranges with no-break spaces", () => {
     expect(typographier("qu'elle ouvre...")).toBe("qu’elle ouvre…");
     expect(typographier("1,8 – 2,4 M€")).toBe(`1,8${INSEC}– 2,4${INSEC}M€`);
     expect(typographier("490 €, 20 %")).toBe(`490${INSEC}€, 20${INSEC}%`);
   });
 });
 
-describe("conditions d'affichage", () => {
+describe("display conditions", () => {
   const cles = { telephone: "", rappel: false, vrai: true, legal: { rcs: "Nantes 123", forme: "" }, guides: [{ titre: "a" }, { titre: "b" }, {}], vide: { a: "" } };
-  it("clé vide, booléen faux, chemin imbriqué", () => {
+  it("empty key, false boolean, nested path", () => {
     expect(condition(cles, "telephone")).toBe(false);
     expect(condition(cles, "rappel")).toBe(false);
     expect(condition(cles, "vrai")).toBe(true);
@@ -40,69 +40,69 @@ describe("conditions d'affichage", () => {
     expect(condition(cles, "legal.forme")).toBe(false);
     expect(condition(cles, "vide")).toBe(false);
   });
-  it("liste avec un minimum d'entrées non vides", () => {
+  it("list with a minimum of non-empty entries", () => {
     expect(condition(cles, "guides:2")).toBe(true);
     expect(condition(cles, "guides:3")).toBe(false);
   });
-  it("interpolation des chemins imbriqués ; clés vides listées avec leur chemin", () => {
+  it("interpolation of nested paths; empty keys listed with their path", () => {
     expect(interpoler("RCS {legal.rcs}", cles)).toBe("RCS Nantes 123");
     expect(interpoler("{legal.forme} au capital", cles)).toBeNull();
     expect(clesVides({ cles })).toEqual(expect.arrayContaining(["telephone", "rappel", "legal.forme", "vide.a"]));
   });
-  it("identité légale : les morceaux vides disparaissent, rien si tout est vide", () => {
+  it("legal identity: empty parts disappear, nothing if everything is empty", () => {
     expect(identiteLegale({ raison_sociale: "Passation SAS", forme: "SAS", capital: "1 000 €", rcs: "Nantes 123 456 789", adresse: "1 rue X, 44000 Nantes" }))
       .toBe("Passation SAS, SAS au capital de 1 000 €, RCS Nantes 123 456 789, 1 rue X, 44000 Nantes.");
     expect(identiteLegale({ raison_sociale: "Passation SAS", forme: "", capital: "1 000 €", rcs: "", adresse: "Nantes" })).toBe("Passation SAS, au capital de 1 000 €, Nantes.");
     expect(identiteLegale({ raison_sociale: "", forme: "", capital: "", rcs: "", adresse: "" })).toBe("");
     expect(completer({ cles: { legal: { rcs: "Nantes 1" } }, pied: { a: 1 } }).pied).toEqual({ a: 1, identite: "RCS Nantes 1." });
   });
-  it("noms de clés avec chiffres (prix_etape2, duree_etape2)", () => {
+  it("key names with digits (prix_etape2, duree_etape2)", () => {
     expect(interpoler("{duree_etape2} · {prix_etape2}", { duree_etape2: "20 minutes", prix_etape2: "Gratuit" })).toBe("20 minutes · Gratuit");
     expect(interpoler("{prix_etape2}", { prix_etape2: "" })).toBeNull();
   });
 });
 
-describe("rendu des valeurs", () => {
+describe("rendering of values", () => {
   const c = { cles: { prix_dossier: "", telephone: "01 23 45 67 89" }, a: "Votre *transmission*.", b: "Prix : {prix_dossier} €",
     t: "Appelez le {telephone}", l: ["Un.", "", "Deux <b>"], x: "Comptes {exercice}", v: "   " };
-  it("italique et échappement", () => {
+  it("italics and escaping", () => {
     expect(enLigne("Votre *transmission*. <script>")).toBe("Votre <em>transmission</em>. &lt;script&gt;");
     expect(html(c, "a")).toBe("Votre <em>transmission</em>.");
   });
-  it("une clé vide retire l'élément ; une clé remplie est interpolée", () => {
+  it("an empty key removes the element; a filled key is interpolated", () => {
     expect(html(c, "b")).toBeNull();
     expect(html(c, "t")).toBe("Appelez le 01 23 45 67 89");
     expect(html(c, "v")).toBeNull();
     expect(html(c, "absent")).toBeNull();
   });
-  it("les repères inconnus de « cles » restent pour le JavaScript", () => {
+  it('placeholders unknown to "cles" stay for the JavaScript', () => {
     expect(interpoler("Comptes {exercice}", c.cles)).toBe("Comptes {exercice}");
     expect(pourJs(c, "x")).toBe("Comptes {exercice}");
   });
-  it("liste : un paragraphe par élément non vide", () => {
+  it("list: one paragraph per non-empty element", () => {
     expect(html(c, "l")).toBe("<p>Un.</p><p>Deux &lt;b&gt;</p>");
   });
-  it("attributs : texte brut sans astérisques", () => {
+  it("attributes: plain text without asterisks", () => {
     expect(texte(c, "a")).toBe("Votre transmission.");
     expect(lireAttributs("alt=a.b; aria-label=c")).toEqual([["alt", "a.b"], ["aria-label", "c"]]);
   });
-  it("lien téléphone sans espaces (y compris insécables), autres attributs intacts", () => {
+  it("phone link without spaces (including no-break ones), other attributes intact", () => {
     expect(valeurAttribut("href", `tel:01 23${INSEC}45 67 89`)).toBe("tel:0123456789");
     expect(valeurAttribut("href", "tel:+33 1 23 45 67 89")).toBe("tel:+33123456789");
     expect(valeurAttribut("aria-label", "Nous appeler au 01 23 45 67 89")).toBe("Nous appeler au 01 23 45 67 89");
     expect(valeurAttribut("alt", 'Le "dossier"')).toBe("Le ”dossier”");
   });
-  it("JSON sûr dans une balise <script>", () => {
+  it("safe JSON in a <script> tag", () => {
     expect(jsonDansScript({ a: "</script><b>" })).not.toContain("</script>");
   });
 });
 
-describe("fichier de contenu et page d'accueil", () => {
+describe("content file and home page", () => {
   const chemins = [...PAGE.matchAll(/data-t="([^"]+)"/g)].map((m) => m[1]);
   const attributs = [...PAGE.matchAll(/data-t-attr="([^"]+)"/g)].flatMap((m) => lireAttributs(m[1]).map(([, ch]) => ch));
   const si = [...PAGE.matchAll(/data-si(?:-un|non)?="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/));
 
-  // Contenu servi (valeurs calculées comprises) ; un élément de liste encore vide (témoignage, guide) n'est pas un oubli
+  // Served content (calculated values included); a list element still empty (testimonial, guide) is not an oversight
   const servi = completer(contenu);
   const existe = (ch) => {
     let v = servi;
@@ -113,15 +113,15 @@ describe("fichier de contenu et page d'accueil", () => {
     }
     return true;
   };
-  it("chaque texte de la page existe dans le fichier de contenu", () => {
+  it("each text of the page exists in the content file", () => {
     const absents = [...chemins, ...attributs].filter((ch) => !existe(ch));
     expect(absents).toEqual([]);
     expect(chemins.length).toBeGreaterThan(100);
   });
-  it("chaque condition porte sur une clé déclarée", () => {
+  it("each condition is on a declared key", () => {
     expect(si.filter((k) => !existe(`cles.${k.split(":")[0]}`))).toEqual([]);
   });
-  it("aucun texte entre crochets dans la page ni dans le contenu", () => {
+  it("no text in square brackets in the page or in the content", () => {
     const valeurs = [];
     const parcourir = (v) => (typeof v === "string" ? valeurs.push(v) : v && typeof v === "object" && Object.values(v).forEach(parcourir));
     parcourir(contenu);
@@ -129,32 +129,32 @@ describe("fichier de contenu et page d'accueil", () => {
     const texteDeLaPage = PAGE.replace(/<script[\s\S]*?<\/script>/g, "").replace(/<[^>]+>/g, " ");
     expect(texteDeLaPage).not.toContain("[");
   });
-  it("aucun texte d'attente ni faux contenu", () => {
+  it("no placeholder text or fake content", () => {
     for (const source of [PAGE, JSON.stringify(contenu)]) {
       expect(source).not.toMatch(/À remplir|\[PRIX\]|Lorem|TODO|XXX/i);
     }
   });
-  it("la page d'accueil ne charge plus la 3D", () => {
+  it("the home page no longer loads the 3D", () => {
     expect(PAGE).not.toMatch(/three|edifice|votre-maquette|data-fenetre|data-maquette/);
   });
-  it("les clés fournies plus tard sont vides, pas inventées", () => {
+  it("keys provided later are empty, not invented", () => {
     expect(clesVides(contenu)).toEqual(expect.arrayContaining(["prix_dossier", "fondateur_nom", "telephone", "hebergement", "partenaires", "videos_metiers",
       "nb_dirigeants", "note_avis", "nb_avis", "rappel", "chiffres.entreprises_estimees", "legal.raison_sociale", "temoignages", "guides", "faq_prix"]));
   });
-  it("les pastilles de prix et de durée des étapes sont retirées avec leur clé", () => {
+  it("the price and duration badges of the steps are removed with their key", () => {
     expect(PAGE).toMatch(/<li data-si="duree_etape2" data-t="comment\.etapes\.1\.pastilles\.0">/);
     expect(PAGE).toMatch(/<li data-si="prix_etape2" data-t="comment\.etapes\.1\.pastilles\.1">/);
     expect(PAGE).toMatch(/<li data-si="prix_dossier" data-t="comment\.etapes\.2\.pastilles\.1">/);
     expect(PAGE).not.toMatch(/id="tarifs"|nav\.tarifs/);
   });
-  it("les parties dans l'ordre (bento du 18/11/2026 : dossier, étapes, confidentialité) ; une seule balise vidéo", () => {
+  it("the parts in order (bento of 18/11/2026: file, steps, confidentiality); a single video tag", () => {
     const ids = [...PAGE.matchAll(/<section id="([^"]+)"/g)].map((m) => m[1]);
     expect(ids).toEqual(["accueil", "resultat", "livrables", "comment", "confidentialite", "equipe", "preuves", "guides", "questions", "relance"]);
     expect(PAGE).toMatch(/<header class="nav-zone"[\s\S]*<main[\s\S]*<\/main>\s*<footer class="pied">/);
     expect(PAGE).not.toMatch(/id="essai"|id="parti-pris"|id="tarifs"|id="histoire"|histoire-page\.js|etabli-1200|parti-pris-video/);
     expect([...PAGE.matchAll(/<video class="([^"]+)"/g)].every((m) => m[1] === "hero-video")).toBe(true);
   });
-  it("sections et éléments retirés sans contenu : équipe, preuves (2 témoignages), guides (3), questions à compléter", () => {
+  it("sections and elements removed without content: team, proof (2 testimonials), guides (3), questions to complete", () => {
     expect(PAGE).toMatch(/<section id="equipe"[^>]*data-si="fondateur_nom fondateur_texte"/);
     expect(PAGE).toMatch(/<section id="preuves"[^>]*data-si="temoignages:2"/);
     expect(PAGE).toMatch(/<section id="guides"[^>]*data-si="guides:3"/);
@@ -164,35 +164,35 @@ describe("fichier de contenu et page d'accueil", () => {
     expect(q.indexOf("D'où viennent les chiffres de ma société ?")).toBe(q.indexOf("L'estimation express est-elle fiable ?") + 1);
     expect(q).toHaveLength(11);
   });
-  it("légende d'un témoignage : prénom, métier, ville, les morceaux vides retirés", () => {
+  it("caption of a testimonial: first name, trade, city, empty parts removed", () => {
     expect(legendeTemoignage({ prenom: "Anne", metier: "boulangère", ville: "Nantes", texte: "…" })).toBe("Anne, boulangère, Nantes");
     expect(legendeTemoignage({ prenom: "Anne", metier: "", ville: "Nantes" })).toBe("Anne, Nantes");
     expect(completer({ cles: { temoignages: [{ prenom: "A" }, { ville: "B" }] }, preuves: { x: 1 } }).preuves).toEqual({ x: 1, legendes: ["A", "B"] });
   });
-  it("bento : trois étapes, trois blocs, encoche du hero avec un exemple marqué fictif, sources réelles", () => {
+  it("bento: three steps, three blocks, hero notch with an example marked fictitious, real sources", () => {
     expect(PAGE).not.toMatch(/role="tablist"|role="tabpanel"|onglets\.js|data-dossier-final|hero-tuiles/);
     expect([...PAGE.matchAll(/<li class="parcours-etape" id="comment-(\d)" data-scene>/g)].map((m) => m[1])).toEqual(["1", "2", "3"]);
     expect(PAGE.match(/<article class="bento-bloc /g)).toHaveLength(3);
-    expect(PAGE.match(/href="#livrables"/g).length).toBeGreaterThanOrEqual(2);           // menu, menu mobile
-    expect(PAGE.match(/class="hero-bulle /g)).toHaveLength(4);                           // quatre bulles logées dans la forme
-    expect(PAGE).toMatch(/<div class="hero-scene" id="hero-scene">[\s\S]*class="conteneur hero-contenu"/);           // le texte est dans la forme
+    expect(PAGE.match(/href="#livrables"/g).length).toBeGreaterThanOrEqual(2);           // menu, mobile menu
+    expect(PAGE.match(/class="hero-bulle /g)).toHaveLength(4);                           // four bubbles placed in the shape
+    expect(PAGE).toMatch(/<div class="hero-scene" id="hero-scene">[\s\S]*class="conteneur hero-contenu"/);           // the text is inside the shape
     expect(PAGE).not.toMatch(/pied-trousseau|resultat-suites|btn-autre/);
-    expect(contenu.hero.bulles.code.fictif).toBe("exemple fictif");                      // jamais présenté comme réel
-    expect(contenu.sources.liste).toEqual(["INSEE", "INPI", "BODACC"]);                  // registres réellement utilisés
+    expect(contenu.hero.bulles.code.fictif).toBe("exemple fictif");                      // never presented as real
+    expect(contenu.sources.liste).toEqual(["INSEE", "INPI", "BODACC"]);                  // registries actually used
     expect(contenu.hero.note_comptes).toBe("");
   });
-  it("lot 1 : scènes des étapes et tampon marqués fictifs, joués une fois, rien sans mouvement autorisé", () => {
+  it("batch 1: step scenes and stamp marked fictitious, played once, nothing without motion allowed", () => {
     const SCENES = readFileSync(new URL("../public/js/landing/scenes.js", import.meta.url), "utf8");
-    expect(SCENES).toMatch(/prefers-reduced-motion: reduce/);                            // état final directement
-    expect(SCENES).toMatch(/unobserve/);                                                 // une seule fois
-    expect(PAGE.match(/data-scene/g)).toHaveLength(4);                                   // trois étapes et le tampon
-    expect(PAGE.match(/data-t="comment\.illustrations\.fictif"/g)).toHaveLength(2);     // étapes 1 et 2 (chiffres d'exemple)
+    expect(SCENES).toMatch(/prefers-reduced-motion: reduce/);                            // final state directly
+    expect(SCENES).toMatch(/unobserve/);                                                 // only once
+    expect(PAGE.match(/data-scene/g)).toHaveLength(4);                                   // three steps and the stamp
+    expect(PAGE.match(/data-t="comment\.illustrations\.fictif"/g)).toHaveLength(2);     // steps 1 and 2 (example figures)
     expect(contenu.comment.illustrations.fictif).toBe("exemple fictif");
     expect(contenu.confidentialite.fictif).toBe("Exemple fictif");
     expect(PAGE).toMatch(/class="confid-tampon"><span data-t="confidentialite\.apres">/);
     expect(contenu.comment.etapes.every((e) => e.obtenez && e.chiffre)).toBe(true);
   });
-  it("lot 1 : fiche de résultat à une seule action, pied de page avec le grand nom", () => {
+  it("batch 1: result card with a single action, footer with the large name", () => {
     expect(PAGE).not.toMatch(/dossier-cta|resultat-dossier/);
     expect(PAGE.match(/id="resultat-ouvrir"/g)).toHaveLength(1);
     expect(PAGE).toMatch(/<p class="pied-marque" aria-hidden="true" data-t="pied\.marque"><\/p>/);
@@ -200,11 +200,11 @@ describe("fichier de contenu et page d'accueil", () => {
   });
 });
 
-// Nettoyage du 19/11/2026 : chaque clé du contenu doit servir. Une clé est lue si la page la cite (data-t, data-t-attr,
-// data-t-liste, data-t-json), ou si un script de l'accueil la lit dans le sous-arbre « js ». Exceptions documentées :
-// « cles » (liste à fournir par le propriétaire, conditions data-si et gabarits {…}), js.erreurs (lu par le code
-// d'erreur renvoyé par l'API), « _lisez_moi » (mode d'emploi du fichier).
-describe("aucune clé orpheline dans accueil.json", () => {
+// Cleanup of 19/11/2026: every content key must be used. A key is read if the page cites it (data-t, data-t-attr,
+// data-t-liste, data-t-json), or if a home page script reads it in the "js" subtree. Documented exceptions:
+// "cles" (list to be provided by the owner, data-si conditions and {…} templates), js.erreurs (read by the error code
+// returned by the API), "_lisez_moi" (instructions for the file).
+describe("no orphan key in accueil.json", () => {
   const source = (f) => readFileSync(new URL(`../public/js/landing/${f}`, import.meta.url), "utf8");
   const lues = new Set([
     ...[...source("resultat.js").matchAll(/\bR\.([a-z_]+)/g)].map((m) => `js.resultat.${m[1]}`),
@@ -219,5 +219,5 @@ describe("aucune clé orpheline dans accueil.json", () => {
   const servie = (c) => c === "_lisez_moi" || c.startsWith("cles.") || c.startsWith("js.erreurs.")
     || [...cites, ...json].some((p) => c === p || c.startsWith(`${p}.`) || p.startsWith(`${c}.`))
     || [...lues].some((p) => c === p || c.startsWith(`${p}.`));
-  it("toutes les clés sont lues par la page ou par ses scripts", () => expect(feuilles.filter((c) => !servie(c))).toEqual([]));
+  it("all keys are read by the page or by its scripts", () => expect(feuilles.filter((c) => !servie(c))).toEqual([]));
 });

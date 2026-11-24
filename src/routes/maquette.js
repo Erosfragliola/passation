@@ -1,4 +1,4 @@
-// GET /api/maquette/:siren : données d'une entreprise pour « Votre maquette » et la frise.
+// GET /api/maquette/:siren : a company's data for "Your model" and the timeline.
 import { json } from "../http.js";
 import { chargerMaquette, CLE_MAQUETTE } from "../maquette/donnees.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";

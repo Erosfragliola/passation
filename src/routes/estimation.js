@@ -1,5 +1,5 @@
-// POST /api/estimation : fourchette express à partir de chiffres saisis par le dirigeant (comptes non publiés).
-// Rien n'est enregistré : le calcul est fait puis la réponse est renvoyée.
+// POST /api/estimation : quick range from figures entered by the owner (unpublished accounts).
+// Nothing is saved: the calculation is done and the response is sent back.
 import { json } from "../http.js";
 import { estimationExpress } from "../valuation/express.js";
 import { verifierDebit } from "../lib/ratelimit.js";

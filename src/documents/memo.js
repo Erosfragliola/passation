@@ -1,7 +1,7 @@
-// Mémorandum d'information, construit comme ceux des banques d'affaires : nom de code en couverture, synthèse
-// organisée autour de six points forts numérotés (un par chapitre), titres qui affirment, source sous chaque chiffre.
-// Le code calcule tout (compte de résultat, EBE retraité, endettement, ratios) ; Claude rédige à partir de ces
-// chiffres, sans en produire de nouveaux. Présentation 100 % Passation ; seul le logo de l'entreprise apparaît.
+// Information memorandum, built like those of investment banks: code name on the cover, summary organized
+// around six numbered strengths (one per chapter), titles that make a claim, source under each figure.
+// The code calculates everything (income statement, adjusted EBITDA, debt, ratios); Claude drafts from these
+// figures, without producing new ones. 100% Passation presentation; only the company's logo appears.
 import { secteurDe, anciennete, regionDe } from "./anonymat.js";
 import { libelleEffectif } from "../../public/js/regles.js";
 import { faitsUtilisables } from "../../public/js/faits-site.js";
@@ -12,7 +12,7 @@ import { projet } from "./nom-de-code.js";
 import { t as tr, T, avecTextes } from "../../public/js/i18n.js";
 import { equipePourClaude } from "../../public/js/equipe.js";
 
-/** Parties du mémorandum, chacune ouverte par une page d'ouverture (convention des banques d'affaires). */
+/** Parts of the memorandum, each opened by an opening page (investment-bank convention). */
 export const PARTIES_MEMO = [
   { n: 1, titre: T, detail: T },
   { n: 2, titre: T, detail: T },
@@ -22,8 +22,8 @@ export const PARTIES_MEMO = [
 ];
 
 /**
- * Chapitres. `titre` : intitulé par défaut (remplacé par le titre affirmatif rédigé) ; `court` : nom dans le sommaire et
- * l'en-tête ; `partie` : numéro de partie ; `point_fort` : numéro du point fort de la synthèse que le chapitre développe.
+ * Chapters. `titre`: default heading (replaced by the drafted assertive title); `court`: name in the contents and
+ * the header; `partie`: part number; `point_fort`: number of the summary strength that the chapter develops.
  */
 export const SECTIONS_MEMO = [
   { cle: "synthese", titre: T, court: T, partie: 1, point_fort: null,
@@ -54,22 +54,22 @@ export const SECTIONS_MEMO = [
     consigne: "Présente l'opération : part du capital cédée, motif du cédant, accompagnement proposé au repreneur, calendrier souhaité, périmètre (détention des titres, situation des murs). Ton neutre et précis. Aucune indication de prix ni de valeur.",
     donnees: ["operation", "perimetre"] },
 ];
-// Titres (parties et chapitres) : src/contenu/<langue>/serveur.json, lus dans la langue de la requête.
+// Titles (parts and chapters): src/contenu/<language>/serveur.json, read in the request's language.
 for (const x of PARTIES_MEMO) avecTextes(x, `serveur.memo.parties.${x.n}`);
 for (const x of SECTIONS_MEMO) avecTextes(x, `serveur.memo.sections.${x.cle}`);
 
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 const exercicesDe = (entree) => entree?.exercices || [];
 
-/** Taux de croissance annuel moyen entre deux valeurs positives séparées de `ans` années. */
+/** Compound annual growth rate between two positive values `ans` years apart. */
 export function tcam(debut, fin, ans) {
   if (!(debut > 0) || !(fin > 0) || !(ans > 0)) return null;
   return Math.pow(fin / debut, 1 / ans) - 1;
 }
 
 /**
- * Compte de résultat des exercices validés : montants (charges en négatif), croissance annuelle (annualisée quand les
- * exercices ne se suivent pas) et ratios en % du chiffre d'affaires. L'EBE est celui du moteur (pont : EBE comptable).
+ * Income statement of the approved fiscal years: amounts (expenses as negatives), annual growth (annualized when the
+ * fiscal years are not consecutive) and ratios as a % of revenue. EBITDA is the engine's (bridge: reported EBITDA).
  */
 export function compteResultat(entree, resultat) {
   const exs = exercicesDe(entree);
@@ -108,7 +108,7 @@ export function compteResultat(entree, resultat) {
   };
 }
 
-/** Passage de l'EBE comptable à l'EBE retraité, par exercice ; une ligne par nature de retraitement. */
+/** Bridge from reported to adjusted EBITDA, per fiscal year; one line per type of adjustment. */
 export function tableauEbeRetraite(entree, resultat) {
   const pont = resultat?.pont_ebe || [];
   const annees = pont.map((p) => p.annee);
@@ -134,7 +134,7 @@ export function tableauEbeRetraite(entree, resultat) {
   };
 }
 
-/** Endettement net au dernier exercice (lignes non nulles), rapporté à l'EBE normatif ; BFR en jours de CA. */
+/** Net debt at the latest fiscal year (non-zero lines), relative to normalized EBITDA; working capital in days of revenue. */
 export function tableauEndettement(entree, resultat) {
   const dn = resultat?.dette_nette;
   if (!dn) return null;
@@ -148,7 +148,7 @@ export function tableauEndettement(entree, resultat) {
   };
 }
 
-/** Principaux clients (anonymes), triés par part décroissante ; concentration dérivée du tableau s'il est rempli. */
+/** Main customers (anonymous), sorted by decreasing share; concentration derived from the table if it is filled in. */
 export function clientsPrincipaux(reponses = {}) {
   const c = reponses.clients || {};
   const lignes = (Array.isArray(c.principaux) ? c.principaux : [])
@@ -165,7 +165,7 @@ export function clientsPrincipaux(reponses = {}) {
   };
 }
 
-/** Périmètre de l'opération : détention des titres, situation des murs, part cédée (réponses du dirigeant). */
+/** Scope of the deal: holding of the shares, situation of the premises, share sold (owner's answers). */
 export function perimetre(reponses = {}) {
   const o = reponses.operation || {}, r = reponses.retraitements || {};
   const connu = (v, liste) => (Object.values(liste).includes(v) ? v : null);
@@ -179,7 +179,7 @@ export function perimetre(reponses = {}) {
   };
 }
 
-/** Origine des chiffres, par exercice validé : « liasses fiscales 2023 et 2024 ; comptes déposés (INPI) 2022 ». */
+/** Origin of the figures, per approved fiscal year: "tax returns 2023 and 2024; filed accounts (INPI) 2022". */
 const origine = (o, n) => tr(`serveur.memo.origines.${o}`, { n });
 export function sourcesChiffres(lignesChiffres = {}, annees = []) {
   const parOrigine = {};
@@ -194,7 +194,7 @@ export function sourcesChiffres(lignesChiffres = {}, annees = []) {
     .map((o) => `${origine(o, parOrigine[o].length)} ${liste(parOrigine[o])}`).join(" ; ") || null;
 }
 
-/** Indicateurs clés, calculés ici et déjà mis en forme : Claude les recopie, il ne calcule rien. */
+/** Key indicators, calculated here and already formatted: Claude copies them, it calculates nothing. */
 export function indicateurs({ cr, ebeR, endet, clients, entreprise }) {
   const d = (cle) => cr.lignes.find((l) => l.cle === cle)?.valeurs.at(-1) ?? null;
   const ca = d("chiffre_affaires"), ebe = d("ebe");
@@ -219,7 +219,7 @@ export function indicateurs({ cr, ebeR, endet, clients, entreprise }) {
   };
 }
 
-/** Tout ce que le mémorandum calcule, en une fois (servi à la page et aux consignes de rédaction). */
+/** Everything the memorandum calculates, in one go (served to the page and to the drafting instructions). */
 export function chiffresMemo({ entreprise = {}, entree, resultat, reponses = {}, lignesChiffres = {} }) {
   const cr = compteResultat(entree, resultat);
   const ebeR = tableauEbeRetraite(entree, resultat);
@@ -228,7 +228,7 @@ export function chiffresMemo({ entreprise = {}, entree, resultat, reponses = {},
   return { cr, ebeR, endet, clients, perimetre: perimetre(reponses), indicateurs: indicateurs({ cr, ebeR, endet, clients, entreprise }), sources: sourcesChiffres(lignesChiffres, cr.annees) };
 }
 
-/** Données transmises à Claude pour une section (uniquement ce dont la section a besoin). */
+/** Data sent to Claude for a section (only what the section needs). */
 export function donneesSection(section, { entreprise, entree, resultat, reponses = {}, lignesChiffres = {} }) {
   const site = reponses.site || {};
   // Faits validés, sauf ceux que les registres contredisent tant que le dirigeant n'a pas tranché
@@ -269,7 +269,7 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
   return d;
 }
 
-/** Le mémorandum s'ouvre quand l'activité est décrite et l'opération précisée. */
+/** The memorandum opens when the business is described and the deal specified. */
 export function memoDeverrouille(reponses = {}) {
   const manque = [];
   if (!reponses.activite?.description?.trim()) manque.push(tr("serveur.memo.manque.activite"));
@@ -277,7 +277,7 @@ export function memoDeverrouille(reponses = {}) {
   return { ok: manque.length === 0, manque };
 }
 
-/** Profil affiché dans les mises en avant des diapositives (données publiques + réponses du dirigeant). */
+/** Profile displayed in the highlights of the slides (public data + owner's answers). */
 export function profilMemo(entreprise = {}, reponses = {}, codeName = null) {
   const c = clientsPrincipaux(reponses), o = reponses.operation || {}, a = reponses.activite || {};
   return {
@@ -294,7 +294,7 @@ export function profilMemo(entreprise = {}, reponses = {}, codeName = null) {
   };
 }
 
-/** Titre affirmatif et accroche rédigés : acceptés s'ils sont courts et sans marque de mise en forme. */
+/** Drafted assertive title and hook: accepted if they are short and without formatting marks. */
 export function titreValide(t, max = 110) {
   const s = String(t || "").replace(/\s+/g, " ").replace(/[.\s]+$/, "").trim();
   return s && s.length <= max && !/[*#_`]/.test(s) ? s : null;

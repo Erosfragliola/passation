@@ -1,6 +1,6 @@
-// FIN-01 (audit du 18/11/2026) : un exercice incomplet ne doit jamais entrer dans la valorisation avec des charges
-// comptées à zéro. Avant le correctif, un exercice avec le seul CA (1 000 000 €) validé donnait un EBE normatif de
-// 1 000 000 € et une valeur centrale de 5,6 M€. Valeurs attendues calculées à la main (détail en commentaire).
+// FIN-01 (audit of 18/11/2026): an incomplete fiscal year must never enter the valuation with expenses
+// counted as zero. Before the fix, a fiscal year with only revenue (€1,000,000) approved gave a normalized EBITDA of
+// €1,000,000 and a central value of €5.6M. Expected values calculated by hand (details in comments).
 import { describe, it, expect } from "vitest";
 import { assemblerEntree } from "../src/valuation/entree.js";
 import { valorisationApprofondie } from "../src/valuation/approfondie.js";
@@ -9,10 +9,10 @@ import HYP from "../src/data/hypotheses.json";
 
 const valide = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, { valeur: v, valide: true, source: "dirigeant" }]));
 
-// Exercice 2025 complet, industrie (section C, multiples 4 / 5,6 / 7) :
-// EBE = 1 000 000 − 400 000 − 200 000 − 20 000 − 230 000 = 150 000
-// Dette nette = 120 000 − 80 000 = 40 000 ; BFR = 50 000 + 100 000 − 60 000 − 40 000 = 50 000 (écart au normatif : 0)
-// Titres = 150 000 × (4 ; 5,6 ; 7) − 40 000 = 560 000 ; 800 000 ; 1 010 000
+// Fiscal year 2025 complete, manufacturing (section C, multiples 4 / 5.6 / 7):
+// EBITDA = 1,000,000 − 400,000 − 200,000 − 20,000 − 230,000 = 150,000
+// Net debt = 120,000 − 80,000 = 40,000; working capital = 50,000 + 100,000 − 60,000 − 40,000 = 50,000 (gap to normalized: 0)
+// Shares = 150,000 × (4; 5.6; 7) − 40,000 = 560,000; 800,000; 1,010,000
 const complet2025 = valide({
   chiffre_affaires: 1_000_000, achats_consommes: 400_000, charges_externes: 200_000, impots_taxes: 20_000, charges_personnel: 230_000,
   stocks: 50_000, creances_clients: 100_000, tresorerie: 80_000, capitaux_propres: 300_000, emprunts: 120_000,
@@ -25,8 +25,8 @@ const calcul = (lignes) => {
 };
 const proche = (a, b, tol = 0.01) => expect(Math.abs(a - b)).toBeLessThan(tol);
 
-describe("exercices incomplets (FIN-01)", () => {
-  it("CA seul validé : aucun calcul, exercice signalé (et non plus 5,6 M€ de valeur)", () => {
+describe("incomplete fiscal years (FIN-01)", () => {
+  it("only revenue approved: no calculation, fiscal year flagged (and no longer €5.6M of value)", () => {
     const { entree, r } = calcul({ 2025: caSeul(1_000_000) });
     expect(entree.exercices).toEqual([]);
     expect(entree.exercices_exclus.map((x) => x.annee)).toEqual([2025]);
@@ -34,7 +34,7 @@ describe("exercices incomplets (FIN-01)", () => {
     expect(r.alertes.join(" ")).toMatch(/2025 écarté/);
   });
 
-  it("exercice complet seul : titres 560 000 / 800 000 / 1 010 000", () => {
+  it("complete fiscal year only: shares 560,000 / 800,000 / 1,010,000", () => {
     const { r } = calcul({ 2025: complet2025 });
     expect(r.ebe_normatif.valeur).toBe(150_000);
     expect(r.dette_nette.total).toBe(40_000);
@@ -43,23 +43,23 @@ describe("exercices incomplets (FIN-01)", () => {
     proche(r.multiples.titres.haut, 1_010_000);
   });
 
-  it("mixte (2025 complet + 2024 avec le seul CA) : 2024 écarté, mêmes résultats que 2025 seul", () => {
+  it("mixed (2025 complete + 2024 with revenue only): 2024 left out, same results as 2025 alone", () => {
     const { entree, r } = calcul({ 2024: caSeul(900_000), 2025: complet2025 });
     expect(entree.exercices.map((x) => x.annee)).toEqual([2025]);
     expect(r.annees).toEqual([2025]);
-    expect(r.ebe_normatif.valeur).toBe(150_000); // et non (150 000 + 900 000) / 2
+    expect(r.ebe_normatif.valeur).toBe(150_000); // and not (150,000 + 900,000) / 2
     proche(r.multiples.titres.central, 800_000);
     expect(r.synthese.alertes.join(" ")).toMatch(/Exercice 2024 écarté/);
   });
 
-  it("une ligne obligatoire non validée suffit à écarter l'exercice", () => {
+  it("one unapproved required line is enough to leave the fiscal year out", () => {
     const l = structuredClone(complet2025);
     l.charges_externes.valide = false;
     const { entree } = calcul({ 2025: l });
     expect(entree.exercices_exclus).toEqual([{ annee: 2025, manquants: ["charges_externes"] }]);
   });
 
-  it("valeur absente (null) ≠ vrai zéro : achats à 0 validés → exercice retenu, EBE 550 000", () => {
+  it("missing value (null) ≠ real zero: purchases at 0 approved → fiscal year used, EBITDA 550,000", () => {
     const zero = structuredClone(complet2025);
     zero.achats_consommes.valeur = 0; // 1 000 000 − 0 − 200 000 − 20 000 − 230 000 = 550 000
     expect(calcul({ 2025: zero }).r.ebe_normatif.valeur).toBe(550_000);
@@ -68,7 +68,7 @@ describe("exercices incomplets (FIN-01)", () => {
     expect(calcul({ 2025: absent }).entree.exercices).toEqual([]);
   });
 
-  it("comptes publics : EBE publié validé à la place du détail des charges → retenu", () => {
+  it("public accounts: published EBITDA approved instead of the detail of expenses → used", () => {
     const l = structuredClone(complet2025);
     for (const k of ["achats_consommes", "charges_externes", "impots_taxes", "charges_personnel"]) delete l[k];
     l.ebe = { valeur: 120_000, valide: true, source: "inpi" };
@@ -76,13 +76,13 @@ describe("exercices incomplets (FIN-01)", () => {
     expect(r.ebe_normatif.valeur).toBe(120_000);
   });
 
-  it("moteur appelé directement avec un exercice partiel : écarté par le moteur lui-même", () => {
+  it("engine called directly with a partial fiscal year: left out by the engine itself", () => {
     const r = valorisationApprofondie({ secteur: "industrie", exercices: [{ annee: 2025, chiffre_affaires: 1_000_000 }] }, HYP);
     expect(r.statut).toBe("chiffres_absents");
     expect(r.alertes.join(" ")).toMatch(/EBE non déterminable/);
   });
 
-  it("datapack (cas mixte) : seul 2025 figure, formules = moteur (EBE normatif 150 000, titres centraux 800 000)", () => {
+  it("datapack (mixed case): only 2025 appears, formulas = engine (normalized EBITDA 150,000, central shares 800,000)", () => {
     const { entree, H, r } = calcul({ 2024: caSeul(900_000), 2025: complet2025 });
     const wb = construireDatapack({ entreprise: { nom: "Exemple", siren: "000000000" }, entree, H, resultat: r, genereLe: new Date("2026-11-18") });
     const calc = wb.calculer();

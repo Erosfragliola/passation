@@ -1,20 +1,20 @@
-// Anonymisation du teaser : faits généraux calculés par le code (secteur, région, fourchettes) et contrôle
-// automatique de tout texte publié. Interdits : nom (et ses mots distinctifs), ville, code postal, SIREN, montants
-// exacts (CA, EBE, résultat, valeur), termes issus du site de l'entreprise. Module pur, testé.
+// Teaser anonymization: general facts calculated by the code (industry, region, ranges) and automatic check
+// of every published text. Forbidden: name (and its distinctive words), city, postal code, SIREN, exact amounts
+// (revenue, EBITDA, net income, value), terms taken from the company's website. Pure module, tested.
 import divisions from "../data/naf-divisions.json";
 import divisionsEn from "../data/naf-divisions-en.json";
 import { t as tr, langue } from "../../public/js/i18n.js";
 
-/** Libellé du secteur affiché partout (accueil, teaser, visuels, mémorandum) : la division NAF officielle (deux
- *  premiers chiffres du code), sans la clause « à l'exception de… ». « 47.71Z » → « Commerce de détail ». */
+/** Industry label displayed everywhere (home page, teaser, visuals, memorandum): the official NAF division (first two
+ *  digits of the code), without the "except…" clause. "47.71Z" → "Commerce de détail" (retail trade). */
 export function secteurDe(naf) {
   const code = String(naf || "").slice(0, 2);
-  if (langue() === "en") { const e = divisionsEn.divisions[code]; return e ? e.split(", except")[0] : null; } // NACE Rév. 2, mêmes divisions
+  if (langue() === "en") { const e = divisionsEn.divisions[code]; return e ? e.split(", except")[0] : null; } // NACE Rev. 2, same divisions
   const l = divisions.divisions[code];
   return l ? l.split(", à l'exception")[0] : null;
 }
 
-/** Régions administratives depuis 2016 (INSEE, code officiel géographique) : département → région. */
+/** Administrative regions since 2016 (INSEE, official geographic code): department → region. */
 const REGIONS = {
   "Auvergne-Rhône-Alpes": ["01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "73", "74"],
   "Bourgogne-Franche-Comté": ["21", "25", "39", "58", "70", "71", "89", "90"],
@@ -40,8 +40,8 @@ export function regionDe(codePostal) {
   return Object.entries(REGIONS).find(([, deps]) => deps.includes(dep))?.[0] ?? null;
 }
 
-/** Sections de la nomenclature NAF rév. 2 (INSEE). Pas pour l'affichage (trop large, parfois trompeur : « G » pour un
- *  magasin de vêtements) : seulement comme contexte de l'étude de marché, avec le code NAF exact. */
+/** Sections of the NAF Rev. 2 classification (INSEE). Not for display (too broad, sometimes misleading: "G" for a
+ *  clothing store): only as context for the market research, with the exact NAF code. */
 export const SECTEURS_NAF = {
   A: "Agriculture, sylviculture et pêche", B: "Industries extractives", C: "Industrie manufacturière",
   D: "Production et distribution d'énergie", E: "Eau, assainissement, gestion des déchets et dépollution", F: "Construction",
@@ -78,17 +78,17 @@ export function anciennete(dateCreation, annee = new Date().getFullYear()) {
   return tr("serveur.anonymat.plus_ans", { n: palier });
 }
 
-// ---------------------------------------------------------------- Contrôle
+// ---------------------------------------------------------------- Check
 const normal = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const FORMES = new Set(["sas", "sasu", "sarl", "eurl", "sa", "sci", "snc", "selarl", "scop", "et", "fils", "freres", "groupe", "societe", "france", "les", "des", "de", "la", "le", "du", "and", "co", "cie", "holding", "entreprise", "ets", "etablissements"]);
 
-/** Termes à ne jamais publier dans le teaser. */
+/** Terms never to publish in the teaser. */
 export function termesInterdits({ nom, ville, code_postal, siren, naf }, montants = [], termesSite = []) {
   const mots = [];
   const n = normal(nom).replace(/[^a-z0-9]+/g, " ").trim();
   if (n) mots.push(n);
-  // Un mot du nom qui figure aussi dans le libellé du secteur (« Travaux » pour « Travaux Dupont ») n'identifie pas
-  // l'entreprise : il reste permis, sinon le teaser ne pourrait plus nommer son propre secteur
+  // A word of the name that also appears in the industry label ("Travaux" for "Travaux Dupont") does not identify
+  // the company: it stays allowed, otherwise the teaser could no longer name its own industry
   const motsSecteur = new Set(normal(secteurDe(naf)).replace(/[^a-z0-9]+/g, " ").split(" "));
   for (const m of n.split(" ")) if (m.length >= 4 && !FORMES.has(m) && !motsSecteur.has(m)) mots.push(m);
   if (ville) mots.push(normal(ville));
@@ -100,7 +100,7 @@ export function termesInterdits({ nom, ville, code_postal, siren, naf }, montant
   };
 }
 
-/** Nombres écrits dans un texte (« 2,4 M€ », « 2 400 000 € », « 380 k€ »), en euros. */
+/** Numbers written in a text ("2,4 M€", "2 400 000 €", "380 k€"), in euros. */
 export function nombresDuTexte(texte) {
   const res = [];
   const re = /(\d{1,3}(?:[\s\u00a0\u202f.]\d{3})+|\d+(?:[.,]\d+)?)\s*(m€|millions?|m\b|k€|milliers?|k\b|€)?/gi;
@@ -111,13 +111,13 @@ export function nombresDuTexte(texte) {
     let v = Number(decimal ? brut.replace(",", ".") : brut.replace(/\./g, ""));
     const u = (m[2] || "").toLowerCase();
     if (u.startsWith("m")) v *= 1e6; else if (u.startsWith("k") || u.startsWith("millier")) v *= 1e3;
-    const chiffres = brut.replace(/^0+|[^0-9]/g, "").replace(/0+$/, "").length; // chiffres significatifs
+    const chiffres = brut.replace(/^0+|[^0-9]/g, "").replace(/0+$/, "").length; // significant digits
     res.push({ texte: m[0].trim(), valeur: v, significatifs: chiffres, unite: Boolean(u) });
   }
   return res;
 }
 
-/** @returns liste des problèmes trouvés (vide = texte publiable). */
+/** @returns list of problems found (empty = text can be published). */
 export function verifierAnonymat(texte, interdits) {
   const t = ` ${normal(texte).replace(/[^a-z0-9€%,.\s-]+/g, " ")} `;
   const problemes = [];
@@ -128,7 +128,7 @@ export function verifierAnonymat(texte, interdits) {
   const chiffres = String(texte).replace(/[\s\u00a0\u202f]/g, "");
   for (const num of interdits.numeros) if (chiffres.includes(num)) problemes.push({ type: "identifiant", terme: num });
   for (const n of nombresDuTexte(texte)) {
-    if (n.significatifs < 2 || n.valeur < 1000) continue; // bornes rondes de fourchettes (1, 2, 5, 10… M€) autorisées
+    if (n.significatifs < 2 || n.valeur < 1000) continue; // round range bounds (1, 2, 5, 10… M€) allowed
     for (const v of interdits.montants) if (Math.abs(n.valeur - Math.abs(v)) <= Math.abs(v) * 0.01) { problemes.push({ type: "montant", terme: n.texte }); break; }
   }
   return problemes;

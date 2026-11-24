@@ -1,63 +1,66 @@
-# PASSATION : règles pour l'assistant
+# PASSATION: rules for the assistant
 
-Plateforme web pour le dirigeant de PME française qui prépare la cession de son entreprise : valorisation express
-(landing, SIREN ou nom), valorisation approfondie, datapack Excel, teaser anonymisé, info memo, ressources, chat IA.
-Le détail (architecture, schéma, routes, méthode, étapes) est dans `PLAN.md` : le lire en début de session.
+A web platform for the owner of a French small business (SME) who is preparing to sell it: quick valuation (landing
+page, SIREN or company name), detailed valuation, Excel datapack, anonymized teaser, information memorandum, resources,
+AI chat. The details (architecture, schema, routes, method, steps) are in `PLAN.md`: read it at the start of each
+session.
 
-## Langue
-Répondre en français. Commits en français.
-Le site est bilingue : anglais (langue par défaut) et français (sous `/fr/`). Tout texte ajouté ou modifié doit l'être
-dans les deux langues (`src/contenu/en/` et `src/contenu/fr/`, mêmes clés), sans texte en dur dans les pages, les
-scripts ni le Worker, en respectant le glossaire `docs/glossaire-traduction.md`. La version française vouvoie.
-`npm run i18n:check` doit rester sans erreur.
+## Language
+Reply to the user in French. Documentation, code comments and commit messages are written in English; keep
+`README.md` and `README.fr.md` in sync.
+The site is bilingual: English (default language) and French (under `/fr/`). Any text added or changed must be added
+or changed in both languages (`src/contenu/en/` and `src/contenu/fr/`, same keys), with no hard-coded text in the
+pages, the scripts or the Worker, following the glossary `docs/glossaire-traduction.md`. The French version uses the
+formal "vous". `npm run i18n:check` must stay free of errors.
 
-## Périmètre
-- Travailler **uniquement** dans le clone du dépôt (chez le propriétaire : `~/Desktop/PROJETS/PASSATION/app` ; ailleurs,
-  le dossier du clone). Ne jamais lire, modifier ni créer quoi que ce soit dans les autres projets voisins. Ne
-  réutiliser ni leur D1, ni leur R2, ni leurs secrets, ni leur Worker.
-- Une étape de `PLAN.md` à la fois. Montrer le résultat et attendre l'accord avant l'étape suivante.
-- Si c'est ambigu, coûteux ou difficile à défaire : demander avant d'agir.
+## Scope
+- Work **only** in the repository clone (on the owner's machine: `~/Desktop/PROJETS/PASSATION/app`; elsewhere, the
+  clone's folder). Never read, change or create anything in the neighboring projects. Never reuse their D1, R2,
+  secrets or Worker.
+- One step of `PLAN.md` at a time. Show the result and wait for approval before the next step.
+- If something is ambiguous, costly or hard to undo: ask before acting.
 
 ## Stack
-- Cloudflare Workers : API dans `src/`, front statique vanilla JS dans `public/` (`[assets]`, `run_worker_first = ["/api/*"]`).
-- D1 `passation` (migrations dans `migrations/`), R2 `passation-fichiers`.
-- Modèles centralisés dans `src/config.js` : `claude-sonnet-5-5` (approfondie, memo, teaser, chat), `claude-haiku-5-5`
-  (commentaire express, extraction de chiffres). Limites d'usage dans la même constante.
-- Brevo : uniquement codes de connexion et notifications.
-- Dépendance nouvelle : seulement si nécessaire et compatible Workers.
-- Données publiques : recherche-entreprises, ratios INPI/BCE, BODACC, cache D1 24 h. Normalisation fondée sur les
-  réponses réelles.
+- Cloudflare Workers: API in `src/`, static vanilla JS front end in `public/` (`[assets]`, `run_worker_first = ["/api/*"]`).
+- D1 `passation` (migrations in `migrations/`), R2 `passation-fichiers`.
+- Models defined in one place, `src/config.js`: `claude-sonnet-5-5` (detailed valuation, memo, teaser, chat),
+  `claude-haiku-5-5` (quick-estimate comment, extraction of figures). Usage limits in the same constant.
+- Brevo: only for sign-in codes and notifications.
+- New dependency: only if necessary and compatible with Workers.
+- Public data: recherche-entreprises, INPI/BCE ratios, BODACC, 24-hour D1 cache. Normalization based on real
+  responses.
 
 ## Secrets
-- Uniquement via `npx wrangler secret put` (saisie par l'utilisateur dans le Terminal) et `.dev.vars` en local.
-  `.dev.vars.example` sans valeurs.
-- Ne jamais demander de coller une clé dans la conversation ; aucune clé dans un fichier suivi, une commande affichée
-  ou un commit. Ne jamais lire ni afficher `.dev.vars`.
-- Avant chaque push : `git grep -nE "sk-ant-[A-Za-z0-9]|xkeysib-[A-Za-z0-9]|(API_KEY|SECRET)=[^[:space:]]"` doit être vide
-  (l'ancien motif trouvait toujours `.dev.vars.example` et ce fichier).
+- Only through `npx wrangler secret put` (typed by the user in the Terminal) and `.dev.vars` locally.
+  `.dev.vars.example` without values.
+- Never ask for a key to be pasted into the conversation; no key in a tracked file, a displayed command or a commit.
+  Never read or display `.dev.vars`.
+- Before every push: `git grep -nE "sk-ant-[A-Za-z0-9]|xkeysib-[A-Za-z0-9]|(API_KEY|SECRET)=[^[:space:]]"` must return
+  nothing (the old pattern always matched `.dev.vars.example` and this file).
 
-## Données et contenus
-- N'inventer aucune donnée financière, aucun multiple, aucune règle fiscale, aucune source : vérifier et citer
-  (avec date), sinon marquer « À compléter ».
-- `src/data/multiples.json` : chaque ligne a une source et une date ; champ vide si pas de source fiable.
-- Les calculs de valorisation sont du code testé ; Claude commente et rédige, il ne calcule pas.
-- Teaser anonymisé (ni nom, ni ville précise, ni chiffre identifiant). Info memo : section sans donnée = « À compléter ».
-- Pas de faux témoignages, faux logos clients ni faux chiffres : emplacements « À remplir ».
-- Direction artistique : s'inspirer, ne rien copier (texte, logo, nom, photo, visuel). Illustrations SVG originales.
+## Data and content
+- Invent no financial data, no multiple, no tax rule and no source: check and cite (with a date), otherwise mark
+  "À compléter" (to be completed).
+- `src/data/multiples.json`: every line has a source and a date; empty field if there is no reliable source.
+- Valuation calculations are tested code; Claude comments and drafts, it does not calculate.
+- Anonymized teaser (no name, no precise city, no identifying figure). Information memo: a section with no data =
+  "À compléter".
+- No fake testimonials, fake customer logos or fake figures: "À remplir" (to be filled in) placeholders.
+- Art direction: take inspiration, copy nothing (text, logo, name, photo, visual). Original SVG illustrations.
 
-## Sécurité et RGPD
-- Connexion par code à 6 chiffres : usage unique, 10 min, 5 essais, stocké haché (sel + secret serveur). Cookie de session `HttpOnly; Secure; SameSite=Lax`.
-- Chaque route privée vérifie que le dossier appartient à l'utilisateur connecté.
-- Données du dirigeant envoyées uniquement à l'API Claude, pour le traitement demandé.
-- Suppression du dossier et des fichiers R2 en un clic. Limite de débit sur la valorisation express.
+## Security and GDPR
+- Sign-in with a 6-digit code: single use, 10 min, 5 attempts, stored hashed (salt + server secret). Session cookie `HttpOnly; Secure; SameSite=Lax`.
+- Every private route checks that the file belongs to the signed-in user.
+- The owner's data is sent only to the Claude API, for the processing requested.
+- One-click deletion of the file and of its R2 files. Rate limit on the quick valuation.
 
-## Qualité
-- `npm test` à chaque étape, au minimum : les trois méthodes, le passage VE → valeur des titres, les cas limites
-  (EBE négatif, comptes absents). Valeurs attendues calculées à la main, pas recopiées depuis le code.
-- `npx wrangler dev` et vérification dans le navigateur avant de dire que ça marche.
-- Commit + push à la fin de chaque étape testée, sur une branche ; fusion dans `main` par Pull Request relue.
-  Dépôt GitHub **public** (constat du 18/11/2026) : aucune donnée réelle sensible dans les
-  fichiers de test, chiffres de démonstration entièrement fictifs.
+## Quality
+- `npm test` at every step, covering at least: the three methods, the bridge from EV to equity value, edge cases
+  (negative EBITDA, missing accounts). Expected values calculated by hand, not copied from the code.
+- `npx wrangler dev` and a check in the browser before saying it works.
+- Commit + push at the end of every tested step, on a branch; merge into `main` through a reviewed Pull Request.
+  The GitHub repository is **public** (noted on 18/11/2026): no real sensitive data in the test files, demonstration
+  figures entirely fictitious.
 
-## Fin de session
-Dire ce qui marche, ce qui reste à faire, et ce que l'utilisateur doit faire de son côté.
+## End of session
+Say what works, what is left to do, and what the user has to do on their side.

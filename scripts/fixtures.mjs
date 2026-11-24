@@ -1,5 +1,5 @@
-// Enregistre des réponses réelles des trois sources pour les tests (npm run fixtures).
-// Les données personnelles (dirigeants, administration, adresses, prix) sont retirées avant écriture.
+// Records real responses from the three sources for the tests (npm run fixtures).
+// Personal data (officers, administration, addresses, prices) is removed before writing.
 import { writeFileSync } from "node:fs";
 import { rechercherBrut } from "../src/sources/entreprise.js";
 import { exercicesBruts } from "../src/sources/inpi.js";
@@ -36,5 +36,5 @@ for (const siren of SIRENS) {
   const [e, i, b] = await Promise.all([rechercherBrut(siren), exercicesBruts(siren), annoncesBrutes(siren)]);
   const fixture = { enregistre_le: new Date().toISOString().slice(0, 10), entreprise: nettoyerEntreprise(e), inpi: i, bodacc: { results: b.results.map(nettoyerAnnonce) } };
   writeFileSync(`test/fixtures/${siren}.json`, JSON.stringify(fixture, null, 1));
-  console.log(siren, e.results[0]?.nom_complet, "| exercices", i.results.length, "| annonces", b.results.length);
+  console.log(siren, e.results[0]?.nom_complet, "| fiscal years", i.results.length, "| notices", b.results.length);
 }

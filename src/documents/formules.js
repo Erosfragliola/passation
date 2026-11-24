@@ -1,6 +1,6 @@
-// Mini-évaluateur des formules du datapack (sous-ensemble d'Excel : + − × / ^, comparaisons, &, références
-// « Feuille!A1 » et plages, SUM, AVERAGE, IF, AND, OR, MIN, MAX, ISNUMBER, COUNT, ROUND). Sert à écrire les
-// valeurs en cache dans le fichier et, dans les tests, à vérifier que les formules redonnent les chiffres du moteur.
+// Mini-evaluator of the datapack formulas (subset of Excel: + − × / ^, comparisons, &, references
+// "Sheet!A1" and ranges, SUM, AVERAGE, IF, AND, OR, MIN, MAX, ISNUMBER, COUNT, ROUND). Used to write the
+// cached values into the file and, in the tests, to check that the formulas give back the engine's figures.
 
 const FONCTIONS = {
   SUM: (a) => a.flat(Infinity).filter((x) => typeof x === "number").reduce((s, x) => s + x, 0),
@@ -34,7 +34,7 @@ function lexer(src) {
     if (fn) { t.push({ k: "fn", v: fn[1] }); i += fn[1].length; continue; }
     const op = /^(<=|>=|<>|[-+*/^(),=<>&])/.exec(src.slice(i));
     if (op) { t.push({ k: "op", v: op[1] }); i += op[1].length; continue; }
-    throw new Error(`Formule illisible près de « ${src.slice(i, i + 12)} »`);
+    throw new Error(`Unreadable formula near "${src.slice(i, i + 12)}"`);
   }
   return t;
 }
@@ -43,15 +43,15 @@ function colonne(lettres) { let n = 0; for (const c of lettres) n = n * 26 + (c.
 export function lettres(n) { let s = ""; n++; while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; }
 const decoupe = (ref) => { const m = /^([A-Z]+)(\d+)$/.exec(ref); return { c: colonne(m[1]), r: Number(m[2]) - 1 }; };
 
-/** Évalue une formule (sans « = ») ; lire(feuille, r, c) renvoie la valeur d'une cellule. */
+/** Evaluates a formula (without "="); lire(feuille, r, c) returns a cell's value. */
 export function evaluer(src, feuilleCourante, lire) {
   const t = lexer(src);
   let p = 0;
   const voir = () => t[p], prendre = () => t[p++];
-  const attendre = (v) => { const x = prendre(); if (!x || x.v !== v) throw new Error(`« ${v} » attendu dans ${src}`); };
+  const attendre = (v) => { const x = prendre(); if (!x || x.v !== v) throw new Error(`"${v}" expected in ${src}`); };
   function primaire() {
     const x = prendre();
-    if (!x) throw new Error(`Formule incomplète : ${src}`);
+    if (!x) throw new Error(`Incomplete formula: ${src}`);
     if (x.k === "num" || x.k === "str") return x.v;
     if (x.k === "op" && x.v === "(") { const v = comparaison(); attendre(")"); return v; }
     if (x.k === "op" && x.v === "-") return -puissance();
@@ -67,8 +67,8 @@ export function evaluer(src, feuilleCourante, lire) {
     if (x.k === "fn") {
       attendre("(");
       const args = [];
-      // IF n'utilise que la branche retenue : une erreur dans l'autre branche ne compte pas (comme dans Excel)
-      const sauter = () => { // avance jusqu'à la fin de l'argument courant (virgule ou parenthèse de même niveau)
+      // IF uses only the branch taken: an error in the other branch does not count (as in Excel)
+      const sauter = () => { // moves to the end of the current argument (comma or parenthesis at the same level)
         let n = 0;
         while (p < t.length) {
           const v = t[p].v;
@@ -90,10 +90,10 @@ export function evaluer(src, feuilleCourante, lire) {
         if (r?.erreurDiff) erreur(r.erreurDiff);
         return r;
       }
-      if (!FONCTIONS[x.v]) throw new Error(`Fonction non prise en charge : ${x.v}`);
+      if (!FONCTIONS[x.v]) throw new Error(`Unsupported function: ${x.v}`);
       return FONCTIONS[x.v](args);
     }
-    throw new Error(`Jeton inattendu dans ${src}`);
+    throw new Error(`Unexpected token in ${src}`);
   }
   const nombre = (v) => (v === null || v === "" ? 0 : typeof v === "number" ? v : typeof v === "boolean" ? Number(v) : erreur("#VALUE!"));
   function puissance() { let v = primaire(); while (voir()?.v === "^") { prendre(); v = nombre(v) ** nombre(primaire()); } return v; }
@@ -110,6 +110,6 @@ export function evaluer(src, feuilleCourante, lire) {
     return v;
   }
   const v = comparaison();
-  if (p < t.length) throw new Error(`Fin de formule inattendue : ${src}`);
+  if (p < t.length) throw new Error(`Unexpected end of formula: ${src}`);
   return v;
 }

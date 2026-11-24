@@ -1,11 +1,11 @@
-// Teaser : faits anonymes donnés à Claude (calculés par le code, jamais les chiffres exacts) et liste des montants
-// à ne jamais publier. La rédaction est contrôlée par anonymat.js avant tout enregistrement.
+// Teaser: anonymous facts given to Claude (calculated by the code, never the exact figures) and list of amounts
+// never to publish. The draft is checked by anonymat.js before anything is saved.
 import { secteurDe, regionDe, fourchetteCA, fourchetteMarge, anciennete } from "./anonymat.js";
 import { libelleEffectif, dernier } from "../../public/js/regles.js";
 import { t as tr } from "../../public/js/i18n.js";
 
 export const SECTIONS_TEASER = [["accroche"], ["activite"], ["chiffres"], ["atouts"], ["operation"]];
-// Titres : src/contenu/<langue>/serveur.json (élément 1 de chaque paire), lus dans la langue de la requête.
+// Titles: src/contenu/<language>/serveur.json (element 1 of each pair), read in the request's language.
 for (const s of SECTIONS_TEASER) Object.defineProperty(s, 1, { get: () => tr(`serveur.teaser.sections.${s[0]}`), enumerable: true, configurable: true });
 const aCompleter = () => tr("teaser.js.a_completer");
 const texte = (v) => (typeof v === "string" && v.trim() ? v.trim() : aCompleter());
@@ -37,7 +37,7 @@ export function faitsTeaser({ entreprise, resultat, entree, reponses = {} }) {
   };
 }
 
-/** Montants exacts du dossier : jamais dans le teaser. */
+/** Exact amounts of the file: never in the teaser. */
 export function montantsSensibles({ entreprise, resultat, entree }) {
   const exD = entree?.exercices?.at(-1) || {};
   const s = resultat?.synthese || {}, e = entreprise.estimation || {};
@@ -48,12 +48,12 @@ export function montantsSensibles({ entreprise, resultat, entree }) {
   ].filter(Number.isFinite);
 }
 
-/** Sections → texte complet (pour le contrôle) ; atouts en liste. */
+/** Sections → full text (for the check); strengths as a list. */
 export const enSections = (r) => SECTIONS_TEASER.map(([cle]) => [cle, cle === "atouts" ? (r.atouts || []).map((x) => `- ${x}`).join("\n") : String(r[cle] ?? "")]);
 
-// ---------------------------------------------------------------- Visuels du teaser
-// Données des graphiques, calculées par le code et anonymes : paliers (pas de montant), évolution du CA en indice
-// base 100 arrondi à 5 points, années relatives (N-2, N-1, N), part récurrente arrondie à 10 %.
+// ---------------------------------------------------------------- Teaser visuals
+// Chart data, calculated by the code and anonymous: bands (no amount), revenue trend as an index
+// base 100 rounded to 5 points, relative years (N-2, N-1, N), recurring share rounded to 10%.
 export const PALIERS_CA = ["< 1 M€", "1-2 M€", "2-5 M€", "5-10 M€", "10-20 M€", "20-50 M€", "> 50 M€"];
 export const PALIERS_MARGE = ["négative", "< 5 %", "5-10 %", "10-15 %", "15-20 %", "> 20 %"];
 const BORNES_CA = [1e6, 2e6, 5e6, 10e6, 20e6, 50e6];

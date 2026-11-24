@@ -1,17 +1,17 @@
 import { t as tr, langue, locale } from "../../public/js/i18n.js";
-// Validation des hypothèses et réglages saisis par le dirigeant (FIN-04, audit du 18/11/2026). Module pur, testé.
-// Une valeur hors bornes est refusée avec un message : elle n'est jamais ramenée silencieusement dans les bornes.
-// Bornes : src/data/hypotheses.json (bornes_saisie, decotes_primes.facteurs).
+// Validation of the assumptions and settings entered by the owner (FIN-04, audit of 18/11/2026). Pure module, tested.
+// An out-of-range value is refused with a message: it is never silently brought back within the bounds.
+// Bounds: src/data/hypotheses.json (bornes_saisie, decotes_primes.facteurs).
 
 const absent = (x) => x === null || x === undefined || x === "";
 const pct = (x) => `${Math.round(x * 1000) / 10} %`;
 const fmt = (x) => { const n = Math.round(x).toLocaleString(locale()); return langue() === "fr" ? `${n} €` : `€${n}`; };
 
 /**
- * @param etape  étape du questionnaire ou « reglages »
- * @param data   réponses de l'étape
- * @param H      hypothèses (hypotheses.json)
- * @returns [{ champ, message }] (vide si tout est valide)
+ * @param etape  questionnaire step or "reglages"
+ * @param data   answers of the step
+ * @param H      assumptions (hypotheses.json)
+ * @returns [{ champ, message }] (empty if everything is valid)
  */
 export function erreursEtape(etape, data, H) {
   const erreurs = [];
@@ -57,7 +57,7 @@ export function erreursEtape(etape, data, H) {
   return erreurs;
 }
 
-/** Toutes les erreurs des réponses enregistrées qui alimentent le calcul. */
+/** All the errors of the saved answers that feed the calculation. */
 export function erreursReponses(reponses, H) {
   return ["reglages", "dirigeant", "retraitements", "perspectives", "bilan"].flatMap((e) => erreursEtape(e, reponses?.[e], H));
 }

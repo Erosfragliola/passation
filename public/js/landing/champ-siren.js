@@ -1,6 +1,6 @@
-// Champ « SIREN ou nom de votre société », partagé : hero, en-tête (centré sur ordinateur, seconde ligne sur
-// téléphone) et relance finale. Une seule valeur, une seule soumission ; chaque emplacement a sa propre liste de
-// suggestions (motif combobox ARIA : flèches, Entrée, Échap) et sa propre zone de message (aria-live).
+// Shared "SIREN or name of your company" field: hero, header (centered on desktop, second line on
+// phone) and final call to action. A single value, a single submission; each slot has its own list of
+// suggestions (ARIA combobox pattern: arrows, Enter, Escape) and its own message area (aria-live).
 import { sirenValide, nettoyerSiren, ressembleASiren } from "/js/siren.js";
 import { rechercher, detailSuggestion } from "/js/landing/estimation.js";
 
@@ -59,9 +59,9 @@ export function creerChampPartage({ estimer, textes = {} }) {
       champ.setAttribute("aria-expanded", String(m.suggestions.length > 0));
       if (!liste.hidden && m.nom !== "nav") requestAnimationFrame(devoiler);
     };
-    // Liste sous le bord de la fenêtre : la page défile juste assez pour la montrer entière, sans faire passer le
-    // champ sous l'en-tête (il reste lisible, et celui de l'en-tête ne prend pas le relais).
-    // Dans une carte collante (data-liste-bornee), défiler ne déplacerait pas le champ : la liste tient dans la carte.
+    // List below the edge of the window: the page scrolls just enough to show it in full, without moving the
+    // field under the header (it stays readable, and the header's field does not take over).
+    // In a sticky card (data-liste-bornee), scrolling would not move the field: the list fits in the card.
     const devoiler = () => {
       const borne = form.closest("[data-liste-bornee]");
       liste.style.maxHeight = "";
@@ -94,7 +94,7 @@ export function creerChampPartage({ estimer, textes = {} }) {
       m.minuterie = setTimeout(async () => {
         const n = ++m.requete;
         const s = await rechercher(q);
-        if (n !== m.requete || champ.value.trim() !== q) return;   // une frappe plus récente l'emporte
+        if (n !== m.requete || champ.value.trim() !== q) return;   // a more recent keystroke wins
         if (s) afficher(s); else fermer();
       }, 250);
     });
@@ -127,7 +127,7 @@ export function creerChampPartage({ estimer, textes = {} }) {
       if (partage.suggestion) return lancer(partage.suggestion.siren);
       if (m.suggestions.length) return choisir(m.suggestions[0]);
       if (brut.length < 3) return dire(erreur("saisie_vide"));
-      // Nom tapé puis validé avant l'arrivée des suggestions : on cherche, puis on prend la première
+      // Name typed then submitted before the suggestions arrive: search, then take the first one
       clearTimeout(m.minuterie);
       const s = await rechercher(brut);
       if (s === null) return dire(erreur("source_indisponible"));
@@ -138,12 +138,12 @@ export function creerChampPartage({ estimer, textes = {} }) {
     return m;
   }
 
-  /** Même valeur dans tous les champs (sans relancer leurs suggestions). */
+  /** Same value in all the fields (without relaunching their suggestions). */
   function synchroniser(valeur, sauf = null) {
     for (const x of montures) if (x !== sauf && x.champ.value !== valeur) x.champ.value = valeur;
   }
 
-  /** Place le curseur dans le champ visible : celui de l'en-tête en priorité, sinon le hero. */
+  /** Puts the cursor in the visible field: the header's first, otherwise the hero's. */
   function focaliser(prefere) {
     const racine = document.documentElement;
     const visible = (x) => {
@@ -167,7 +167,7 @@ export function creerChampPartage({ estimer, textes = {} }) {
     dire("");
   }
 
-  /** Ferme toutes les listes de suggestions (le champ change de place pendant le défilement). */
+  /** Closes all suggestion lists (the field changes place while scrolling). */
   const fermerListes = () => montures.forEach((x) => x.fermer?.());
 
   return { monter, focaliser, vider, dire, fermerListes, montures };

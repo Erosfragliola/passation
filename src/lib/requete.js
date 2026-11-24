@@ -1,5 +1,5 @@
-// Appel HTTP vers une API publique, avec nouvelles tentatives espacées en cas de 429 (trop de requêtes)
-// ou d'erreur 5xx. Respecte l'en-tête Retry-After quand il est court. Durée totale bornée (~3 s).
+// HTTP call to a public API, with spaced-out retries on a 429 (too many requests)
+// or a 5xx error. Respects the Retry-After header when it is short. Total duration bounded (~3 s).
 import { USER_AGENT } from "../config.js";
 
 const attendre = (ms) => new Promise((r) => setTimeout(r, ms));

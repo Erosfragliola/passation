@@ -1,25 +1,24 @@
-# Crédits des images
+# Image credits
 
-| Fichier | Origine | Licence |
+| File | Origin | License |
 |---|---|---|
-| `favicon.svg` | Création originale Passation | Propriété du projet |
+| `favicon.svg` | Original Passation creation | Property of the project |
 
-| Carte des régions (mémorandum, `public/js/carte-france.js`) | IGN Admin Express, contours simplifiés par github.com/gregoiredavid/france-geojson ; converti par `scripts/carte-france.mjs` | Licence ouverte Etalab (mention de la source) |
-| Pictogrammes et logo Passation des diapositives | Dessins SVG originaux (`public/js/memo.js`) | Propriété du projet |
+| Map of the regions (memorandum, `public/js/carte-france.js`) | IGN Admin Express, outlines simplified by github.com/gregoiredavid/france-geojson; converted by `scripts/carte-france.mjs` | Etalab Open License (source must be credited) |
+| Passation pictograms and logo in the slides | Original SVG drawings (`public/js/memo.js`) | Property of the project |
 
-## Photos et vidéos tierces
-Aucune personne photographiée n'est présentée comme un client ou un témoignage réel (textes alternatifs :
-« photo d'illustration »).
+## Third-party photos and videos
+No person photographed is presented as a real customer or testimonial (alternative texts: "illustrative photo").
 
-| Fichier publié | Origine | Licence | À faire |
+| Published file | Origin | License | To do |
 |---|---|---|---|
-| `../video/hero-1080.*`, `../video/hero-2160.webm` | Montage couleur (tons sombres, légère retouche de contraste) de 4 vidéos Pexels (8 plans de 1,5 s, fondus de 0,12 s) : n° 8322342 (horloger), n° 6262812 (artisane à l'établi), n° 5846627 (atelier, perceuse), n° 14132505 (machine) — https://www.pexels.com/video/<n°>/ | Licence Pexels (usage commercial autorisé, sans attribution obligatoire) | Confirmer les auteurs |
-| `photos/hero-poster-*.webp` | Image de la vidéo Pexels n° 8322342 | Licence Pexels | Confirmer l'auteur |
-| `photos/etape-artisane-*.webp` | Image extraite de la vidéo Pexels n° 6262812 | Licence Pexels | Confirmer l'auteur |
-| _non publiée_ `photos/etape-atelier-800.webp` | Image extraite de la vidéo Pexels n° 12938242 (artisan, meuleuse), https://www.pexels.com/video/12938242/ | Licence Pexels | Confirmer l'auteur |
-| `photos/portrait-dirigeant-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 (recadrée pour retirer un logo tiers) | **À confirmer** | Lien source et licence |
-| `photos/etape-bureau-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 | **À confirmer** | Lien source et licence |
-| `photos/etape-equipe-800.webp` | Photo fournie par l'utilisateur le 10/11/2026 | **À confirmer** | Lien source et licence |
+| `../video/hero-1080.*`, `../video/hero-2160.webm` | Color edit (dark tones, slight contrast adjustment) of 4 Pexels videos (8 shots of 1.5 s, 0.12 s fades): no. 8322342 (watchmaker), no. 6262812 (craftswoman at her workbench), no. 5846627 (workshop, drill), no. 14132505 (machine) — https://www.pexels.com/video/<no.>/ | Pexels license (commercial use allowed, no attribution required) | Confirm the authors |
+| `photos/hero-poster-*.webp` | Frame from Pexels video no. 8322342 | Pexels license | Confirm the author |
+| `photos/etape-artisane-*.webp` | Frame extracted from Pexels video no. 6262812 | Pexels license | Confirm the author |
+| _not published_ `photos/etape-atelier-800.webp` | Frame extracted from Pexels video no. 12938242 (craftsman, grinder), https://www.pexels.com/video/12938242/ | Pexels license | Confirm the author |
+| `photos/portrait-dirigeant-800.webp` | Photo provided by the user on 10/11/2026 (cropped to remove a third-party logo) | **To be confirmed** | Source link and license |
+| `photos/etape-bureau-800.webp` | Photo provided by the user on 10/11/2026 | **To be confirmed** | Source link and license |
+| `photos/etape-equipe-800.webp` | Photo provided by the user on 10/11/2026 | **To be confirmed** | Source link and license |
 
 
-Vidéos fournies mais non utilisées (dossier `video/`, non publié) : n° 6023467, n° 15783299, n° 12938242, n° 5846621 (verticales ou tons trop clairs).
+Videos provided but not used (folder `video/`, not published): no. 6023467, no. 15783299, no. 12938242, no. 5846621 (vertical or tones too light).

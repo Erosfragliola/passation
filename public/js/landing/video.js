@@ -1,13 +1,13 @@
-// Vidéo du hero : playlist de clips de métiers (src/contenu/cles.json, videos_metiers :
-// [{ mp4, webm, poster, metier, mp4_720?, webm_720? }]), 1,5 à 2 s chacun, enchaînés en fondu de 400 ms par deux
-// <video> en alternance (le second lecteur n'est créé qu'à ce moment), en boucle. Liste vide : la vidéo actuelle, en
-// boucle, en 1080p ; la 2160p seulement à partir de 1 600 px de large, sur une connexion rapide.
-// Jamais avec « réduire les animations » ni en économie de données (le poster reste). Sur téléphone : seulement
-// si des versions 720p sont fournies. Pause hors de l'écran et onglet masqué ; bouton pause/lecture (WCAG 2.2.2).
+// Hero video: playlist of trade clips (src/contenu/cles.json, videos_metiers:
+// [{ mp4, webm, poster, metier, mp4_720?, webm_720? }]), 1.5 to 2 s each, chained with a 400 ms crossfade by two
+// alternating <video> elements (the second player is created only at that point), looping. Empty list: the current video,
+// looping, in 1080p; 2160p only from 1,600 px wide, on a fast connection.
+// Never with "reduce motion" or in data saver mode (the poster stays). On phones: only
+// if 720p versions are provided. Paused off screen and when the tab is hidden; pause/play button (WCAG 2.2.2).
 
 const FONDU = 400; // ms
 
-/** 2160p : écran d'au moins 1 600 px de large (CSS) et connexion rapide ; 1080p sinon. */
+/** 2160p: screen at least 1,600 px wide (CSS) and fast connection; 1080p otherwise. */
 export const uhd = (largeur, rapide = true) => largeur >= 1600 && rapide;
 
 export function lancerVideo({ hero, textes = {} }) {
@@ -27,9 +27,9 @@ export function lancerVideo({ hero, textes = {} }) {
   try { clips = JSON.parse(document.getElementById("videos-metiers")?.textContent || "[]"); } catch { clips = []; }
   clips = (Array.isArray(clips) ? clips : []).filter((c) => c && (c.mp4 || c.webm));
   if (telephone) clips = clips.filter((c) => c.mp4_720 || c.webm_720).map((c) => ({ ...c, mp4: c.mp4_720, webm: c.webm_720 }));
-  if (telephone && !clips.length) return; // pas de version légère : le poster suffit
+  if (telephone && !clips.length) return; // no light version: the poster is enough
 
-  // Second lecteur, pour le fondu entre deux clips : seulement s'il y a plusieurs clips
+  // Second player, for the crossfade between two clips: only if there are several clips
   const b = clips.length > 1 ? zone.appendChild(a.cloneNode(false)) : null;
   const etat = { arretParVous: false, visible: true, courant: a, suivant: b, index: 0, bascule: false };
 
@@ -55,8 +55,8 @@ export function lancerVideo({ hero, textes = {} }) {
     a.addEventListener("timeupdate", surTemps(a));
     b?.addEventListener("timeupdate", surTemps(b));
   } else {
-    // Vidéo actuelle : 1080p ; 2160p seulement sur un écran d'au moins 1 600 px de large, à connexion rapide
-    // (l'économie de données a déjà arrêté la vidéo plus haut)
+    // Current video: 1080p; 2160p only on a screen at least 1,600 px wide, with a fast connection
+    // (data saver has already stopped the video above)
     const rapide = !connexion.effectiveType || connexion.effectiveType === "4g";
     sources(a, JSON.parse(uhd(window.innerWidth, rapide) ? zone.dataset.sourcesUhd : zone.dataset.sourcesHd));
     a.loop = true;
@@ -75,7 +75,7 @@ export function lancerVideo({ hero, textes = {} }) {
     setTimeout(() => {
       sortant.pause();
       sortant.hidden = true;
-      sourcesClip(sortant, clips[(etat.index + 1) % clips.length]); // le suivant se charge pendant ce temps
+      sourcesClip(sortant, clips[(etat.index + 1) % clips.length]); // the next one loads meanwhile
       etat.courant = entrant; etat.suivant = sortant; etat.bascule = false;
     }, FONDU);
   }
