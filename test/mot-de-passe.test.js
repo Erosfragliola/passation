@@ -129,6 +129,35 @@ describe("password storage", () => {
   });
 });
 
+describe("number of iterations recorded in each hash: the target can change without breaking any account", () => {
+  it("a hash at 100,000 stays verifiable when the target becomes 20,000, then is recalculated at the next sign-in", async () => {
+    const { motDePasse } = await creerCompte(appel, "a@exemple.fr");
+    const avant = env.DB.sqlite.prepare("SELECT password_hash FROM users").get().password_hash;
+    expect(avant.split("$")[1]).toBe("100000");
+    const cible = MOT_DE_PASSE.iterations;
+    MOT_DE_PASSE.iterations = 20_000;
+    try {
+      expect(await verifierMotDePasse(motDePasse, avant)).toBe(true);
+      expect((await connexion("a@exemple.fr", motDePasse)).status).toBe(200);
+      const apres = env.DB.sqlite.prepare("SELECT password_hash FROM users").get().password_hash;
+      expect(apres.split("$")[1]).toBe("20000");
+      expect(apres).not.toBe(avant); // new salt too
+      expect(await verifierMotDePasse(motDePasse, apres)).toBe(true);
+      // a wrong password never triggers a recalculation
+      expect((await connexion("a@exemple.fr", motDePasse + "x")).status).toBe(401);
+      expect(env.DB.sqlite.prepare("SELECT password_hash FROM users").get().password_hash).toBe(apres);
+    } finally { MOT_DE_PASSE.iterations = cible; }
+    // back to 100,000: recalculated again at the next sign-in
+    expect((await connexion("a@exemple.fr", motDePasse)).status).toBe(200);
+    expect(env.DB.sqlite.prepare("SELECT password_hash FROM users").get().password_hash.split("$")[1]).toBe("100000");
+  });
+  it("a count above the maximum is refused (cost bounded)", async () => {
+    const h = await hacherMotDePasse("essai-quelconque-1");
+    const [a, , s, e] = h.split("$");
+    expect(await verifierMotDePasse("essai-quelconque-1", [a, MOT_DE_PASSE.iterationsMax + 1, s, e].join("$"))).toBe(false);
+  });
+});
+
 describe("password policy", () => {
   it("12 characters at least, refused if common", () => {
     expect(refusMotDePasse("a".repeat(5) + "b".repeat(6))).toBe("trop_court"); // 11 characters

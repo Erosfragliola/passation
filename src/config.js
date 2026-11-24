@@ -29,7 +29,9 @@ export const CODE_ESSAIS_MAX = 5;
  * counted per account (email hash) and per IP hash.
  */
 export const MOT_DE_PASSE = {
-  iterations: 100_000, selOctets: 16, longueurMin: 12, longueurMax: 256,
+  // iterations: target for new hashes; each hash records its own count, so the target can change without breaking any
+  // account (rehashed at the next successful sign-in). iterationsMax: refused above (Workers maximum, CPU cost).
+  iterations: 100_000, iterationsMax: 100_000, selOctets: 16, longueurMin: 12, longueurMax: 256,
   echecsMax: 5, blocage: 15 * 60,
 };
 

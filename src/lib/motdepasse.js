@@ -54,15 +54,26 @@ export function egalTempsConstant(a, b) {
   return diff === 0;
 }
 
-/** Hash used when the account does not exist: the work is the same, so the response time reveals nothing. */
-const LEURRE = `${ALGO}$${MOT_DE_PASSE.iterations}$${b64(new Uint8Array(MOT_DE_PASSE.selOctets))}$${b64(new Uint8Array(32))}`;
+/** Hash used when the account does not exist: the work is the same, so the response time reveals nothing (read at
+ *  each call: the current target count). */
+const leurre = () => `${ALGO}${MOT_DE_PASSE.iterations}${b64(new Uint8Array(MOT_DE_PASSE.selOctets))}${b64(new Uint8Array(32))}`;
+
+/** Iterations recorded in a stored hash (null if the hash is not of this format). */
+export function iterationsDe(stocke) {
+  const p = String(stocke || "").split("$");
+  const n = Number(p[1]);
+  return p.length === 4 && p[0] === ALGO && Number.isInteger(n) ? n : null;
+}
+/** The hash was made with another count than the current target: to be recalculated after a successful sign-in. */
+export const aRecalculer = (stocke) => iterationsDe(stocke) !== null && iterationsDe(stocke) !== MOT_DE_PASSE.iterations;
 
 /** true if `mdp` matches the stored hash. Without a hash (unknown account), the same calculation is done, then false. */
 export async function verifierMotDePasse(mdp, stocke) {
-  const parties = String(stocke || LEURRE).split("$");
+  const parties = String(stocke || leurre()).split("$");
   if (parties.length !== 4 || parties[0] !== ALGO) return false;
   const iterations = Number(parties[1]);
-  if (!Number.isInteger(iterations) || iterations < 1 || iterations > MOT_DE_PASSE.iterations) return false;
+  // The count of the hash itself, not the current target: a hash made before a change of target stays verifiable
+  if (!Number.isInteger(iterations) || iterations < 1 || iterations > MOT_DE_PASSE.iterationsMax) return false;
   const attendu = deb64(parties[3]);
   const obtenu = await deriver(mdp, deb64(parties[2]), iterations);
   return Boolean(stocke) && egalTempsConstant(obtenu, attendu);

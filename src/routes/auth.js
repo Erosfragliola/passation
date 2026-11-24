@@ -13,7 +13,7 @@ import { json } from "../http.js";
 import { DURATIONS, CODE_ESSAIS_MAX, MOT_DE_PASSE } from "../config.js";
 import { empreinte, maintenant, emailValide, normaliserEmail, creerSession, cookieSession,
   cookieEffacement, lireCookie, exigerUtilisateur, codeAleatoire, empreinteCode, aleatoire } from "../lib/auth.js";
-import { refusMotDePasse, hacherMotDePasse, verifierMotDePasse } from "../lib/motdepasse.js";
+import { refusMotDePasse, hacherMotDePasse, verifierMotDePasse, aRecalculer } from "../lib/motdepasse.js";
 import { envoyerCodeConnexion } from "../lib/email.js";
 import { verifierDebit, verifierDebitCle } from "../lib/ratelimit.js";
 import { sirenValide, nettoyerSiren } from "../lib/siren.js";
@@ -206,10 +206,14 @@ export async function routeConnexion(request, env) {
   const ok = await verifierMotDePasse(mdp, user?.password_hash ?? null);
   if (!ok || !user) return (await compterEchec(env, cles, t)) ? tropEchecs() : invalides();
 
-  await env.DB.batch([
+  const stmts = [
     env.DB.prepare("DELETE FROM login_failures WHERE cle = ?").bind(cles[0]),
     env.DB.prepare("UPDATE users SET last_login_at = ? WHERE id = ?").bind(t, user.id),
-  ]);
+  ];
+  // Hash made with another number of iterations than the target (setting changed): recalculated now that the
+  // password is known, so that a change of setting never breaks an account
+  if (aRecalculer(user.password_hash)) stmts.push(env.DB.prepare("UPDATE users SET password_hash = ? WHERE id = ?").bind(await hacherMotDePasse(mdp), user.id));
+  await env.DB.batch(stmts);
   return ouvrirSession(env, user.id, corps.siren);
 }
 
