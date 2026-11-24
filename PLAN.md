@@ -673,3 +673,18 @@ model to be defined later by the user (business plan in progress).
   critical review in the side panel ("Yes, correct it" without touching any figure, conciseness checked again);
   panel with short titles that expand in place (`public/js/ameliorations.js`); "credit exhausted": a clear message
   for every drafting and analysis. Security: file paths never come from the browser any more. Tests: 586.
+- **24/11/2026, branch `parcours-v2`** (PR not merged, not deployed), mission given by the owner (parts A to D, in this
+  order, one PR replacing #32):
+  - A. Maxime's English translation (PR #32) merged from its last clean commit `dbae4d1`: code kept from `main`,
+    documentation in English completed with what `main` had added, deliverables in English with the Geist font.
+  - B. Account required after the SIREN: no amount without a session (checked on the server), email verified by the
+    6-digit code then a password (12 characters at least, common ones refused, PBKDF2-SHA256 100,000 iterations recorded
+    in each hash and recalculated when the target changes), 5 failures → 15-minute block per account and per IP,
+    forgotten password and change of password closing the other sessions. Migration `0004_mot_de_passe.sql`.
+  - C. Two stages: « Your valuation » (three fiscal years, adjustments never answered in advance, net debt and scope,
+    « Your value » with the bridge visible, approved by the owner; « to approve again » when the figures change), then
+    « Your memorandum » (refused by the server before the approval). Leasing: convention FIN-05 kept and stated.
+    Existing files drafted before: banner « Nouvelle étape », answers kept.
+  - D. Logo and photos guided: screen always offered, attestation above the upload, several files with progress,
+    reduction in the browser, advice for every error, place of each photo in the memorandum.
+  - Local check without the Claude API: `scripts/claude-simule.mjs`. Tests: 649.

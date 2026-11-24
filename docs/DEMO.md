@@ -36,11 +36,11 @@ production. Record it again the day before if the interface has changed.
 
 | Step | Action | What we show |
 |---|---|---|
-| 1 | Home page: enter the SIREN or the name | Public data (business directory, INPI, BODACC), quick range from sourced multiples |
-| 2 | "Open my file": email, then 6-digit code | Passwordless sign-in, hashed single-use code |
+| 1 | Home page: enter the SIREN or the name | Public profile (business directory, INPI, BODACC); the range stays hidden without an account (not sent by the server) |
+| 2 | "Create my account": email, 6-digit code, then a password | Address verified by a hashed single-use code; password hashed (PBKDF2), quick range visible once signed in |
 | 3 | Upload `liasse-fictive.pdf` (or enter the amounts below) | Reading by Claude is **proposed**, never approved automatically; automatic checks (the revenue differs from the published accounts of the chosen company: alert expected) |
-| 4 | Confirm fiscal years 2024 and 2025 | Approval by the owner; an incomplete fiscal year is left out of the calculation and flagged |
-| 5 | Valuation | Multiples only, range without a central value (decision of 19/11/2026); adjusted net assets as a check; sentence that explains the gap with the quick estimate |
+| 4 | Confirm fiscal years 2024 and 2025 (2023 skipped knowingly) | Approval by the owner; the screen says what the range loses without a third fiscal year |
+| 5 | Adjustments, net debt and scope, then « Your value » | The bridge from EBITDA to the value of the shares, visible without a click; adjusted net assets below the range: a floor; « I approve these figures », after which the memorandum starts |
 | 6 | "Fine-tune": EBITDA used, discounts and premiums, Recalculate | The DCF is no longer shown or adjustable on screen; it is still calculated in the datapack (DCF tab) |
 | 7 | Download the datapack | Overview with logo and clickable contents, 8 tabs numbered by section, live formulas: changing a copper cell recalculates everything |
 | 8 | Teaser, memorandum (if the Claude key is active) | Drafting from approved facts only; anonymity check on the teaser |
