@@ -1072,7 +1072,7 @@ async function redaction() {
     catch (e) { lignes[k].classList.replace("en-cours", "erreur"); erreurs.push({ k, message: e.message, statut: e.statut }); }
   };
   try {
-    await executer(taches[0]); // la valorisation d'abord : le datapack, le teaser et le mémorandum s'en servent
+    await executer(taches[0]); // the valuation first: the datapack, the teaser and the memorandum rely on it
     // L'étude de marché tourne pendant tout le reste ; seuls les chapitres qui la citent (marché, synthèse,
     // perspectives) l'attendent, et ils passent en dernier
     const marche = executer(taches[1]);
