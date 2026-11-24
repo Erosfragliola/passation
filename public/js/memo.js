@@ -6,6 +6,7 @@ import { surfaceCouverte, planFusion, numeroter, SEUIL_PAGE_VIDE } from "/js/mem
 import { ameliorations, reponsePour } from "/js/ameliorations.js";
 import { libelleRole, libelleApres, initiales, parcoursDeSecours, transitionEquipe } from "/js/equipe.js";
 import { listePhotos } from "/js/photos-fiches.js";
+import { dateCourte } from "/js/dossier-parcours.js";
 import { zoneDepotPhotos, zoneLogo } from "/js/depot-photos.js";
 import { lien, t as tr, langue } from "/js/i18n.js";
 import { libelleOption } from "/js/questionnaire.js";
@@ -110,7 +111,12 @@ function dessinerMarche() {
 
 function dessinerVerrou() {
   const v = etat.deverrouille;
-  remplacer($("#verrou"), v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: tr("memo.js.verrou.avant") }),
+  // Figures modified since their approval: the memorandum says so (24/11/2026)
+  const revalider = etat.validation?.a_jour === false
+    ? el("div", { class: "bandeau-etape", role: "status", "data-genre": "revalider" }, el("p", { text: tr("dossier.bandeau.revalider", { date: dateCourte(etat.validation.le) }) }),
+      el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/demarrer/?dossier=${id}&etape=valeur`) }, tr("dossier.bandeau.bouton_revalider"), " →"))
+    : "";
+  remplacer($("#verrou"), v.ok ? revalider : el("div", { class: "message-carte" }, el("p", { text: tr("memo.js.verrou.avant") }),
     el("ul", {}, ...v.manque.map((m) => el("li", { text: m }))),
     el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/demarrer/?dossier=${id}`) }, tr("memo.js.verrou.questionnaire"))));
   $("#btn-tout").disabled = !v.ok || redactionEnCours;

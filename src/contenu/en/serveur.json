@@ -539,7 +539,8 @@
     "pied_synthese": "Indicative, non-binding estimate. Calculations are reproduced with formulas: edit the copper cells in the “{onglet}” tab.",
     "a_verifier": "To check",
     "unite_euros": "in €",
-    "unite_euros_pct": "in € or %"
+    "unite_euros_pct": "in € or %",
+    "a_revalider": "Figures changed since they were approved on {date}: to approve again before sharing."
   },
   "hypotheses": {
     "_lisez_moi": "Labels from src/data/hypotheses.json (values, sources and dates stay in that file); « facteurs »: discounts and premiums, by key.",

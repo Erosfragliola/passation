@@ -10,7 +10,7 @@
 import { projet } from "../documents/nom-de-code.js";
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
-import { calculer, lireReponses, lireChiffres } from "./valorisation.js";
+import { calculer, lireReponses, lireChiffres, etatValidation } from "./valorisation.js";
 import { construireDatapack } from "../documents/datapack.js";
 import { propositions } from "../documents/propositions.js";
 import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, rechercherMarche, analyserPhoto, relireMemo, erreurClaudeConnue } from "../lib/claude.js";
@@ -43,7 +43,8 @@ async function datapack(env, row, { stocker = false } = {}) {
     return json({ erreur: "chiffres_absents", message: tr("serveur.documents.validez_abord_chiffres_moins") }, 409);
   }
   const entreprise = { ...JSON.parse(row.company_json || "{}"), siren: row.siren };
-  const octets = construireDatapack({ entreprise, entree, H: hypotheses, resultat, nomDeCode: row.code_name || (entreprise.naf ? projet(entreprise.naf) : null) }).octets({ titre: `Datapack ${entreprise.nom || ""}` });
+  const validation = await etatValidation(env, row, await lireReponses(env, row.id));
+  const octets = construireDatapack({ entreprise, entree, H: hypotheses, resultat, validation, nomDeCode: row.code_name || (entreprise.naf ? projet(entreprise.naf) : null) }).octets({ titre: `Datapack ${entreprise.nom || ""}` });
   const version = await prochaineVersion(env, row.id, "datapack");
   const cle = `dossiers/${row.id}/documents/datapack-v${version}.xlsx`;
   await env.FILES.put(cle, octets, { httpMetadata: { contentType: XLSX } });
@@ -175,6 +176,8 @@ async function lireMemo(env, row) {
   const site = reponses.site || null;
   return {
     deverrouille: memoDeverrouille(reponses),
+    // Figures approved, and still the same since? (« Modified since your approval: to approve again »)
+    validation: await etatValidation(env, row, reponses),
     entreprise: entreprise.nom ?? null,
     profil: profilMemo(entreprise, reponses, row.code_name),
     photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "", origine: p.origine || null, largeur: p.largeur ?? null, hauteur: p.hauteur ?? null,

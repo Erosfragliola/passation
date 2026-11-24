@@ -81,7 +81,8 @@ function etapeCourante() {
   const ev = etatValorisation(S.reponses, S.vues);
   if (!ev.retraitements) return "retraitements";
   if (!ev.dette) return "dette";
-  if (!ev.validation) return "valeur";
+  // not approved yet, or figures modified since the approval (state given by the server)
+  if (!ev.validation || S.dossier?.parcours?.etapes?.validation?.a_jour === false) return "valeur";
   // 2. Votre mémorandum, seulement après la validation des chiffres : entreprise (site, puis questions), photos et
   // logo, équipe dirigeante, rédaction
   if (siteARepondre() && !S.complet && !S.reponses.suivi?.pret_envoye) { S.q = -1; return "questions"; }
@@ -538,8 +539,11 @@ async function valeur() {
   try { d = await api(`${base}/valuation`, { method: "POST" }); }
   catch (e) { message(e.message, true); return; }
   if (S.etape !== "valeur") return;
+  await rafraichirEtat();
   const r = d.resultat, v = resumeValorisation(r);
-  const validee = etatValorisation(S.reponses, S.vues).validation;
+  const etatV = S.dossier?.parcours?.etapes?.validation || null;
+  const aRevalider = etatV?.a_jour === false;
+  const validee = etatV && !aRevalider ? etatV : null;
   const modifier = el("p", { class: "petit valeur-modifier" },
     t("demarrer.js.valeur.modifier"), " ",
     el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("dossier.etapes.chiffres")), " · ",
@@ -580,7 +584,8 @@ async function valeur() {
   remplir(...titre(t("demarrer.js.valeur.titre"), t("demarrer.js.valeur.aide")),
     el("div", { class: "carte valeur-tete" }, el("p", { class: "etiquette", text: etiquetteTitres() }), el("p", { class: "valeur-fourchette chiffre", text: fourchette(v.bas, v.haut) }),
       ecart ? el("p", { class: "petit", text: ecart }) : null,
-      validee ? el("p", { class: "petit valeur-validee", text: t("demarrer.js.valeur.validee_le", { date: new Date(validee.le * 1000).toLocaleDateString(locale()) }) }) : null),
+      validee ? el("p", { class: "petit valeur-validee", text: t("demarrer.js.valeur.validee_le", { date: new Date(validee.le * 1000).toLocaleDateString(locale()) }) }) : null,
+      aRevalider ? el("p", { class: "valeur-revalider", role: "status", text: t("dossier.taches.valeur.a_revalider") }) : null),
     p ? el("section", { class: "carte valeur-pont" }, el("h2", { text: t("demarrer.js.valeur.pont_titre") }),
       el("div", { class: "tableau-defile", tabindex: "0" }, el("table", { class: "tableau-resultat" },
         el("caption", { class: "visuellement-cache", text: t("demarrer.js.valeur.pont_titre") }),
@@ -1391,7 +1396,9 @@ async function pret() {
       etatDoc(d),
       a ? el("a", { class: "fin-ouvrir", href: a.href, download: a.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: a.libelle, objet: d.titre }) }, a.libelle) : el("span"));
   });
+  const b = e.nouvelleEtape;
   remplir(...titre(f.titre, f.aide),
+    b ? el("div", { class: "bandeau-etape", role: "status", "data-genre": b.genre }, el("p", { text: b.texte }), el("a", { class: "btn btn-noir btn-mini", href: b.href }, b.bouton, " →")) : null,
     v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), el("a", { href: v.lien.href, text: v.lien.texte })) : null,
     restent.length ? el("div", { class: "fin-reste" }, el("h2", { text: f.resteTitre }),
       el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }), x.detail ? el("span", { class: "petit", text: ` · ${x.detail}` }) : null)))) : null,

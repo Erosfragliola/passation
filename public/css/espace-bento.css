@@ -1017,3 +1017,10 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .depot-fichier > .petit { display: none; }
   .photos-grille { max-width: 100%; }
 }
+
+/* ---------- Banners (24/11/2026): new step for a file drafted before the two stages, figures modified since their
+   approval; always with the button that leads to the screen concerned ---------- */
+.bandeau-etape { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 14px 18px; border-radius: 16px; background: var(--g-cuivre-pale, #F6E9DC); border-left: 4px solid var(--cuivre); }
+.bandeau-etape p { margin: 0; flex: 1 1 260px; font-size: 15px; color: var(--espresso); }
+.bandeau-etape .btn { white-space: normal; }
+.valeur-revalider { margin: 4px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--g-cuivre-pale, #F6E9DC); color: var(--g-cuivre-texte, #8E5530); font-weight: 600; font-size: 14px; }

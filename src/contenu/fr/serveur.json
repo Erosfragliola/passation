@@ -539,7 +539,8 @@
     "pied_synthese": "Estimation indicative, non contractuelle. Calculs reproduits par formules : modifiez les cellules cuivre de l'onglet « {onglet} ».",
     "a_verifier": "À vérifier",
     "unite_euros": "en €",
-    "unite_euros_pct": "en € ou en %"
+    "unite_euros_pct": "en € ou en %",
+    "a_revalider": "Chiffres modifiés depuis leur validation du {date} : à revalider avant toute diffusion."
   },
   "hypotheses": {
     "_lisez_moi": "Libellés de src/data/hypotheses.json (valeurs, sources et dates restent dans ce fichier) ; « facteurs » : décotes et primes, par clé.",

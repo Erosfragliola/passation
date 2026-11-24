@@ -154,6 +154,35 @@ describe("premier temps : retraitements, dette, valeur à valider", () => {
   });
 });
 
+// 24/11/2026 : jamais de changement d'état silencieux. Un dossier rédigé avant les deux temps garde ses réponses et
+// reçoit un bandeau qui mène à l'écran concerné ; des chiffres modifiés après leur validation sont « à revalider ».
+describe("bandeaux : nouvelle étape pour les anciens dossiers, chiffres modifiés depuis la validation", () => {
+  it("dossier rédigé avant les deux temps (mémorandum et teaser, rien de validé) : bandeau « Nouvelle étape », vers le premier écran à faire", () => {
+    const e = etatParcours(dossier({ documents: tousDocs, parcours: { exercices: trois, valorisation: valo, questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100, restantes: [] } } }), memoComplet);
+    expect(e.pret).toBe(false);
+    expect(e.nouvelleEtape).toEqual({ genre: "nouvelle", texte: "Nouvelle étape : vérifiez et validez vos chiffres. Vos réponses sont conservées.",
+      bouton: "Corriger vos comptes : rémunération, loyer, exceptionnels", href: `/espace/demarrer/?dossier=${ID}&etape=retraitements` });
+    expect(e.action.href).toBe(e.nouvelleEtape.href);
+  });
+  it("nouveau dossier, ou dossier validé : pas de bandeau", () => {
+    expect(etatParcours(dossier()).nouvelleEtape).toBeNull();
+    expect(etatParcours(toutFait(), memoComplet).nouvelleEtape).toBeNull();
+  });
+  it("chiffres modifiés depuis la validation : « à revalider » partout, bandeau vers « Votre valeur », plus prêt", () => {
+    const e = etatParcours(toutFait({ parcours: { etapes: { validation: { le: LE, a_jour: false } } } }), memoComplet);
+    expect(e.fait.valeur).toBe(false);
+    expect(e.pret).toBe(false);
+    expect(e.taches[0]).toMatchObject({ cle: "valeur", titre: "Modifiés depuis votre validation : à revalider", detail: "Validés le 18/11/2026 ; vos chiffres ont changé depuis", href: `/espace/demarrer/?dossier=${ID}&etape=valeur` });
+    expect(e.nouvelleEtape).toMatchObject({ genre: "revalider", href: `/espace/demarrer/?dossier=${ID}&etape=valeur` });
+    expect(e.nouvelleEtape.texte).toMatch(/modifiés depuis votre validation du 18\/11\/2026/);
+    expect(e.documents[0]).toMatchObject({ etat: "a-relire", detail: "Modifiés depuis votre validation : à revalider" });
+  });
+  it("validation à jour : rien de signalé", () => {
+    const e = etatParcours(toutFait({ parcours: { etapes: { validation: { le: LE, a_jour: true } } } }), memoComplet);
+    expect([e.pret, e.nouvelleEtape]).toEqual([true, null]);
+  });
+});
+
 describe("second temps : le mémorandum, après la validation des chiffres", () => {
   const restantes = ["histoire", "equipe", "activite", "clients", "perspectives"];
   const e = etatParcours(valorise({ checklist: CHECKLIST_COMPLETE.slice(0, 8), parcours: { questions: { faits: 3, total: NB_QUESTIONS, pct: 38, restantes } } }));

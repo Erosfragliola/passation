@@ -67,6 +67,11 @@ function afficher({ checklist = true } = {}) {
     el("span", { class: "fil-temps-titre", text: `${i + 1}. ${tp.titre}` }),
     el("ol", { class: "fil-etapes" }, ...tp.etapes.map(etape)))));
 
+  // Banner (24/11/2026): new step for a file drafted before the two stages, or figures modified since their approval
+  const b = etat.nouvelleEtape;
+  $("#bandeau-etape").hidden = !b;
+  if (b) { $("#bandeau-texte").textContent = b.texte; $("#bandeau-lien").textContent = `${b.bouton} →`; $("#bandeau-lien").href = b.href; $("#bandeau-etape").dataset.genre = b.genre; }
+
   // En-tête vert : nom de code, nom, fourchette, une seule ligne d'explication (le détail derrière « Voir le détail »)
   $("#nom-code").textContent = dossier.nom_de_code || "";
   $("#dossier-nom").textContent = e.nom || t("espace.js.votre_entreprise");

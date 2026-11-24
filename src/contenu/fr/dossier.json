@@ -171,7 +171,9 @@
     "valeur": {
       "titre": "Vérifier et valider votre valeur",
       "detail": "Le calcul complet, ligne par ligne",
-      "detail_calculee": "Calculée : {fourchette} ; à vérifier ligne par ligne"
+      "detail_calculee": "Calculée : {fourchette} ; à vérifier ligne par ligne",
+      "a_revalider": "Modifiés depuis votre validation : à revalider",
+      "detail_revalider": "Validés le {date} ; vos chiffres ont changé depuis"
     },
     "photos": {
       "titre": "Choisir votre logo et vos photos",
@@ -267,5 +269,10 @@
     "valorisation": "Votre valorisation",
     "memo": "Votre mémorandum"
   },
-  "question_site": "Votre site internet"
+  "question_site": "Votre site internet",
+  "bandeau": {
+    "nouvelle_etape": "Nouvelle étape : vérifiez et validez vos chiffres. Vos réponses sont conservées.",
+    "revalider": "Vos chiffres ont été modifiés depuis votre validation du {date} : vérifiez la nouvelle valeur, puis validez-la de nouveau.",
+    "bouton_revalider": "Vérifier et valider"
+  }
 }

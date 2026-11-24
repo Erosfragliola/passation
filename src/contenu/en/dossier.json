@@ -171,7 +171,9 @@
     "valeur": {
       "titre": "Check and approve your value",
       "detail": "The full calculation, line by line",
-      "detail_calculee": "Calculated: {fourchette}; to check line by line"
+      "detail_calculee": "Calculated: {fourchette}; to check line by line",
+      "a_revalider": "Changed since your approval: to approve again",
+      "detail_revalider": "Approved on {date}; your figures have changed since"
     },
     "photos": {
       "titre": "Choose your logo and your photos",
@@ -267,5 +269,10 @@
     "valorisation": "Your valuation",
     "memo": "Your memorandum"
   },
-  "question_site": "Your website"
+  "question_site": "Your website",
+  "bandeau": {
+    "nouvelle_etape": "New step: check and approve your figures. Your answers are kept.",
+    "revalider": "Your figures have changed since you approved them on {date}: check the new value, then approve it again.",
+    "bouton_revalider": "Check and approve"
+  }
 }

@@ -17,7 +17,7 @@ import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
 import { manquants, exercicesAttendus } from "../../public/js/champs-financiers.js";
 import { avancementQuestions, etatValorisation, vuesDe } from "../../public/js/parcours.js";
 import { resumeValorisation } from "../../public/js/dossier-parcours.js";
-import { routeValorisation, lireChiffres, lireReponses } from "./valorisation.js";
+import { routeValorisation, lireChiffres, lireReponses, etatValidation } from "./valorisation.js";
 import { routePieces } from "./pieces.js";
 import { projet } from "../documents/nom-de-code.js";
 import { routeDocuments } from "./documents.js";
@@ -75,7 +75,7 @@ async function detail(env, row) {
   const vues = vuesDe(reponses);
   const questions = avancementQuestions(reponses, vues);
   // Steps of the two stages done or not, from the saved answers (same rule as the guided steps)
-  const etapes = { ...etatValorisation(reponses, vues), photos: vues.includes("photos"), equipe: vues.includes("equipe_dirigeante") };
+  const etapes = { ...etatValorisation(reponses, vues), validation: await etatValidation(env, row, reponses), photos: vues.includes("photos"), equipe: vues.includes("equipe_dirigeante") };
   const docs = await env.DB.prepare("SELECT kind, MAX(version) AS version, MAX(created_at) AS le FROM documents WHERE dossier_id = ? GROUP BY kind").bind(row.id).all();
   return {
     id: row.id, siren: row.siren, cree_le: row.created_at, statut: row.status,
