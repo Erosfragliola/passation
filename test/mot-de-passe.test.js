@@ -299,3 +299,39 @@ describe("accounts created before passwords (code only)", () => {
     expect((await connexion("ancien@exemple.fr", motDePasse)).status).toBe(200);
   });
 });
+
+describe("change of password from the owner's space", () => {
+  const changer = (cookie, actuel, nouveau) => appel("/api/auth/changer", { methode: "POST", corps: { actuel, nouveau }, cookie });
+  it("current password, then the new one: every other session closed, this one kept; old password refused, new accepted", async () => {
+    const { cookie: ici, motDePasse: ancien } = await creerCompte(appel, "a@exemple.fr");
+    const ailleurs = (await connexion("a@exemple.fr", ancien)).headers.get("set-cookie").split(";")[0];
+    const nouveau = motDePasseAleatoire();
+    const r = await changer(ici, ancien, nouveau);
+    expect(r.status).toBe(200);
+    expect(await r.text()).not.toContain(nouveau);
+    expect((await appel("/api/me", { cookie: ici })).status).toBe(200);
+    expect((await appel("/api/me", { cookie: ailleurs })).status).toBe(401);
+    expect((await connexion("a@exemple.fr", ancien)).status).toBe(401);
+    expect((await connexion("a@exemple.fr", nouveau)).status).toBe(200);
+    expect(env.DB.sqlite.prepare("SELECT password_hash FROM users").get().password_hash).not.toContain(nouveau);
+  });
+  it("wrong current password, too short or identical: refused, nothing changed, no session closed", async () => {
+    const { cookie, motDePasse } = await creerCompte(appel, "a@exemple.fr");
+    const autre = (await connexion("a@exemple.fr", motDePasse)).headers.get("set-cookie").split(";")[0];
+    const avant = env.DB.sqlite.prepare("SELECT password_hash FROM users").get().password_hash;
+    expect((await (await changer(cookie, motDePasse + "x", motDePasseAleatoire())).json()).erreur).toBe("actuel_incorrect");
+    expect((await (await changer(cookie, motDePasse, "court")).json()).erreur).toBe("mot_de_passe_trop_court");
+    expect((await (await changer(cookie, motDePasse, motDePasse)).json()).erreur).toBe("identique");
+    expect(env.DB.sqlite.prepare("SELECT password_hash FROM users").get().password_hash).toBe(avant);
+    expect((await appel("/api/me", { cookie: autre })).status).toBe(200);
+  });
+  it("a stolen session cannot try passwords: 5 wrong current passwords → blocked like at sign-in", async () => {
+    const { cookie, motDePasse } = await creerCompte(appel, "a@exemple.fr");
+    for (let i = 1; i <= 4; i++) expect((await changer(cookie, motDePasse + i, motDePasseAleatoire())).status).toBe(400);
+    expect((await changer(cookie, motDePasse + 5, motDePasseAleatoire())).status).toBe(429);
+    expect((await changer(cookie, motDePasse, motDePasseAleatoire())).status).toBe(429);
+  });
+  it("without a session: 401", async () => {
+    expect((await changer(null, "x", motDePasseAleatoire())).status).toBe(401);
+  });
+});

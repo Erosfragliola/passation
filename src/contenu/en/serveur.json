@@ -24,7 +24,11 @@
     "ticket_expire": "The time to choose your password has run out. Ask for a new code.",
     "mot_de_passe_trop_court": "The password must be at least {n} characters long.",
     "mot_de_passe_trop_long": "This password is too long (256 characters at most).",
-    "mot_de_passe_trop_courant": "This password is too common. Choose another one, for example a short phrase of a few words."
+    "mot_de_passe_trop_courant": "This password is too common. Choose another one, for example a short phrase of a few words.",
+    "sans_mot_de_passe": "Your account has no password yet: sign out, then choose “Forgot your password?”.",
+    "actuel_incorrect": "Incorrect current password.",
+    "mot_de_passe_identique": "The new password must be different from the current one.",
+    "mot_de_passe_change": "Password changed. Your other sessions are closed; this one stays open."
   },
   "documents": {
     "validez_abord_chiffres_moins": "First approve your figures (at least one complete fiscal year) to generate the datapack.",

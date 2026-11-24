@@ -24,7 +24,11 @@
     "ticket_expire": "Le délai pour choisir votre mot de passe est dépassé. Demandez un nouveau code.",
     "mot_de_passe_trop_court": "Le mot de passe compte {n} caractères au moins.",
     "mot_de_passe_trop_long": "Ce mot de passe est trop long (256 caractères au plus).",
-    "mot_de_passe_trop_courant": "Ce mot de passe est trop courant. Choisissez-en un autre, par exemple une phrase de quelques mots."
+    "mot_de_passe_trop_courant": "Ce mot de passe est trop courant. Choisissez-en un autre, par exemple une phrase de quelques mots.",
+    "sans_mot_de_passe": "Votre accès n'a pas encore de mot de passe : déconnectez-vous, puis choisissez « Mot de passe oublié ».",
+    "actuel_incorrect": "Mot de passe actuel incorrect.",
+    "mot_de_passe_identique": "Le nouveau mot de passe doit être différent de l'actuel.",
+    "mot_de_passe_change": "Mot de passe changé. Vos autres sessions sont fermées ; celle-ci reste ouverte."
   },
   "documents": {
     "validez_abord_chiffres_moins": "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack.",

@@ -228,3 +228,40 @@ $("#confirmer-supprimer").addEventListener("click", async () => {
 });
 
 charger().catch((err) => { if (err.message !== "non_connecte") message(err.message, true); });
+
+// ================================================================== Change of password (24/11/2026)
+// Current password, then the new one (12 characters or more, the same rule as the server); every other session is
+// closed by the server, this one stays open.
+function changerMotDePasse() {
+  const zone = $("#changer-mdp");
+  if (!zone) return;
+  const champ = (id, lib, auto) => [el("label", { for: id, text: lib }), el("input", { id, type: "password", autocomplete: auto, required: true })];
+  const msg = el("p", { class: "message-carte", role: "status", hidden: true });
+  const form = el("form", { class: "form-carte mdp-form", novalidate: true },
+    el("h3", { text: t("espace.js.mdp.titre") }),
+    el("input", { type: "email", autocomplete: "username", value: "", hidden: true, tabindex: "-1", "aria-hidden": "true", class: "mdp-identifiant" }),
+    ...champ("mdp-actuel", t("espace.js.mdp.actuel"), "current-password"),
+    ...champ("mdp-nouveau", t("espace.js.mdp.nouveau"), "new-password"),
+    el("p", { class: "petit", text: t("connexion_code.mdp_regle", { n: 12 }) }),
+    ...champ("mdp-confirmation", t("espace.js.mdp.confirmation"), "new-password"),
+    el("button", { class: "btn btn-noir btn-mini", type: "submit" }, t("espace.js.mdp.bouton")),
+    el("p", { class: "petit", text: t("espace.js.mdp.sessions") }), msg);
+  const dire = (texte, erreur) => { msg.textContent = texte; msg.hidden = !texte; msg.classList.toggle("erreur", erreur); };
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const actuel = $("#mdp-actuel").value, nouveau = $("#mdp-nouveau").value;
+    if (!actuel) return dire(t("connexion_code.mdp_vide"), true);
+    if ([...nouveau].length < 12) return dire(t("connexion_code.mdp_court", { n: 12 }), true);
+    if (nouveau !== $("#mdp-confirmation").value) return dire(t("connexion_code.mdp_differents"), true);
+    const b = form.querySelector("button"); b.disabled = true;
+    try {
+      const r = await fetch("/api/auth/changer", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ actuel, nouveau }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.message || t("espace.js.erreur"));
+      form.reset(); dire(d.message, false);
+    } catch (err) { dire(err.message, true); } finally { b.disabled = false; }
+  });
+  zone.replaceChildren(form);
+  fetch("/api/me").then((r) => r.json()).then((m) => { form.querySelector(".mdp-identifiant").value = m.email || ""; }).catch(() => {});
+}
+changerMotDePasse();

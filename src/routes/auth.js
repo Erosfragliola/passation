@@ -7,6 +7,8 @@
 //                                                              account, opens a session, creates the SIREN's file
 //   POST /api/auth/login    { email, mot_de_passe, siren? }  → email + password; 5 failures → 15-min block (account and IP);
 //                                                              the same message whether or not the address exists
+//   POST /api/auth/changer  { actuel, nouveau }              → signed in: current password, then the new one; every
+//                                                              other session of the account is closed (this one stays)
 //   POST /api/auth/logout                                    → closes the session
 //   GET  /api/me                                             → user and their files (401 otherwise)
 import { json } from "../http.js";
@@ -215,6 +217,39 @@ export async function routeConnexion(request, env) {
   if (aRecalculer(user.password_hash)) stmts.push(env.DB.prepare("UPDATE users SET password_hash = ? WHERE id = ?").bind(await hacherMotDePasse(mdp), user.id));
   await env.DB.batch(stmts);
   return ouvrirSession(env, user.id, corps.siren);
+}
+
+/**
+ * Change of password from the owner's space: the current password is checked (failures counted and blocked as at
+ * sign-in, so a stolen session cannot try passwords), the new one follows the policy; every other session is closed.
+ */
+export async function routeChangerMotDePasse(request, env) {
+  const [u, refus] = await exigerUtilisateur(request, env);
+  if (refus) return refus;
+  const corps = await lireCorps(request);
+  if (!corps) return json({ erreur: "requete_invalide" }, 400);
+  const actuel = typeof corps.actuel === "string" ? corps.actuel : "", nouveau = corps.nouveau;
+  const t = maintenant();
+  const cles = [await cleEchec(env, "compte", u.email), await cleEchec(env, "ip", request.headers.get("cf-connecting-ip") || "local")];
+  const tropEchecs = () => json({ erreur: "trop_echecs", message: tr("serveur.auth.trop_echecs", { n: MOT_DE_PASSE.blocage / 60 }) }, 429);
+  if (await bloque(env, cles, t)) return tropEchecs();
+  const ligne = await env.DB.prepare("SELECT password_hash FROM users WHERE id = ?").bind(u.id).first();
+  if (!ligne?.password_hash) return json({ erreur: "sans_mot_de_passe", message: tr("serveur.auth.sans_mot_de_passe") }, 400);
+  if (!actuel || actuel.length > MOT_DE_PASSE.longueurMax || !(await verifierMotDePasse(actuel, ligne.password_hash))) {
+    return (await compterEchec(env, cles, t)) ? tropEchecs() : json({ erreur: "actuel_incorrect", message: tr("serveur.auth.actuel_incorrect") }, 400);
+  }
+  if (typeof nouveau !== "string") return refusMdp("trop_court");
+  const raison = refusMotDePasse(nouveau, { email: u.email });
+  if (raison) return refusMdp(raison);
+  if (nouveau === actuel) return json({ erreur: "identique", message: tr("serveur.auth.mot_de_passe_identique") }, 400);
+  const secret = lireCookie(request);
+  await env.DB.batch([
+    env.DB.prepare("UPDATE users SET password_hash = ?, password_set_at = ? WHERE id = ?").bind(await hacherMotDePasse(nouveau), t, u.id),
+    // every other session closed (lost or stolen device); the one in use stays open
+    env.DB.prepare("DELETE FROM sessions WHERE user_id = ? AND id_hash != ?").bind(u.id, await empreinte(secret)),
+    env.DB.prepare("DELETE FROM login_failures WHERE cle = ?").bind(cles[0]),
+  ]);
+  return json({ ok: true, message: tr("serveur.auth.mot_de_passe_change") }, 200, { "cache-control": "no-store" });
 }
 
 export async function routeDeconnexion(request, env) {
