@@ -246,7 +246,8 @@
     },
     "manque": {
       "activite": "Describe your business (questionnaire, “Your business”)",
-      "operation": "Specify the planned deal (questionnaire, “The planned deal”)"
+      "operation": "Specify the share of the capital being sold (guided steps, “Net debt and scope” step)",
+      "validation": "Approve your figures (guided steps, “Your value” step)"
     }
   },
   "teaser": {

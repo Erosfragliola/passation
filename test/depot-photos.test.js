@@ -36,6 +36,18 @@ describe("several files at once", () => {
     expect(q.suivis[1].code).toBe("trop_de_photos");
     expect(s.recus).toHaveLength(1);
   });
+  it("a photo removed elsewhere frees its place: the upload works again (advice « remove a photo » kept its promise)", async () => {
+    const s = serveur(11);
+    const q = creerFileDepot({ max: 12, restantes: 0, poidsMax: PHOTOS.poidsMax, reduire: sansReduction, envoyer: s.envoyer });
+    q.attester(true);
+    q.recevoir([fichier("a.jpg", 1000)]);
+    await q.fin();
+    expect(q.suivis[0].code).toBe("trop_de_photos");
+    q.ajuster(1); // one photo removed from the list
+    q.recevoir([fichier("b.jpg", 1000)]);
+    await q.fin();
+    expect(q.suivis[1].etat).toBe("ok");
+  });
   it("an error of the server on one file does not stop the others", async () => {
     let n = 0;
     const q = creerFileDepot({ max: 12, restantes: 12, poidsMax: PHOTOS.poidsMax, reduire: sansReduction,

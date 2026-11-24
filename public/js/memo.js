@@ -65,6 +65,7 @@ function dessinerPhotos() {
   // The upload zone is kept from one drawing to the next: its progress rows and pending files are not lost
   depotMemo ||= zoneDepotPhotos({ memo: etat, baseMemo: base, idBase: "memo-photos",
     surAjout: (m) => { etat = { ...m, versionPhotos: Date.now() }; tout(); }, surCandidate: (m) => { etat = { ...m, versionPhotos: Date.now() }; tout(); } });
+  depotMemo.majMemo(etat); // a photo removed frees a place
   remplacer($("#photos"), el("div", { class: "photos-panneau" },
     el("p", { class: "petit", text: tr("memo.js.photos.titre_max", { n, max }) }),
     depotMemo,
@@ -111,7 +112,7 @@ function dessinerVerrou() {
   const v = etat.deverrouille;
   remplacer($("#verrou"), v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: tr("memo.js.verrou.avant") }),
     el("ul", {}, ...v.manque.map((m) => el("li", { text: m }))),
-    el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/valorisation/?dossier=${id}#entreprise`) }, tr("memo.js.verrou.questionnaire"))));
+    el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/demarrer/?dossier=${id}`) }, tr("memo.js.verrou.questionnaire"))));
   $("#btn-tout").disabled = !v.ok || redactionEnCours;
 }
 

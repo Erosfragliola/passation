@@ -1089,6 +1089,7 @@ async function photos() {
   const zoneListe = el("div", { class: "guide-champ" });
   const majListe = () => {
     const m = S.memo || {};
+    depot.majMemo(m); // a photo removed frees a place
     const liste = listePhotos({ memo: m, baseMemo, message, focus: focusPhotoParcours, maj: redessiner });
     focusPhotoParcours = null;
     remplacer(zoneListe, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.vos_photos", { n: (m.photos || []).length, max }) }),

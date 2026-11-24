@@ -84,6 +84,8 @@ export function creerFileDepot({ max, restantes, poidsMax, reduire, envoyer, sur
     recevoir(liste) { const l = [...liste]; if (!atteste) attente.push(...l); else l.forEach(traiter); },
     /** Attestation ticked (or unticked): the waiting files leave at once. */
     attester(oui) { atteste = Boolean(oui); if (atteste && attente.length) attente.splice(0).forEach(traiter); },
+    /** Places left after a change made elsewhere (a photo removed, a photo of the website added). */
+    ajuster(n) { reste = Math.max(0, n); },
     get atteste() { return atteste; }, get enAttente() { return attente.length; }, get restantes() { return reste; },
     suivis, fin: () => file,
   };
@@ -204,9 +206,11 @@ export function zoneDepotPhotos({ memo, baseMemo, surAjout, surCandidate, idBase
   racine.ajouterSite = (url, surFin) => {
     if (!atteste.checked) { atteste.focus(); etatAttente.hidden = false; etatAttente.textContent = t("memo.js.depot.cochez_d_abord"); return Promise.resolve(false); }
     return fetch(`${baseMemo}/photos`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ url, attestation: true }) })
-      .then(async (r) => { const d = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(d.message || ""), { code: d.erreur }); restantes = Math.max(0, max - (d.photos || []).length); maj(); surCandidate?.(d); return true; })
+      .then(async (r) => { const d = await r.json().catch(() => ({})); if (!r.ok) throw Object.assign(new Error(d.message || ""), { code: d.erreur }); racine.majMemo(d); surCandidate?.(d); return true; })
       .catch((e) => { surFin?.(conseilErreur(e.code, { max })); return false; });
   };
+  // The list changed elsewhere (photo removed, website photo added): places left recounted, upload reopened if needed
+  racine.majMemo = (m) => { restantes = Math.max(0, max - (m?.photos || []).length); q.ajuster(restantes); maj(); };
   racine.atteste = () => atteste.checked;
   racine.recevoir = recevoir; // tests and drop from elsewhere
   maj();

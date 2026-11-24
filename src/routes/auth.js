@@ -52,6 +52,8 @@ async function bloque(env, cles, t) {
 /** Counts a failure on each key; the 5th failure within 15 minutes blocks the key for 15 minutes. true if now blocked. */
 async function compterEchec(env, cles, t) {
   let bloquee = false;
+  // Occasional clean-up: rows with no failure for a day are of no use (same practice as the rate limits)
+  if (Math.random() < 0.05) await env.DB.prepare("DELETE FROM login_failures WHERE updated_at < ? AND bloque_jusqua < ?").bind(t - 86_400, t).run().catch(() => {});
   for (const cle of cles) {
     const l = await env.DB.prepare(
       "INSERT INTO login_failures (cle, echecs, bloque_jusqua, updated_at) VALUES (?, 1, 0, ?) " +

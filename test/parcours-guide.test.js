@@ -26,8 +26,10 @@ describe("parcours guidé", () => {
   });
   it("les réponses indispensables du parcours sont exactement celles qu'exige le mémorandum côté serveur", () => {
     // le mémorandum exige la description (question du mémorandum) et la part cédée (premier temps, validé avant lui)
-    expect(questionsIncompletes({}).length + manquesValorisation("dette", {}).filter((c) => c.cle === "part_cedee").length).toBe(memoDeverrouille({}).manque.length);
-    const complet = { activite: { description: "x" }, operation: { part_cedee: "100 %" } };
+    // … and the approval of the figures, recorded by the server at the end of the first stage
+    expect(questionsIncompletes({}).length + manquesValorisation("dette", {}).filter((c) => c.cle === "part_cedee").length + 1).toBe(memoDeverrouille({}).manque.length);
+    expect(memoDeverrouille({ activite: { description: "x" }, operation: { part_cedee: "100 %" } }).ok).toBe(false);
+    const complet = { activite: { description: "x" }, operation: { part_cedee: "100 %" }, validation: { le: 1 } };
     expect(memoDeverrouille(complet).ok).toBe(true);
     expect(questionsIncompletes(complet)).toEqual([]);
   });

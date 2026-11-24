@@ -246,7 +246,8 @@
     },
     "manque": {
       "activite": "Décrire votre activité (questionnaire, « Votre activité »)",
-      "operation": "Préciser l'opération envisagée (questionnaire, « L'opération envisagée »)"
+      "operation": "Préciser la part du capital cédée (parcours guidé, étape « Dette nette et périmètre »)",
+      "validation": "Valider vos chiffres (parcours guidé, étape « Votre valeur »)"
     }
   },
   "teaser": {

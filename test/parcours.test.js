@@ -36,6 +36,9 @@ async function seConnecter(email) {
 }
 const pdf = (texte = "%PDF-1.4 liasse") => { const f = new FormData(); f.append("fichier", new File([texte], "liasse.pdf", { type: "application/pdf" })); return f; };
 
+/** Figures approved (« Je valide ces chiffres »), as the server records it: the memorandum can be drafted. */
+const chiffresValides = (id) => env.DB.sqlite.prepare("INSERT OR REPLACE INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'validation', ?, 1)").run(id, JSON.stringify({ le: 1 }));
+
 beforeEach(async () => {
   env = { DB: d1Memoire(), FILES: r2Memoire() };
   lireLiasse.mockReset();
@@ -314,6 +317,7 @@ describe("mémorandum", () => {
     expect((await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).status).toBe(409);
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { faits: [
       { id: 1, categorie: "histoire", fait: "Fondée en 1980.", source: "s", valide: true },
       { id: 2, categorie: "histoire", fait: "Leader mondial.", source: "s", valide: false }] } } });
@@ -332,6 +336,7 @@ describe("mémorandum", () => {
     const { cookie, id } = await seConnecter("titres@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     redigerSectionMemo.mockResolvedValue({ titre: "Une entreprise fondée en 1980, dirigée par la même famille.", accroche: "Quarante ans d'activité continue.", contenu: "- **1980** : création.", a_completer: [] });
     let m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).json();
     expect(m.sections.find((x) => x.cle === "histoire")).toMatchObject({ titre_affirme: "Une entreprise fondée en 1980, dirigée par la même famille", accroche: "Quarante ans d'activité continue", point_fort: null, partie: 2, court: "Histoire" });
@@ -414,6 +419,7 @@ describe("mémorandum : rédactions en parallèle", () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     redigerSectionMemo.mockResolvedValue({ contenu: "Texte.", a_completer: [] });
     const cles = ["synthese", "histoire", "activite", "marche", "organisation", "finances", "perspectives", "operation"];
     await Promise.all(cles.map((k) => appel(`/api/dossiers/${id}/documents/memo/sections/${k}`, { methode: "POST", cookie })));
@@ -474,6 +480,7 @@ describe("quotas des traitements par Claude (SEC-01)", () => {
   const preparer = async (cookie, id) => {
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
   };
   it("quota quotidien par utilisateur : au-delà, 429 sans appel à Claude ; un autre utilisateur n'est pas touché", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";

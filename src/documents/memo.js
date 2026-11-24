@@ -269,11 +269,13 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
   return d;
 }
 
-/** The memorandum opens when the business is described and the deal specified. */
+/** The memorandum opens when the figures are approved, the business described and the deal specified. */
 export function memoDeverrouille(reponses = {}) {
   const manque = [];
   if (!reponses.activite?.description?.trim()) manque.push(tr("serveur.memo.manque.activite"));
   if (!reponses.operation?.part_cedee) manque.push(tr("serveur.memo.manque.operation"));
+  // The memorandum comes after the figures (24/11/2026): approved on « Your value », recorded by the server only
+  if (!Number.isFinite(reponses.validation?.le)) manque.push(tr("serveur.memo.manque.validation"));
   return { ok: manque.length === 0, manque };
 }
 
