@@ -53,7 +53,7 @@
       "registres": ""
     },
     "coches": [
-      "Estimation gratuite, sans compte",
+      "Estimation gratuite, accès protégé",
       "Personne n’est averti",
       "Registres officiels"
     ],
@@ -86,11 +86,11 @@
       {
         "chiffre": "30 secondes",
         "titre": "Une première fourchette de valeur",
-        "texte": "Tapez le nom ou le SIREN de votre société : la fourchette s’affiche aussitôt, à partir des registres publics. Sans compte, et personne n’est averti.",
+        "texte": "Tapez le nom ou le SIREN de votre société : sa fiche publique s’affiche aussitôt. Créez votre accès gratuit pour voir la fourchette, calculée à partir des registres publics. Personne n’est averti.",
         "obtenez": "Vous obtenez une fourchette de valeur et le nom de code de votre dossier.",
         "pastilles": [
           "Gratuit",
-          "Sans compte"
+          "Accès protégé"
         ]
       },
       {
@@ -248,7 +248,7 @@
       {
         "q": "Est-ce que quelqu'un est prévenu ?",
         "r": [
-          "Non. L'estimation express lit uniquement des registres publics : personne n'est informé de votre recherche, ni votre société, ni votre expert-comptable. Aucun compte n'est demandé."
+          "Non. L'estimation express lit uniquement des registres publics : personne n'est informé de votre recherche, ni votre société, ni votre expert-comptable. La fourchette ne s'affiche qu'à vous, une fois votre accès créé."
         ]
       },
       {
@@ -285,7 +285,7 @@
   },
   "relance": {
     "titre": "Et si on regardait *votre entreprise* ?",
-    "texte": "L’estimation est gratuite et sans compte : en 30 secondes, une première idée de sa valeur.",
+    "texte": "L’estimation est gratuite : en 30 secondes, une première idée de sa valeur, visible de vous seul une fois votre accès créé.",
     "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
     "livrables_titre": "Ce que contient votre dossier",
     "livrables": [
@@ -340,7 +340,7 @@
       "sources": "Sources : comptes publics {exercice} (INPI), registre Sirene (INSEE), annonces BODACC ; multiples sectoriels de {mois}.",
       "sources_saisie": "Sources : le chiffre d'affaires et l'EBE que vous avez saisis ; multiples sectoriels de {mois}.",
       "dossier_bouton": "Ouvrir mon dossier",
-      "dossier_note": "Votre dossier : gratuit, un code par e-mail, aucun mot de passe",
+      "dossier_note": "Votre dossier : gratuit, protégé par un mot de passe",
       "tampon": "Confidentiel",
       "profil": {
         "secteur": "Secteur",
@@ -350,7 +350,9 @@
       },
       "profil_note": "Ni nom, ni ville, ni chiffre identifiant : c'est ce que verra un repreneur.",
       "prive": "Visible de vous seul",
-      "methode_saisie": "Calculée sur l'EBE que vous avez saisi ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur."
+      "methode_saisie": "Calculée sur l'EBE que vous avez saisi ({ebe}), entre {bas} et {haut} fois l'EBE selon les références du secteur.",
+      "masque": "Créez votre accès pour voir votre estimation et ouvrir votre dossier.",
+      "creer_bouton": "Créer mon accès"
     },
     "video": {
       "pause": "Mettre la vidéo en pause",

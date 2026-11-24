@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import worker from "../src/index.js";
 import { d1Memoire, r2Memoire } from "./aide/environnement.js";
+import { creerCompte } from "./aide/connexion.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
@@ -32,11 +33,8 @@ const verifier = (email, code, siren = SIREN) => appel("/api/auth/code", { metho
 const autreCode = (code) => String((Number(code) + 1) % 1e6).padStart(6, "0");
 
 async function seConnecter(email) {
-  const { code } = await demanderCode(email);
-  const r = await verifier(email, code);
-  const d = await r.json();
-  const cookie = r.headers.get("set-cookie").split(";")[0];
-  return { r, d, cookie, id: new URL(d.destination, BASE).searchParams.get("dossier") };
+  const { r, cookie, id } = await creerCompte(appel, email, { siren: SIREN });
+  return { r, d: await r.json(), cookie, id };
 }
 
 beforeEach(async () => {
@@ -66,7 +64,19 @@ describe("sign-in by code", () => {
     expect(ligne.code_hash).toMatch(/^[0-9a-f]{64}$/);
     expect(JSON.stringify(env.DB.sqlite.prepare("SELECT * FROM login_codes").all())).not.toContain(`"${code}"`);
   });
-  it("the right code opens a session (cookie HttpOnly, Secure, SameSite=Lax) and creates the SIREN's file", async () => {
+  it("the right code only verifies the address: a ticket, no session, no account yet", async () => {
+    const { code } = await demanderCode("dirigeant@exemple.fr");
+    const r = await verifier("dirigeant@exemple.fr", code);
+    expect(r.status).toBe(200);
+    expect(r.headers.get("set-cookie")).toBeNull();
+    const d = await r.json();
+    expect(d).toMatchObject({ ok: true, etape: "mot_de_passe" });
+    expect(d.ticket.length).toBeGreaterThanOrEqual(40);
+    expect(env.DB.sqlite.prepare("SELECT COUNT(*) n FROM users").get().n).toBe(0);
+    // only the ticket's hash is stored
+    expect(JSON.stringify(env.DB.sqlite.prepare("SELECT * FROM password_tickets").all())).not.toContain(d.ticket);
+  });
+  it("the password then opens a session (cookie HttpOnly, Secure, SameSite=Lax) and creates the SIREN's file", async () => {
     const { r, d } = await seConnecter("dirigeant@exemple.fr");
     expect(r.status).toBe(200);
     const c = r.headers.get("set-cookie");

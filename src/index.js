@@ -4,7 +4,7 @@ import { json } from "./http.js";
 import { routeMaquette } from "./routes/maquette.js";
 import { routeRecherche } from "./routes/company.js";
 import { routeEstimation } from "./routes/estimation.js";
-import { routeDemandeCode, routeVerificationCode, routeDeconnexion, routeMoi } from "./routes/auth.js";
+import { routeDemandeCode, routeVerificationCode, routeMotDePasse, routeConnexion, routeDeconnexion, routeMoi } from "./routes/auth.js";
 import { routeDossiers } from "./routes/dossiers.js";
 import { origineAutorisee } from "./lib/auth.js";
 import { avecEntetes } from "./lib/entetes.js";
@@ -70,6 +70,8 @@ async function router(request, env) {
     if (p === "/api/estimation") return routeEstimation(request, env);
     if (p === "/api/auth/request") return routeDemandeCode(request, env);
     if (p === "/api/auth/code") return routeVerificationCode(request, env);
+    if (p === "/api/auth/password") return routeMotDePasse(request, env);
+    if (p === "/api/auth/login") return routeConnexion(request, env);
     if (p === "/api/auth/logout") return routeDeconnexion(request, env);
   }
   if (p === "/api/dossiers" || p.startsWith("/api/dossiers/")) {

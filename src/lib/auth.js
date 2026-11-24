@@ -7,7 +7,7 @@ import { t as tr } from "../../public/js/i18n.js";
 const NOM_COOKIE = "passation_session";
 
 /** Secure random string (base64url, 32 bytes by default). */
-function aleatoire(octets = 32) {
+export function aleatoire(octets = 32) {
   const b = crypto.getRandomValues(new Uint8Array(octets));
   return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
@@ -58,7 +58,7 @@ export async function creerSession(db, userId) {
 }
 
 /** Signed-in user, or null. */
-async function utilisateurConnecte(request, env) {
+export async function utilisateurConnecte(request, env) {
   const secret = lireCookie(request);
   if (!secret || secret.length < 20) return null;
   return env.DB.prepare(

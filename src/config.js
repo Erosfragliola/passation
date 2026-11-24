@@ -23,9 +23,20 @@ export const SEARCH_RATE_LIMIT = { requetesParHeureParIP: 120 };
 /** Connexion par code : essais faux tolérés avant blocage du code. */
 export const CODE_ESSAIS_MAX = 5;
 
+/**
+ * Password (account required after the SIREN, 24/11/2026). PBKDF2-SHA256 through WebCrypto: 100,000 iterations is the
+ * maximum Cloudflare Workers accepts; 16-byte random salt per account. Sign-in: 5 failures → 15-minute block,
+ * counted per account (email hash) and per IP hash.
+ */
+export const MOT_DE_PASSE = {
+  iterations: 100_000, selOctets: 16, longueurMin: 12, longueurMax: 256,
+  echecsMax: 5, blocage: 15 * 60,
+};
+
 /** Durées (en secondes). */
 export const DURATIONS = {
   codeConnexion: 10 * 60,
+  ticketMotDePasse: 15 * 60, // after a verified code: time left to choose the password
   session: 30 * 24 * 3600,
   apiCache: 24 * 3600,
 };

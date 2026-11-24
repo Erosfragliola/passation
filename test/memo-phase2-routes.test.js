@@ -15,6 +15,7 @@ vi.mock("../src/sources/secteur.js", async (original) => ({ ...(await original()
 import { redigerTeaser, redigerSectionMemo, analyserPhoto, relireMemo, extraireSite, rechercherMarche, lireLiasse } from "../src/lib/claude.js";
 import worker from "../src/index.js";
 import { d1Memoire, r2Memoire } from "./aide/environnement.js";
+import { creerCompte } from "./aide/connexion.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
@@ -31,12 +32,8 @@ const appel = (chemin, { methode = "GET", corps, cookie, brut, referer } = {}) =
   return worker.fetch(new Request(BASE + chemin, { method: methode, headers, body: brut ?? (corps ? JSON.stringify(corps) : undefined) }), env);
 };
 async function seConnecter(email) {
-  const espion = vi.spyOn(console, "log").mockImplementation(() => {});
-  await appel("/api/auth/request", { methode: "POST", corps: { email } });
-  const code = espion.mock.calls.flat().join("\n").match(/Code de connexion pour \S+ : (\d{6})/)[1];
-  espion.mockRestore();
-  const r = await appel("/api/auth/code", { methode: "POST", corps: { email, code, siren: SIREN } });
-  return { cookie: r.headers.get("set-cookie").split(";")[0], id: new URL((await r.json()).destination, BASE).searchParams.get("dossier") };
+  const { cookie, id } = await creerCompte(appel, email, { siren: SIREN });
+  return { cookie, id };
 }
 // Images fictives : en-tête JPEG avec dimensions ; un octet varie pour que chaque photo soit différente
 const jpg = (l, h, k = 0) => new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 0, 1, k, 0, 0xff, 0xc0, 0, 17, 8, h >> 8, h & 255, l >> 8, l & 255, 3, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1]);

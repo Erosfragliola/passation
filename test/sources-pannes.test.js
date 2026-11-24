@@ -59,11 +59,14 @@ describe("GET /api/maquette/:siren: nothing wrong in the cache", () => {
     expect((await r.json()).erreur).toBe("source_indisponible");
     expect(await enCache()).toBeNull();
   }, 10_000);
-  it("BODACC down: 200 with the estimate, but not cached (will be read again on the next call)", async () => {
+  it("BODACC down: 200 with the public card, but not cached (will be read again on the next call)", async () => {
     vi.stubGlobal("fetch", fauxFetch({ bodacc: 500 }).f);
     const r = await appel();
     expect(r.status).toBe(200);
-    expect((await r.json()).estimation.statut).toBe("ok");
+    // Without a session the range is masked since 24/11/2026 (test/mot-de-passe.test.js); the published accounts are read
+    const d = await r.json();
+    expect(d).toMatchObject({ estimation: null, estimation_masquee: true });
+    expect(d.exercices_publies.length).toBeGreaterThan(0);
     expect(await enCache()).toBeNull();
   }, 10_000);
   it("all sources respond: cached under the single key (CODE-04)", async () => {

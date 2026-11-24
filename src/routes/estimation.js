@@ -5,8 +5,12 @@ import { estimationExpress } from "../valuation/express.js";
 import { verifierDebit } from "../lib/ratelimit.js";
 import { EXPRESS_RATE_LIMIT } from "../config.js";
 import { t as tr } from "../../public/js/i18n.js";
+import { exigerUtilisateur } from "../lib/auth.js";
 
 export async function routeEstimation(request, env) {
+  // A range is an amount: only for a signed-in owner (24/11/2026).
+  const [, refus] = await exigerUtilisateur(request, env);
+  if (refus) return refus;
   let corps;
   try { corps = await request.json(); } catch { return json({ erreur: "requete_invalide" }, 400); }
   const ca = Number(corps?.ca), ebe = corps?.ebe == null ? null : Number(corps.ebe);

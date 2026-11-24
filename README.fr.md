@@ -17,8 +17,8 @@ bilingue est visible en ligne une fois `main` déployée).
 
 | Fonction | État | Dépend de |
 |---|---|---|
-| Estimation express sans compte (SIREN ou nom) : fourchette de valeur d'entreprise par multiples d'EBE sourcés | Disponible | API publiques gratuites |
-| Connexion par code à 6 chiffres reçu par e-mail ; espace dirigeant ; parcours guidé avec reprise | Disponible | Brevo (en local : code affiché dans le terminal) |
+| Fiche publique de l'entreprise sans compte (SIREN ou nom) ; estimation express (fourchette de valeur d'entreprise par multiples d'EBE sourcés) une fois l'accès créé | Disponible | API publiques gratuites |
+| Accès avec mot de passe : adresse vérifiée par un code à 6 chiffres, puis mot de passe (mot de passe oublié : même chemin, autres sessions fermées) ; espace dirigeant ; parcours guidé avec reprise | Disponible | Brevo (en local : code affiché dans le terminal) |
 | Interface bilingue, anglais (par défaut, sous `/`) et français (sous `/fr/`), avec un sélecteur « EN \| FR » | Disponible | — |
 | Saisie des comptes et contrôles de cohérence (bilan équilibré, CA publié, unité, variation suspecte) | Disponible | — |
 | Lecture automatique d'une liasse fiscale PDF (montants proposés, jamais validés d'office) | Disponible | API Claude (payante) |
@@ -42,7 +42,10 @@ la lecture de liasse et les rédactions répondent « indisponible ».
   `src/data/`. Une valeur sans source reste « À compléter » (exemple : la prime de taille, d'où le DCF optionnel).
 - **Le dirigeant valide.** Seuls les exercices complets et validés entrent dans le calcul ; un exercice incomplet est
   écarté et signalé, jamais complété par des zéros. Les réglages hors bornes sont refusés avec un message.
-- **Sécurité et RGPD** : code de connexion haché (sel + secret serveur), usage unique, 10 minutes, 5 essais ; cookie
+- **Sécurité et RGPD** : aucun montant envoyé par le serveur sans session ; mot de passe haché en PBKDF2-SHA256
+  (100 000 itérations, sel de 16 octets propre au compte), comparé en temps constant, 12 caractères au moins, mots de
+  passe courants refusés ; 5 échecs de connexion → blocage de 15 minutes (par compte et par IP), même message que
+  l'adresse existe ou non ; code de vérification haché (sel + secret serveur), usage unique, 10 minutes, 5 essais ; cookie
   `HttpOnly; Secure; SameSite=Lax` ; contrôle d'origine (CSRF) ; chaque route privée vérifie la propriété du dossier ;
   limites de débit par empreinte d'IP ; quotas quotidiens des traitements par Claude ; suppression du dossier et de
   ses fichiers en un clic (le compte, lui, n'est pas supprimé : voir `public/confidentialite.html`).
@@ -84,7 +87,7 @@ Variables (`.dev.vars` en local, `npx wrangler secret put NOM` en production) :
 
 | Variable | Rôle | Sans elle |
 |---|---|---|
-| `SESSION_SECRET` | Secret des empreintes (codes de connexion, IP) | En local : fonctionne (secret de développement). **Hors local : l'API refuse de fonctionner (503).** |
+| `SESSION_SECRET` | Secret des empreintes (codes de vérification, IP, compteurs d'échecs de connexion) | En local : fonctionne (secret de développement). **Hors local : l'API refuse de fonctionner (503).** |
 | `ANTHROPIC_API_KEY` | Lecture de liasse, rédactions | Ces fonctions répondent « indisponible » |
 | `BREVO_API_KEY`, `SENDER_EMAIL`, `SENDER_NAME` | Envoi des codes et notifications | En local : code affiché dans le terminal ; en production : connexion impossible |
 

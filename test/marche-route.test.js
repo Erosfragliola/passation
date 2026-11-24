@@ -15,6 +15,7 @@ vi.mock("../src/sources/secteur.js", async (original) => ({
 import { rechercherMarche } from "../src/lib/claude.js";
 import worker from "../src/index.js";
 import { d1Memoire, r2Memoire } from "./aide/environnement.js";
+import { creerCompte } from "./aide/connexion.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
@@ -31,13 +32,8 @@ function appel(chemin, { methode = "GET", corps, cookie } = {}) {
   return worker.fetch(new Request(BASE + chemin, { method: methode, headers, body: corps ? JSON.stringify(corps) : undefined }), env);
 }
 async function seConnecter(email) {
-  const espion = vi.spyOn(console, "log").mockImplementation(() => {});
-  await appel("/api/auth/request", { methode: "POST", corps: { email } });
-  const code = espion.mock.calls.flat().join("\n").match(/Code de connexion pour \S+ : (\d{6})/)[1];
-  espion.mockRestore();
-  const r = await appel("/api/auth/code", { methode: "POST", corps: { email, code, siren: SIREN } });
-  const d = await r.json();
-  return { cookie: r.headers.get("set-cookie").split(";")[0], id: new URL(d.destination, BASE).searchParams.get("dossier") };
+  const { cookie, id } = await creerCompte(appel, email, { siren: SIREN });
+  return { cookie, id };
 }
 const etat = async (id) => JSON.parse((await env.DB.prepare("SELECT data_json FROM answers WHERE dossier_id = ? AND step = 'marche'").bind(id).first())?.data_json ?? "{}");
 const quotaUtilise = async () => (await env.DB.prepare("SELECT COALESCE(SUM(count), 0) AS n FROM rate_limits WHERE bucket LIKE 'jour-claude:%'").first()).n;

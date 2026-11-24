@@ -17,8 +17,8 @@ version is visible online once `main` has been deployed).
 
 | Feature | Status | Depends on |
 |---|---|---|
-| Quick estimate without an account (SIREN or company name): enterprise value range based on sourced EBITDA multiples | Available | Free public APIs |
-| Sign-in with a 6-digit code sent by email; owner's space; guided steps that can be resumed | Available | Brevo (locally: code shown in the terminal) |
+| Public profile of the company without an account (SIREN or company name); quick estimate (enterprise value range based on sourced EBITDA multiples) once the account is created | Available | Free public APIs |
+| Account with a password: email verified by a 6-digit code, then a password (forgotten password: same path, other sessions closed); owner's space; guided steps that can be resumed | Available | Brevo (locally: code shown in the terminal) |
 | Bilingual interface, English (default, at `/`) and French (at `/fr/`), with an "EN \| FR" language switcher | Available | — |
 | Entry of the accounts and consistency checks (balanced balance sheet, published revenue, unit, suspicious change) | Available | — |
 | Automatic reading of a PDF French tax return (*liasse fiscale*): amounts are proposed, never approved automatically | Available | Claude API (paid) |
@@ -42,7 +42,10 @@ reading and drafting answer "unavailable".
   value without a source stays "To be completed" (for example the size premium, hence the optional DCF).
 - **The owner approves.** Only complete, approved fiscal years go into the calculation; an incomplete fiscal year is
   left out and flagged, never filled with zeros. Out-of-range settings are rejected with a message.
-- **Security and GDPR**: sign-in code hashed (salt + server secret), single use, 10 minutes, 5 attempts; cookie
+- **Security and GDPR**: no amount sent by the server without a session; password hashed with PBKDF2-SHA256 (100,000
+  iterations, 16-byte salt per account), compared in constant time, 12 characters at least, common passwords refused;
+  5 failed sign-ins → 15-minute block (per account and per IP), same message whether or not the address exists;
+  verification code hashed (salt + server secret), single use, 10 minutes, 5 attempts; cookie
   `HttpOnly; Secure; SameSite=Lax`; origin check (CSRF); every private route checks that the file belongs to the user;
   rate limits based on a hash of the IP address; daily quotas for Claude processing; one-click deletion of the file and
   its documents (the account itself is not deleted: see `public/confidentialite.html`).
@@ -84,7 +87,7 @@ Variables (`.dev.vars` locally, `npx wrangler secret put NAME` in production):
 
 | Variable | Purpose | Without it |
 |---|---|---|
-| `SESSION_SECRET` | Secret used for hashes (sign-in codes, IP addresses) | Locally: works (development secret). **Elsewhere: the API refuses to run (503).** |
+| `SESSION_SECRET` | Secret used for hashes (verification codes, IP addresses, failed sign-in counters) | Locally: works (development secret). **Elsewhere: the API refuses to run (503).** |
 | `ANTHROPIC_API_KEY` | Tax-return reading, drafting | These features answer "unavailable" |
 | `BREVO_API_KEY`, `SENDER_EMAIL`, `SENDER_NAME` | Sending sign-in codes and notifications | Locally: code shown in the terminal; in production: sign-in impossible |
 

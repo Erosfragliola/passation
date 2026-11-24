@@ -53,7 +53,7 @@
       "registres": ""
     },
     "coches": [
-      "Free estimate, no sign-up",
+      "Free estimate, protected account",
       "No one is notified",
       "Official registries"
     ],
@@ -86,11 +86,11 @@
       {
         "chiffre": "30 seconds",
         "titre": "A first value range",
-        "texte": "Type your company's name or SIREN: the range appears right away, based on public registries. No sign-up, and no one is notified.",
+        "texte": "Type your company's name or SIREN: its public profile appears right away. Create your free account to see the range, based on public registries. No one is notified.",
         "obtenez": "You get a value range and the code name of your file.",
         "pastilles": [
           "Free",
-          "No sign-up"
+          "Protected account"
         ]
       },
       {
@@ -248,7 +248,7 @@
       {
         "q": "Is anyone notified?",
         "r": [
-          "No. The quick estimate only reads public registries: no one is told about your search, not your company, not your accountant. No account is required."
+          "No. The quick estimate only reads public registries: no one is told about your search, not your company, not your accountant. The range is shown only to you, once your account is created."
         ]
       },
       {
@@ -285,7 +285,7 @@
   },
   "relance": {
     "titre": "Shall we take a look at *your company*?",
-    "texte": "The estimate is free and needs no sign-up: in 30 seconds, a first idea of its value.",
+    "texte": "The estimate is free: in 30 seconds, a first idea of its value, visible only to you once your account is created.",
     "telephone": "Prefer to talk to someone? Call us at",
     "livrables_titre": "What your file contains",
     "livrables": [
@@ -340,7 +340,7 @@
       "sources": "Sources: {exercice} public accounts (INPI), Sirene registry (INSEE), BODACC notices; industry multiples from {mois}.",
       "sources_saisie": "Sources: the revenue and EBITDA you entered; industry multiples from {mois}.",
       "dossier_bouton": "Open my file",
-      "dossier_note": "Your file: free, a code by email, no password",
+      "dossier_note": "Your file: free, protected by a password",
       "tampon": "Confidential",
       "profil": {
         "secteur": "Industry",
@@ -350,7 +350,9 @@
       },
       "profil_note": "No name, no city, no identifying figure: this is what a buyer will see.",
       "prive": "Visible only to you",
-      "methode_saisie": "Based on the EBITDA you entered ({ebe}), between {bas} and {haut} times EBITDA according to industry benchmarks."
+      "methode_saisie": "Based on the EBITDA you entered ({ebe}), between {bas} and {haut} times EBITDA according to industry benchmarks.",
+      "masque": "Create your account to see your estimate and open your file.",
+      "creer_bouton": "Create my account"
     },
     "video": {
       "pause": "Pause the video",

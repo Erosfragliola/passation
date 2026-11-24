@@ -68,6 +68,19 @@ export function creerResultat({ section, textes = {} }) {
     // menu) also lead to this file: otherwise, after the code, the owner came back to the home page without a file
     // (found on 17/11/2026)
     document.querySelectorAll("a[data-connexion]").forEach((a) => { a.href = lien(`/connexion?siren=${d.siren}`); a.dataset.siren = d.siren; });
+    // Without an account the server sends no amount (24/11/2026): public card, then "Create my access"
+    const masquee = Boolean(d.estimation_masquee);
+    const ouvrir = $("#resultat-ouvrir");
+    ouvrir.dataset.mode = masquee ? "creer" : "connexion";
+    ouvrir.href = lien(`/connexion?siren=${d.siren}${masquee ? "&mode=creer" : ""}`);
+    ouvrir.querySelector("span").textContent = masquee ? R.creer_bouton : R.dossier_bouton;
+    $("#resultat-masque").hidden = !masquee;
+    if (masquee) {
+      $("#resultat-estimation").hidden = true;
+      $("#form-comptes").hidden = true;
+      $("#resultat-sources").hidden = true;
+      return;
+    }
     afficherEstimation(d.estimation);
   }
 

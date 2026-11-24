@@ -49,7 +49,16 @@ formal "vous". `npm run i18n:check` must stay free of errors.
 - Art direction: take inspiration, copy nothing (text, logo, name, photo, visual). Original SVG illustrations.
 
 ## Security and GDPR
-- Sign-in with a 6-digit code: single use, 10 min, 5 attempts, stored hashed (salt + server secret). Session cookie `HttpOnly; Secure; SameSite=Lax`.
+- An account is required after the SIREN: without a valid session, no route sends an amount (range, published
+  figures); the public card shows name, industry, region and headcount band only.
+- Password: 12 characters at least, common passwords refused; PBKDF2-SHA256 through WebCrypto, 100,000 iterations
+  (the Workers maximum), random 16-byte salt per account, constant-time comparison. Never in a log, a response or a
+  test (tests draw a random one).
+- Sign-in with email + password: 5 failures → 15-minute block, counted per account and per IP (hashes); the message
+  never reveals whether the address exists.
+- 6-digit code (sign-up, forgotten password, accounts created before passwords): verifies the address only; single
+  use, 10 min, 5 attempts, stored hashed (salt + server secret); gives a one-time ticket (15 min) to choose the
+  password. A new password closes every other session. Session cookie `HttpOnly; Secure; SameSite=Lax`.
 - Every private route checks that the file belongs to the signed-in user.
 - The owner's data is sent only to the Claude API, for the processing requested.
 - One-click deletion of the file and of its R2 files. Rate limit on the quick valuation.
