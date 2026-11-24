@@ -86,18 +86,20 @@ describe("chiffres", () => {
     expect(Object.keys(v.exercices)).toEqual(["2024"]);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
     expect(detail.parcours.exercices).toEqual({ dernier: 2024, dernier_complet: false, recommandes: [2023, 2022], recommandes_manquants: [2023, 2022], anciens: [] });
-    // Les questions du parcours guidé (9) et celle du site : 10, aucune faite
-    expect(detail.parcours.questions).toEqual({ faits: 0, total: 10, pct: 0 });
+    // Les questions du mémorandum (7) et celle du site : 8, aucune faite (24/11/2026 : les questions qui changent la
+    // valeur sont dans le premier temps, « Votre valorisation »)
+    expect(detail.parcours.questions).toMatchObject({ faits: 0, total: 8, pct: 0 });
+    expect(detail.parcours.etapes).toEqual({ exercices_passes: false, retraitements: false, dette: false, validation: null, photos: false, equipe: false });
     // 15 (dossier) + 10 (estimation express) = 25
     expect(detail.avancement.global).toBe(25);
   });
   it("écrans vus du parcours guidé enregistrés : « Passer » compte comme une réponse, côté serveur aussi", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { aucun: true } } });
-    expect((await appel(`/api/dossiers/${id}/answers/parcours`, { methode: "PUT", cookie, corps: { data: { vues: ["remuneration", "histoire"] } } })).status).toBe(200);
+    expect((await appel(`/api/dossiers/${id}/answers/parcours`, { methode: "PUT", cookie, corps: { data: { vues: ["distinctions", "histoire"] } } })).status).toBe(200);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
-    // site + 2 écrans passés = 3 sur 10 ; 3 / 10 = 30 %
-    expect(detail.parcours.questions).toEqual({ faits: 3, total: 10, pct: 30 });
+    // site + 2 écrans passés = 3 sur 8 ; 3 / 8 = 37,5 → 38 %
+    expect(detail.parcours.questions).toMatchObject({ faits: 3, total: 8, pct: 38 });
   });
   it("refuse une année absurde", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");

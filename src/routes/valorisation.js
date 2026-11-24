@@ -237,6 +237,22 @@ export async function routeValorisation(request, env, row, sous, item) {
     }
   }
 
+  // "I approve these figures" (24/11/2026): the valuation is calculated and saved, and the approval recorded by the
+  // server only (the browser cannot write the "validation" step). The memorandum and the datapack use these figures;
+  // they can still be changed afterwards (a new calculation keeps the date of approval).
+  if (sous === "valuation" && item === "validation" && m === "POST") {
+    const { resultat, entree, hypotheses } = await calculer(env, row);
+    if (resultat?.statut !== "ok") return json({ erreur: "valorisation_impossible", message: tr("serveur.valorisation.validation_impossible") }, 409);
+    const t = maintenant();
+    await env.DB.prepare("INSERT INTO valuations (id, dossier_id, kind, inputs_json, result_json, created_at) VALUES (?, ?, 'approfondie', ?, ?, ?)")
+      .bind(crypto.randomUUID(), row.id, JSON.stringify({ entree, hypotheses }), JSON.stringify(resultat), t).run();
+    const validation = { le: t, bas: resultat.synthese?.bas ?? null, haut: resultat.synthese?.haut ?? null };
+    await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'validation', ?, ?)
+      ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)
+      .bind(row.id, JSON.stringify(validation), t).run();
+    await toucher();
+    return json({ ok: true, validation, resultat });
+  }
   if (sous === "valuation" && !item) {
     if (m === "POST") {
       const { resultat, entree, hypotheses } = await calculer(env, row);

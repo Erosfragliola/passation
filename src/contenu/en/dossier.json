@@ -49,11 +49,14 @@
     }
   },
   "etapes": {
-    "estimation": "Estimate",
     "chiffres": "Your figures",
-    "reponses": "Your answers",
-    "redaction": "Drafting",
-    "relecture": "Review and send"
+    "redaction": "Drafting and review",
+    "retraitements": "Adjustments",
+    "dette": "Net debt and scope",
+    "valeur": "Your value",
+    "entreprise": "Your company",
+    "photos": "Photos and logo",
+    "equipe": "Management team"
   },
   "etiquette_express": "Estimated enterprise value",
   "etiquette_titres": "Value of your shares",
@@ -95,7 +98,9 @@
       },
       "titre": "Answer the {n} questions",
       "detail_reste": "{faits} of {total} already done",
-      "detail": "Short screens, most of them one click"
+      "detail": "Short screens, most of them one click",
+      "titre_une": "Answer the question “{question}”",
+      "detail_noms": "Left: {liste}"
     },
     "redaction": {
       "terminer": "Finish drafting",
@@ -123,8 +128,8 @@
       }
     },
     "exercices": {
-      "titre": "Add {annees} to make the range more reliable (optional)",
-      "detail": "The range is already based on {annee}; earlier fiscal years confirm it"
+      "titre": "Add your fiscal years {annees}",
+      "detail": "A buyer reasons over three years; you can also skip this step"
     },
     "photo": {
       "titre_premiere": "Add a photo of the workshop or the products",
@@ -154,6 +159,27 @@
         "one": "{n} document of {total}",
         "other": "{n} documents of {total}"
       }
+    },
+    "retraitements": {
+      "titre": "Adjust your accounts: pay, rent, one-off items",
+      "detail": "The adjustment that weighs most on the value"
+    },
+    "dette": {
+      "titre": "Enter your net debt and the scope of the sale",
+      "detail": "What separates the value of the company from that of your shares"
+    },
+    "valeur": {
+      "titre": "Check and approve your value",
+      "detail": "The full calculation, line by line",
+      "detail_calculee": "Calculated: {fourchette}; to check line by line"
+    },
+    "photos": {
+      "titre": "Choose your logo and your photos",
+      "detail": "Those from your website, or your own"
+    },
+    "equipe": {
+      "titre": "Present your management team",
+      "detail": "A page of the memorandum, never in the teaser"
     }
   },
   "guillemets": "“{texte}”",
@@ -168,7 +194,8 @@
     "ouvrir": "Open",
     "excel": "Download Excel",
     "choisir": "Choose",
-    "relire_envoyer": "Review and send"
+    "relire_envoyer": "Review and send",
+    "verifier": "Check"
   },
   "relire_envoyer": "Review and send your file",
   "documents": {
@@ -181,7 +208,7 @@
     "version": "version {n}",
     "prete": "Ready",
     "calculee_redaction": "Calculated at the Drafting step, with your answers.",
-    "debloque_chiffres_reponses": "Unlocks with your figures and your answers.",
+    "debloque_chiffres_reponses": "Calculated at the “Your value” step, after your adjustments and your debt.",
     "prepare_chiffres": "Prepared from your confirmed figures",
     "debloque_exercice": "Unlocks as soon as a fiscal year is confirmed.",
     "parties_a_rediger": {
@@ -193,7 +220,10 @@
     "chapitres_a_rediger": {
       "one": "{n} of {total} chapters to draft",
       "other": "{n} of {total} chapters to draft"
-    }
+    },
+    "validee_le": "Approved on {date}",
+    "a_valider": "Calculated, to check and approve",
+    "apres_validation": "Drafted once your figures are approved"
   },
   "valeur": {
     "base_titres": "Based on your industry’s EBITDA (EBE) multiples, after debt and cash.",
@@ -202,7 +232,9 @@
     "base_express": "Estimated from the latest public accounts and industry multiples, before debt and cash; your figures will refine it.",
     "voir_calcul": "See the calculation",
     "base_aucune": "The public accounts are not enough for a first estimate: your figures will make it possible.",
-    "saisir": "Enter your figures"
+    "saisir": "Enter your figures",
+    "base_titres_a_valider": "Calculated from your figures, after debt and cash; check it line by line, then approve it.",
+    "verifier": "Check and approve"
   },
   "final": {
     "pret_titre": "Your file is ready",
@@ -211,7 +243,12 @@
     "redige_titre": "Your file is drafted",
     "non_redige_titre": "Your file isn’t drafted yet",
     "non_pret_aide": "It isn’t ready to send yet: {pct}% complete. Here’s what’s left.",
-    "reste": "What’s left to do"
+    "reste": "What’s left to do",
+    "redige_reste": {
+      "one": "Your file is drafted: {n} step left",
+      "other": "Your file is drafted: {n} steps left"
+    },
+    "prochaine": "Next step: {tache}."
   },
   "formats": {
     "nd": "n/a",
@@ -219,5 +256,16 @@
     "exercices": "fiscal years {de} to {a}"
   },
   "relire_detail": "Your documents are written. Review the memorandum, then choose who to send it to.",
-  "relire_detail_non_redige": "See what’s ready and what’s left before sending."
+  "relire_detail_non_redige": "See what’s ready and what’s left before sending.",
+  "ancc": {
+    "dans": "The adjusted net assets ({ancc}) fall within the range ({bas} – {haut}): asset value and earnings value agree.",
+    "plancher": "The adjusted net assets ({ancc}) are below the whole range ({bas} – {haut}): they serve as a floor in negotiations.",
+    "au_dessus": "Asset value above earnings value: the adjusted net assets ({ancc}) exceed the range from the multiples ({bas} – {haut}). Your company is worth more for what it owns than for what it earns. Prepare this argument for the negotiation with your advisor: which assets explain the gap (ample cash, real estate, inventory) and how to have them recognized, in the price or outside it.",
+    "negatif": "The adjusted net assets are negative ({ancc}): they do not support the value, which rests entirely on profitability."
+  },
+  "temps": {
+    "valorisation": "Your valuation",
+    "memo": "Your memorandum"
+  },
+  "question_site": "Your website"
 }

@@ -97,6 +97,22 @@ A reproducible scenario, with an **entirely fictitious** tax return and the expe
 Locally: `npm run dev`, enter a SIREN, request a code (it appears in the terminal), upload
 `test/fixtures/liasse-fictive.pdf` (with an Anthropic key) or enter the amounts from the table in `docs/DEMO.md`.
 
+## Local check without the Claude API (simulated Claude)
+
+To go through the whole flow locally (tax-return reading, drafting, photo assessment, market research) without a key
+or any call to Anthropic, start the simulated Claude in a second terminal, then the Worker wired to it:
+
+```bash
+node scripts/claude-simule.mjs 8790
+npx wrangler dev --var ANTHROPIC_BASE_URL:http://127.0.0.1:8790 --var ANTHROPIC_API_KEY:simule
+```
+
+`scripts/claude-simule.mjs` answers every call with a JSON that follows the requested schema
+(`output_config.format.schema`), with texts marked as fictitious; the tax return gives three fiscal years of
+consistent fictitious amounts. `ANTHROPIC_BASE_URL` is a development setting only: never set it in production.
+Sign-in codes appear in the `wrangler dev` terminal. The code request is limited to 10 per hour per IP; locally, the
+counters can be reset with `npx wrangler d1 execute passation --local --command "DELETE FROM rate_limits"`.
+
 ## Languages
 
 The site is bilingual: **English** (default language, original addresses) and **French** (under `/fr/`). An

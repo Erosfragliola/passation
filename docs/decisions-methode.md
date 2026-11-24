@@ -59,6 +59,11 @@ Captain, Damodaran) measure EBITDA before or after rental payments (IFRS 16 for 
 **Decision to be made**: (2) needs a new field "lease financing payments for the fiscal year" and an EBITDA adjustment.
 (3) is the simplest: remove the line from net debt. Failing that, keep (1) and flag it to the user.
 
+**Status on 24/11/2026 (part C of the flow)**: convention (1) kept, as decided by the team for this PR. The new
+"Adjustments" screen explains that leasing does not change EBITDA and that its remaining principal is entered with
+the net debt; when a remaining principal is entered, a point of attention says that the convention may undervalue
+the company. No calculation changed.
+
 ## Other documented conventions (P2 items of the audit, not changed)
 
 - ANCC (adjusted book net assets): no deferred tax deducted from unrealized gains; provisions for risks counted at 100%

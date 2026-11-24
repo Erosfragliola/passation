@@ -76,59 +76,11 @@
         }
       }
     },
-    "remuneration": {
-      "titre": "Ce qu'il faut corriger dans vos comptes",
-      "aide": "Un repreneur raisonne sur un résultat « normal » : votre rémunération au prix du marché, sans les événements qui ne se reproduiront pas.",
-      "pourquoi": "L'écart avec une rémunération normale et les éléments exceptionnels sont des retraitements de l'EBE, donc de la valeur.",
-      "chapitre": "4.3 EBE retraité ; datapack « Retraitements »",
-      "champs": {
-        "remuneration_dirigeant_reelle": {
-          "libelle": "Ce que vous coûtez à l'entreprise par an",
-          "aide": "Salaire et charges sociales, ou rémunération de gérance et cotisations."
-        },
-        "remuneration_normative": {
-          "libelle": "Ce que coûterait un directeur pour vous remplacer",
-          "aide": "Si vous ne savez pas, gardez la proposition : elle ne change pas la valorisation."
-        },
-        "exceptionnel_signale": {
-          "libelle": "Une charge ou un produit exceptionnel a-t-il pesé sur vos derniers comptes ?",
-          "aide": "Par exemple : un litige, un sinistre, une subvention ponctuelle."
-        }
-      }
-    },
-    "detention": {
-      "titre": "Le périmètre de la cession",
-      "aide": "Un repreneur pose toujours deux questions : à qui achète-t-il les parts, et achète-t-il aussi les murs ?",
-      "pourquoi": "L'organigramme juridique et le périmètre ; un loyer anormal est retraité.",
-      "chapitre": "5.2 Organigramme juridique ; 4.3 EBE retraité",
-      "champs": {
-        "detention": {
-          "libelle": "Comment détenez-vous les parts de l'entreprise ?"
-        },
-        "murs": {
-          "libelle": "À qui appartiennent les murs de l'entreprise ?"
-        },
-        "murs_cession": {
-          "libelle": "Les murs font-ils partie de la cession ?"
-        },
-        "loyer_paye": {
-          "libelle": "Loyer annuel payé par l'entreprise"
-        },
-        "loyer_marche": {
-          "libelle": "Loyer annuel de marché pour des locaux équivalents",
-          "aide": "Si vous ne savez pas, gardez la proposition : aucun retraitement."
-        }
-      }
-    },
     "operation": {
       "titre": "Votre projet de cession",
       "pourquoi": "Le périmètre, le calendrier et l'accompagnement, présentés sans aucun prix. L'accompagnement rassure sur la reprise des clients et du savoir-faire.",
       "chapitre": "5.2 Opération envisagée ; teaser",
       "champs": {
-        "part_cedee": {
-          "libelle": "Part du capital",
-          "requis": "la part du capital cédée"
-        },
         "calendrier": {
           "libelle": "Calendrier souhaité"
         },
@@ -176,5 +128,67 @@
     "recrutement": "Recrutement clé",
     "equipement": "Nouvel équipement",
     "autre": "Autre"
+  },
+  "valorisation": {
+    "retraitements": {
+      "champs": {
+        "remuneration_dirigeant_reelle": {
+          "libelle": "Ce que vous coûtez à l'entreprise par an",
+          "aide": "Salaire et charges sociales, ou rémunération de gérance et cotisations."
+        },
+        "remuneration_normative": {
+          "libelle": "Ce que coûterait un directeur pour vous remplacer",
+          "aide": "Salaire et charges d'un directeur salarié qui ferait votre travail. Le même montant que le vôtre : aucun retraitement."
+        },
+        "murs": {
+          "libelle": "À qui appartiennent les murs de l'entreprise ?",
+          "aide": "Si l'entreprise vous paie un loyer, à vous ou à votre SCI, il est ramené au prix du marché."
+        },
+        "loyer_paye": {
+          "libelle": "Loyer annuel payé par l'entreprise"
+        },
+        "loyer_marche": {
+          "libelle": "Loyer annuel de marché pour des locaux équivalents",
+          "aide": "Ce que coûteraient des locaux équivalents loués à un propriétaire extérieur."
+        },
+        "exceptionnel_signale": {
+          "libelle": "Une charge ou un produit exceptionnel a-t-il pesé sur vos derniers comptes ?",
+          "aide": "Par exemple : un litige, un sinistre, une subvention ponctuelle."
+        },
+        "exceptionnels": {
+          "libelle": "Éléments exceptionnels",
+          "aide": "Une ligne par élément : l'exercice, charge ou produit, le montant et la raison."
+        }
+      }
+    },
+    "dette": {
+      "champs": {
+        "comptes_courants_remboursables": {
+          "libelle": "Comptes courants d'associés à rembourser",
+          "aide": "Les sommes que vous avez prêtées à l'entreprise et qu'elle devra vous rembourser."
+        },
+        "credit_bail_restant": {
+          "libelle": "Crédit-bail : loyers restant dus",
+          "aide": "Capital restant dû sur les contrats de crédit-bail."
+        },
+        "dividendes_a_verser": {
+          "libelle": "Dividendes votés non encore versés",
+          "aide": "Dividendes votés en assemblée et pas encore versés."
+        },
+        "actifs_hors_exploitation": {
+          "libelle": "Actifs hors exploitation (trésorerie excédentaire, bien non utilisé)",
+          "aide": "Trésorerie au-delà des besoins de l'activité, bien que l'entreprise n'utilise pas."
+        },
+        "detention": {
+          "libelle": "Comment détenez-vous les parts de l'entreprise ?"
+        },
+        "murs_cession": {
+          "libelle": "Les murs font-ils partie de la cession ?"
+        },
+        "part_cedee": {
+          "libelle": "Part du capital"
+        }
+      }
+    }
   }
 }

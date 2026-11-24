@@ -3,6 +3,7 @@
 // complements, forecasts, discounts/premiums; sourced assumptions (src/data/hypotheses.json).
 import MULTIPLES from "../data/multiples.json";
 import { t as tr, langue, locale } from "../../public/js/i18n.js";
+import { lignesRetraitement, ebeExercice } from "../../public/js/valeur-pont.js";
 
 const n = (x) => (Number.isFinite(Number(x)) ? Number(x) : 0);
 const moyenne = (l) => (l.length ? l.reduce((a, b) => a + b, 0) / l.length : null);
@@ -14,14 +15,8 @@ const moyenne = (l) => (l.length ? l.reduce((a, b) => a + b, 0) / l.length : nul
  * "other income" and "taxes and duties" are optional items of the entry: if missing, they count as 0.
  * Otherwise, the published EBITDA (INPI accounts) is taken as is; failing that, EBITDA cannot be determined (null).
  */
-const CHARGES_OBLIGATOIRES = ["achats_consommes", "charges_externes", "charges_personnel"];
-const renseigne = (x) => x !== null && x !== undefined && x !== "" && Number.isFinite(Number(x));
-export function ebe(ex) {
-  if (renseigne(ex.chiffre_affaires) && CHARGES_OBLIGATOIRES.every((k) => renseigne(ex[k]))) {
-    return n(ex.chiffre_affaires) + n(ex.autres_produits) - n(ex.achats_consommes) - n(ex.charges_externes) - n(ex.impots_taxes) - n(ex.charges_personnel);
-  }
-  return renseigne(ex.ebe) ? Number(ex.ebe) : null;
-}
+// Single definition shared with the restatements screen (public/js/valeur-pont.js)
+export const ebe = ebeExercice;
 
 /**
  * Bridge from reported EBITDA → adjusted EBITDA, per fiscal year.
@@ -29,16 +24,9 @@ export function ebe(ex) {
  */
 export function pontEbe(exercices, r = {}) {
   return exercices.map((ex) => {
-    const lignes = [];
-    if (Number.isFinite(r.remuneration_dirigeant_reelle) && Number.isFinite(r.remuneration_normative)) {
-      lignes.push({ cle: "dirigeant", libelle: tr("serveur.valorisation_moteur.retraitements.dirigeant"), montant: r.remuneration_dirigeant_reelle - r.remuneration_normative });
-    }
-    if (Number.isFinite(r.loyer_paye) && Number.isFinite(r.loyer_marche)) {
-      lignes.push({ cle: "loyer", libelle: tr("serveur.valorisation_moteur.retraitements.loyer"), montant: r.loyer_paye - r.loyer_marche });
-    }
-    for (const e of r.exceptionnels || []) {
-      if (e.annee === ex.annee && Number.isFinite(e.montant)) lignes.push({ cle: "exceptionnel", libelle: e.libelle || tr("serveur.valorisation_moteur.retraitements.exceptionnel"), montant: e.montant, justification: e.justification || "" });
-    }
+    // A single definition of the restatements, shared with the restatements screen (public/js/valeur-pont.js)
+    const lignes = lignesRetraitement(r, ex.annee).map((l) => ({ ...l,
+      libelle: l.cle === "exceptionnel" ? l.libelle || tr("serveur.valorisation_moteur.retraitements.exceptionnel") : tr(`serveur.valorisation_moteur.retraitements.${l.cle}`) }));
     const comptable = ebe(ex);
     return { annee: ex.annee, ebe_comptable: comptable, lignes, ebe_retraite: comptable + lignes.reduce((a, l) => a + l.montant, 0) };
   });
@@ -186,6 +174,8 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   const bfrN = bfrNormatif(exs);
   const ecartBfr = bfrN.valeur == null ? 0 : bfr(dernier) - bfrN.valeur;
   const dn = detteNette(dernier, e.complements || {});
+  // Leasing (convention FIN-05 kept on 24/11/2026, docs/decisions-methode.md): stated, not changed
+  if (n(e.complements?.credit_bail_restant) > 0) alertes.push(tr("serveur.valorisation_moteur.alertes.credit_bail"));
   const facteur = facteurDecotes(e.decotes || []);
   const hors = n(e.complements?.actifs_hors_exploitation);
   const versTitres = (ve) => ve * facteur - dn.total + ecartBfr + hors;

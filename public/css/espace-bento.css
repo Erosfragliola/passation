@@ -917,3 +917,65 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .eq-apercu { width: 72px; height: 90px; }
 }
 
+
+/* ---------- Two stages (24/11/2026, part C): "1. Your valuation", then "2. Your memorandum" ----------
+   Guided steps (left column, horizontal bars under 900 px) and the file page (light thread). */
+.page-guidee .guide-etapes li.temps { display: block; padding: 0 0 12px; gap: 0; color: var(--espresso); }
+.page-guidee .guide-etapes li.temps > span.temps-titre { display: block; width: auto; height: auto; border: 0; background: none; box-shadow: none; font-size: 12.5px; font-weight: 600; letter-spacing: .02em; color: var(--pierre-texte); margin: 0 0 2px; }
+.page-guidee .guide-etapes li.temps-actif > span.temps-titre { color: var(--vert); }
+.page-guidee .temps-etapes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.page-guidee .temps-etapes li { display: flex; align-items: center; }
+.fil-leger { column-gap: 30px; }
+.fil-leger > li.fil-temps { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.fil-leger > li.fil-temps::before, .fil-leger > li.fil-temps + li.fil-temps::before { content: none; }
+.fil-temps-titre { font-size: 12.5px; font-weight: 600; letter-spacing: .02em; color: var(--pierre-texte); }
+.fil-temps.fait .fil-temps-titre { color: var(--vert); }
+.fil-etapes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; }
+.dossier-leger .valeur-ecart { margin: 6px 0 0; font-size: 14px; line-height: 1.45; color: #DCE5DF; max-width: 62ch; }
+@media (max-width: 900px) {
+  .page-guidee .guide-etapes li.temps { display: flex; align-items: center; gap: 6px; padding: 0; font-size: 13.5px; }
+  .page-guidee .guide-etapes li.temps:not(.temps-actif) > span.temps-titre { display: none; }
+  .page-guidee .guide-etapes li.temps > span.temps-titre { margin: 0 4px 0 0; }
+  .page-guidee .temps-etapes { flex-direction: row; gap: 5px; flex-wrap: wrap; }
+  .page-guidee .temps-etapes li.actif { font-size: 13.5px; }
+  .page-guidee .guide-etapes { flex-wrap: wrap; row-gap: 6px; max-width: 100%; }
+  .page-guidee .temps-etapes li span:first-child { width: 18px; }
+}
+@media (max-width: 760px) {
+  .fil-leger { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------- First stage screens: previous fiscal years, adjustments, net debt and scope, your value ---------- */
+.exercices-manquants { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.exercices-manquants li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; }
+.exercices-perte { padding: 16px 20px; background: var(--g-sable-doux, #F3EBDD); border: 0; }
+.exercices-perte p { margin: 0; }
+.exercices-perte .etiquette { margin-bottom: 4px; }
+.retraitement { display: grid; gap: 12px; padding: 20px 22px; }
+.retraitement h2 { margin: 0; font: 600 17px var(--b-serif, inherit); text-transform: none; letter-spacing: -.01em; color: var(--espresso); }
+.retraitement .petit { margin: 0; }
+.retraitement-effet { margin: 0; font-size: 14px; font-weight: 500; color: var(--vert); }
+.retraitements-tete { position: sticky; top: 76px; z-index: 2; padding: 14px 20px; background: var(--g-vert-pale, #E6EEE8); border: 0; }
+.retraitements-total { margin: 0; font-size: 15px; color: var(--espresso); }
+.retraitements-total strong { font-variant-numeric: tabular-nums; }
+.retraitement .exceptionnels { display: grid; gap: 10px; }
+.retraitement .exc { display: grid; grid-template-columns: 90px minmax(0, 1.3fr) minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 8px; align-items: center; }
+.retraitement .exc input, .retraitement .exc select { min-width: 0; width: 100%; }
+.dette-bilan { margin: 0; }
+.valeur-tete { display: grid; gap: 6px; padding: 22px 24px; }
+.valeur-tete .valeur-fourchette { margin: 0; font: 500 clamp(30px, 4vw, 42px)/1.05 var(--titre-police, inherit); letter-spacing: var(--titre-interlettrage, -.02em); color: var(--vert); }
+.valeur-tete p { margin: 0; }
+.valeur-pont { display: grid; gap: 10px; padding: 20px 22px; }
+.valeur-pont h2, .valeur-points h2, .valeur-ancc h2 { margin: 0; font: 600 17px var(--b-serif, inherit); text-transform: none; letter-spacing: -.01em; color: var(--espresso); }
+.valeur-pont .tableau-resultat { width: 100%; }
+.valeur-pont .tableau-resultat td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.valeur-pont .tableau-resultat tr.total th, .valeur-pont .tableau-resultat tr.total td { font-weight: 600; border-top: 1px solid var(--trait-fort); }
+.valeur-pont .tableau-resultat tr.fort th, .valeur-pont .tableau-resultat tr.fort td { color: var(--vert); font-size: 1.05em; }
+.valeur-points, .valeur-ancc { display: grid; gap: 8px; padding: 18px 22px; }
+.valeur-ancc p { margin: 0; }
+.valeur-modifier { margin: 0; }
+@media (max-width: 760px) {
+  .retraitement .exc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .retraitements-tete { top: 64px; }
+  .exercices-manquants li { flex-direction: column; align-items: flex-start; }
+}

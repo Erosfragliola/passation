@@ -1,46 +1,56 @@
 import { describe, it, expect } from "vitest";
 import {
   etatParcours, ecranFinal, explicationEcart, alertesDirigeant, resumeValorisation, lectureMemo, listeAnnees, dateCourte,
-  pointsACompleter, libellePoints, partiesTeaserVides,
-  NB_PIECES, ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etiquetteTitres,
+  pointsACompleter, libellePoints, partiesTeaserVides, nomQuestion,
+  NB_PIECES, ETAPES_PARCOURS, TEMPS, ETAPE_DE_L_ECRAN, etiquetteExpress, etiquetteTitres,
 } from "../public/js/dossier-parcours.js";
-import { NB_QUESTIONS } from "../public/js/parcours.js";
+import { NB_QUESTIONS, QUESTIONS } from "../public/js/parcours.js";
 import LANDING from "../src/contenu/fr/accueil.json";
 
 // Dossiers entièrement fictifs. Les valeurs attendues sont comptées à la main à partir de ces données, pas tirées du code.
+// 24/11/2026 (partie C) : deux temps, « Votre valorisation » (chiffres, retraitements, dette nette et périmètre, valeur)
+// puis « Votre mémorandum » (entreprise, photos et logo, équipe dirigeante, rédaction et relecture).
 const ID = "00000000-0000-4000-8000-000000000001";
 const sp = (t) => String(t).replace(/\s/g, " "); // espaces insécables → espaces
+const titreQ = (id) => QUESTIONS.find((q) => q.id === id).titre;
 const exo = (x = {}) => ({ dernier: 2024, dernier_complet: false, recommandes: [2023, 2022], recommandes_manquants: [2023, 2022], anciens: [], ...x });
+const RIEN = { exercices_passes: false, retraitements: false, dette: false, validation: null, photos: false, equipe: false };
+// 18/11/2026 à 10:00 heure de Paris (UTC+1) = 09:00 UTC : 1 794 960 000 s à minuit UTC + 9 × 3 600 = 1 794 992 400 s
+const LE = 1_794_992_400;
+const VALIDE = { exercices_passes: false, retraitements: true, dette: true, validation: { le: LE } };
 const dossier = (x = {}) => ({
   id: ID, estimation: { statut: "ok", exercice: 2024, methode: "multiple_ebe", agregat: 80_000, bas: 310_000, haut: 520_000 }, checklist: [], documents: {},
   ...x,
-  parcours: { exercices: exo(), exercices_complets: 0, questions: { faits: 0, total: NB_QUESTIONS, pct: 0 }, valorisation: null, ...(x.parcours || {}) },
+  parcours: { exercices: exo(), exercices_complets: 0, questions: { faits: 0, total: NB_QUESTIONS, pct: 0, restantes: ["site", ...QUESTIONS.map((q) => q.id)] }, valorisation: null, ...(x.parcours || {}), etapes: { ...RIEN, ...(x.parcours?.etapes || {}) } },
 });
 const valo = { bas: 420_000, haut: 560_000, annees: [2024], ebe_normatif: 80_000, dette_nette: -110_000, facteur_decotes: 1, ecart_bfr: 0, hors_exploitation: 0 };
-// 18/11/2026 à 10:00 heure de Paris (UTC+1) = 09:00 UTC : 1 794 960 000 s à minuit UTC + 9 × 3 600 = 1 794 992 400 s
-const LE = 1_794_992_400;
 const tousDocs = { memo: { version: 1, le: LE }, teaser: { version: 1, le: LE }, datapack: { version: 2, le: LE } };
 const section = (cle, court, x = {}) => ({ cle, court, titre: court, redigee: true, a_completer: [], ...x });
 const CHECKLIST_COMPLETE = ["statuts", "kbis", "pv-ag", "capital", "liasses", "situation", "emprunts", "balances", "organigramme", "registre", "contrats-cles", "accords", "clients", "contrats", "cgv", "baux", "equipements", "marques", "assurances", "litiges", "autorisations"];
 const memoComplet = { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("organisation", "Équipe")] };
+const trois = exo({ dernier_complet: true, recommandes_manquants: [] });
+/** Premier temps fait (3 exercices, retraitements, dette, valeur validée), mémorandum pas commencé. */
+const valorise = (x = {}) => dossier({ ...x, parcours: { exercices: trois, exercices_complets: 3, valorisation: valo, ...(x.parcours || {}), etapes: { ...VALIDE, ...(x.parcours?.etapes || {}) } } });
 const toutFait = (x = {}) => dossier({ documents: tousDocs, checklist: CHECKLIST_COMPLETE, ...x,
-  parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), exercices_complets: 3, questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100 }, valorisation: valo, ...(x.parcours || {}) } });
+  parcours: { exercices: trois, exercices_complets: 3, questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100, restantes: [] }, valorisation: valo, ...(x.parcours || {}),
+    etapes: { ...VALIDE, photos: true, equipe: true, ...(x.parcours?.etapes || {}) } } });
 
-describe("constantes : une seule liste d'étapes", () => {
+describe("constantes : deux temps, une seule liste d'étapes", () => {
   it("21 pièces attendues (4 juridiques, 4 financières, 4 sociales, 3 commerciales, 6 actifs et risques)", () => expect(NB_PIECES).toBe(21));
-  it("5 étapes, dans l'ordre, pour la page du dossier et le parcours guidé", () => {
-    expect(ETAPES_PARCOURS.map(([, l]) => l)).toEqual(["Estimation", "Vos chiffres", "Vos réponses", "Rédaction", "Relecture et envoi"]);
+  it("8 étapes en deux temps, dans l'ordre, pour la page du dossier et le parcours guidé", () => {
+    expect(TEMPS.map((x) => x.titre)).toEqual(["Votre valorisation", "Votre mémorandum"]);
+    expect(ETAPES_PARCOURS.map(([, l]) => l)).toEqual(["Vos chiffres", "Retraitements", "Dette nette et périmètre", "Votre valeur",
+      "Votre entreprise", "Photos et logo", "Équipe dirigeante", "Rédaction et relecture"]);
   });
-  it("chaque écran du parcours guidé appartient à une étape de cette liste ; le site est une question de « Vos réponses »", () => {
+  it("chaque écran du parcours guidé appartient à une étape de cette liste", () => {
     const cles = new Set(ETAPES_PARCOURS.map(([k]) => k));
-    expect(Object.keys(ETAPE_DE_L_ECRAN).sort()).toEqual(["accueil", "chiffres", "comptes", "equipe", "photos", "pret", "questions", "redaction", "saisie", "site"]);
-    expect(ETAPE_DE_L_ECRAN.equipe).toBe("reponses"); // équipe dirigeante : après la question sur l'équipe
-    expect(ETAPE_DE_L_ECRAN.accueil).toBe("chiffres"); // l'accueil ouvre l'étape « Vos chiffres »
-    expect(ETAPE_DE_L_ECRAN.photos).toBe("reponses");  // logo et photos : juste après la lecture du site
     for (const e of Object.values(ETAPE_DE_L_ECRAN)) expect(cles.has(e)).toBe(true);
-    expect(ETAPE_DE_L_ECRAN.site).toBe("reponses");
-    expect(ETAPE_DE_L_ECRAN.comptes).toBe(ETAPE_DE_L_ECRAN.chiffres); // « Vos comptes » et « Vos chiffres » fusionnés
-    expect(ETAPE_DE_L_ECRAN.pret).toBe("relecture");
+    expect(ETAPE_DE_L_ECRAN.exercices).toBe("chiffres"); // les deux exercices précédents font partie de « Vos chiffres »
+    expect(ETAPE_DE_L_ECRAN.site).toBe("entreprise");
+    expect(ETAPE_DE_L_ECRAN.questions).toBe("entreprise");
+    expect([ETAPE_DE_L_ECRAN.retraitements, ETAPE_DE_L_ECRAN.dette, ETAPE_DE_L_ECRAN.valeur]).toEqual(["retraitements", "dette", "valeur"]);
+    expect(ETAPE_DE_L_ECRAN.photos).toBe("photos");
+    expect(ETAPE_DE_L_ECRAN.equipe).toBe("equipe");
   });
   it("même étiquette pour l'estimation express sur la fiche de l'accueil et dans le dossier", () => {
     expect(findCle(LANDING, "fourchette_titre")).toBe(etiquetteExpress());
@@ -59,33 +69,36 @@ describe("constantes : une seule liste d'étapes", () => {
     expect(listeAnnees([2024, 2022, 2023])).toBe("2022 à 2024");
     expect(listeAnnees([2024, 2019, 2021])).toBe("2019, 2021 et 2024");
   });
+  it("une question se nomme par son titre ; le site aussi", () => {
+    expect(nomQuestion("perspectives")).toBe(titreQ("perspectives"));
+    expect(nomQuestion("site")).toBe("Votre site internet");
+  });
 });
 function findCle(o, cle) { for (const [k, v] of Object.entries(o || {})) { if (k === cle) return v; if (v && typeof v === "object") { const r = findCle(v, cle); if (r !== undefined) return r; } } return undefined; }
 
 describe("dossier tout juste créé (comptes publics 2024 seulement, rien de confirmé)", () => {
   const e = etatParcours(dossier());
-  it("Estimation faite, Vos chiffres en cours, le reste à venir", () => {
-    expect(e.etapes.map((x) => x.etat)).toEqual(["fait", "actuelle", "a-venir", "a-venir", "a-venir"]);
+  it("Vos chiffres en cours, le reste à venir ; les deux temps séparés", () => {
+    expect(e.etapes.map((x) => x.etat)).toEqual(["actuelle", "a-venir", "a-venir", "a-venir", "a-venir", "a-venir", "a-venir", "a-venir"]);
     expect(e.actuelle).toBe("chiffres");
-    expect(e.etapes[0].href).toBe(`/espace/valorisation/?dossier=${ID}#chiffres`);
-    expect(e.etapes[1].href).toBeNull();
+    expect(e.temps.map((x) => [x.cle, x.etapes.length, x.fait])).toEqual([["valorisation", 4, false], ["memo", 4, false]]);
+    expect(e.etapes.every((x) => x.href === null)).toBe(true);
   });
-  it("À faire : le seul exercice indispensable, les 10 questions, les premières pièces", () => {
-    expect(e.taches.map((t) => t.titre)).toEqual(["Confirmer l'exercice 2024", `Répondre aux ${NB_QUESTIONS} questions`, "Déposer vos premières pièces"]);
-    expect(e.taches[2].detail).toBe("0 pièce sur 21");
-    expect(e.taches[2].pieces).toBe(true);
+  it("À faire : le premier temps, dans l'ordre ; rien du mémorandum tant que les chiffres ne sont pas validés", () => {
+    expect(e.taches.map((t) => t.titre)).toEqual(["Confirmer l'exercice 2024", "Corriger vos comptes : rémunération, loyer, exceptionnels", "Indiquer votre dette nette et le périmètre de la cession"]);
+    expect(e.taches.some((t) => ["questions", "photos", "equipe", "redaction"].includes(t.cle))).toBe(false);
   });
   it("action principale = première tâche, même libellé et même lien", () => {
     expect(e.action).toMatchObject({ texte: "Confirmer l'exercice 2024", href: `/espace/demarrer/?dossier=${ID}&etape=chiffres` });
   });
-  it("15 (dossier) + 10 (estimation express) = 25 %, pas prêt", () => {
-    expect(e.avancement).toBe(25);
+  it("1 (dossier ouvert) sur 9 = 11 %, pas prêt", () => {
+    expect(e.avancement).toBe(11);
     expect(e.pret).toBe(false);
   });
-  it("documents tous à venir, avec ce qui les débloque ; pas d'action", () => {
+  it("documents tous à venir, avec ce qui les débloque ; le mémorandum après la validation", () => {
     expect(e.documents.map((x) => x.etat)).toEqual(["a-venir", "a-venir", "a-venir", "a-venir"]);
-    expect(e.documents[0].detail).toBe("Se débloque avec vos chiffres et vos réponses.");
     expect(e.documents[1].detail).toBe("Se débloque dès qu'un exercice est confirmé.");
+    expect(e.documents[3].detail).toBe("Rédigé après la validation de vos chiffres");
     expect(e.documents.every((x) => x.actions.length === 0)).toBe(true);
   });
   it("fourchette express, étiquetée valeur d'entreprise, jamais de valeur centrale", () => {
@@ -99,68 +112,76 @@ describe("dossier tout juste créé (comptes publics 2024 seulement, rien de con
     expect(f.taches[0]).toMatchObject({ titre: "Confirmer votre dernier exercice", href: `/espace/demarrer/?dossier=${ID}` });
     expect(f.valeur.bas).toBeNull();
     expect(f.valeur.lien.href).toBe(`/espace/demarrer/?dossier=${ID}`);
-    expect(f.avancement).toBe(15);
   });
 });
 
-describe("exercices : le dernier indispensable, les deux précédents facultatifs", () => {
-  it("dernier exercice confirmé : « Vos chiffres » coché ; 2023 et 2022 proposés en facultatif, après l'indispensable", () => {
+describe("les trois derniers exercices sont demandés (défaut 8 du 24/11/2026)", () => {
+  it("dernier exercice confirmé, deux précédents absents : « Vos chiffres » pas fini ; tâche indispensable, vers l'écran des exercices", () => {
     const e = etatParcours(dossier({ parcours: { exercices: exo({ dernier_complet: true }), exercices_complets: 1 } }));
-    expect(e.fait.chiffres).toBe(true);
-    expect(e.etapes[1].etat).toBe("fait");
-    expect(e.taches.map((t) => t.cle)).toEqual(["questions", "exercices", "pieces"]);
-    expect(e.taches[1]).toMatchObject({ titre: "Ajouter 2023 et 2022 pour fiabiliser la fourchette (facultatif)", facultatif: true, href: `/espace/demarrer/?dossier=${ID}&etape=exercice` });
-    // 15 + 10 + 25 = 50 : les exercices précédents n'entrent pas dans le pourcentage
-    expect(e.avancement).toBe(50);
+    expect(e.fait.chiffres).toBe(false);
+    expect(e.taches[0]).toMatchObject({ cle: "exercices", titre: "Ajouter vos exercices 2022 et 2023", href: `/espace/demarrer/?dossier=${ID}&etape=exercices` });
+    expect(e.taches[0].facultatif).toBeUndefined();
   });
   it("un seul exercice précédent manque : il est seul nommé", () => {
     const e = etatParcours(dossier({ parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [2022] }) } }));
-    expect(e.taches.find((t) => t.cle === "exercices").titre).toBe("Ajouter 2022 pour fiabiliser la fourchette (facultatif)");
+    expect(e.taches[0].titre).toBe("Ajouter vos exercices 2022");
   });
-  it("les exercices précédents absents ne bloquent ni le pourcentage ni le statut « prêt »", () => {
-    const e = etatParcours(toutFait({ parcours: { exercices: exo({ dernier_complet: true }) } }), memoComplet);
-    expect(e.pret).toBe(true);
-    expect(e.avancement).toBe(100);
-    expect(e.taches.map((t) => t.cle)).toEqual(["exercices"]);
-    expect(e.taches.every((t) => t.facultatif)).toBe(true);
-  });
-  it("dernier exercice non confirmé : rien sur les exercices précédents tant que l'indispensable manque", () => {
-    const e = etatParcours(dossier());
-    expect(e.taches.some((t) => t.cle === "exercices")).toBe(false);
+  it("passés en connaissance de cause : « Vos chiffres » fait, on continue (retraitements)", () => {
+    const e = etatParcours(dossier({ parcours: { exercices: exo({ dernier_complet: true }), etapes: { exercices_passes: true } } }));
+    expect(e.fait.chiffres).toBe(true);
+    expect(e.actuelle).toBe("retraitements");
+    expect(e.etapes[0]).toMatchObject({ etat: "fait", href: `/espace/demarrer/?dossier=${ID}&etape=chiffres` });
   });
 });
 
-describe("dossier à moitié rempli : 2024 confirmé, 6 questions sur 14, 8 pièces", () => {
-  // 6 / 14 = 42,9 % → 43 %
-  const d = dossier({ checklist: CHECKLIST_COMPLETE.slice(0, 8), parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), exercices_complets: 1, questions: { faits: 6, total: 14, pct: 43 } } });
-  const e = etatParcours(d);
-  it("Vos réponses en cours ; les deux premières étapes cochées et cliquables", () => {
-    expect(e.etapes.map((x) => x.etat)).toEqual(["fait", "fait", "actuelle", "a-venir", "a-venir"]);
-    expect(e.etapes[1].href).toBe(`/espace/demarrer/?dossier=${ID}&etape=chiffres`);
+describe("premier temps : retraitements, dette, valeur à valider", () => {
+  it("valeur calculée mais pas validée : étape « Votre valeur » en cours, document à vérifier, en-tête qui le dit", () => {
+    const e = etatParcours(dossier({ parcours: { exercices: trois, valorisation: valo, etapes: { retraitements: true, dette: true } } }));
+    expect(e.actuelle).toBe("valeur");
+    expect(e.taches[0]).toMatchObject({ cle: "valeur", titre: "Vérifier et valider votre valeur", href: `/espace/demarrer/?dossier=${ID}&etape=valeur` });
+    expect(sp(e.taches[0].detail)).toBe("Calculée : 420 – 560 k€ ; à vérifier ligne par ligne");
+    expect(e.documents[0]).toMatchObject({ etat: "a-relire", detail: "Calculée, à vérifier et valider" });
+    expect(e.valeur.base).toMatch(/validez-la/);
+    expect(e.valeur.lien.href).toBe(`/espace/demarrer/?dossier=${ID}&etape=valeur`);
+    expect(e.taches.some((t) => t.cle === "questions")).toBe(false); // le mémorandum attend la validation
+    // 1 + 3 étapes faites (chiffres, retraitements, dette) sur 9 = 44,4 → 44 %
+    expect(e.avancement).toBe(44);
   });
-  it("À faire : 14 − 6 = 8 dernières questions, rédaction (43 % ≥ 40 %), 21 − 8 = 13 pièces", () => {
-    expect(e.taches.map((t) => t.titre)).toEqual(["Répondre aux 8 dernières questions", "Lancer la rédaction", "Déposer 13 pièces manquantes"]);
-    expect(e.taches[0].detail).toBe("6 sur 14 déjà faites");
-    expect(e.taches[2].detail).toBe("8 pièces sur 21");
-    expect(e.questions).toEqual({ faits: 6, total: 14, restantes: 8 });
+  it("le passage de l'estimation express à la valeur des titres est expliqué sur la page du dossier", () => {
+    const e = etatParcours(valorise());
+    // 310 – 520 k€ → 420 – 560 k€ ; EBE identique (80 k€) ; trésorerie nette 110 k€
+    expect(sp(e.valeur.ecart)).toBe("Votre fourchette passe de 310 – 520 k€ à 420 – 560 k€ : comptes 2024 confirmés et trésorerie nette de 110 k€ ajoutée.");
   });
-  it("action principale = « Répondre aux 8 dernières questions », vers les questions", () => {
-    expect(e.action).toMatchObject({ texte: "Répondre aux 8 dernières questions", href: `/espace/demarrer/?dossier=${ID}&etape=questions` });
+});
+
+describe("second temps : le mémorandum, après la validation des chiffres", () => {
+  const restantes = ["histoire", "equipe", "activite", "clients", "perspectives"];
+  const e = etatParcours(valorise({ checklist: CHECKLIST_COMPLETE.slice(0, 8), parcours: { questions: { faits: 3, total: NB_QUESTIONS, pct: 38, restantes } } }));
+  it("premier temps coché, « Votre entreprise » en cours", () => {
+    expect(e.etapes.map((x) => x.etat)).toEqual(["fait", "fait", "fait", "fait", "actuelle", "a-venir", "a-venir", "a-venir"]);
+    expect(e.valorisationFaite).toBe(true);
+    expect(e.etapes[3].href).toBe(`/espace/demarrer/?dossier=${ID}&etape=valeur`);
   });
-  it("15 + 10 + 25 + 15 × 0,43 = 56,45 → 56 %", () => expect(e.avancement).toBe(56));
-  it("seul le datapack est prêt (un exercice confirmé suffit), à télécharger", () => {
-    expect(e.documents.map((x) => x.etat)).toEqual(["a-venir", "pret", "a-venir", "a-venir"]);
-    expect(e.documents[1].actions).toEqual([{ libelle: "Télécharger l'Excel", href: `/api/dossiers/${ID}/documents/datapack`, principal: true, telecharger: true }]);
-    expect(e.documents[0].detail).toBe("Calculée à l'étape Rédaction, avec vos réponses.");
+  it("les questions restantes sont nommées", () => {
+    expect(e.taches[0].titre).toBe("Répondre aux 5 dernières questions");
+    expect(e.taches[0].detail).toBe(`Restent : ${restantes.map((id) => `« ${titreQ(id)} »`).join(", ")}`);
+    expect(e.questions).toMatchObject({ faits: 3, total: NB_QUESTIONS, restantes: 5 });
   });
-  it("sous 40 % de réponses (5 / 14 = 36 %), la rédaction n'est pas proposée", () => {
-    const f = etatParcours(dossier({ parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), questions: { faits: 5, total: 14, pct: 36 } } }));
-    expect(f.taches.map((t) => t.cle)).toEqual(["questions", "pieces"]);
+  it("une seule question restante : nommée (défaut 9 du 24/11/2026), même texte pour l'action", () => {
+    const f = etatParcours(valorise({ parcours: { questions: { faits: NB_QUESTIONS - 1, total: NB_QUESTIONS, pct: 88, restantes: ["perspectives"] } } }));
+    expect(f.taches[0].titre).toBe(`Répondre à la question « ${titreQ("perspectives")} »`);
+    expect(f.action.texte).toBe(f.taches[0].titre);
   });
-  it("une seule question restante", () => {
-    const f = etatParcours(dossier({ parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [] }), questions: { faits: 13, total: 14, pct: 93 } } }));
-    expect(f.taches[0].titre).toBe("Répondre à la dernière question");
-    expect(f.action.texte).toBe("Répondre à la dernière question");
+  it("questions faites : photos et logo, puis équipe, puis rédaction", () => {
+    const f = etatParcours(valorise({ parcours: { questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100, restantes: [] } } }));
+    expect(f.taches.map((t) => t.cle)).toEqual(["photos", "equipe", "redaction"]);
+    expect(f.taches[0].href).toBe(`/espace/demarrer/?dossier=${ID}&etape=photos`);
+    // 1 + 5 étapes sur 9 = 66,7 → 67 %
+    expect(f.avancement).toBe(67);
+  });
+  it("sous 40 % de réponses, la rédaction n'est pas proposée", () => {
+    const f = etatParcours(valorise({ parcours: { questions: { faits: 2, total: NB_QUESTIONS, pct: 25, restantes: ["a", "b", "c", "d", "e", "f"] }, etapes: { photos: true, equipe: true } } }));
+    expect(f.taches.some((t) => t.cle === "redaction")).toBe(false);
   });
 });
 
@@ -168,9 +189,9 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
   const d = toutFait({ checklist: CHECKLIST_COMPLETE.slice(0, 17), parcours: { valorisation_le: LE } });
   const memo = { photos: [], sections: [section("synthese", "Synthèse"), section("organisation", "Équipe", { a_completer: ["Nombre de salariés", "Date d'arrivée du responsable d'atelier"] }), section("marche", "Marché")] };
   const e = etatParcours(d, memo);
-  it("quatre étapes cochées, Relecture et envoi en cours ; prêt et 100 %", () => {
-    expect(e.etapes.map((x) => x.etat)).toEqual(["fait", "fait", "fait", "fait", "actuelle"]);
-    expect(e.etapes[3].href).toBe(`/espace/documents/memo/?dossier=${ID}`);
+  it("les huit étapes cochées ; prêt et 100 %", () => {
+    expect(e.etapes.every((x) => x.etat === "fait")).toBe(true);
+    expect(e.etapes[7].href).toBe(`/espace/documents/memo/?dossier=${ID}`);
     expect(e.pret).toBe(true);
     expect(e.avancement).toBe(100);
   });
@@ -179,9 +200,8 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     expect(e.taches.every((t) => t.facultatif)).toBe(true);
     expect(e.taches[1].detail).toBe("Indiqués « À compléter » : « Équipe »");
     expect(e.taches[1].href).toBe(`/espace/documents/memo/?dossier=${ID}#section-organisation`);
-    expect(e.taches[0].href).toBe(`/espace/documents/memo/?dossier=${ID}#donnees`);
+    expect(e.taches[0].href).toBe(`/espace/demarrer/?dossier=${ID}&etape=photos`);
   });
-  // 20/11/2026 : le bouton principal n'est jamais une tâche facultative ; à 100 %, « Relire et envoyer votre dossier »
   it("action principale : dossier prêt, tâches toutes facultatives → « Relire et envoyer votre dossier » (écran final)", () => {
     expect(e.action).toMatchObject({ texte: "Relire et envoyer votre dossier", bouton: "Relire et envoyer", href: `/espace/demarrer/?dossier=${ID}&etape=pret`, cle: "relecture" });
     expect(e.secondaires.map((x) => x.titre)).toEqual(["Ajouter une photo de l'atelier ou des produits", "Compléter 2 points du mémorandum"]); // 2 au plus
@@ -190,7 +210,7 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     expect(e.documents.map((x) => x.etat)).toEqual(["pret", "pret", "pret", "a-relire"]);
     expect(e.documents[3].detail).toBe("Rédigé le 18/11/2026 · 2 points à compléter");
     expect(e.documents[1].detail).toBe("Mis à jour le 18/11/2026 · version 2");
-    expect(e.documents[0].detail).toBe("Mise à jour le 18/11/2026");
+    expect(e.documents[0].detail).toBe("Validée le 18/11/2026");
     expect(e.documents[3].actions.map((a) => a.href)).toEqual([`/espace/documents/memo/?dossier=${ID}`, `/espace/documents/memo/?dossier=${ID}&imprimer=1`]);
   });
   it("valeur des titres, fondée sur les multiples seuls, sans DCF ni pondération", () => {
@@ -198,50 +218,46 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     expect(e.valeur.base).not.toMatch(/DCF|pondér|méthodes/);
     expect(e.valeur).not.toHaveProperty("central");
   });
-  it("l'écart avec l'estimation express est expliqué par les montants calculés", () => {
-    // 310 – 520 k€ → 420 – 560 k€ ; EBE identique (80 k€) ; trésorerie nette 110 k€
-    expect(sp(e.valeur.ecart)).toBe("Votre fourchette passe de 310 – 520 k€ à 420 – 560 k€ : comptes 2024 confirmés et trésorerie nette de 110 k€ ajoutée.");
-  });
   it("écran final : « prêt », avec exactement les mêmes tâches, présentées comme facultatives", () => {
     const f = ecranFinal(e);
     expect(f.titre).toBe("Votre dossier est prêt");
     expect(f.resteTitre).toBe("Pour aller plus loin (facultatif)");
     expect(f.reste).toBe(e.taches);
   });
-  it("chapitres non rédigés : pas prêt (99 % au plus), « rédigé », et la même liste que la page du dossier", () => {
+  it("chapitres non rédigés : pas prêt (99 % au plus), ce qui reste est nommé, la même liste que la page du dossier", () => {
     const f = etatParcours(d, { photos: [{}], sections: [section("synthese", "Synthèse"), section("marche", "Marché", { redigee: false }), section("clients", "Clients", { redigee: false })] });
     expect(f.pret).toBe(false);
-    expect(f.etapes[3].etat).toBe("actuelle");
-    // 15 + 10 + 25 + 15 + 15 + 20 = 100, plafonné à 99 tant que la rédaction n'est pas finie
-    expect(f.avancement).toBe(99);
+    expect(f.etapes[7].etat).toBe("actuelle");
+    // 1 + 7 étapes sur 9 = 88,9 → 89 %
+    expect(f.avancement).toBe(89);
     expect(f.taches[0]).toMatchObject({ titre: "Rédiger 2 chapitres du mémorandum", detail: "Chapitres : Marché, Clients" });
-    expect(f.taches[1].titre).toBe("Ajouter une photo de l'équipe ou du site");
     const final = ecranFinal(f);
-    expect(final.titre).toBe("Votre dossier est rédigé");
-    expect(final.resteTitre).toBe("Ce qui reste à faire");
+    expect(final.titre).toBe("Votre dossier est rédigé : il reste 1 étape");
+    expect(final.aide).toBe("Prochaine étape : Rédiger 2 chapitres du mémorandum.");
     expect(final.reste.map((t) => t.titre)).toEqual(f.taches.map((t) => t.titre));
-    expect(final.aide).toMatch(/99 %/);
   });
   it("trois tâches au plus", () => {
-    const f = etatParcours(toutFait({ parcours: { questions: { faits: 13, total: 14, pct: 93 } } }), { photos: [], sections: [section("marche", "Marché", { redigee: false, a_completer: ["Taille du marché"] })] });
+    const f = etatParcours(toutFait({ parcours: { questions: { faits: NB_QUESTIONS - 1, total: NB_QUESTIONS, pct: 88, restantes: ["perspectives"] } } }), { photos: [], sections: [section("marche", "Marché", { redigee: false, a_completer: ["Taille du marché"] })] });
     expect(f.taches.map((t) => t.cle)).toEqual(["questions", "chapitres", "photo"]);
   });
 });
 
-// Audit du 19/11/2026 : « Votre dossier est prêt » en fin de parcours, puis 86 %, « 19 dernières questions » et
-// « Confirmer 2 exercices de plus » sur la page du dossier
-describe("un seul état pour le parcours guidé et la page du dossier", () => {
-  it("rédigé mais deux questions restantes : ni prêt ni 100 % des deux côtés, même décompte", () => {
-    const e = etatParcours(toutFait({ parcours: { questions: { faits: 12, total: 14, pct: 86 } } }), memoComplet);
+// Défaut 9 du 24/11/2026 : « Votre dossier est rédigé », « 99 % du parcours » et « Répondre à la dernière question »
+describe("un seul état pour le parcours guidé et la page du dossier ; l'écran final ne se contredit pas", () => {
+  it("rédigé mais une question restante : ni prêt ni 100 %, la question nommée des deux côtés", () => {
+    const e = etatParcours(toutFait({ parcours: { questions: { faits: NB_QUESTIONS - 1, total: NB_QUESTIONS, pct: 88, restantes: ["perspectives"] } } }), memoComplet);
     expect(e.pret).toBe(false);
-    // 15 + 10 + 25 + 15 × 0,86 + 15 + 20 = 97,9 → 98
-    expect(e.avancement).toBe(98);
+    // 1 + 7 étapes + 0,88 (questions au prorata) = 8,88 sur 9 = 98,7 → 99 % (jamais 100 tant que ce n'est pas prêt)
+    expect(e.avancement).toBe(99);
     const f = ecranFinal(e);
-    expect(f.titre).toBe("Votre dossier est rédigé");
-    expect(f.reste[0].titre).toBe("Répondre aux 2 dernières questions");
-    expect(e.action.texte).toBe("Répondre aux 2 dernières questions");
+    const attendu = `Répondre à la question « ${titreQ("perspectives")} »`;
+    expect(f.titre).toBe("Votre dossier est rédigé : il reste 1 étape");
+    expect(f.aide).toBe(`Prochaine étape : ${attendu}.`);
+    expect(f.reste[0].titre).toBe(attendu);
+    expect(e.action.texte).toBe(attendu);
+    expect(`${f.titre} ${f.aide}`).not.toMatch(/dernière question/);
   });
-  it("tout l'indispensable fait : 100 % et « prêt » des deux côtés", () => {
+  it("tout fait : 100 % et « prêt » des deux côtés", () => {
     const e = etatParcours(toutFait(), memoComplet);
     expect([e.pret, e.avancement, ecranFinal(e).titre]).toEqual([true, 100, "Votre dossier est prêt"]);
   });
@@ -252,21 +268,25 @@ describe("un seul état pour le parcours guidé et la page du dossier", () => {
     expect(e.pieces).toEqual({ fournies: 21, total: 21, ouvert: false });
     expect(ecranFinal(e).resteTitre).toBeNull();
   });
-  it("sans date de valorisation : « Prête »", () => expect(etatParcours(toutFait(), memoComplet).documents[0].detail).toBe("Prête"));
   it("s'il ne manque que des pièces (facultatif) : le dépôt s'ouvre de lui-même, le bouton principal reste « Relire et envoyer »", () => {
     const f = etatParcours(toutFait({ checklist: CHECKLIST_COMPLETE.slice(0, 20) }), memoComplet);
     expect(f.taches.map((t) => t.titre)).toEqual(["Déposer 1 pièce manquante"]);
     expect(f.action).toMatchObject({ texte: "Relire et envoyer votre dossier", cle: "relecture", pieces: false });
-    expect(f.secondaires.map((x) => x.titre)).toEqual(["Déposer 1 pièce manquante"]);
     expect(f.pieces.ouvert).toBe(true);
   });
   it("une clé de checklist inconnue n'est pas comptée", () => {
     expect(etatParcours(dossier({ checklist: ["statuts", "inconnue"] })).pieces.fournies).toBe(1);
   });
+  it("teaser manquant : « Terminer la rédaction », vers l'étape Rédaction du parcours guidé", () => {
+    const e = etatParcours(toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet);
+    expect(e.pret).toBe(false);
+    expect(e.taches[0]).toMatchObject({ titre: "Terminer la rédaction", href: `/espace/demarrer/?dossier=${ID}&etape=redaction` });
+  });
   it.each([
     ["nouveau", dossier(), null],
-    ["à moitié", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 6, total: 14, pct: 43 } } }), null],
-    ["rédaction à lancer", dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100 } } }), null],
+    ["exercices à ajouter", dossier({ parcours: { exercices: exo({ dernier_complet: true }) } }), null],
+    ["valeur à valider", dossier({ parcours: { exercices: trois, valorisation: valo, etapes: { retraitements: true, dette: true } } }), null],
+    ["mémorandum à moitié", valorise({ parcours: { questions: { faits: 3, total: NB_QUESTIONS, pct: 38, restantes: ["a"] } } }), null],
     ["teaser manquant", toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet],
     ["prêt avec recommandations", toutFait({ checklist: [] }), { photos: [], sections: [section("a", "A", { a_completer: ["x"] })] }],
   ])("prochaine action = première tâche indispensable, sinon « Relire et envoyer » (%s)", (_, d, memo) => {
@@ -275,11 +295,8 @@ describe("un seul état pour le parcours guidé et la page du dossier", () => {
     const indispensable = e.taches.find((x) => !x.facultatif);
     expect(e.action.texte).toBe(indispensable ? indispensable.titre : "Relire et envoyer votre dossier");
     expect(e.action.href).toBe(indispensable ? indispensable.href : `/espace/demarrer/?dossier=${ID}&etape=pret`);
-  });
-  it("teaser manquant : « Terminer la rédaction », vers l'étape Rédaction du parcours guidé", () => {
-    const e = etatParcours(toutFait({ documents: { memo: tousDocs.memo, datapack: tousDocs.datapack } }), memoComplet);
-    expect(e.pret).toBe(false);
-    expect(e.taches[0]).toMatchObject({ titre: "Terminer la rédaction", href: `/espace/demarrer/?dossier=${ID}&etape=redaction` });
+    expect(new Set(e.taches.filter((x) => x.facultatif).map((x) => x.cle)).has(e.action.cle)).toBe(false);
+    expect(e.secondaires.length).toBeLessThanOrEqual(2);
   });
 });
 
@@ -337,8 +354,7 @@ describe("lecture du mémorandum", () => {
   it("mémorandum absent → null", () => expect(lectureMemo(null)).toBeNull());
 });
 
-// PR #14 (audit, points 15 et 16), réintégrés après la fusion avec la PR #15 : un document vide n'est pas « prêt » ;
-// un seul décompte des points à compléter.
+// PR #14 (audit, points 15 et 16) : un document vide n'est pas « prêt » ; un seul décompte des points à compléter.
 describe("teaser et mémorandum vides ou incomplets", () => {
   const teaser = (...contenus) => ({ teaser: { sections: ["accroche", "activite", "chiffres", "atouts", "operation"].map((cle, i) => ({ cle, titre: cle, contenu: contenus[i] ?? "" })) } });
   const plein = teaser("Texte", "Texte", "Texte", "Texte", "Texte");
@@ -377,48 +393,8 @@ describe("décompte unique des points à compléter", () => {
   });
   it("même nombre pour la page du dossier (lectureMemo) et les tâches", () => expect(lectureMemo(memo).nbACompleter).toBe(pointsACompleter(memo).length));
   it("même formulation", () => { expect(libellePoints(1)).toBe("1 point à compléter"); expect(libellePoints(4)).toBe("4 points à compléter"); });
-});
-
-// 20/11/2026 : les photos trouvées sur le site sont proposées (« Choisir vos photos : 12 trouvées »), pas seulement
-// « Ajouter une photo » ; le lien mène à l'écran « Votre logo et vos photos » du parcours guidé.
-describe("photos trouvées sur le site", () => {
-  const d = toutFait({ checklist: CHECKLIST_COMPLETE, parcours: { valorisation_le: LE } });
-  const candidates = Array.from({ length: 12 }, (_, k) => `https://exemple.fr/p${k}.jpg`);
-  it("aucune photo choisie, 12 trouvées : « Choisir vos photos : 12 trouvées sur votre site », vers le parcours", () => {
-    const e = etatParcours(d, { photos: [], site: { photos_candidates: candidates }, sections: [section("synthese", "Synthèse")] });
-    const t = e.taches.find((x) => x.cle === "photo");
-    expect(t.titre).toBe("Choisir vos photos : 12 trouvées sur votre site");
-    expect(t.href).toBe(`/espace/demarrer/?dossier=${ID}&etape=photos`);
-    expect(t.facultatif).toBe(true);
-  });
-  it("sans photo trouvée : la tâche reste « Ajouter une photo » (dépôt)", () => {
-    const e = etatParcours(d, { photos: [], site: { photos_candidates: [] }, sections: [section("synthese", "Synthèse")] });
-    expect(e.taches.find((x) => x.cle === "photo").titre).toBe("Ajouter une photo de l'atelier ou des produits");
-  });
-});
-
-// Règle de la PR « Parcours d'analyse » (20/11/2026) : le bouton principal n'est jamais une tâche facultative, et la
-// page du dossier, la tâche et l'écran final comptent les mêmes points à compléter.
-describe("bouton principal jamais facultatif ; un seul décompte des points", () => {
-  const memo47 = { photos: [], sections: [section("synthese", "Synthèse", { a_completer: Array.from({ length: 40 }, (_, k) => `p${k}`) }), section("marche", "Marché", { a_completer: Array.from({ length: 7 }, (_, k) => `m${k}`) })] };
-  const etats = [
-    dossier(),
-    dossier({ parcours: { exercices: exo({ dernier_complet: true }), questions: { faits: 6, total: NB_QUESTIONS, pct: 60 } } }),
-    toutFait({ checklist: [] }),
-    toutFait({ checklist: CHECKLIST_COMPLETE }),
-    toutFait({ checklist: CHECKLIST_COMPLETE.slice(0, 3), parcours: { exercices: exo({ dernier_complet: true, recommandes_manquants: [2023] }) } }),
-  ];
-  it.each(etats.map((d, k) => [k, d]))("état %s : l'action principale n'est jamais une tâche facultative", (_, d) => {
-    for (const memo of [null, memoComplet, memo47]) {
-      const e = etatParcours(d, memo);
-      const facultatives = new Set(e.taches.filter((x) => x.facultatif).map((x) => x.cle));
-      expect(facultatives.has(e.action.cle)).toBe(false);
-      if (e.pret) expect(e.action.texte).toBe("Relire et envoyer votre dossier");
-      expect(e.secondaires.length).toBeLessThanOrEqual(2);
-      expect(e.secondaires).not.toContain(e.taches.find((x) => x.cle === e.action.cle));
-    }
-  });
   it("47 points : même nombre dans le document, la tâche et l'écran final (une seule fonction de décompte)", () => {
+    const memo47 = { photos: [{}, {}], sections: [section("synthese", "Synthèse", { a_completer: Array.from({ length: 40 }, (_, k) => `p${k}`) }), section("marche", "Marché", { a_completer: Array.from({ length: 7 }, (_, k) => `m${k}`) })] };
     const e = etatParcours(toutFait({ checklist: CHECKLIST_COMPLETE }), memo47);
     expect(e.documents.find((x) => x.cle === "memo").badge).toBe("47 points à compléter");
     expect(e.taches.find((x) => x.cle === "a-completer").titre).toBe("Compléter 47 points du mémorandum");

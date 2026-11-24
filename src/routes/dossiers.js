@@ -15,7 +15,7 @@ import { chargerMaquette, CLE_MAQUETTE } from "../maquette/donnees.js";
 import { estimationExpress } from "../valuation/express.js";
 import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
 import { manquants, exercicesAttendus } from "../../public/js/champs-financiers.js";
-import { avancementQuestions } from "../../public/js/parcours.js";
+import { avancementQuestions, etatValorisation, vuesDe } from "../../public/js/parcours.js";
 import { resumeValorisation } from "../../public/js/dossier-parcours.js";
 import { routeValorisation, lireChiffres, lireReponses } from "./valorisation.js";
 import { routePieces } from "./pieces.js";
@@ -71,7 +71,11 @@ async function detail(env, row) {
   const approfondie = await env.DB.prepare("SELECT result_json, created_at FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();
   // Range only (never a central value for the owner), and what explains it
   const valorisation = approfondie ? resumeValorisation(JSON.parse(approfondie.result_json)) : null;
-  const questions = avancementQuestions(await lireReponses(env, row.id));
+  const reponses = await lireReponses(env, row.id);
+  const vues = vuesDe(reponses);
+  const questions = avancementQuestions(reponses, vues);
+  // Steps of the two stages done or not, from the saved answers (same rule as the guided steps)
+  const etapes = { ...etatValorisation(reponses, vues), photos: vues.includes("photos"), equipe: vues.includes("equipe_dirigeante") };
   const docs = await env.DB.prepare("SELECT kind, MAX(version) AS version, MAX(created_at) AS le FROM documents WHERE dossier_id = ? GROUP BY kind").bind(row.id).all();
   return {
     id: row.id, siren: row.siren, cree_le: row.created_at, statut: row.status,
@@ -83,7 +87,7 @@ async function detail(env, row) {
     },
     estimation: entreprise.estimation ?? null,
     checklist: [...coches],
-    parcours: { exercices, exercices_complets: complets, questions, valorisation, valorisation_le: approfondie?.created_at ?? null },
+    parcours: { exercices, exercices_complets: complets, questions, etapes, valorisation, valorisation_le: approfondie?.created_at ?? null },
     documents: Object.fromEntries(docs.results.map((d) => [d.kind, { version: d.version, le: d.le }])),
     avancement: avancement({
       estimation_express: entreprise.estimation?.statut === "ok", checklist: coches,

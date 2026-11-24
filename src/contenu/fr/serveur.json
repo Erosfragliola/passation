@@ -98,7 +98,8 @@
     "trois_exercices_suffisent_retirez": "Trois exercices suffisent ; retirez-en un avant d'en ajouter.",
     "exercice_introuvable": "Exercice introuvable.",
     "reponses_invalides": "Réponses invalides.",
-    "lectures_max": "Vous avez atteint le nombre maximal de lectures ({n}) pour ce dossier. Complétez les chiffres à la main."
+    "lectures_max": "Vous avez atteint le nombre maximal de lectures ({n}) pour ce dossier. Complétez les chiffres à la main.",
+    "validation_impossible": "La valeur ne peut pas être calculée : complétez d'abord vos chiffres."
   },
   "estimation": {
     "chiffres_invalides": "Chiffres invalides.",
@@ -296,7 +297,8 @@
       "valeur_terminale": "La valeur terminale représente plus de 80 % du DCF : résultat très sensible aux hypothèses de long terme.",
       "cp_negatifs": "Capitaux propres corrigés négatifs.",
       "dcf_option": "Synthèse sur les multiples. Le DCF est proposé en option : renseignez la prime de taille dans « Affiner » si votre conseil le souhaite.",
-      "sous_ancc": "Votre fourchette est inférieure à l'actif net corrigé de l'entreprise ({montant}). Un repreneur paie rarement moins que cet actif : à examiner avec votre conseil."
+      "sous_ancc": "Votre fourchette est inférieure à l'actif net corrigé de l'entreprise ({montant}). Un repreneur paie rarement moins que cet actif : à examiner avec votre conseil.",
+      "credit_bail": "Crédit-bail : ses loyers restent dans l'EBE et son capital restant dû est compté dans la dette. Cette convention peut sous-estimer la valeur ; à examiner avec votre conseil."
     },
     "origines": {
       "defaut": "par défaut (0 %, un seul exercice)",
@@ -324,7 +326,10 @@
     "ca_public": "Le chiffre d'affaires saisi ({saisi}) diffère des comptes publiés ({publie}). Vérifiez l'exercice et l'unité.",
     "bilan": "Le bilan ne s'équilibre pas : actif {actif}, passif {passif}. Une ligne manque peut-être (charges constatées d'avance, comptes courants…).",
     "ebe": "L'EBE calculé ({ebe}) s'éloigne du résultat d'exploitation augmenté des dotations ({rex}). Vérifiez les charges.",
-    "variation": "Le chiffre d'affaires varie fortement par rapport à l'exercice précédent ({avant} → {apres}). Vérifiez l'unité (euros ou milliers d'euros)."
+    "variation": "Le chiffre d'affaires varie fortement par rapport à l'exercice précédent ({avant} → {apres}). Vérifiez l'unité (euros ou milliers d'euros).",
+    "variation_30": "Le chiffre d'affaires varie de {pct} % par rapport à l'exercice précédent ({avant} → {apres}). Vérifiez le montant ; s'il est juste, un repreneur vous demandera ce qui l'explique.",
+    "resultat_net_ebe": "Le résultat net ({rn}) est supérieur à l'EBE ({ebe}). C'est possible avec un produit exceptionnel ou financier (cession d'un bien, par exemple), mais vérifiez d'abord les montants : c'est souvent une erreur d'unité ou de ligne.",
+    "capitaux_propres_negatifs": "Les capitaux propres sont négatifs ({montant}). Vérifiez le montant ; s'il est juste, l'actif net ne soutient pas la valeur, qui repose alors sur la rentabilité."
   },
   "propositions": {
     "sources": {
@@ -380,7 +385,7 @@
     "dette_nette_bfr_normatif": "Dette nette, BFR normatif, actifs hors exploitation",
     "methode_1_multiples_ebe": "Méthode 1 : multiples d'EBE",
     "methode_2_flux_tresorerie": "Méthode 2 : flux de trésorerie actualisés sur 5 ans",
-    "methode_3_actif_net": "Méthode 3 : actif net comptable corrigé (plancher)",
+    "methode_3_actif_net": "Méthode 3 : actif net comptable corrigé (valeur patrimoniale)",
     "fourchettes_ponderation_sensibilites": "Fourchettes, pondération, sensibilités",
     "presentation": ">> Présentation",
     "entreprise": "Entreprise",
@@ -507,7 +512,7 @@
     "g_0_5_pt": "g − 0,5 pt",
     "g_0_5_pt_2": "g + 0,5 pt",
     "methode_3_actif_net_2": "Méthode 3 : actif net comptable corrigé",
-    "presente_part_comme_plancher": "Présenté à part, comme plancher de négociation.",
+    "presente_part_comme_plancher": "Présenté à part, comme contrôle : la valeur patrimoniale, à comparer à la valeur de rentabilité.",
     "capitaux_propres": "Capitaux propres",
     "plus_values_latentes_justifiees": "Plus-values latentes justifiées (immobilier, fonds)",
     "frais_etablissement_sans_valeur": "Frais d'établissement (sans valeur, en moins)",
@@ -517,7 +522,7 @@
     "methode": "Méthode",
     "multiples_ebe": "Multiples d'EBE",
     "dcf_cmpc_1_pt": "DCF (CMPC ± 1 pt)",
-    "actif_net_corrige_plancher": "Actif net corrigé (plancher)",
+    "actif_net_corrige_plancher": "Actif net corrigé (valeur patrimoniale)",
     "poids_multiples": "Poids des multiples",
     "poids_dcf": "Poids du DCF",
     "valeur_titres_synthese": "Valeur des titres (synthèse)",

@@ -68,7 +68,7 @@
     "corriger": "Corriger mes réponses",
     "validez_exercice": "Validez un exercice complet (chiffre d'affaires, charges et bilan) pour obtenir une valorisation.",
     "completer_chiffres": "Compléter mes chiffres",
-    "fondee": "Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, la référence des cessions de PME, après dettes et trésorerie. Contrôle par l'actif net corrigé (plancher de négociation) : {plancher}.",
+    "fondee": "Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, la référence des cessions de PME, après dettes et trésorerie.",
     "mention": "Estimation indicative, non contractuelle. Elle ne remplace pas l'avis d'un expert-comptable ou d'un conseil en cession.",
     "telecharger_datapack": "Télécharger le datapack Excel ",
     "ff_multiples": "Multiples d'EBE",
@@ -108,7 +108,7 @@
       "plus": "Un point de plus"
     },
     "ff_titre": "Votre fourchette et son contrôle",
-    "ff_legende": "Valeur des titres. Barre : fourchette des multiples du secteur ; point : actif net corrigé, qui sert de contrôle et de plancher.",
+    "ff_legende": "Valeur des titres. Barre : fourchette des multiples du secteur ; point : actif net corrigé, la valeur patrimoniale, à comparer à la fourchette.",
     "points_attention": "Points d'attention ({n})",
     "comment": "Comment la fourchette est calculée",
     "titre_pont_ebe": "De l'EBE comptable à l'EBE normatif",

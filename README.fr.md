@@ -97,6 +97,22 @@ Scénario reproductible, avec une liasse **entièrement fictive** et les résult
 En local : `npm run dev`, saisir un SIREN, demander un code (il s'affiche dans le terminal), déposer
 `test/fixtures/liasse-fictive.pdf` (avec une clé Anthropic) ou saisir les montants du tableau de `docs/DEMO.md`.
 
+## Vérification locale sans l'API Claude (Claude simulé)
+
+Pour parcourir tout le parcours en local (lecture de liasse, rédaction, jugement des photos, étude de marché) sans clé
+ni appel à Anthropic, lancez le Claude simulé dans un second terminal, puis le Worker branché dessus :
+
+```bash
+node scripts/claude-simule.mjs 8790
+npx wrangler dev --var ANTHROPIC_BASE_URL:http://127.0.0.1:8790 --var ANTHROPIC_API_KEY:simule
+```
+
+`scripts/claude-simule.mjs` répond à chaque appel par un JSON conforme au schéma demandé
+(`output_config.format.schema`), avec des textes marqués comme fictifs ; la liasse donne trois exercices de montants
+fictifs cohérents. `ANTHROPIC_BASE_URL` est un réglage de développement : jamais en production. Les codes de
+connexion s'affichent dans le terminal de `wrangler dev`. La demande de code est limitée à 10 par heure et par IP ; en
+local, les compteurs se remettent à zéro avec `npx wrangler d1 execute passation --local --command "DELETE FROM rate_limits"`.
+
 ## Langues
 
 Le site est bilingue : **anglais** (langue par défaut, adresses d'origine) et **français** (sous `/fr/`). Sélecteur

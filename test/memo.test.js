@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { PARTIES_MEMO, compteResultat, tableauEbeRetraite, tableauEndettement, clientsPrincipaux, perimetre, sourcesChiffres, indicateurs, tcam, titreValide, SECTIONS_MEMO, profilMemo } from "../src/documents/memo.js";
 import { pontEbe, ebeNormatif, detteNette } from "../src/valuation/approfondie.js";
 import { kEuros, montant, pourcent, ratioTableau, multiple } from "../public/js/memo-format.js";
-import { DETENTION, MURS, MURS_CESSION, QUESTIONS } from "../public/js/parcours.js";
+import { DETENTION, MURS, MURS_CESSION, QUESTIONS, champsVisibles } from "../public/js/parcours.js";
 
 const espaces = (s) => String(s).replace(/[  ]/g, " ");
 
@@ -153,15 +153,15 @@ describe("structure du mémorandum", () => {
     expect(titreValide("x".repeat(111))).toBeNull();
     expect(titreValide("")).toBeNull();
   });
-  // 20/11/2026 : détention et murs sur un même écran (« Le périmètre de la cession »), cinq premiers clients repliés
-  // dans l'écran « Vos clients »
+  // 24/11/2026 (partie C) : murs et loyer dans « Retraitements », détention et cession des murs dans « Dette nette et
+  // périmètre » (premier temps) ; cinq premiers clients repliés dans l'écran « Vos clients »
   it("parcours : détention des titres, murs (avec la cession s'ils appartiennent au dirigeant), cinq premiers clients", () => {
     const champs = (id) => QUESTIONS.find((q) => q.id === id).champs.map((c) => `${c.etape}.${c.cle}`);
-    expect(champs("detention")).toEqual(["operation.detention", "retraitements.murs"]);
     expect(champs("clients")).toContain("clients.principaux");
-    const locaux = QUESTIONS.find((q) => q.id === "detention");
-    expect(locaux.suite.si({ retraitements: { murs: MURS.dirigeant } })).toBe(true);
-    expect(locaux.suite.si({ retraitements: { murs: MURS.tiers } })).toBe(false);
-    expect(locaux.suite.champs.map((c) => c.cle)).toEqual(["murs_cession", "loyer_paye", "loyer_marche"]);
+    const visibles = (ecran, r) => champsVisibles(ecran, r).map((c) => c.cle);
+    expect(visibles("retraitements", { retraitements: { murs: MURS.dirigeant } })).toEqual(expect.arrayContaining(["murs", "loyer_paye", "loyer_marche"]));
+    expect(visibles("retraitements", { retraitements: { murs: MURS.tiers } })).not.toContain("loyer_paye");
+    expect(visibles("dette", { retraitements: { murs: MURS.dirigeant } })).toEqual(expect.arrayContaining(["detention", "murs_cession", "part_cedee"]));
+    expect(visibles("dette", { retraitements: { murs: MURS.tiers } })).not.toContain("murs_cession");
   });
 });

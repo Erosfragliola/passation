@@ -8,6 +8,7 @@ import { REGIONS, libelleOption } from "/js/questionnaire.js";
 import { POUR_ALLER_PLUS_LOIN as ETAPES } from "/js/parcours.js";
 import { etiquetteTitres, resumeValorisation, explicationEcart, alertesDirigeant } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { situationAncc, texteAncc } from "/js/valeur-pont.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -381,11 +382,13 @@ function dessinerResultat() {
   const tete = el("div", { class: "synthese-valeur carte" },
     el("p", { class: "etiquette", text: etiquetteTitres() }),
     el("p", { class: "valeur-centrale chiffre", text: v ? fourchette(v.bas, v.haut) : t("teaser.js.a_completer") }),
-    el("p", { class: "petit", text: t("valorisation.js.fondee", { plancher: euros(s.plancher_ancc) }) }),
+    el("p", { class: "petit", text: t("valorisation.js.fondee") }),
+    // Adjusted net assets next to the range: "floor" only when they are below it (defect 5 of 24/11/2026)
+    v ? el("p", { class: "petit", text: texteAncc(situationAncc(v.bas, v.haut, s.plancher_ancc), v) }) : null,
     ecart ? el("p", { class: "petit", text: ecart }) : null,
     el("p", { class: "estimation-mention", text: t("valorisation.js.mention") }),
     el("a", { class: "btn btn-sable", href: `${base}/documents/datapack`, download: "" }, t("valorisation.js.telecharger_datapack"), el("span", { class: "fleche", "aria-hidden": "true", text: "↓" })));
-  const visibles = alertesDirigeant(s.alertes);
+  const visibles = alertesDirigeant(s.alertes).filter((a) => !/actif net corrigé de l'entreprise|company’s adjusted net assets/i.test(a));
   const alertes = visibles.length ? el("ul", { class: "alertes" }, ...visibles.map((a) => el("li", { text: a }))) : null;
 
   // --- Range and its check: the multiples bar, the adjusted net assets point
@@ -459,9 +462,9 @@ function dessinerResultat() {
 
   remplacer(zone, 
     el("div", { class: "resultat-tete" }, tete, el("div", { class: "carte" }, el("h3", { text: t("valorisation.js.ff_titre") }), el("p", { class: "petit", text: t("valorisation.js.ff_legende") }), ff)),
-    ...(alertes ? [el("details", { class: "carte alertes-repli" }, el("summary", {}, t("valorisation.js.points_attention", { n: alertes.childElementCount })), alertes)] : []),
+    ...(alertes ? [el("details", { class: "carte alertes-repli", open: true }, el("summary", {}, t("valorisation.js.points_attention", { n: alertes.childElementCount })), alertes)] : []),
     el("div", { class: "resultat-deplis" },
-    el("details", { class: "carte calcul-detail" }, el("summary", {}, el("strong", { text: t("valorisation.js.comment") })),
+    el("details", { class: "carte calcul-detail", open: true }, el("summary", {}, el("strong", { text: t("valorisation.js.comment") })),
     el("div", { class: "resultat-detail" },
       el("section", { class: "carte" }, el("h3", { text: t("valorisation.js.titre_pont_ebe") }), tableau([t("valorisation.js.pont_ebe"), t("demarrer.js.exc.montant")], pontLignes)),
       el("section", { class: "carte" }, el("h3", { text: t("valorisation.js.titre_pont_titres") }), pontTitres),

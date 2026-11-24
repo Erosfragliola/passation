@@ -98,7 +98,8 @@
     "trois_exercices_suffisent_retirez": "Three fiscal years are enough; remove one before adding another.",
     "exercice_introuvable": "Fiscal year not found.",
     "reponses_invalides": "Invalid answers.",
-    "lectures_max": "You’ve reached the maximum number of readings ({n}) for this file. Complete the figures by hand."
+    "lectures_max": "You’ve reached the maximum number of readings ({n}) for this file. Complete the figures by hand.",
+    "validation_impossible": "The value cannot be calculated: complete your figures first."
   },
   "estimation": {
     "chiffres_invalides": "Invalid figures.",
@@ -296,7 +297,8 @@
       "valeur_terminale": "The terminal value is more than 80% of the DCF: the result is very sensitive to long-term assumptions.",
       "cp_negatifs": "Adjusted shareholders’ equity is negative.",
       "dcf_option": "Summary based on multiples. The DCF is offered as an option: fill in the size premium under “Fine-tune” if your advisor wants it.",
-      "sous_ancc": "Your range is below the company’s adjusted net assets ({montant}). A buyer rarely pays less than these assets: review this with your advisor."
+      "sous_ancc": "Your range is below the company’s adjusted net assets ({montant}). A buyer rarely pays less than these assets: review this with your advisor.",
+      "credit_bail": "Lease financing: its payments stay in EBITDA and its remaining principal is counted as debt. This convention may undervalue the company; review it with your advisor."
     },
     "origines": {
       "defaut": "default (0%, single fiscal year)",
@@ -324,7 +326,10 @@
     "ca_public": "The revenue entered ({saisi}) differs from the published accounts ({publie}). Check the fiscal year and the unit.",
     "bilan": "The balance sheet doesn’t balance: assets {actif}, liabilities {passif}. A line may be missing (prepaid expenses, shareholder loans…).",
     "ebe": "The calculated EBITDA ({ebe}) differs from operating income plus depreciation ({rex}). Check the expenses.",
-    "variation": "Revenue changes sharply from the previous fiscal year ({avant} → {apres}). Check the unit (euros or thousands of euros)."
+    "variation": "Revenue changes sharply from the previous fiscal year ({avant} → {apres}). Check the unit (euros or thousands of euros).",
+    "variation_30": "Revenue changes by {pct}% compared with the previous fiscal year ({avant} → {apres}). Check the amount; if it is right, a buyer will ask you what explains it.",
+    "resultat_net_ebe": "Net income ({rn}) is above EBITDA ({ebe}). This is possible with exceptional or financial income (the sale of an asset, for example), but check the amounts first: it is often a unit or line error.",
+    "capitaux_propres_negatifs": "Shareholders’ equity is negative ({montant}). Check the amount; if it is right, the net assets do not support the value, which then rests on profitability."
   },
   "propositions": {
     "sources": {
@@ -380,7 +385,7 @@
     "dette_nette_bfr_normatif": "Net debt, normalized working capital, non-operating assets",
     "methode_1_multiples_ebe": "Method 1: EBITDA multiples",
     "methode_2_flux_tresorerie": "Method 2: discounted cash flows over 5 years",
-    "methode_3_actif_net": "Method 3: adjusted book net assets (floor)",
+    "methode_3_actif_net": "Method 3: adjusted book net assets (asset value)",
     "fourchettes_ponderation_sensibilites": "Ranges, weighting, sensitivities",
     "presentation": ">> Overview",
     "entreprise": "Company",
@@ -507,7 +512,7 @@
     "g_0_5_pt": "g − 0.5 pt",
     "g_0_5_pt_2": "g + 0.5 pt",
     "methode_3_actif_net_2": "Method 3: adjusted book net assets",
-    "presente_part_comme_plancher": "Shown separately, as a negotiation floor.",
+    "presente_part_comme_plancher": "Shown separately, as a check: the asset value, to compare with the earnings value.",
     "capitaux_propres": "Shareholders’ equity",
     "plus_values_latentes_justifiees": "Justified unrealized gains (real estate, goodwill)",
     "frais_etablissement_sans_valeur": "Start-up costs (no value, deducted)",
@@ -517,7 +522,7 @@
     "methode": "Method",
     "multiples_ebe": "EBITDA multiples",
     "dcf_cmpc_1_pt": "DCF (WACC ± 1 pt)",
-    "actif_net_corrige_plancher": "Adjusted net assets (floor)",
+    "actif_net_corrige_plancher": "Adjusted net assets (asset value)",
     "poids_multiples": "Weight of multiples",
     "poids_dcf": "Weight of DCF",
     "valeur_titres_synthese": "Equity value (summary)",

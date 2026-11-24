@@ -53,13 +53,19 @@ function afficher({ checklist = true } = {}) {
   document.title = t("espace.js.titre_page", { nom: e.nom || t("espace.js.votre_dossier") });
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
 
-  // Fil du parcours : léger, libellés jamais tronqués (le bouton principal n'y est plus), étapes faites cliquables
-  remplacer($("#fil"), ...etat.etapes.map((x, i) => {
-    const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(i + 1) }), el("span", { class: "lib", text: x.libelle })];
-    if (x.etat === "fait") return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": t("espace.js.etape_faite", { etape: x.libelle }) }, contenu));
+  // Fil du parcours en deux temps (24/11/2026) : « 1. Votre valorisation », puis « 2. Votre mémorandum » ; léger,
+  // libellés jamais tronqués, étapes faites cliquables
+  let n = 0;
+  const etape = (x) => {
+    n += 1;
+    const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(n) }), el("span", { class: "lib", text: x.libelle })];
+    if (x.etat === "fait" && x.href) return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": t("espace.js.etape_faite", { etape: x.libelle }) }, contenu));
     if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_en_cours") })));
-    return el("li", {}, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_a_venir") })));
-  }));
+    return el("li", { class: x.etat === "fait" ? "fait" : null }, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: x.etat === "fait" ? t("demarrer.js.faite") : t("espace.js.etape_a_venir") })));
+  };
+  remplacer($("#fil"), ...etat.temps.map((tp, i) => el("li", { class: `fil-temps${tp.fait ? " fait" : ""}` },
+    el("span", { class: "fil-temps-titre", text: `${i + 1}. ${tp.titre}` }),
+    el("ol", { class: "fil-etapes" }, ...tp.etapes.map(etape)))));
 
   // En-tête vert : nom de code, nom, fourchette, une seule ligne d'explication (le détail derrière « Voir le détail »)
   $("#nom-code").textContent = dossier.nom_de_code || "";
@@ -68,6 +74,8 @@ function afficher({ checklist = true } = {}) {
   $("#valeur-etiquette").textContent = v.etiquette;
   $("#valeur-montant").textContent = v.bas != null && v.haut != null ? fourchette(v.bas, v.haut) : t("espace.js.a_affiner");
   $("#valeur-base").textContent = v.base;
+  // From the quick estimate (enterprise value) to the value of the shares: explained here too (defect 6 of 24/11/2026)
+  $("#valeur-ecart").textContent = v.ecart || ""; $("#valeur-ecart").hidden = !v.ecart;
   $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
 
   // Action principale : jamais facultative (première tâche indispensable, sinon « Relire et envoyer »)

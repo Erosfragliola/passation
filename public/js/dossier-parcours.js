@@ -8,16 +8,31 @@
 //   - l'avancement en %, le statut « prêt » (100 % si et seulement si tout l'indispensable est fait) ;
 //   - l'état des 4 documents, la fourchette affichée, ce sur quoi elle repose et l'explication de son évolution.
 // Aucune donnée n'est inventée : tout vient des deux réponses de l'API.
-import { CHECKLIST, avancement } from "./dossier-regles.js";
+import { CHECKLIST } from "./dossier-regles.js";
+import { QUESTIONS } from "./parcours.js";
 import { fourchette, montant } from "./landing/estimation.js";
 import { lien, t, locale } from "./i18n.js";
 
-/** Liste unique des étapes, pour la page du dossier et le parcours guidé (mêmes libellés, même ordre). */
-export const ETAPES_PARCOURS = [["estimation"], ["chiffres"], ["reponses"], ["redaction"], ["relecture"]];
+/**
+ * Two stages (24/11/2026, part C): the owner first wants to know what the company is worth and why, then the
+ * memorandum. Single list of steps, for the file page and the guided steps (same labels, same order).
+ */
+export const TEMPS = [
+  { cle: "valorisation", etapes: ["chiffres", "retraitements", "dette", "valeur"] },
+  { cle: "memo", etapes: ["entreprise", "photos", "equipe", "redaction"] },
+];
+for (const x of TEMPS) Object.defineProperty(x, "titre", { get: () => t(`dossier.temps.${x.cle}`), enumerable: true });
+export const ETAPES_PARCOURS = TEMPS.flatMap((x) => x.etapes.map((cle) => [cle]));
 // Libellés : src/contenu/<langue>/dossier.json, lus à chaque accès (élément 1 de chaque paire).
 for (const e of ETAPES_PARCOURS) Object.defineProperty(e, 1, { get: () => t(`dossier.etapes.${e[0]}`), enumerable: true, configurable: true });
-/** Écran du parcours guidé → étape du fil. Le site est une question de « Vos réponses ». */
-export const ETAPE_DE_L_ECRAN = { accueil: "chiffres", photos: "reponses", equipe: "reponses", comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", questions: "reponses", site: "reponses", redaction: "redaction", pret: "relecture" };
+/** Stage of a step ("valorisation" or "memo"). */
+export const tempsDe = (cle) => TEMPS.find((x) => x.etapes.includes(cle))?.cle ?? null;
+/** Écran du parcours guidé → étape du fil. Le site est une question de « Votre entreprise ». */
+export const ETAPE_DE_L_ECRAN = { accueil: "chiffres", comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", exercices: "chiffres",
+  retraitements: "retraitements", dette: "dette", valeur: "valeur",
+  questions: "entreprise", site: "entreprise", photos: "photos", equipe: "equipe", redaction: "redaction", pret: "redaction" };
+/** Name of a question still without an answer (the website or a question of the memorandum). */
+export const nomQuestion = (id) => (id === "site" ? t("dossier.question_site") : QUESTIONS.find((q) => q.id === id)?.titre ?? id);
 /** Étiquettes de la valeur, identiques partout (fiche de l'accueil, page du dossier, parcours guidé, valorisation). */
 export const etiquetteExpress = () => t("dossier.etiquette_express");
 export const etiquetteTitres = () => t("dossier.etiquette_titres");
@@ -127,8 +142,9 @@ export function explicationEcart(est, v) {
 export function etatParcours(d, memo = null, teaser = null) {
   const id = d.id, p = d.parcours || {}, docs = d.documents || {};
   const ex = p.exercices || { dernier: null, dernier_complet: false, recommandes: [], recommandes_manquants: [], anciens: [] };
-  const q = p.questions || { faits: 0, total: 0, pct: 0 };
+  const q = p.questions || { faits: 0, total: 0, pct: 0, restantes: [] };
   const restantes = Math.max(0, (q.total || 0) - (q.faits || 0));
+  const ev = p.etapes || {};
   const v = p.valorisation && Number.isFinite(p.valorisation.bas) && Number.isFinite(p.valorisation.haut) ? p.valorisation : null;
   const m = docs.memo ? lectureMemo(memo) : null;
   const memoARelire = Boolean(m && (m.nonRedigees.length || m.nbACompleter));
@@ -145,45 +161,67 @@ export function etatParcours(d, memo = null, teaser = null) {
     teaser: lien(`/espace/documents/teaser/?dossier=${id}`),
     datapack: `/api/dossiers/${id}/documents/datapack`,
   };
+  const etape = (e) => `${liens.demarrer}&etape=${e}`;
 
-  // ---------- Fil du parcours : une étape n'est faite que si le dirigeant a fait ou validé quelque chose
+  // ---------- Les deux temps : une étape n'est faite que si le dirigeant a fait ou validé quelque chose
   const fait = {
-    estimation: true, // le dirigeant a saisi son SIREN et vu la fiche : le dossier en est issu
-    chiffres: Boolean(ex.dernier_complet), // le dernier exercice, confirmé par le dirigeant (jamais d'office)
-    reponses: q.total > 0 && restantes === 0,
+    // le dernier exercice confirmé, et les deux précédents confirmés ou passés en connaissance de cause
+    chiffres: Boolean(ex.dernier_complet) && (!(ex.recommandes_manquants || []).length || Boolean(ev.exercices_passes)),
+    retraitements: Boolean(ev.retraitements),
+    dette: Boolean(ev.dette),
+    valeur: Boolean(ev.validation && v),
+    entreprise: q.total > 0 && restantes === 0,
+    photos: Boolean(ev.photos),
+    equipe: Boolean(ev.equipe),
     redaction: Boolean(v && docs.memo && docs.teaser && !(m && m.nonRedigees.length) && !teaserVides.length),
-    relecture: false, // l'envoi se fait hors de la page : l'étape reste la dernière ouverte
   };
-  const pret = fait.chiffres && fait.reponses && fait.redaction;
+  const valorisationFaite = TEMPS[0].etapes.every((k) => fait[k]);
+  const pret = ETAPES_PARCOURS.every(([k]) => fait[k]);
   const redige = Boolean(v && docs.memo && docs.teaser); // documents produits (des chapitres peuvent rester à rédiger)
   const lienEtape = {
-    estimation: `${liens.valorisation}#chiffres`, chiffres: `${liens.demarrer}&etape=chiffres`,
-    reponses: `${liens.demarrer}&etape=questions`, redaction: liens.memo, relecture: liens.memo,
+    chiffres: etape("chiffres"), retraitements: etape("retraitements"), dette: etape("dette"), valeur: etape("valeur"),
+    entreprise: etape("questions"), photos: etape("photos"), equipe: etape("equipe"), redaction: liens.memo,
   };
-  const actuelle = ETAPES_PARCOURS.find(([k]) => !fait[k])[0];
+  const actuelle = ETAPES_PARCOURS.find(([k]) => !fait[k])?.[0] ?? "redaction";
   const iActuelle = ETAPES_PARCOURS.findIndex(([k]) => k === actuelle);
   const etapes = ETAPES_PARCOURS.map(([cle, libelle], i) => ({
-    cle, libelle, etat: i === iActuelle ? "actuelle" : fait[cle] ? "fait" : "a-venir",
-    href: i !== iActuelle && fait[cle] ? lienEtape[cle] : null,
+    cle, libelle, temps: tempsDe(cle), etat: i === iActuelle && !pret ? "actuelle" : fait[cle] ? "fait" : "a-venir",
+    href: (i !== iActuelle || pret) && fait[cle] ? lienEtape[cle] : null,
   }));
+  const temps = TEMPS.map((x) => ({ cle: x.cle, titre: x.titre, fait: x.etapes.every((k) => fait[k]), etapes: etapes.filter((e) => e.temps === x.cle) }));
 
-  // ---------- À faire maintenant : l'indispensable d'abord, puis le facultatif (marqué comme tel)
+  // ---------- À faire maintenant : les étapes dans l'ordre (le mémorandum après la validation des chiffres), puis le
+  // facultatif (marqué comme tel)
   const taches = [];
   if (!fait.chiffres) {
-    taches.push(ex.dernier == null
-      ? { cle: "chiffres", titre: t("dossier.taches.chiffres.titre_aucun"), detail: t("dossier.taches.chiffres.detail_aucun"), action: t("dossier.actions.confirmer"), href: liens.demarrer }
-      : { cle: "chiffres", titre: t("dossier.taches.chiffres.titre", { annee: ex.dernier }), detail: t("dossier.taches.chiffres.detail"), action: t("dossier.actions.confirmer"), href: `${liens.demarrer}&etape=chiffres` });
+    if (!ex.dernier_complet) {
+      taches.push(ex.dernier == null
+        ? { cle: "chiffres", titre: t("dossier.taches.chiffres.titre_aucun"), detail: t("dossier.taches.chiffres.detail_aucun"), action: t("dossier.actions.confirmer"), href: liens.demarrer }
+        : { cle: "chiffres", titre: t("dossier.taches.chiffres.titre", { annee: ex.dernier }), detail: t("dossier.taches.chiffres.detail"), action: t("dossier.actions.confirmer"), href: etape("chiffres") });
+    } else {
+      const annees = [...ex.recommandes_manquants].sort((a, b) => b - a);
+      taches.push({ cle: "exercices", titre: t("dossier.taches.exercices.titre", { annees: listeAnnees(annees) }), detail: t("dossier.taches.exercices.detail"), action: t("dossier.actions.ajouter"), href: etape("exercices") });
+    }
   }
-  if (restantes > 0) {
-    taches.push({
-      cle: "questions",
-      titre: q.faits ? t("dossier.taches.questions.titre_reste", { n: restantes }) : t("dossier.taches.questions.titre", { n: q.total }),
-      detail: q.faits ? t("dossier.taches.questions.detail_reste", { faits: q.faits, total: q.total }) : t("dossier.taches.questions.detail"),
-      action: q.faits ? t("dossier.actions.reprendre") : t("dossier.actions.commencer"), href: `${liens.demarrer}&etape=questions`,
-    });
-  }
-  if (fait.chiffres && !fait.redaction && !m?.nonRedigees.length && !teaserVides.length && (restantes === 0 || (q.pct || 0) >= SEUIL_REDACTION)) {
-    taches.push({ cle: "redaction", titre: v || docs.memo || docs.teaser ? t("dossier.taches.redaction.terminer") : t("dossier.taches.redaction.lancer"), detail: t("dossier.taches.redaction.detail"), action: t("dossier.actions.rediger"), href: `${liens.demarrer}&etape=redaction` });
+  if (!fait.retraitements) taches.push({ cle: "retraitements", titre: t("dossier.taches.retraitements.titre"), detail: t("dossier.taches.retraitements.detail"), action: t("dossier.actions.commencer"), href: etape("retraitements") });
+  if (!fait.dette) taches.push({ cle: "dette", titre: t("dossier.taches.dette.titre"), detail: t("dossier.taches.dette.detail"), action: t("dossier.actions.commencer"), href: etape("dette") });
+  if (!fait.valeur) taches.push({ cle: "valeur", titre: t("dossier.taches.valeur.titre"), detail: v ? t("dossier.taches.valeur.detail_calculee", { fourchette: fourchette(v.bas, v.haut) }) : t("dossier.taches.valeur.detail"), action: t("dossier.actions.verifier"), href: etape("valeur") });
+  if (valorisationFaite) {
+    if (restantes > 0) {
+      // Les questions sans réponse, par leur nom (jamais « la dernière question » sans dire laquelle)
+      const noms = (q.restantes || []).map(nomQuestion);
+      taches.push({
+        cle: "questions",
+        titre: noms.length === 1 ? t("dossier.taches.questions.titre_une", { question: noms[0] }) : q.faits ? t("dossier.taches.questions.titre_reste", { n: restantes }) : t("dossier.taches.questions.titre", { n: q.total }),
+        detail: noms.length > 1 ? t("dossier.taches.questions.detail_noms", { liste: noms.map((x) => t("dossier.guillemets", { texte: x })).join(", ") }) : q.faits ? t("dossier.taches.questions.detail_reste", { faits: q.faits, total: q.total }) : t("dossier.taches.questions.detail"),
+        action: q.faits ? t("dossier.actions.reprendre") : t("dossier.actions.commencer"), href: etape("questions"),
+      });
+    }
+    if (!fait.photos) taches.push({ cle: "photos", titre: t("dossier.taches.photos.titre"), detail: t("dossier.taches.photos.detail"), action: t("dossier.actions.choisir"), href: etape("photos") });
+    if (!fait.equipe) taches.push({ cle: "equipe", titre: t("dossier.taches.equipe.titre"), detail: t("dossier.taches.equipe.detail"), action: t("dossier.actions.commencer"), href: etape("equipe") });
+    if (!fait.redaction && !m?.nonRedigees.length && !teaserVides.length && (restantes === 0 || (q.pct || 0) >= SEUIL_REDACTION)) {
+      taches.push({ cle: "redaction", titre: docs.memo || docs.teaser ? t("dossier.taches.redaction.terminer") : t("dossier.taches.redaction.lancer"), detail: t("dossier.taches.redaction.detail"), action: t("dossier.actions.rediger"), href: etape("redaction") });
+    }
   }
   if (m?.nonRedigees.length) {
     const n = m.nonRedigees.length;
@@ -193,18 +231,10 @@ export function etatParcours(d, memo = null, teaser = null) {
     const n = teaserVides.length;
     taches.push({ cle: "teaser", titre: t("dossier.taches.teaser.titre", { n }), detail: t("dossier.taches.teaser.detail", { n, liste: teaserVides.map((x) => x.titre).join(", ") }), action: t("dossier.actions.rediger"), href: liens.teaser });
   }
-  if (fait.chiffres && ex.recommandes_manquants?.length) {
-    const annees = [...ex.recommandes_manquants].sort((a, b) => b - a);
-    taches.push({ cle: "exercices", facultatif: true, titre: t("dossier.taches.exercices.titre", { annees: annees.length > 1 ? t("dossier.annees.liste", { debut: annees.slice(0, -1).join(", "), fin: annees.at(-1) }) : annees[0] }),
-      detail: t("dossier.taches.exercices.detail", { annee: ex.dernier }), action: t("dossier.actions.ajouter"), href: `${liens.demarrer}&etape=exercice` });
-  }
-  if (m && m.photos === 0 && m.photosTrouvees > 0) {
-    // Photos trouvées sur le site : on propose de les choisir (écran « Votre logo et vos photos » du parcours)
-    taches.push({ cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_choisir", { n: m.photosTrouvees }), detail: t("dossier.taches.photo.detail_choisir"), action: t("dossier.actions.choisir"), href: `${liens.demarrer}&etape=photos` });
-  } else if (m && m.photos < 2) {
+  if (m && fait.photos && m.photos < 2) {
     taches.push(m.photos === 0
-      ? { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_premiere"), detail: t("dossier.taches.photo.detail_premiere"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` }
-      : { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_seconde"), detail: t("dossier.taches.photo.detail_seconde"), action: t("dossier.actions.ajouter"), href: `${liens.memo}#donnees` });
+      ? { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_premiere"), detail: t("dossier.taches.photo.detail_premiere"), action: t("dossier.actions.ajouter"), href: etape("photos") }
+      : { cle: "photo", facultatif: true, titre: t("dossier.taches.photo.titre_seconde"), detail: t("dossier.taches.photo.detail_seconde"), action: t("dossier.actions.ajouter"), href: etape("photos") });
   }
   if (m?.nbACompleter) {
     const n = m.nbACompleter, chap = m.aCompleter.map((s) => t("dossier.guillemets", { texte: s.court || s.titre }));
@@ -220,23 +250,21 @@ export function etatParcours(d, memo = null, teaser = null) {
   const indispensable = taches.find((x) => !x.facultatif);
   const action = indispensable
     ? { texte: indispensable.titre, detail: indispensable.detail, bouton: indispensable.action, href: indispensable.href, cle: indispensable.cle, pieces: Boolean(indispensable.pieces) }
-    : { texte: t("dossier.relire_envoyer"), detail: redige ? t("dossier.relire_detail") : t("dossier.relire_detail_non_redige"), bouton: t("dossier.actions.relire_envoyer"), href: `${liens.demarrer}&etape=pret`, cle: "relecture", pieces: false };
+    : { texte: t("dossier.relire_envoyer"), detail: redige ? t("dossier.relire_detail") : t("dossier.relire_detail_non_redige"), bouton: t("dossier.actions.relire_envoyer"), href: etape("pret"), cle: "relecture", pieces: false };
   // Tâches montrées sous l'action principale : deux au plus, sans répéter l'action
   const secondaires = taches.filter((x) => x !== indispensable).slice(0, MAX_SECONDAIRES);
 
-  // ---------- Avancement : 100 % si et seulement si tout l'indispensable est fait
-  const brut = avancement({
-    estimation_express: d.estimation?.statut === "ok", dernier_exercice: fait.chiffres, questions_pct: q.pct,
-    valorisation_approfondie: Boolean(v), documents: ["datapack", "teaser", "memo"].filter((k) => docs[k]).length,
-  }).global;
-  const pct = pret ? 100 : Math.min(99, brut);
+  // ---------- Avancement : le dossier ouvert (le dirigeant ne part pas de zéro, choix du 17/11/2026) et les 8 étapes,
+  // les questions au prorata ; 100 % si et seulement si tout est fait
+  const nFaits = 1 + ETAPES_PARCOURS.filter(([k]) => fait[k]).length + (fait.entreprise ? 0 : Math.min(1, (q.pct || 0) / 100));
+  const pct = pret ? 100 : Math.min(99, Math.round((100 * nFaits) / (ETAPES_PARCOURS.length + 1)));
 
   // ---------- Documents
   const venir = (detail) => ({ etat: "a-venir", detail, actions: [] });
   const documents = [
     { cle: "valorisation", titre: t("dossier.documents.valorisation"), ...(v
-      ? { etat: "pret", detail: p.valorisation_le ? t("dossier.documents.mise_a_jour_f", { date: dateCourte(p.valorisation_le) }) : t("dossier.documents.prete"), actions: [{ libelle: t("dossier.actions.ouvrir"), href: `${liens.valorisation}#valorisation`, principal: true }, { libelle: t("dossier.actions.excel"), href: liens.datapack, telecharger: true }] }
-      : venir(fait.chiffres ? t("dossier.documents.calculee_redaction") : t("dossier.documents.debloque_chiffres_reponses"))) },
+      ? { etat: fait.valeur ? "pret" : "a-relire", detail: fait.valeur ? t("dossier.documents.validee_le", { date: dateCourte(ev.validation.le) }) : t("dossier.documents.a_valider"), actions: [{ libelle: t("dossier.actions.ouvrir"), href: fait.valeur ? `${liens.valorisation}#valorisation` : etape("valeur"), principal: true }, { libelle: t("dossier.actions.excel"), href: liens.datapack, telecharger: true }] }
+      : venir(t("dossier.documents.debloque_chiffres_reponses"))) },
     { cle: "datapack", titre: t("dossier.documents.datapack"), ...(p.exercices_complets
       ? { etat: "pret", detail: docs.datapack ? `${t("dossier.documents.mis_a_jour", { date: dateCourte(docs.datapack.le) })}${docs.datapack.version > 1 ? ` · ${t("dossier.documents.version", { n: docs.datapack.version })}` : ""}` : t("dossier.documents.prepare_chiffres"), actions: [{ libelle: t("dossier.actions.excel"), href: liens.datapack, principal: true, telecharger: true }] }
       : venir(t("dossier.documents.debloque_exercice"))) },
@@ -249,17 +277,18 @@ export function etatParcours(d, memo = null, teaser = null) {
       ? m?.nonRedigees.length
         ? { etat: "incomplet", detail: t("dossier.documents.chapitres_a_rediger", { n: m.nonRedigees.length, total: (memo?.sections || []).length }), actions: [{ libelle: t("dossier.actions.rediger"), href: liens.memo, principal: true }] }
         : { etat: memoARelire ? "a-relire" : "pret", badge: m?.nbACompleter ? libellePoints(m.nbACompleter) : null, detail: `${t("dossier.documents.redige_le", { date: dateCourte(docs.memo.le) })}${m?.nbACompleter ? ` · ${libellePoints(m.nbACompleter)}` : ""}`, actions: [{ libelle: t("dossier.actions.ouvrir"), href: liens.memo, principal: true }, { libelle: t("commun.documents.pdf"), href: `${liens.memo}&imprimer=1` }] }
-      : venir(t("dossier.documents.redige_redaction"))) },
+      : venir(valorisationFaite ? t("dossier.documents.redige_redaction") : t("dossier.documents.apres_validation"))) },
   ];
 
-  // ---------- Fourchette affichée (jamais de valeur centrale), ce sur quoi elle repose, et pourquoi elle a changé
+  // ---------- Fourchette affichée (jamais de valeur centrale), ce sur quoi elle repose, et pourquoi elle a changé :
+  // le passage de la valeur d'entreprise express à la valeur des titres est expliqué aussi sur la page du dossier
   const est = d.estimation;
   let valeur;
   if (v) {
     valeur = { etiquette: etiquetteTitres(), bas: v.bas, haut: v.haut,
-      base: t("dossier.valeur.base_titres"),
+      base: fait.valeur ? t("dossier.valeur.base_titres") : t("dossier.valeur.base_titres_a_valider"),
       ecart: explicationEcart(est, v),
-      lien: { texte: t("dossier.valeur.voir_detail"), href: `${liens.valorisation}#valorisation` } };
+      lien: fait.valeur ? { texte: t("dossier.valeur.voir_detail"), href: `${liens.valorisation}#valorisation` } : { texte: t("dossier.valeur.verifier"), href: etape("valeur") } };
   } else if (est?.statut === "ok") {
     valeur = { etiquette: `${etiquetteExpress()}${est.exercice ? ` · ${t("dossier.valeur.comptes", { annee: est.exercice })}` : ""}`, bas: est.bas, haut: est.haut,
       base: t("dossier.valeur.base_express"),
@@ -271,20 +300,22 @@ export function etatParcours(d, memo = null, teaser = null) {
   }
 
   return {
-    etapes, actuelle, fait, pret, redige, avancement: pct, action, taches: affichees, secondaires, documents, valeur,
-    questions: { faits: q.faits || 0, total: q.total || 0, restantes },
-    pieces: { fournies, total: NB_PIECES, ouvert: actuelle === "relecture" && manquantes > 0 && affichees.length > 0 && affichees.every((t) => t.cle === "pieces") },
+    etapes, temps, actuelle, fait, pret, redige, valorisationFaite, avancement: pct, action, taches: affichees, secondaires, documents, valeur,
+    questions: { faits: q.faits || 0, total: q.total || 0, restantes, noms: (q.restantes || []).map(nomQuestion) },
+    pieces: { fournies, total: NB_PIECES, ouvert: pret && manquantes > 0 && affichees.length > 0 && affichees.every((x) => x.cle === "pieces") },
   };
 }
 
-/** Écran final du parcours guidé : « prêt » seulement si tout l'indispensable est fait ; sinon « rédigé » (ou pas
- *  encore), avec exactement les mêmes tâches que « À faire maintenant » sur la page du dossier. */
+/** Écran final du parcours guidé : « prêt » seulement si tout l'indispensable est fait ; sinon ce qui reste, nommé
+ *  (jamais « rédigé » et « 99 % » sans dire ce qui manque), avec exactement les mêmes tâches que la page du dossier. */
 export function ecranFinal(e) {
   if (e.pret) {
     return { titre: t("dossier.final.pret_titre"), aide: t("dossier.final.pret_aide"),
       resteTitre: e.taches.length ? t("dossier.final.plus_loin") : null, reste: e.taches };
   }
-  return { titre: e.redige ? t("dossier.final.redige_titre") : t("dossier.final.non_redige_titre"),
-    aide: t("dossier.final.non_pret_aide", { pct: e.avancement }),
+  const indispensables = e.taches.filter((x) => !x.facultatif);
+  const premiere = indispensables[0];
+  return { titre: e.redige ? t("dossier.final.redige_reste", { n: indispensables.length || 1 }) : t("dossier.final.non_redige_titre"),
+    aide: premiere ? t("dossier.final.prochaine", { tache: premiere.titre }) : t("dossier.final.non_pret_aide", { pct: e.avancement }),
     resteTitre: t("dossier.final.reste"), reste: e.taches };
 }

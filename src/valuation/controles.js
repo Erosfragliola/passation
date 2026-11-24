@@ -59,7 +59,22 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
   const caPrec = v(precedent, "chiffre_affaires");
   if (ca !== null && caPrec !== null && caPrec > 0 && ca > 0 && (ca / caPrec > 3 || caPrec / ca > 3)) {
     ajoute("variation", "alerte", ["chiffre_affaires"], tr("serveur.controles.variation", { avant: fmt(caPrec), apres: fmt(ca) }));
+  } else if (ca !== null && caPrec !== null && caPrec > 0 && ca > 0 && Math.abs(ca - caPrec) > 0.3 * caPrec) {
+    // More than 30% up or down (threshold set by the owner on 24/11/2026): to explain, never blocking
+    ajoute("variation_30", "attention", ["chiffre_affaires"], tr("serveur.controles.variation_30", { avant: fmt(caPrec), apres: fmt(ca), pct: Math.round(Math.abs(ca / caPrec - 1) * 100) }));
   }
+
+  // Net income above EBITDA: possible (exceptional or financial income, capital gain) but to check, often a unit error.
+  // EBITDA = the one calculated from the detail of the expenses, otherwise the published or entered one.
+  const ebeCalc = ca !== null && det.slice(0, 2).every((x) => x !== null) && det[3] !== null
+    ? ca + (v(lignes, "autres_produits") ?? 0) - det.reduce((s, x) => s + (x ?? 0), 0) : v(lignes, "ebe");
+  const rn = v(lignes, "resultat_net");
+  if (rn !== null && ebeCalc !== null && rn > ebeCalc) {
+    ajoute("resultat_net_ebe", "attention", ["resultat_net"], tr("serveur.controles.resultat_net_ebe", { rn: fmt(rn), ebe: fmt(ebeCalc) }));
+  }
+  // Negative shareholders' equity: the adjusted net assets cannot support the value
+  const cp = v(lignes, "capitaux_propres");
+  if (cp !== null && cp < 0) ajoute("capitaux_propres_negatifs", "attention", ["capitaux_propres"], tr("serveur.controles.capitaux_propres_negatifs", { montant: fmt(cp) }));
   return res;
 }
 
