@@ -17,6 +17,7 @@ import { moisSource } from "/js/landing/estimation.js";
 import { fourchette } from "/js/landing/estimation.js";
 import { placementPhotos } from "/js/memo-format.js";
 import { listePhotos } from "/js/photos-fiches.js";
+import { zoneDepotPhotos, zoneLogo } from "/js/depot-photos.js";
 import { ROLES, FORMATIONS, TYPES_EXPERIENCE, APRES, PERSONNES_MAX, EXPERIENCES_MAX, BORNES, normaliserEquipe, nouvelId, initiales, libelleRole, libelleApres, personneComplete } from "/js/equipe.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
@@ -1065,80 +1066,62 @@ async function site() {
     el("p", { class: "q-usage", text: t("demarrer.js.site.usage_faits") }));
 }
 
-/** Logo et photos : le logo trouvé est présélectionné ; le dirigeant clique les photos du site à ajouter (12 au plus,
- *  case de droits cochée une fois) ou dépose les siennes. Sous chaque photo ajoutée, le jugement de Claude
- *  (catégorie, note, usage et légende proposés) avec « Utiliser comme proposé » et « Ignorer » ; l'ordre se change
- *  aux flèches ou en glissant. La couverture, l'activité, les réalisations et l'équipe sont choisies par catégorie. */
+/** « Photos et logo » (part D, 24/11/2026), with or without a website: 1. the logo, chosen among those of the website
+ *  or uploaded, with its preview; 2. the photos of the website to click and the upload of several files at once
+ *  (drag and drop, progress per file, reduction in the browser), the attestation above, never lost; 3. the photos
+ *  kept, each with Claude's assessment and where it will appear in the memorandum. */
 let focusPhotoParcours = null;
 async function photos() {
-  const memo = S.memo?.site ? S.memo : await api(`${base}/documents/memo`).catch(() => null);
+  const memo = await api(`${base}/documents/memo`).catch(() => S.memo);
   S.memo = memo;
   const s = memo?.site || S.reponses.site || {};
   const max = memo?.photos_max || 12;
   const deja = memo?.photos || [];
+  const baseMemo = `${base}/documents/memo`;
   const candidates = (s.photos_candidates || []).filter((u) => !deja.some((p) => p.origine === u)).slice(0, Math.max(0, max - deja.length));
   const ecartees = s.photos_ecartees || [];
-  const logos = s.logos || [];
-  let logo = memo?.logo ? "garde" : logos[0]?.url ?? null;
-  const droits = el("input", { type: "checkbox", id: "photos-droits" });
-  const baseMemo = `${base}/documents/memo`;
-  const ajouter = async (corps, bouton) => {
-    if (!droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); return; }
-    if (bouton) bouton.disabled = true;
-    try { S.memo = await api(`${baseMemo}/photos`, { method: "POST", body: corps }); message(""); photos(); }
-    catch (e) { message(e.message, true); if (bouton) bouton.disabled = false; }
+  // A decision, a new order or an assessment redraws the list only: the upload rows (and their advice) and the logo
+  // status stay in place
+  const redessiner = (m, cible) => { if (m) S.memo = m; focusPhotoParcours = cible || null; majListe(); };
+  // Upload: the list below is redrawn after each photo, the upload zone (and its progress rows) stays in place
+  const depot = zoneDepotPhotos({ memo, baseMemo, idBase: "parcours-photos",
+    surAjout: (m) => { S.memo = m; majListe(); }, surCandidate: (m) => { S.memo = m; majListe(); } });
+  const zoneListe = el("div", { class: "guide-champ" });
+  const majListe = () => {
+    const m = S.memo || {};
+    const liste = listePhotos({ memo: m, baseMemo, message, focus: focusPhotoParcours, maj: redessiner });
+    focusPhotoParcours = null;
+    remplacer(zoneListe, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.vos_photos", { n: (m.photos || []).length, max }) }),
+      liste || el("p", { class: "petit", text: t("demarrer.js.photos.aucune_choisie") }));
+    bouton.replaceChildren((m.photos || []).length ? t("demarrer.js.photos.utiliser", { n: m.photos.length }) : t("demarrer.js.photos.sans_photo"), fleche());
   };
-  const grille = el("div", { class: "photos-grille", role: "group", "aria-labelledby": "photos-site-titre" }, ...candidates.map((u, k) => el("button", { type: "button", class: "photo-tuile", "aria-label": t("demarrer.js.photos.ajouter_n", { n: k + 1 }), onclick: (ev) => ajouter(JSON.stringify({ url: u, attestation: true }), ev.currentTarget) },
-    el("img", { src: u, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.currentTarget.closest(".photo-tuile")?.remove() }), el("span", { class: "photo-coche", "aria-hidden": "true", text: "+" }))));
-  const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "photos-fichier", class: "visuellement-cache", multiple: true });
-  fichier.addEventListener("change", async () => {
-    if (!droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); fichier.value = ""; return; }
-    for (const f of [...fichier.files].slice(0, Math.max(0, max - deja.length))) {
-      const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", "oui");
-      try { S.memo = await api(`${baseMemo}/photos`, { method: "POST", body: fd }); } catch (e) { message(e.message, true); break; }
-    }
-    photos();
-  });
-  // Logo : présélectionné ; « Changer » ouvre les autres candidats, le dépôt et « aucun »
-  const apercuLogo = () => (logo === "garde" ? `${baseMemo}/logo?v=${Date.now()}` : logo);
-  const zoneLogo = el("div", { class: "logo-ligne" });
-  const dessinerLogo = (ouvert = false) => remplacer(zoneLogo,
-    el("span", { class: "logo-apercu" }, apercuLogo() ? el("img", { src: apercuLogo(), alt: t("demarrer.js.site.votre_logo"), referrerpolicy: "no-referrer" }) : el("span", { class: "petit", text: t("demarrer.js.photos.aucun_logo") })),
-    el("div", { class: "logo-texte" }, el("strong", { text: t("demarrer.js.site.votre_logo") }), el("span", { class: "petit", text: logo ? t("demarrer.js.photos.logo_aide") : t("demarrer.js.photos.logo_aucun_aide") })),
-    logos.length > 1 || !logo ? el("button", { type: "button", class: "btn btn-contour btn-mini", "aria-expanded": String(ouvert), onclick: () => dessinerLogo(!ouvert) }, t("demarrer.js.photos.changer")) : null,
-    ouvert ? el("div", { class: "logos-liste", role: "radiogroup", "aria-label": t("demarrer.js.site.choix_logo") },
-      ...logos.map((l, k) => { const r = el("input", { type: "radio", name: "logo", id: `logo-${k}`, checked: logo === l.url, class: "visuellement-cache" }); r.addEventListener("change", () => { logo = l.url; dessinerLogo(true); }); return el("label", { class: "logo-choix", for: `logo-${k}` }, r, el("img", { src: l.url, alt: l.origine, referrerpolicy: "no-referrer" })); }),
-      (() => { const r = el("input", { type: "radio", name: "logo", id: "logo-aucun", class: "visuellement-cache", checked: !logo }); r.addEventListener("change", () => { logo = null; dessinerLogo(true); }); return el("label", { class: "logo-choix logo-aucun", for: "logo-aucun" }, r, t("demarrer.js.site.aucun_logo")); })()) : null);
-  dessinerLogo();
-  const bouton = el("button", { type: "button", class: "btn btn-vert" }, deja.length ? t("demarrer.js.photos.utiliser", { n: deja.length }) : t("demarrer.js.photos.sans_photo"), fleche());
+  const grille = candidates.length ? el("div", { class: "photos-grille", role: "group", "aria-labelledby": "photos-site-titre" }, ...candidates.map((u, k) => el("button", { type: "button", class: "photo-tuile", "aria-label": t("demarrer.js.photos.ajouter_n", { n: k + 1 }), onclick: async (ev) => {
+    const b = ev.currentTarget; b.disabled = true;
+    const ok = await depot.ajouterSite(u, (texte) => message(texte, true));
+    if (ok) { b.remove(); message(""); } else b.disabled = false;
+  } }, el("img", { src: u, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.currentTarget.closest(".photo-tuile")?.remove() }), el("span", { class: "photo-coche", "aria-hidden": "true", text: "+" })))) : null;
+  const bouton = el("button", { type: "button", class: "btn btn-vert" });
   bouton.addEventListener("click", async () => {
-    bouton.disabled = true; message(t("demarrer.js.photos.enregistrement"));
-    try {
-      if (logo && logo !== "garde") await api(`${baseMemo}/logo`, { method: "POST", body: JSON.stringify({ url: logo }) }).catch(() => message(t("demarrer.js.photos.echecs", { n: 1 }), true));
-      await marquerVue("photos");
-      message("");
-      aller(etapeCourante());
-    } catch (e) { message(e.message, true); bouton.disabled = false; }
+    bouton.disabled = true;
+    try { await marquerVue("photos"); message(""); aller(etapeCourante()); }
+    catch (e) { message(e.message, true); bouton.disabled = false; }
   });
-  const liste = listePhotos({ memo, baseMemo, message, focus: focusPhotoParcours, maj: (m, cible) => { if (m) S.memo = m; focusPhotoParcours = cible || null; photos(); } });
-  focusPhotoParcours = null;
   remplir(
-    s.url ? el("p", { class: "q-compteur", text: new URL(s.url).hostname }) : null,
+    s.url ? el("p", { class: "q-compteur", text: new URL(/^https?:/.test(s.url) ? s.url : `https://${s.url}`).hostname }) : null,
     ...titre(t("demarrer.js.photos.titre"), t("demarrer.js.photos.aide_jugement")),
-    zoneLogo,
-    el("div", { class: "guide-champ" },
-      el("p", { class: "guide-lib", text: t("demarrer.js.photos.vos_photos", { n: deja.length, max }) }),
-      liste || el("p", { class: "petit", text: t("demarrer.js.photos.aucune_choisie") })),
-    el("label", { class: "photos-droits", for: "photos-droits" }, droits, el("span", { text: t("demarrer.js.photos.droits") })),
-    candidates.length ? el("div", { class: "guide-champ" },
-      el("p", { class: "guide-lib", id: "photos-site-titre", text: t("demarrer.js.photos.cliquez_ajouter") }),
-      el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max }) }), grille) : null,
-    ecartees.length ? el("p", { class: "petit", text: t("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => t(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null,
-    deja.length < max ? el("p", { class: "petit" }, el("label", { class: "lien-simple", for: "photos-fichier", tabindex: "0", onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fichier.click(); } } }, t("demarrer.js.photos.deposer")), fichier, " ", t("demarrer.js.photos.formats")) : el("p", { class: "petit", text: t("memo.js.photos.limite", { max }) }),
+    el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.logo_titre") }),
+      zoneLogo({ memo, baseMemo, logos: s.logos || [], idBase: "parcours-logo", surChange: (m) => { S.memo = m; } })),
+    el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.ajouter_titre") }),
+      el("p", { class: "petit", text: s.url ? t("demarrer.js.photos.aide_site") : t("demarrer.js.photos.aide_sans_site") }),
+      depot,
+      grille ? el("div", { class: "guide-champ" }, el("p", { class: "guide-lib", id: "photos-site-titre", text: t("demarrer.js.photos.cliquez_ajouter") }), el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max }) }), grille) : null,
+      ecartees.length ? el("p", { class: "petit", text: t("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => t(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null),
+    zoneListe,
     el("div", { class: "q-nav" },
       el("button", { type: "button", class: "lien-simple", onclick: () => { S.q = QUESTIONS.length - 1; aller("questions"); } }, t("demarrer.js.retour")),
       bouton),
     el("p", { class: "q-usage", text: t("demarrer.js.photos.ou_va") }));
+  majListe();
 }
 
 // ================================================================== Équipe dirigeante (mémorandum seulement)

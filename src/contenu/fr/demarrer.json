@@ -275,7 +275,11 @@
       "vos_photos": "Vos photos ({n} sur {max} au plus)",
       "aucune_choisie": "Aucune photo pour l'instant.",
       "cliquez_ajouter": "Photos trouvées sur votre site : cliquez pour ajouter",
-      "ajouter_n": "Ajouter la photo {n} du site"
+      "ajouter_n": "Ajouter la photo {n} du site",
+      "logo_titre": "1. Votre logo",
+      "ajouter_titre": "2. Vos photos",
+      "aide_site": "Cliquez les photos de votre site à garder, ou déposez les vôtres : atelier, locaux, réalisations, équipe.",
+      "aide_sans_site": "Déposez vos photos : atelier, locaux, réalisations, équipe. Douze au plus ; deux ou trois bonnes photos suffisent."
     },
     "accueil": {
       "surtitre": "Analyse approfondie · une vingtaine de minutes",

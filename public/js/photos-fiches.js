@@ -4,6 +4,7 @@
 // Rien n'est appliqué sans un clic du dirigeant. Les analyses manquantes sont lancées une par une, en arrière-plan.
 import { t } from "./i18n.js";
 import { analyserPhoto } from "./photo-analyse.js";
+import { endroitPhoto } from "./depot-photos.js";
 
 const el = (tag, attrs = {}, ...enfants) => {
   const e = document.createElement(tag);
@@ -57,6 +58,9 @@ export function listePhotos({ memo, baseMemo, maj, message, version = Date.now()
         a.signalements?.length ? el("p", { class: "ph-alertes" }, ...a.signalements.map((s) => el("span", { class: `pastille-etat ${s === "identifiante" ? "a-faire" : "alerte"}`, text: t(`memo.js.photos.signalements.${s}`) }))) : null,
         etat)
       : el("div", { class: "ph-jugement" }, el("p", { class: "petit", text: echouees.get(cle) || (memo.analyse_photos ? t("memo.js.photos.analyse_en_cours") : t("memo.js.photos.sans_analyse")) }));
+    // Where it will appear in the memorandum (same placement as the document itself)
+    const endroit = endroitPhoto(photos, p.n);
+    const ou = el("p", { class: `ph-endroit${endroit === "non_placee" ? " non-placee" : ""}` }, t("memo.js.photos.endroit"), " ", el("strong", { text: t(`memo.js.photos.endroits.${endroit}`) }));
     const li = el("li", { class: `ph${p.decision === "ignore" ? " ignoree" : ""}`, draggable: "true", "data-n": String(k),
       ondragstart: (e) => { glisse = k; e.dataTransfer.effectAllowed = "move"; li.classList.add("glisse"); },
       ondragend: () => li.classList.remove("glisse"),
@@ -69,7 +73,7 @@ export function listePhotos({ memo, baseMemo, maj, message, version = Date.now()
         el("button", { type: "button", class: "ph-fleche", id: `photo-${k}-bas`, disabled: k === photos.length - 1, "aria-label": t("memo.js.photos.descendre", { n: k + 1 }), onclick: () => ordre(k, k + 1) }, "↓")),
       el("figure", { class: "ph-vignette" }, el("img", { src: `${baseMemo}/photos/${p.n}?v=${version}`, alt: p.legende || t("memo.js.photos.photo_n", { n: k + 1 }) }),
         el("button", { type: "button", class: "lien-simple", onclick: () => changer(appel(`${baseMemo}/photos/${p.n}`, { method: "DELETE" })) }, t("espace.js.retirer"))),
-      fiche);
+      el("div", { class: "ph-texte" }, fiche, ou));
     liste.append(li);
     // Analyse manquante : lancée en arrière-plan, une photo à la fois
     if (!a && memo.analyse_photos && !enCours.has(cle) && !echouees.has(cle)) {

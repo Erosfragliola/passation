@@ -275,7 +275,11 @@
       "vos_photos": "Your photos ({n} of {max} max)",
       "aucune_choisie": "No photos yet.",
       "cliquez_ajouter": "Photos found on your website: click to add",
-      "ajouter_n": "Add website photo {n}"
+      "ajouter_n": "Add website photo {n}",
+      "logo_titre": "1. Your logo",
+      "ajouter_titre": "2. Your photos",
+      "aide_site": "Click the photos of your website to keep, or upload your own: workshop, premises, projects, team.",
+      "aide_sans_site": "Upload your photos: workshop, premises, projects, team. Twelve at most; two or three good photos are enough."
     },
     "accueil": {
       "surtitre": "Detailed valuation · about twenty minutes",

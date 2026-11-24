@@ -16,7 +16,7 @@ import { propositions } from "../documents/propositions.js";
 import { claudeDisponible, redigerTeaser, extraireSite, redigerSectionMemo, rechercherMarche, analyserPhoto, relireMemo, erreurClaudeConnue } from "../lib/claude.js";
 import { compterSecteur, structureSecteur } from "../sources/secteur.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
-import { MARCHE, CLAUDE_QUOTAS, PHOTOS, EQUIPE } from "../config.js";
+import { MARCHE, CLAUDE_QUOTAS, PHOTOS, EQUIPE, LOGO_POIDS_MAX } from "../config.js";
 import { quotaClaude } from "../lib/ratelimit.js";
 import { lireSite, adressePublique, fetchPublic } from "../documents/site.js";
 import { SECTIONS_MEMO, PARTIES_MEMO, donneesSection, chiffresMemo, memoDeverrouille, profilMemo, titreValide } from "../documents/memo.js";
@@ -179,7 +179,8 @@ async function lireMemo(env, row) {
     profil: profilMemo(entreprise, reponses, row.code_name),
     photos: (site?.photos || []).map((p, i) => ({ n: i, legende: p.legende || "", origine: p.origine || null, largeur: p.largeur ?? null, hauteur: p.hauteur ?? null,
       analyse: p.analyse || null, decision: p.decision || null, categorie: p.categorie || null, usage: p.usage || null })),
-    photos_max: PHOTOS.max, analyse_photos: claudeDisponible(env),
+    // Limits given to the browser (one definition, src/config.js): photos are reduced there before being sent
+    photos_max: PHOTOS.max, photos_poids_max: PHOTOS.poidsMax, logo_poids_max: LOGO_POIDS_MAX, analyse_photos: claudeDisponible(env),
     site: site ? { ...site, photos: undefined } : null, logo: Boolean(site?.logo),
     // Équipe dirigeante : réponses sans les chemins des photos (servies par leur route), parcours rédigés
     equipe: { personnes: (reponses.equipe?.personnes || []).map(({ photo, ...x }) => ({ ...x, a_photo: Boolean(photo) })) },
@@ -278,7 +279,7 @@ async function deposerLogo(request, env, row) {
   if (type.startsWith("multipart/form-data")) {
     const f = (await request.formData()).get("fichier");
     if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: tr("serveur.documents.aucun_fichier_recu") }, 400);
-    if (f.size > 1_000_000) return json({ erreur: "trop_lourd", message: tr("serveur.documents.logo_depasse_1_mo") }, 413);
+    if (f.size > LOGO_POIDS_MAX) return json({ erreur: "trop_lourd", message: tr("serveur.documents.logo_depasse_1_mo") }, 413);
     octets = new Uint8Array(await f.arrayBuffer());
   } else {
     let corps; try { corps = await request.json(); } catch { corps = null; }
@@ -286,9 +287,9 @@ async function deposerLogo(request, env, row) {
     if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
     try {
       const r = await fetchPublic(u, { signal: AbortSignal.timeout(8000) });
-      if (!r.ok || Number(r.headers.get("content-length") || 0) > 1_000_000) throw new Error("image");
+      if (!r.ok || Number(r.headers.get("content-length") || 0) > LOGO_POIDS_MAX) throw new Error("image");
       octets = new Uint8Array(await r.arrayBuffer());
-      if (octets.length > 1_000_000) throw new Error("image");
+      if (octets.length > LOGO_POIDS_MAX) throw new Error("image");
     } catch { return json({ erreur: "image_injoignable", message: tr("serveur.documents.image_introuvable_ou_trop") }, 422); }
   }
   const ext = typeImage(octets);

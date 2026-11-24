@@ -56,6 +56,8 @@ export const MARCHE = { etudesMaxParDossier: 3 };
  * une couverture ou une page d'ouverture, et filtre des images lues sur le site.
  */
 export const PHOTOS_MAX = 12;
+/** Logo of the memorandum: weight of the file (reduced in the browser before being sent when heavier). */
+export const LOGO_POIDS_MAX = 1_000_000;
 export const PHOTOS = {
   max: PHOTOS_MAX, poidsMax: 3_000_000, coteAnalyseMax: 1568, poidsAnalyseMax: 1_500_000, largeurPleinePage: 1200,
   site: { largeurMin: 500, hauteurMin: 300, allongementMax: 2.6, mesureesMax: 20, retenuesMax: 16 },
