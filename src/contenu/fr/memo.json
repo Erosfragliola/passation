@@ -506,7 +506,8 @@
     },
     "ameliorations": {
       "titre": "À améliorer",
-      "resume": "{n} améliorations · {i} indispensables",
+      "resume": { "one": "{n} amélioration", "other": "{n} améliorations" },
+      "resume_indispensables": { "one": "{n} indispensable", "other": "{n} indispensables" },
       "page": "p. {n}",
       "indispensable": "Indispensable",
       "valider": "Valider",

@@ -48,7 +48,7 @@ export function planFusion(pages, seuil = SEUIL_PAGE_VIDE) {
  * Numéros « partie.page » et pages du sommaire, recalculés après fusion : une page d'ouverture fixe la partie ; une
  * suite garde le numéro de sa page ; chaque chapitre renvoie à la première page qui le porte (une page fusionnée en
  * porte plusieurs).
- * @param pages [{ type: "ouverture"|"page"|"hors", partie, sections: [cle], suite }]
+ * @param pages [{ type: "ouverture"|"page"|"hors", partie, sections: [cle], suite, fusion: [cle des chapitres rapprochés] }]
  * @returns { numeros: [string|null], pageDe: { cle: n° de page (1…) }, numeroDe: { cle: "2.3" }, ouvertures: { partie: n° } }
  */
 export function numeroter(pages) {
@@ -60,7 +60,10 @@ export function numeroter(pages) {
     if (!p.suite) n++;
     const num = `${partie}.${Math.max(1, n)}`;
     numeros.push(num);
-    for (const cle of p.sections || []) { if (!(cle in pageDe)) { pageDe[cle] = k + 1; numeroDe[cle] = num; } }
+    for (const cle of p.sections || []) { if (!(cle in pageDe) && !(p.fusion || []).includes(cle)) { pageDe[cle] = k + 1; numeroDe[cle] = num; } }
+    // Chapitre rapproché sur la page d'un autre (fusion) : son propre numéro, à la suite, pour que le sommaire ne
+    // répète jamais un numéro ; la page suivante continue après lui
+    for (const cle of p.fusion || []) { if (!(cle in pageDe)) { n++; pageDe[cle] = k + 1; numeroDe[cle] = `${partie}.${n}`; } }
   });
   return { numeros, pageDe, numeroDe, ouvertures };
 }

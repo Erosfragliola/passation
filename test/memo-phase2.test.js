@@ -220,6 +220,13 @@ describe("remplissage mesuré à la surface, fusion des pages, sommaire recalcul
     expect(r2.pageDe).toEqual({ finances: 4, perspectives: 7, operation: 8 });
     expect(r2.ouvertures).toEqual({ 4: 3, 5: 6 });
   });
+  it("deux chapitres rapprochés sur une page : chacun son numéro, jamais deux fois le même dans le sommaire", () => {
+    const pages = [{ type: "ouverture", partie: 2 }, { type: "page", sections: ["histoire", "activite"], fusion: ["activite"] }, { type: "page", sections: ["organisation"] }, { type: "page", sections: ["organisation"], suite: true }];
+    const r = numeroter(pages);
+    expect(r.numeroDe).toEqual({ histoire: "2.1", activite: "2.2", organisation: "2.3" });
+    expect(r.numeros).toEqual([null, "2.1", "2.3", "2.3"]);
+    expect(r.pageDe).toEqual({ histoire: 2, activite: 2, organisation: 3 });
+  });
 });
 
 describe("panneau d'amélioration", () => {
