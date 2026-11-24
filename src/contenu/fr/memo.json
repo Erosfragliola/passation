@@ -42,7 +42,52 @@
       "entreprise": "Photo de l'entreprise",
       "a_ajouter": "{quoi} : à ajouter",
       "ou": "Page Mémorandum, étape 1 (photos de l'entreprise)",
-      "cliquez": "Cliquez sur les photos à utiliser (la case ci-dessus d'abord) :"
+      "cliquez": "Cliquez sur les photos à utiliser (la case ci-dessus d'abord) :",
+      "titre_max": "Photos du mémorandum ({n} sur {max} au plus) : placées par catégorie (couverture, activité, réalisations, équipe).",
+      "limite": "{max} photos au plus : retirez-en une pour en ajouter une autre.",
+      "ecartees": "{n} images du site écartées automatiquement ({raisons}).",
+      "raisons": {
+        "format": "dessin ou format non photo",
+        "petite": "trop petite",
+        "bandeau": "bandeau allongé",
+        "doublon": "doublon",
+        "injoignable": "introuvable"
+      },
+      "liste": "Photos choisies, dans l'ordre",
+      "note": "Qualité {n} sur 5",
+      "utilisee": "✓ Utilisée comme proposé",
+      "ignoree": "Jugement ignoré : la photo reste, sans placement imposé.",
+      "utiliser": "Utiliser comme proposé",
+      "ignorer": "Ignorer",
+      "propose": "Proposé :",
+      "legende": "légende « {legende} »",
+      "analyse_en_cours": "Analyse de la photo en cours…",
+      "sans_analyse": "Photo utilisable telle quelle, sans analyse.",
+      "monter": "Monter la photo {n}",
+      "descendre": "Descendre la photo {n}",
+      "categories": {
+        "atelier": "Atelier, production",
+        "produits": "Produits",
+        "realisations": "Réalisations",
+        "equipe": "Équipe",
+        "locaux": "Locaux",
+        "exterieur": "Extérieur",
+        "autre": "Autre"
+      },
+      "usages": {
+        "couverture": "couverture",
+        "activite": "activité",
+        "realisations": "réalisations",
+        "equipe": "équipe",
+        "eviter": "à éviter"
+      },
+      "signalements": {
+        "dessin": "Dessin, pas une photo",
+        "publicite": "Visuel publicitaire",
+        "floue": "Floue",
+        "trop_petite": "Trop petite pour une page entière",
+        "identifiante": "Pas pour le teaser : identifiante"
+      }
     },
     "themes": {
       "taille": "Taille du marché",
@@ -442,6 +487,141 @@
       "en_cours": "Rédaction de la section en cours… (20 secondes environ)",
       "fait": "Chapitre rédigé. Relisez-le avant toute diffusion."
     },
-    "logo_entreprise": "Logo de {nom}"
+    "logo_entreprise": "Logo de {nom}",
+    "equipe": {
+      "titre": "L'équipe dirigeante",
+      "photo_de": "Photo de {nom}",
+      "sans_photo": "{nom}, sans photo",
+      "dans_entreprise": "dans l'entreprise",
+      "de_metier": "de métier",
+      "photos_accord": "Photos publiées avec l'accord des personnes."
+    },
+    "realisations": {
+      "titre": "Réalisations"
+    },
+    "elements": {
+      "titre": "Éléments à compléter",
+      "message": "Ce qui manque encore à la partie « {partie} », pour la prochaine version",
+      "a_rediger": "Chapitre à rédiger : les informations manquent encore."
+    },
+    "ameliorations": {
+      "titre": "À améliorer",
+      "resume": "{n} améliorations · {i} indispensables",
+      "page": "p. {n}",
+      "indispensable": "Indispensable",
+      "valider": "Valider",
+      "ignorer": "Ignorer",
+      "non": "Non",
+      "oui_corriger": "Oui, corriger",
+      "fait": "Fait ✓",
+      "votre_reponse": "Votre réponse",
+      "pas_de_chiffre": "Vos mots, tels quels : Passation n'ajoute aucun chiffre.",
+      "choisissez": "Choisissez une réponse.",
+      "ecrivez": "Écrivez votre réponse.",
+      "enregistre": "Réponse enregistrée.",
+      "mise_a_jour": "Mise à jour…",
+      "chapitre_mis_a_jour": "Réponse enregistrée, chapitre mis à jour.",
+      "reponse_gardee": "Réponse enregistrée. Le chapitre n'a pas pu être mis à jour : {erreur}",
+      "ignoree": "Amélioration écartée : rien n'a changé.",
+      "corrige": "Correction appliquée au chapitre.",
+      "titres": {
+        "anciennete_equipe": "Préciser l'ancienneté de l'équipe",
+        "encadrement": "Préciser l'encadrement en place",
+        "zone": "Préciser la zone commerciale",
+        "motif": "Préciser le motif de cession",
+        "calendrier": "Préciser le calendrier souhaité",
+        "accompagnement": "Préciser l'accompagnement proposé",
+        "equipe": "Présenter l'équipe dirigeante",
+        "jugements": "Valider le jugement des photos",
+        "photo_equipe": "Ajouter une photo de l'équipe",
+        "photo_activite": "Ajouter une photo de l'atelier",
+        "marche": "Lancer l'étude de marché"
+      },
+      "questions": {
+        "anciennete_equipe": "Ancienneté moyenne des salariés",
+        "encadrement": "Avez-vous des responsables en place ?",
+        "zone": "Où sont vos clients ?",
+        "motif": "Pourquoi vendez-vous ?",
+        "calendrier": "Dans quel délai souhaitez-vous céder ?",
+        "accompagnement": "Combien de temps accompagnerez-vous le repreneur ?"
+      },
+      "explications": {
+        "equipe": "Une page présente les dirigeants (photo, parcours, place après la cession) : c'est ce qu'un repreneur regarde en premier.",
+        "jugements": "Claude a jugé vos photos : utilisez ou ignorez chaque proposition.",
+        "photo_equipe": "Aucune photo d'équipe validée : l'encadré « L'équipe » reste vide.",
+        "photo_activite": "Une photo de l'atelier ou des produits illustre la page d'activité.",
+        "marche": "Le chapitre « Marché » n'a aucun chiffre de marché sourcé."
+      },
+      "actions": {
+        "photos": "Choisir une photo",
+        "marche": "Lancer l'étude",
+        "equipe": "Présenter l'équipe",
+        "comptes": "Compléter vos comptes"
+      }
+    },
+    "relecture": {
+      "bouton": "Relecture critique",
+      "en_cours": "Relecture critique en cours…",
+      "fait": "Relecture terminée : {n} remarques.",
+      "date": "relu le {date}",
+      "chiffre": "Passation ne modifie jamais un chiffre : vérifiez-le dans vos comptes ou votre valorisation.",
+      "types": {
+        "non_sourcee": "Affirmation non sourcée",
+        "contradiction": "Contradiction entre deux pages",
+        "repetition": "Répétition",
+        "promotionnel": "Ton promotionnel",
+        "photo": "Photo mal choisie",
+        "page_vide": "Page trop vide",
+        "incoherence_registres": "Incohérence avec les registres",
+        "chiffre": "Chiffre à vérifier"
+      }
+    }
+  },
+  "equipe": {
+    "roles": {
+      "fondateur": "Dirigeant fondateur",
+      "cogerant": "Cogérant",
+      "commercial": "Directeur commercial",
+      "production": "Directeur de production",
+      "raf": "Responsable administratif et financier",
+      "autre": "Autre"
+    },
+    "formations": {
+      "cap_bep": "CAP-BEP",
+      "bac_pro": "Bac pro",
+      "bts_dut": "BTS-DUT",
+      "licence": "Licence",
+      "master_ecole": "Master, école",
+      "autodidacte": "Autodidacte"
+    },
+    "experiences": {
+      "formation": "Formation ou compagnonnage",
+      "meme_metier": "Même métier, autre entreprise",
+      "encadrement": "Encadrement d'équipe",
+      "creation": "Création ou reprise d'entreprise",
+      "grand_groupe": "Grand groupe",
+      "autre": "Autre"
+    },
+    "apres": {
+      "reste": "Reste",
+      "accompagne": "Accompagne le repreneur",
+      "part": "Part"
+    },
+    "apres_libelle": {
+      "reste": "Reste après la cession",
+      "accompagne": "Accompagne le repreneur",
+      "accompagne_mois": "Accompagne le repreneur {n} mois",
+      "part": "Part après la cession"
+    },
+    "transition": {
+      "restent": "{n} des {total} dirigeants restent",
+      "accompagne_mois": "accompagnement de la transition : {n} mois",
+      "accompagnent": "{n} accompagnent la transition",
+      "partent": "{n} partent après la cession",
+      "restent_un": "1 dirigeant sur {total} reste",
+      "accompagne_un": "1 accompagne la transition",
+      "partent_un": "1 part après la cession",
+      "separateur": " ; "
+    }
   }
 }

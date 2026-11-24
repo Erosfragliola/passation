@@ -150,7 +150,7 @@ export async function routeDossiers(request, env, segments) {
     return json({ erreur: "methode" }, 405);
   }
   if (["financials", "uploads", "answers", "valuation"].includes(sous)) return routeValorisation(request, env, row, sous, reste.length ? [item, ...reste].join("/") : item);
-  if (sous === "documents") return routeDocuments(request, env, row, item, reste[0], reste[1]);
+  if (sous === "documents") return reste.length > 3 ? json({ erreur: "route_inconnue" }, 404) : routeDocuments(request, env, row, item, reste[0], reste[1], reste[2]);
   if (sous === "termine" && m === "POST") return routeTermine(request, env, row, u);
   if (sous === "pieces" && reste.length === 0) return routePieces(request, env, row, item);
   if (sous === "checklist" && item && m === "PUT") {

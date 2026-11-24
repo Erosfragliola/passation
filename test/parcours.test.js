@@ -3,14 +3,13 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 
-vi.mock("../src/lib/claude.js", () => ({
+vi.mock("../src/lib/claude.js", async (original) => ({
+  ...(await original()),
   claudeDisponible: (env) => Boolean(env.ANTHROPIC_API_KEY),
   lireLiasse: vi.fn(),
   redigerTeaser: vi.fn(),
   extraireSite: vi.fn(),
   redigerSectionMemo: vi.fn(),
-  cleRefusee: (e) => e?.status === 401 || e?.status === 403,
-  MESSAGE_CLE_REFUSEE: "clé refusée",
 }));
 import { lireLiasse, redigerTeaser, extraireSite, redigerSectionMemo } from "../src/lib/claude.js";
 import worker from "../src/index.js";
@@ -356,7 +355,7 @@ describe("photos du mémorandum", () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(false) })).status).toBe(400);
     const m = await (await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(true) })).json();
-    expect(m.photos).toEqual([{ n: 0, legende: "L'atelier", origine: null }]); // déposée : pas d'adresse d'origine
+    expect(m.photos).toMatchObject([{ n: 0, legende: "L'atelier", origine: null, analyse: null, decision: null }]); // déposée : pas d'adresse d'origine
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie })).headers.get("content-type")).toBe("image/jpeg");
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie: b.cookie })).status).toBe(404);

@@ -13,7 +13,8 @@ import { LIASSE, CLAUDE_QUOTAS } from "../config.js";
 import { quotaClaude } from "../lib/ratelimit.js";
 import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants, anneesAReprendre } from "../../public/js/champs-financiers.js";
 import { ETAPES } from "../../public/js/questionnaire.js";
-import { claudeDisponible, lireLiasse, cleRefusee, MESSAGE_CLE_REFUSEE } from "../lib/claude.js";
+import { normaliserEquipe, photosOrphelines } from "../../public/js/equipe.js";
+import { claudeDisponible, lireLiasse, erreurClaudeConnue } from "../lib/claude.js";
 import { assemblerEntree } from "../valuation/entree.js";
 import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
@@ -35,7 +36,7 @@ function hypotheses() {
 }
 
 // « parcours » : écrans du parcours guidé déjà vus (« Passer » compte comme une réponse), pour un décompte identique partout
-const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche", "parcours"]);
+const ETAPES_VALIDES = new Set([...ETAPES.map((e) => e.cle), "reglages", "site", "marche", "parcours", "equipe", "panneau", "complements"]);
 const corpsJson = async (request) => { try { return await request.json(); } catch { return null; } };
 
 // ---------------------------------------------------------------- Chiffres
@@ -137,7 +138,8 @@ async function deposerLiasse(request, env, row) {
     console.log(`Lecture de liasse impossible : ${e.message}`);
     await env.DB.prepare("INSERT INTO uploads (id, dossier_id, r2_key, filename, mime, size, extracted_json, created_at) VALUES (?, ?, ?, ?, 'application/pdf', ?, ?, ?)")
       .bind(id, row.id, cle, String(fichier.name || "liasse.pdf").slice(0, 200), octets.length, JSON.stringify({ erreur: e.message }), maintenant()).run();
-    if (cleRefusee(e)) return json({ erreur: "cle_refusee", message: MESSAGE_CLE_REFUSEE }, 503);
+    const connue = erreurClaudeConnue(e);
+    if (connue) return json({ erreur: connue.erreur, message: connue.message }, connue.statut);
     return json({ erreur: "lecture_echouee", message: tr("serveur.valorisation.nous_avons_pu_lire") }, 502);
   }
   await env.DB.prepare("INSERT INTO uploads (id, dossier_id, r2_key, filename, mime, size, extracted_json, created_at) VALUES (?, ?, ?, ?, 'application/pdf', ?, ?, ?)")
@@ -159,6 +161,20 @@ async function deposerLiasse(request, env, row) {
 export async function lireReponses(env, dossierId) {
   const { results } = await env.DB.prepare("SELECT step, data_json FROM answers WHERE dossier_id = ?").bind(dossierId).all();
   return Object.fromEntries(results.map((r) => [r.step, JSON.parse(r.data_json)]));
+}
+
+/**
+ * Ce que le navigateur ne peut pas écrire par l'enregistrement des réponses : les photos et le logo du site (chemins
+ * de fichiers, jugements de Claude : leurs propres routes) et les photos de l'équipe (déposées avec le consentement).
+ * L'équipe est nettoyée (4 personnes au plus, listes fermées) ; la photo d'une personne retirée est supprimée.
+ */
+async function reponsesProtegees(env, row, etape, donnees) {
+  if (etape !== "site" && etape !== "equipe") return donnees;
+  const ancien = (await lireReponses(env, row.id))[etape] || null;
+  if (etape === "site") { const { photos, logo, ...reste } = donnees; return { ...reste, ...(ancien?.photos ? { photos: ancien.photos } : {}), ...(ancien?.logo ? { logo: ancien.logo } : {}) }; }
+  const equipe = normaliserEquipe(donnees, ancien);
+  for (const ph of photosOrphelines(ancien, equipe)) if (typeof ph.cle === "string" && ph.cle.startsWith(`dossiers/${row.id}/`)) await env.FILES.delete(ph.cle);
+  return equipe;
 }
 
 // ---------------------------------------------------------------- Calcul
@@ -212,9 +228,10 @@ export async function routeValorisation(request, env, row, sous, item) {
       if (!donnees || typeof donnees !== "object" || JSON.stringify(donnees).length > 60_000) return json({ erreur: "requete_invalide", message: tr("serveur.valorisation.reponses_invalides") }, 400);
       const erreurs = erreursEtape(item, donnees, hypotheses());
       if (erreurs.length) return json({ erreur: "hypothese_invalide", message: erreurs.map((x) => x.message).join(" "), erreurs }, 400);
+      const aEnregistrer = await reponsesProtegees(env, row, item, donnees);
       await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, ?, ?, ?)
         ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)
-        .bind(row.id, item, JSON.stringify(donnees), maintenant()).run();
+        .bind(row.id, item, JSON.stringify(aEnregistrer), maintenant()).run();
       await toucher();
       return json({ ok: true });
     }

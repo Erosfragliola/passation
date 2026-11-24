@@ -51,7 +51,19 @@
       "injoignable": "Le site ne répond pas ou ne renvoie pas de page lisible.",
       "adresse": "Adresse de site invalide.",
       "impossible": "Lecture du site impossible. Réessayez plus tard."
-    }
+    },
+    "photo_deja_ajoutee": "Cette photo est déjà dans votre mémorandum.",
+    "analyse_photo_indisponible": "L'analyse des photos n'est pas disponible : la photo reste utilisable telle quelle.",
+    "image_a_reduire": "L'image envoyée pour l'analyse doit faire 1 568 pixels au plus de côté.",
+    "analyse_photo_echouee": "L'analyse de cette photo n'a pas abouti. La photo reste utilisable telle quelle.",
+    "ordre_invalide": "Ordre des photos invalide : rechargez la page.",
+    "personne_introuvable": "Cette personne n'est plus dans l'équipe : rechargez la page.",
+    "consentement_photo": "Cochez d'abord la case : cette personne a accepté que sa photo figure dans le mémorandum. Sans son accord, la photo n'est pas enregistrée.",
+    "rien_a_relire": "Rédigez d'abord au moins un chapitre : la relecture porte sur le texte rédigé.",
+    "relecture_echouee": "La relecture n'a pas abouti. Votre mémorandum n'a pas changé.",
+    "remarque_sans_correction": "Cette remarque ne se corrige pas dans le texte : suivez le lien proposé.",
+    "passage_modifie": "Le passage visé a changé depuis la relecture : relancez la relecture critique.",
+    "correction_trop_longue": "Cette correction rendrait le chapitre trop long : elle n'a pas été appliquée."
   },
   "pieces": {
     "envoyez_fichier": "Envoyez un fichier.",
@@ -557,7 +569,8 @@
     }
   },
   "claude": {
-    "cle_refusee": "La lecture et la rédaction automatiques sont momentanément indisponibles : la clé de l'API Claude du site est refusée. L'administrateur du site doit la remplacer."
+    "cle_refusee": "La lecture et la rédaction automatiques sont momentanément indisponibles : la clé de l'API Claude du site est refusée. L'administrateur du site doit la remplacer.",
+    "credit_epuise": "La rédaction est momentanément indisponible. Vos réponses sont enregistrées."
   },
   "express": {
     "avertissement": "EBE négatif ou absent : estimation sur le chiffre d'affaires, plus incertaine."

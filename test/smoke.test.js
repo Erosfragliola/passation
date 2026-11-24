@@ -14,7 +14,7 @@ describe("squelette", () => {
     expect(res.status).toBe(404);
   });
 
-  it("centralise les deux modèles", () => {
-    expect(MODELS).toEqual({ deep: "claude-sonnet-5-5", fast: "claude-haiku-5-5" });
+  it("centralise les modèles (photos : modèle léger ; relecture : modèle complet)", () => {
+    expect(MODELS).toEqual({ deep: "claude-sonnet-5-5", fast: "claude-haiku-5-5", photos: "claude-haiku-5-5", relecture: "claude-sonnet-5-5" });
   });
 });

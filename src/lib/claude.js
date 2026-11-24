@@ -3,7 +3,8 @@
 // un schéma. Claude ne calcule rien : il recopie des chiffres, que le dirigeant valide ligne par ligne.
 import Anthropic from "@anthropic-ai/sdk";
 import { contenuConcis } from "../documents/concision.js";
-import { MODELS } from "../config.js";
+import { MODELS, RELECTURE } from "../config.js";
+import { SCHEMA_PHOTO, validerAnalysePhoto, SCHEMA_RELECTURE, validerRelecture, PROPRIETE_PARCOURS, validerParcours } from "../documents/jugements.js";
 import { CHAMPS } from "../../public/js/champs-financiers.js";
 import { t as tr, langue } from "../../public/js/i18n.js";
 
@@ -194,20 +195,69 @@ Règles absolues
 - Utilise uniquement les données fournies : réponses du dirigeant, faits de son site qu'il a validés, données publiques, chiffres validés et indicateurs calculés. N'invente rien : ni chiffre, ni client, ni nom, ni projet, ni certification, ni concurrent, ni tendance de marché.
 - Ne mentionne aucun prix, aucune valeur d'entreprise, aucune fourchette de valorisation.
 - Quand une information attendue manque, écris « À compléter » à l'endroit voulu et ajoute une demande précise dans a_completer (par exemple « Préciser la part du chiffre d'affaires réalisée sous contrat pluriannuel »).
-- Mieux vaut quatre points nets que six points délayés : si les faits manquent, le chapitre est plus court et a_completer dit ce qu'il faut apporter.`;
+- Mieux vaut quatre points nets que six points délayés : si les faits manquent, le chapitre est plus court et a_completer dit ce qu'il faut apporter.
+- « complements_du_dirigeant » : ses réponses à des demandes précédentes ; utilise-les comme ses autres réponses et ne repose pas une demande à laquelle il a répondu.`;
+
+// Chapitre « Organisation » avec l'équipe dirigeante décrite : un parcours par personne, rédigé à partir de ses seules
+// réponses (formation, expériences, ancienneté), vérifié par le code (aucun chiffre absent de ses réponses).
+const SCHEMA_SECTION_EQUIPE = { ...SCHEMA_SECTION, required: [...SCHEMA_SECTION.required, "parcours_equipe"], properties: { ...SCHEMA_SECTION.properties, parcours_equipe: PROPRIETE_PARCOURS } };
+const CONSIGNE_PARCOURS = `
+Parcours des dirigeants (« parcours_equipe ») : pour chaque personne de « equipe_dirigeante », une ou deux phrases à la troisième personne sur sa formation et ses expériences, uniquement à partir de ses réponses. Ne cite ni son nom ni son rôle (affichés à part), aucun chiffre qui ne figure pas dans ses réponses, aucun employeur ni diplôme non fourni.`;
 
 export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
+  const equipe = Array.isArray(donnees?.equipe_dirigeante) && donnees.equipe_dirigeante.length ? donnees.equipe_dirigeante : null;
   const reponse = await client(env).beta.messages.create({
     model: MODELS.deep, max_tokens: 16000,
-    system: `${CONSIGNE_MEMO}\n\nChapitre à rédiger : « ${titre} ».\n${consigne}${langueDeSortie()}`,
+    system: `${CONSIGNE_MEMO}\n\nChapitre à rédiger : « ${titre} ».\n${consigne}${equipe ? CONSIGNE_PARCOURS : ""}${langueDeSortie()}`,
     messages: [{ role: "user", content: `Données du dossier (JSON) :\n${JSON.stringify(donnees, null, 2)}` }],
-    output_config: { format: { type: "json_schema", schema: SCHEMA_SECTION } },
+    output_config: { format: { type: "json_schema", schema: equipe ? SCHEMA_SECTION_EQUIPE : SCHEMA_SECTION } },
     betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
   });
   if (reponse.stop_reason === "refusal") throw new Error("redaction_refusee");
   if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
   const r = JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
-  return { titre: r.titre, accroche: r.accroche, contenu: contenuConcis(r), a_completer: r.a_completer || [] };
+  return { titre: r.titre, accroche: r.accroche, contenu: contenuConcis(r), a_completer: r.a_completer || [], ...(equipe ? { parcours: validerParcours(r.parcours_equipe, equipe) } : {}) };
+}
+
+// ---------------------------------------------------------------- Mémorandum : jugement d'une photo (vision)
+const CONSIGNE_PHOTO = `Tu es directeur artistique dans une banque d'affaires. Tu juges une photo qu'un dirigeant de PME propose pour le mémorandum de cession de son entreprise (remis aux repreneurs après un accord de confidentialité) et pour son teaser (anonyme, diffusé avant tout accord).
+Décris ce que montre la photo en une phrase factuelle, sans rien supposer. Choisis sa catégorie. Note sa qualité de 1 à 5 (netteté, lumière, cadrage, résolution suffisante pour une page entière) et donne la raison en une phrase. Conseille son usage dans le mémorandum (couverture, activité, réalisations, équipe, ou à éviter) et propose une légende de 8 mots au plus, sans nom de personne.
+Signale : un dessin, un schéma ou un pictogramme plutôt qu'une photo ; un visuel publicitaire ou un bandeau de texte ; une photo floue ; une résolution insuffisante pour une page entière ; tout élément qui identifie l'entreprise ou une personne (enseigne, logo, nom sur un véhicule, plaque, adresse, visage reconnaissable).`;
+
+/** @param base64 image déjà réduite (plus grand côté ≤ 1 568 px) ; @returns jugement validé (jugements.js) */
+export async function analyserPhoto(env, base64, mediaType) {
+  const reponse = await client(env).messages.create({
+    model: MODELS.photos, max_tokens: 2000, system: CONSIGNE_PHOTO + langueDeSortie(),
+    messages: [{ role: "user", content: [
+      { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+      { type: "text", text: "Juge cette photo." },
+    ] }],
+    output_config: { format: { type: "json_schema", schema: SCHEMA_PHOTO } },
+  });
+  if (reponse.stop_reason === "refusal") throw new Error("analyse_refusee");
+  if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
+  const j = validerAnalysePhoto(JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join("")));
+  if (!j) throw new Error("analyse_invalide");
+  return j;
+}
+
+// ---------------------------------------------------------------- Mémorandum : relecture critique
+const CONSIGNE_RELECTURE = `Tu es un repreneur exigeant, conseillé par une banque d'affaires. Tu relis le mémorandum de cession d'une PME française, chapitre par chapitre, avant qu'il ne soit envoyé.
+Relève au plus 10 remarques, les plus importantes d'abord : affirmation non sourcée, contradiction entre deux chapitres, répétition, ton promotionnel, photo mal choisie, page trop vide, incohérence avec les registres publics fournis, chiffre douteux.
+Pour chaque remarque : le chapitre (sa clé), le type, un titre de 6 mots au plus à l'infinitif, le constat en une phrase simple, et si elle se corrige dans le texte, le passage exact à remplacer (recopié tel quel) et le passage corrigé.
+Règles absolues : tu ne modifies, n'ajoutes ni ne retires jamais un chiffre. Une remarque sur un chiffre est de type « chiffre », sans correction : le dirigeant le vérifiera dans ses comptes ou sa valorisation. Pas de remarque de style sans enjeu pour un repreneur. Français simple.`;
+
+/** @param sections [{ cle, titre, contenu }] ; @param contexte données publiques et pages (photos, pages vides) */
+export async function relireMemo(env, sections, contexte = {}) {
+  const reponse = await client(env).beta.messages.create({
+    model: MODELS.relecture, max_tokens: 16000, system: CONSIGNE_RELECTURE + langueDeSortie(),
+    messages: [{ role: "user", content: `Mémorandum (JSON) :\n${JSON.stringify({ chapitres: sections, ...contexte }, null, 2)}` }],
+    output_config: { format: { type: "json_schema", schema: SCHEMA_RELECTURE } },
+    betas: ["server-side-fallback-2026-07-01"], fallbacks: "default",
+  });
+  if (reponse.stop_reason === "refusal") throw new Error("redaction_refusee");
+  if (reponse.stop_reason === "max_tokens") throw new Error("reponse_tronquee");
+  return validerRelecture(JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join("")), sections, RELECTURE.remarquesMax);
 }
 
 // ---------------------------------------------------------------- Mémorandum : étude de marché (recherche web)
@@ -276,5 +326,16 @@ export async function rechercherMarche(env, contexte) {
 
 /** Erreur d'authentification de l'API Claude (clé absente, mal copiée ou d'un autre type) : message explicite. */
 export const cleRefusee = (e) => e?.status === 401 || e?.status === 403;
+/** Crédit Anthropic épuisé (erreur 400 « Your credit balance is too low… ») : ce n'est pas une panne passagère. */
+export const creditEpuise = (e) => e?.status === 400 && /credit balance is too low/i.test(`${e?.message || ""} ${JSON.stringify(e?.error ?? "")}`);
+/**
+ * Réponse à une erreur de Claude, commune à toutes les rédactions et analyses : clé refusée, crédit épuisé (« La
+ * rédaction est momentanément indisponible. Vos réponses sont enregistrées. »), sinon null (message propre à l'appel).
+ */
+export function erreurClaudeConnue(e) {
+  if (cleRefusee(e)) return { statut: 503, erreur: "cle_refusee", message: tr("serveur.claude.cle_refusee") };
+  if (creditEpuise(e)) return { statut: 503, erreur: "credit_epuise", message: tr("serveur.claude.credit_epuise") };
+  return null;
+}
 /** Message de la clé refusée, dans la langue de la requête (lu à chaque usage). */
 export const MESSAGE_CLE_REFUSEE = { toString: () => tr("serveur.claude.cle_refusee"), toJSON: () => tr("serveur.claude.cle_refusee") };

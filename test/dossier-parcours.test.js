@@ -33,7 +33,8 @@ describe("constantes : une seule liste d'étapes", () => {
   });
   it("chaque écran du parcours guidé appartient à une étape de cette liste ; le site est une question de « Vos réponses »", () => {
     const cles = new Set(ETAPES_PARCOURS.map(([k]) => k));
-    expect(Object.keys(ETAPE_DE_L_ECRAN).sort()).toEqual(["accueil", "chiffres", "comptes", "photos", "pret", "questions", "redaction", "saisie", "site"]);
+    expect(Object.keys(ETAPE_DE_L_ECRAN).sort()).toEqual(["accueil", "chiffres", "comptes", "equipe", "photos", "pret", "questions", "redaction", "saisie", "site"]);
+    expect(ETAPE_DE_L_ECRAN.equipe).toBe("reponses"); // équipe dirigeante : après la question sur l'équipe
     expect(ETAPE_DE_L_ECRAN.accueil).toBe("chiffres"); // l'accueil ouvre l'étape « Vos chiffres »
     expect(ETAPE_DE_L_ECRAN.photos).toBe("reponses");  // logo et photos : juste après la lecture du site
     for (const e of Object.values(ETAPE_DE_L_ECRAN)) expect(cles.has(e)).toBe(true);

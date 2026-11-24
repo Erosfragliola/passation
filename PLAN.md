@@ -661,3 +661,14 @@ modèle économique défini plus tard par l'utilisateur (business plan en cours)
   (`POLICE_DATAPACK`, `TAILLES_DATAPACK`), deux colonnes élargies (aucune cellule tronquée, FR et EN). Instrument Serif
   n'était plus rendue nulle part : police, licence et mention légale retirées. Big Shoulders reste sur le site.
   Tests : 543.
+- **24/11/2026, branche `memo-phase2`** (PR non fusionnée, non déployée), options validées par le propriétaire (PR #35) :
+  photos jugées par Claude (vision, `claude-haiku-5-5`, image réduite à 1 568 px dans le navigateur, JSON validé par
+  `src/documents/jugements.js`, rien d'appliqué sans « Utiliser comme proposé ») ; 12 photos (`PHOTOS_MAX`, une seule
+  définition dans `src/config.js`, transmise au navigateur par l'API), réordonnables, placées par catégorie sans
+  doublon (`placementPhotos`), filtre du site par les vraies dimensions et l'empreinte (`mesurerPhotos`) ; écran
+  « Votre équipe dirigeante » (1 à 4 personnes, consentement obligatoire pour chaque photo) et page « L'équipe
+  dirigeante » du mémorandum, jamais dans le teaser (noms ajoutés aux interdits d'anonymat) ; remplissage mesuré à la
+  surface, fusion sous 16 %, sommaire recalculé, « Éléments à compléter » en fin de partie (`public/js/memo-pages.js`) ;
+  relecture critique dans le panneau (« Oui, corriger » sans chiffre touché, concision recontrôlée) ; panneau à titres
+  courts dépliés sur place (`public/js/ameliorations.js`) ; « crédit épuisé » : message clair pour toutes les
+  rédactions et analyses. Sécurité : les chemins de fichiers ne viennent plus jamais du navigateur. Tests : 586.
