@@ -58,12 +58,36 @@ export function periodeExercices(annees = []) {
   return annees.length === 1 || annees[0] === annees.at(-1) ? t("dossier.formats.exercice", { annee: annees.at(-1) }) : t("dossier.formats.exercices", { de: annees[0], a: annees.at(-1) });
 }
 
-/** Rang de la photo de chaque page du mémorandum, d'après l'ordre choisi par le dirigeant (n photos) : la 1re en
- *  couverture, la 2e pour l'activité (la 1re s'il n'y en a qu'une), la 4e pour l'équipe (la 3e s'il n'y en a que
- *  trois ; aucune sinon, pour ne pas répéter la couverture). null : pas de photo pour cette page. */
-export function rangPhoto(usage, n) {
-  if (usage === "couverture") return n >= 1 ? 0 : null;
-  if (usage === "activite") return n >= 2 ? 1 : n === 1 ? 0 : null;
-  if (usage === "equipe") return n >= 4 ? 3 : n === 3 ? 2 : null;
-  return null;
+/**
+ * Placement des photos du mémorandum (12 au plus) par leur catégorie et leur usage validés (« Utiliser comme proposé »),
+ * l'ordre choisi par le dirigeant départageant à catégorie égale. Jamais deux fois la même photo ; en grand
+ * (couverture, pages d'ouverture) seulement si sa largeur le permet ; une photo « à éviter » n'est jamais placée.
+ *   couverture   : la mieux notée des locaux, de l'extérieur ou de l'atelier ;
+ *   activite     : atelier et produits (deux au plus) ;
+ *   realisations : les réalisations (page dédiée à partir de 3) ;
+ *   equipe       : la photo d'équipe validée ;
+ *   ouvertures   : les photos restantes assez grandes, pour les pages d'ouverture.
+ * Une photo sans jugement validé (pas d'analyse, ou « Ignorer ») complète la couverture puis l'activité, dans l'ordre ;
+ * elle n'est jamais prise pour l'équipe (on ne sait pas ce qu'elle montre).
+ * @param photos [{ n, decision, categorie, usage, analyse: { note }, largeur }]
+ */
+export function placementPhotos(photos = [], { largeurPleinePage = 1200, realisationsMin = 3 } = {}) {
+  const pris = new Set();
+  const valide = (p) => p.decision === "utilise" && p.categorie;
+  const libre = (p) => !pris.has(p.n) && p.usage !== "eviter";
+  const grande = (p) => p.largeur == null || p.largeur >= largeurPleinePage;
+  const note = (p) => p.analyse?.note ?? 0;
+  const prendre = (p) => { if (!p) return null; pris.add(p.n); return p.n; };
+  const parNote = (l) => [...l].sort((a, b) => note(b) - note(a));
+  const l = photos.filter((p) => p && Number.isInteger(p.n));
+  const classees = l.filter(valide), sansJugement = l.filter((p) => !valide(p));
+
+  const couverture = prendre(parNote(classees.filter((p) => libre(p) && grande(p) && (p.usage === "couverture" || ["locaux", "exterieur", "atelier"].includes(p.categorie))))[0])
+    ?? prendre(sansJugement.find((p) => libre(p) && grande(p)));
+  const equipe = prendre(parNote(classees.filter((p) => libre(p) && (p.categorie === "equipe" || p.usage === "equipe")))[0]);
+  const reals = classees.filter((p) => libre(p) && (p.categorie === "realisations" || p.usage === "realisations"));
+  const realisations = reals.length >= realisationsMin ? reals.slice(0, 6).map(prendre) : [];
+  const activite = [...classees.filter((p) => libre(p) && (["atelier", "produits"].includes(p.categorie) || p.usage === "activite")), ...sansJugement.filter(libre)].slice(0, 2).map(prendre);
+  const ouvertures = l.filter((p) => libre(p) && grande(p) && (valide(p) || p.decision !== "ignore")).map(prendre);
+  return { couverture, activite, realisations, equipe, ouvertures };
 }

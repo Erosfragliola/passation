@@ -1,7 +1,11 @@
 // Page du mémorandum : site et logo (faits validés un par un), sections rédigées à la demande, impression.
 const $ = (s) => document.querySelector(s);
 import { CARTE } from "/js/carte-france.js";
-import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices, rangPhoto } from "/js/memo-format.js";
+import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices, placementPhotos } from "/js/memo-format.js";
+import { surfaceCouverte, planFusion, numeroter, SEUIL_PAGE_VIDE } from "/js/memo-pages.js";
+import { ameliorations, reponsePour } from "/js/ameliorations.js";
+import { libelleRole, libelleApres, initiales, parcoursDeSecours, transitionEquipe } from "/js/equipe.js";
+import { listePhotos } from "/js/photos-fiches.js";
 import { lien, t as tr, langue } from "/js/i18n.js";
 import { libelleOption } from "/js/questionnaire.js";
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -15,6 +19,9 @@ const el = (tag, attrs = {}, ...enfants) => {
 /** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 let etat = null;
+let reponses = {}; // réponses du dossier (panneau d'amélioration : QCM, compléments, éléments ignorés)
+let focusPhoto = null;
+let redactionEnCours = false; // « Rédiger les chapitres manquants » : le bouton reste inactif jusqu'à la fin (relecture comprise)
 function message(t, erreur = false) { const m = $("#message"); m.textContent = t; m.hidden = !t; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
@@ -57,6 +64,7 @@ function dessinerSite() {
 
 function dessinerPhotos() {
   const s = etat.site || {};
+  const max = etat.photos_max || 12;
   const atteste = el("input", { type: "checkbox", id: "attestation-photo" });
   const ajouter = async (corpsRequete) => {
     if (!atteste.checked) { message(tr("memo.js.photos.cochez"), true); atteste.focus(); return; }
@@ -64,15 +72,20 @@ function dessinerPhotos() {
   };
   const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "fichier-photo", class: "visuellement-cache" });
   fichier.addEventListener("change", () => { const f = fichier.files[0]; if (!f) return; const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", atteste.checked ? "oui" : "non"); ajouter(fd); fichier.value = ""; });
+  const n = (etat.photos || []).length;
+  const candidates = (s.photos_candidates || []).filter((u) => !(etat.photos || []).some((ph) => ph.origine === u));
+  const ecartees = s.photos_ecartees || [];
   remplacer($("#photos"), el("div", { class: "photos-panneau" },
-    el("p", { class: "petit", text: tr("memo.js.photos.titre", { n: (etat.photos || []).length }) }),
-    (s.photos_candidates || []).length ? el("p", { class: "guide-lib", text: tr("memo.js.photos.cliquez") }) : null,
+    el("p", { class: "petit", text: tr("memo.js.photos.titre_max", { n, max }) }),
+    listePhotos({ memo: etat, baseMemo: base, version: etat.versionPhotos, message, focus: focusPhoto,
+      maj: (m, cible) => { if (m) { etat = { ...m, versionPhotos: etat.versionPhotos }; } focusPhoto = cible || null; tout(); } }),
+    candidates.length && n < max ? el("p", { class: "guide-lib", text: tr("memo.js.photos.cliquez") }) : null,
     el("label", { class: "fait", for: "attestation-photo" }, atteste, el("span", { text: tr("memo.js.photos.attestation") })),
-    el("div", { class: "logos-liste" },
-      ...(etat.photos || []).map((ph) => el("div", { class: "photo-choisie" }, el("img", { src: `${base}/photos/${ph.n}?v=${etat.versionPhotos}`, alt: ph.legende || tr("memo.js.photos.photo_n", { n: ph.n + 1 }) }),
-        el("button", { type: "button", class: "lien-simple", onclick: async () => { try { etat = await api(`${base}/photos/${ph.n}`, { method: "DELETE" }); etat.versionPhotos = Date.now(); tout(); } catch (e) { message(e.message, true); } } }, tr("espace.js.retirer")))),
-      ...(s.photos_candidates || []).slice(0, 12).filter((u) => !(etat.photos || []).some((ph) => ph.origine === u)).map((u) => el("button", { type: "button", class: "logo-choix photo-choix", title: tr("memo.js.photos.ajouter_site"), onclick: () => ajouter(JSON.stringify({ url: u, attestation: atteste.checked })) }, el("img", { src: u, alt: tr("memo.js.photos.candidate"), loading: "lazy", referrerpolicy: "no-referrer" })))),
-    el("label", { class: "btn btn-contour btn-mini", for: "fichier-photo" }, tr("memo.js.photos.deposer")), fichier));
+    n < max ? el("div", { class: "logos-liste" },
+      ...candidates.slice(0, max - n).map((u) => el("button", { type: "button", class: "logo-choix photo-choix", title: tr("memo.js.photos.ajouter_site"), onclick: () => ajouter(JSON.stringify({ url: u, attestation: atteste.checked })) }, el("img", { src: u, alt: tr("memo.js.photos.candidate"), loading: "lazy", referrerpolicy: "no-referrer" })))) : null,
+    ecartees.length ? el("p", { class: "petit", text: tr("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => tr(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null,
+    n < max ? el("label", { class: "btn btn-contour btn-mini", for: "fichier-photo" }, tr("memo.js.photos.deposer")) : el("p", { class: "petit", text: tr("memo.js.photos.limite", { max }) }), fichier));
+  focusPhoto = null;
 }
 
 const themeFait = (theme) => (["taille", "tendance", "demande", "reglementation", "concurrence"].includes(theme) ? tr(`memo.js.themes.${theme}`) : theme);
@@ -107,7 +120,7 @@ function dessinerVerrou() {
   remplacer($("#verrou"), v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: tr("memo.js.verrou.avant") }),
     el("ul", {}, ...v.manque.map((m) => el("li", { text: m }))),
     el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/valorisation/?dossier=${id}#entreprise`) }, tr("memo.js.verrou.questionnaire"))));
-  $("#btn-tout").disabled = !v.ok;
+  $("#btn-tout").disabled = !v.ok || redactionEnCours;
 }
 
 // ================================================================== Le mémorandum, à la manière des banques d'affaires
@@ -469,7 +482,9 @@ function organigramme() {
 }
 
 const photoUrl = (n) => (n != null && etat.photos?.[n] ? `${base}/photos/${n}?v=${etat.versionPhotos}` : null);
-const photoPour = (usage) => photoUrl(rangPhoto(usage, etat.photos?.length || 0));
+/** Placement des photos par catégorie (une seule fois chacune), recalculé à chaque dessin du mémorandum. */
+let placement = { couverture: null, activite: [], realisations: [], equipe: null, ouvertures: [] };
+const photoPour = (usage) => photoUrl(usage === "activite" ? placement.activite[0] : placement[usage]);
 function photo(n, attendu = tr("memo.js.photos.photo_n", { n: "" }).trim()) {
   const u = photoUrl(n);
   if (n == null) return el("div", { class: "im-photo-vide" }, el("span", { text: tr("memo.js.photos.a_ajouter", { quoi: attendu }) }), el("span", { class: "petit", text: tr("memo.js.photos.ou") }));
@@ -532,7 +547,7 @@ function couverture() {
       el("span", { class: "im-pilule", text: tr("teaser.js.confidentiel") }), el("strong", { text: majuscule(moisAnnee()) }), logoPassation()));
 }
 function pageOuverture(partie, k) {
-  const u = photoUrl(k % Math.max(1, etat.photos?.length || 1));
+  const u = photoUrl(placement.ouvertures[k] ?? null);
   const num = String(partie.n).padStart(2, "0");
   const chapitres = etat.sections.filter((s) => s.partie === partie.n);
   return el("div", { class: "diapo im-ouverture", "data-partie": String(partie.n) },
@@ -595,6 +610,38 @@ function pagesSynthese(s) {
   return [p1, p2];
 }
 
+/**
+ * Page « L'équipe dirigeante » (chapitre Organisation) : une carte par personne, photo (avec consentement enregistré)
+ * ou initiales, nom, rôle, parcours rédigé par Claude à partir de ses seules réponses (à défaut, formation et
+ * expériences telles que saisies), ancienneté, place après la cession. Bandeau de transition écrit par le code.
+ */
+function pageEquipe(s) {
+  const l = etat.equipe?.personnes || [];
+  if (!l.length) return null;
+  const carte = (x) => el("article", { class: "im-eq-carte" },
+    x.a_photo ? el("div", { class: "im-eq-photo" }, el("img", { src: `${base}/equipe/${x.id}/photo?v=${etat.versionPhotos}`, alt: tr("memo.js.equipe.photo_de", { nom: x.nom }) }))
+      : el("div", { class: "im-eq-initiales", role: "img", "aria-label": tr("memo.js.equipe.sans_photo", { nom: x.nom }), text: initiales(x.nom) }),
+    el("div", { class: "im-eq-corps" },
+      el("h4", { class: "im-eq-nom", text: x.nom }),
+      el("p", { class: "im-eq-role", text: libelleRole(x) }),
+      el("p", { class: "im-eq-parcours", text: s.parcours?.[x.id] || parcoursDeSecours(x) || tr("teaser.js.a_completer") }),
+      el("p", { class: "im-eq-chiffres" },
+        x.anciennete != null ? el("span", {}, el("b", { text: tr("memo.js.kpi.ans", { n: x.anciennete }) }), ` ${tr("memo.js.equipe.dans_entreprise")}`) : null,
+        x.experience != null ? el("span", {}, el("b", { text: tr("memo.js.kpi.ans", { n: x.experience }) }), ` ${tr("memo.js.equipe.de_metier")}`) : null),
+      x.apres ? el("p", { class: `im-eq-apres ${x.apres}`, text: libelleApres(x) }) : null));
+  return page({ s, ancre: false, titre: tr("memo.js.equipe.titre"), classe: "im-page-equipe",
+    contenu: [el("div", { class: "im-eq-cartes", style: `--n:${l.length}` }, ...l.map(carte))],
+    conclusion: transitionEquipe(etat.equipe), sources: [SOURCES.dirigeant], notes: l.some((x) => x.a_photo) ? [tr("memo.js.equipe.photos_accord")] : [] });
+}
+/** Page « Réalisations » (chapitre Activité) : à partir de trois photos de réalisations validées. */
+function pageRealisations(s) {
+  const l = placement.realisations || [];
+  if (l.length < 3) return null;
+  return page({ s, ancre: false, titre: tr("memo.js.realisations.titre"), classe: "im-page-realisations",
+    contenu: [el("div", { class: "im-realisations", style: `--n:${Math.min(3, l.length)}` }, ...l.map((n) => photo(n)))],
+    sources: [SOURCES.dirigeant] });
+}
+
 function pagesChapitre(s) {
   const q = p(), cl = ch().clients || {};
   const an = cr().annees.at(-1), ca = derniere("chiffre_affaires");
@@ -608,13 +655,13 @@ function pagesChapitre(s) {
         sources: [SOURCES.publiques, faitsSite("histoire", "implantation") ? SOURCES.site : null, SOURCES.dirigeant] })];
     }
     case "activite":
-      return [chapitre(s, { contenu: [el("div", { class: "im-grille im-g-texte-encadre" }, el("div", { class: "im-col-texte" }, corpsTexte(s)),
-        el("div", { class: "im-pile" }, encadre(tr("memo.js.activite.donnees_cles"), tableCles([[tr("teaser.js.tuiles.secteur"), q.secteur], [tr("memo.js.activite.zone"), q.zone ? libelleOption("zone", q.zone) : q.zone], [tr("memo.js.kpi.salaries"), effectifCourt()], [tr("memo.js.kpi.ca", { annee: an ?? "" }).trim(), ok(ca) ? montant(ca) : null], [tr("memo.js.histoire.region_siege"), q.region]])), encadre(tr("memo.js.activite.en_images"), photo(rangPhoto("activite", etat.photos?.length || 0), tr("memo.js.activite.photo_atelier")))))],
-        sources: [SOURCES.publiques, SOURCES.dirigeant, faitsSite("activite", "produits", "qualite") ? SOURCES.site : null] })];
+      return [...[chapitre(s, { contenu: [el("div", { class: "im-grille im-g-texte-encadre" }, el("div", { class: "im-col-texte" }, corpsTexte(s)),
+        el("div", { class: "im-pile" }, encadre(tr("memo.js.activite.donnees_cles"), tableCles([[tr("teaser.js.tuiles.secteur"), q.secteur], [tr("memo.js.activite.zone"), q.zone ? libelleOption("zone", q.zone) : q.zone], [tr("memo.js.kpi.salaries"), effectifCourt()], [tr("memo.js.kpi.ca", { annee: an ?? "" }).trim(), ok(ca) ? montant(ca) : null], [tr("memo.js.histoire.region_siege"), q.region]])), encadre(tr("memo.js.activite.en_images"), photo(placement.activite[0] ?? null, tr("memo.js.activite.photo_atelier")))))],
+        sources: [SOURCES.publiques, SOURCES.dirigeant, faitsSite("activite", "produits", "qualite") ? SOURCES.site : null] })], pageRealisations(s)].filter(Boolean);
     case "organisation":
       return [chapitre(s, { contenu: [el("div", { class: "im-grille im-g-texte-encadre" }, el("div", { class: "im-col-texte" }, corpsTexte(s)),
-        el("div", { class: "im-pile" }, encadre(tr("memo.js.organisation.effectifs"), bandeChiffres([[effectifCourt(), tr("memo.js.kpi.salaries")], [q.ville || tr("dossier.formats.nd"), tr("memo.js.organisation.site_principal")]]), tableCles([[tr("memo.js.organisation.creation"), q.creation ? String(q.creation) : null], [tr("memo.js.organisation.region"), q.region]])), encadre(tr("memo.js.organisation.equipe"), photo(rangPhoto("equipe", etat.photos?.length || 0), tr("memo.js.organisation.photo_equipe")))))],
-        sources: [SOURCES.publiques, SOURCES.dirigeant, faitsSite("equipe") ? SOURCES.site : null] })];
+        el("div", { class: "im-pile" }, encadre(tr("memo.js.organisation.effectifs"), bandeChiffres([[effectifCourt(), tr("memo.js.kpi.salaries")], [q.ville || tr("dossier.formats.nd"), tr("memo.js.organisation.site_principal")]]), tableCles([[tr("memo.js.organisation.creation"), q.creation ? String(q.creation) : null], [tr("memo.js.organisation.region"), q.region]])), encadre(tr("memo.js.organisation.equipe"), photo(placement.equipe, tr("memo.js.organisation.photo_equipe")))))],
+        sources: [SOURCES.publiques, SOURCES.dirigeant, faitsSite("equipe") ? SOURCES.site : null] }), pageEquipe(s)].filter(Boolean);
     case "marche": {
       const sct = etat.marche?.secteur, faits = faitsMarche();
       const pages = [chapitre(s, { contenu: [el("div", { class: `im-grille ${sct ? "im-g-marche" : "im-g-texte-encadre"}` }, el("div", { class: "im-col-texte" }, corpsTexte(s)),
@@ -712,7 +759,7 @@ function pagesChapitre(s) {
       return [chapitre(s, { contenu: [
         tuiles.length ? el("div", { class: "im-kpis rangee" }, ...tuiles.map(([v, l, d], k) => el("div", { class: `im-tuile-kpi${k === 0 ? " vert" : ""}` }, el("strong", { text: v }), el("span", { text: `${l} · ${d}` })))) : null,
         s.redigee && axes.length && paragraphes.length ? el("p", { class: "im-chapeau" }, ...enrichi(paragraphes.join(" "))) : null,
-        s.redigee ? el("ol", { class: `im-piliers n${Math.min(4, items.length)}`, "data-decoupable": "" }, ...items.map((it, k) => { const { titre, texte } = eclaterPuce(it); return el("li", {}, el("span", { class: "im-pilier-num", text: String(k + 1).padStart(2, "0") }), titre ? el("h5", {}, ...enrichi(titre)) : null, el("p", {}, ...enrichi(majuscule(texte)))); })) : aRediger(s.court),
+        s.redigee ? el("ol", { class: `im-piliers n${Math.min(5, items.length)}`, style: `--n:${items.length <= 5 ? Math.max(1, items.length) : 3}`, "data-decoupable": "" }, ...items.map((it, k) => { const { titre, texte } = eclaterPuce(it); return el("li", {}, el("span", { class: "im-pilier-num", text: String(k + 1).padStart(2, "0") }), titre ? el("h5", {}, ...enrichi(titre)) : null, el("p", {}, ...enrichi(majuscule(texte)))); })) : aRediger(s.court),
         info(tr("memo.js.perspectives.avertissement"))],
         sources: [SOURCES.dirigeant, t && ok(t.ca) ? sourceChiffres() : null, faitsMarche().length ? tr("memo.js.perspectives.source_marche") : null] })];
     }
@@ -739,6 +786,7 @@ function pagesChapitre(s) {
 
 function dessinerMemo() {
   etat.versionPhotos ??= Date.now();
+  placement = placementPhotos(etat.photos || [], { largeurPleinePage: 1200 });
   $("#studio").classList.remove("actif"); // toutes les pages visibles le temps de les mesurer (découpage, remplissage)
   const enfants = [couverture(), pageSommaire(), pageGlossaire()];
   (etat.parties || []).forEach((pt, k) => {
@@ -757,24 +805,9 @@ function dessinerMemo() {
   enfants.push(pageAvertissement());
   remplacer($("#memo"), ...enfants);
   decouper();
+  regrouperPages();
   remplirPages();
-  // Numéros « partie.page » (une suite garde le numéro de sa page), pages, renvois du sommaire et des points forts
-  const diapos = [...$("#memo").querySelectorAll(".diapo")];
-  const numSection = {};
-  let partie = 0, n = 0;
-  diapos.forEach((d, k) => {
-    const np = d.querySelector(".im-page-num"); if (np) np.textContent = String(k + 1);
-    if (d.classList.contains("im-ouverture")) { partie = Number(d.dataset.partie); n = 0; return; }
-    const num = d.querySelector(".im-num"); if (!num) return;
-    if (!d.dataset.suite) n++;
-    num.textContent = `${partie}.${Math.max(1, n)}`;
-    if (d.id?.startsWith("s-")) numSection[d.dataset.section] = num.textContent;
-  });
-  const premiere = (cle) => diapos.findIndex((d) => d.dataset.section === cle) + 1;
-  $("#memo").querySelectorAll("[data-renvoi]").forEach((r) => { const k = premiere(r.dataset.renvoi); r.textContent = k > 0 ? (r.classList.contains("im-voir") ? tr("memo.js.voir_page", { n: k }) : String(k)) : ""; });
-  $("#memo").querySelectorAll("[data-renvoi-partie]").forEach((r) => { const k = diapos.findIndex((d) => d.dataset.partie === r.dataset.renvoiPartie && d.classList.contains("im-ouverture")) + 1; r.textContent = k > 0 ? String(k) : ""; });
-  $("#memo").querySelectorAll(".im-som a").forEach((a) => { const h = $("#memo").querySelector(`${a.getAttribute("href")} .im-entete h3`); if (h) a.textContent = h.textContent; });
-  $("#memo").querySelectorAll("[data-num-section]").forEach((r) => { r.textContent = numSection[r.dataset.numSection] || ""; });
+  numeroterPages();
   presentation();
 }
 
@@ -818,37 +851,134 @@ function appliquerPresentation() {
   if (d) panneau(d);
 }
 
-/** Ce qu'il faut faire sur la page affichée : recommandations tirées des données, et actions. */
+// ------------------------------------------------------------------ Panneau d'amélioration (titres courts, réponse sur place)
+let amelOuverte = null; // amélioration dépliée
+let focusAmel = null; // rang du titre à refocaliser après une action
+const faitesSession = []; // titres validés pendant la visite (« Fait ✓ »)
+const pageDe = (cle) => (cle ? diapos().findIndex((d) => d.dataset.section === cle || (d.dataset.sections || "").split(" ").includes(cle)) : 0);
+const listeAmeliorations = () => ameliorations({ etat, reponses, placement, ignores: reponses.panneau?.ignores || [] });
+const vers = (ancre) => { $("#donnees").open = true; $(ancre)?.scrollIntoView({ behavior: "smooth", block: "start" }); };
+const ACTIONS = {
+  photos: () => vers("#photos"), marche: () => vers("#marche"),
+  equipe: () => { location.href = lien(`/espace/demarrer/?dossier=${id}&etape=equipe`); },
+  comptes: () => { location.href = lien(`/espace/valorisation/?dossier=${id}#chiffres`); },
+};
+/** Page en cours de mise à jour : voile « Mise à jour… » sur les pages du chapitre, le temps de la rédaction. */
+function enMiseAJour(cle, oui) {
+  for (const d of diapos().filter((x) => x.dataset.section === cle || (x.dataset.sections || "").split(" ").includes(cle))) {
+    d.querySelector(".im-maj")?.remove();
+    if (oui) d.append(el("div", { class: "im-maj pas-imprime", role: "status", text: tr("memo.js.ameliorations.mise_a_jour") }));
+  }
+}
+async function apresAction(rang, titre, cle) {
+  if (titre) faitesSession.push(titre);
+  amelOuverte = null; focusAmel = rang;
+  tout();
+  // La page concernée est affichée (le panneau est redessiné) ; le focus va au titre suivant
+  const k = pageDe(cle); if (cle && k >= 0) { focusAmel = rang; allerPage(k); }
+}
+/** « Valider » : la réponse est enregistrée (mêmes routes que le parcours guidé), puis le chapitre est rédigé à nouveau. */
+async function valider(item, valeur, rang) {
+  const rep = reponsePour(item, valeur, reponses);
+  if (!rep) { message(item.genre === "qcm" ? tr("memo.js.ameliorations.choisissez") : tr("memo.js.ameliorations.ecrivez"), true); return; }
+  try {
+    await api(`/api/dossiers/${id}/answers/${rep.etape}`, { method: "PUT", body: JSON.stringify({ data: rep.data }) });
+    reponses[rep.etape] = rep.data;
+    if (item.section && section(item.section)?.redigee && etat.deverrouille.ok) {
+      const k = pageDe(item.section); if (k >= 0) allerPage(k);
+      enMiseAJour(item.section, true); message(tr("memo.js.ameliorations.mise_a_jour"));
+      try { etat = { ...(await api(`${base}/sections/${item.section}`, { method: "POST" })), versionPhotos: etat.versionPhotos }; message(tr("memo.js.ameliorations.chapitre_mis_a_jour")); }
+      catch (e) { enMiseAJour(item.section, false); message(tr("memo.js.ameliorations.reponse_gardee", { erreur: e.message }), true); }
+    } else message(tr("memo.js.ameliorations.enregistre"));
+    await apresAction(rang, item.titre, item.section);
+  } catch (e) { message(e.message, true); }
+}
+async function ignorer(item, rang) {
+  const ignores = [...new Set([...(reponses.panneau?.ignores || []), item.id])];
+  try {
+    if (item.genre === "remarque") etat = { ...(await api(`${base}/relecture/${item.remarque.id}`, { method: "POST", body: JSON.stringify({ decision: "non" }) })), versionPhotos: etat.versionPhotos };
+    else { await api(`/api/dossiers/${id}/answers/panneau`, { method: "PUT", body: JSON.stringify({ data: { ...(reponses.panneau || {}), ignores } }) }); reponses.panneau = { ...(reponses.panneau || {}), ignores }; }
+    message(tr("memo.js.ameliorations.ignoree"));
+    await apresAction(rang, null, null);
+  } catch (e) { message(e.message, true); }
+}
+/** « Oui, corriger » : le passage est remplacé dans le chapitre par le serveur (aucun chiffre touché, concision contrôlée). */
+async function corriger(item, rang) {
+  enMiseAJour(item.section, true);
+  try { etat = { ...(await api(`${base}/relecture/${item.remarque.id}`, { method: "POST", body: JSON.stringify({ decision: "oui" }) })), versionPhotos: etat.versionPhotos }; message(tr("memo.js.ameliorations.corrige")); await apresAction(rang, item.titre, item.section); }
+  catch (e) { enMiseAJour(item.section, false); message(e.message, true); }
+}
+async function relire(bouton) {
+  if (bouton) bouton.disabled = true;
+  message(tr("memo.js.relecture.en_cours"));
+  try { etat = { ...(await api(`${base}/relecture`, { method: "POST" })), versionPhotos: etat.versionPhotos }; amelOuverte = null; focusAmel = 0; tout(); message(tr("memo.js.relecture.fait", { n: (etat.relecture?.remarques || []).length })); }
+  catch (e) { message(e.message, true); if (bouton) bouton.disabled = false; }
+}
+
+function corpsAmelioration(item, rang) {
+  const boutons = (...b) => el("div", { class: "amel-actions" }, ...b);
+  const btnIgnorer = el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => ignorer(item, rang) }, item.genre === "remarque" ? tr("memo.js.ameliorations.non") : tr("memo.js.ameliorations.ignorer"));
+  if (item.genre === "qcm") {
+    const nom = `qcm-${item.id}`;
+    return [el("fieldset", { class: "amel-qcm" }, el("legend", { text: tr(`memo.js.ameliorations.questions.${item.id}`) }),
+      ...item.options.map((o, k) => el("label", { class: "amel-choix", for: `${nom}-${k}` }, el("input", { type: "radio", name: nom, id: `${nom}-${k}`, value: o }), el("span", { text: libelleOption(item.cle, o) })))),
+    boutons(el("button", { type: "button", class: "btn btn-noir btn-mini", onclick: (ev) => valider(item, ev.currentTarget.closest(".amel-corps").querySelector(`input[name="${nom}"]:checked`)?.value, rang) }, tr("memo.js.ameliorations.valider")), btnIgnorer)];
+  }
+  if (item.genre === "proposition") {
+    const ta = el("textarea", { rows: "3", id: `prop-${item.id}`, "aria-describedby": `dem-${item.id}`, placeholder: tr("memo.js.ameliorations.votre_reponse") }); ta.value = item.proposition || "";
+    return [el("p", { class: "amel-pourquoi", id: `dem-${item.id}`, text: item.demande }), el("label", { class: "visuellement-cache", for: `prop-${item.id}`, text: tr("memo.js.ameliorations.votre_reponse") }), ta,
+      el("p", { class: "petit", text: tr("memo.js.ameliorations.pas_de_chiffre") }),
+      boutons(el("button", { type: "button", class: "btn btn-noir btn-mini", onclick: () => valider(item, ta.value, rang) }, tr("memo.js.ameliorations.valider")), btnIgnorer)];
+  }
+  if (item.genre === "action") {
+    return [el("p", { class: "amel-pourquoi", text: tr(`memo.js.ameliorations.explications.${item.id}`) }),
+      boutons(el("button", { type: "button", class: "btn btn-noir btn-mini", onclick: () => ACTIONS[item.action]?.() }, tr(`memo.js.ameliorations.actions.${item.action}`)), btnIgnorer)];
+  }
+  const r = item.remarque;
+  return [el("p", { class: "amel-pourquoi" }, el("span", { class: "pastille-etat alerte", text: tr(`memo.js.relecture.types.${r.type}`) }), " ", r.constat),
+    r.correction ? el("p", { class: "amel-avant", text: r.correction.texte_actuel }) : null,
+    r.correction ? el("p", { class: "amel-apres", text: r.correction.texte_propose }) : null,
+    r.type === "chiffre" ? el("p", { class: "petit", text: tr("memo.js.relecture.chiffre") }) : null,
+    boutons(r.correction ? el("button", { type: "button", class: "btn btn-noir btn-mini", onclick: () => corriger(item, rang) }, tr("memo.js.ameliorations.oui_corriger"))
+      : item.action ? el("button", { type: "button", class: "btn btn-noir btn-mini", onclick: () => ACTIONS[item.action]?.() }, tr(`memo.js.ameliorations.actions.${item.action}`)) : null, btnIgnorer)];
+}
+
+/** Panneau de droite : améliorations (titres courts), puis les actions de la page affichée. */
 function panneau(d) {
   const s = d.dataset.section ? section(d.dataset.section) : null;
-  const recos = [];
-  const reco = (texte, action) => recos.push({ texte, action });
-  const vers = (ancre, libelle) => ({ libelle, faire: () => { $("#donnees").open = true; $(ancre)?.scrollIntoView({ behavior: "smooth", block: "start" }); } });
-  if (s) {
-    if (!s.redigee) reco(tr("memo.js.recos.non_redige"));
-    for (const t of s.a_completer || []) reco(t);
-    if (s.cle === "activite" && !photoPour("activite")) reco(tr("memo.js.recos.photo_activite"), vers("#photos", tr("memo.js.recos.ajouter_photos")));
-    if (s.cle === "organisation" && !photoPour("equipe")) reco(tr("memo.js.recos.photo_equipe"), vers("#photos", tr("memo.js.recos.ajouter_photos")));
-    if (s.cle === "marche" && !faitsMarche().length) reco(tr("memo.js.recos.marche_aucun"), vers("#marche", tr("memo.js.recos.voir_marche")));
-    if (s.cle === "marche" && faitsMarche().length) reco(tr("memo.js.recos.marche_retenus", { n: faitsMarche().length }), vers("#marche", tr("memo.js.recos.verifier")));
-    if (d.classList.contains("serre") || d.dataset.suite) reco(tr("memo.js.recos.long"));
-    if (s.modifie) reco(tr("memo.js.recos.modifie"));
-  }
+  const l = listeAmeliorations();
+  const indisp = l.filter((x) => x.importance === "indispensable").length;
+  const ul = el("ul", { class: "ameliorations" }, ...l.map((item, k) => {
+    const ouvert = amelOuverte === item.id, k1 = pageDe(item.section);
+    return el("li", { class: `amel${item.importance === "indispensable" ? " indispensable" : ""}` },
+      el("h4", {}, el("button", { type: "button", class: "amel-titre", "aria-expanded": String(ouvert), "aria-controls": `amel-${item.id}`, "data-rang": String(k), onclick: () => { amelOuverte = ouvert ? null : item.id; focusAmel = k; panneau(diapos()[pres.idx]); } },
+        el("span", { class: "amel-point", "aria-hidden": "true" }), el("span", { text: item.titre }), item.importance === "indispensable" ? el("span", { class: "visuellement-cache", text: tr("memo.js.ameliorations.indispensable") }) : null,
+        el("span", { class: "amel-page", text: item.section && k1 >= 0 ? tr("memo.js.ameliorations.page", { n: k1 + 1 }) : "" }))),
+      el("div", { class: "amel-corps", id: `amel-${item.id}`, hidden: !ouvert }, ...(ouvert ? corpsAmelioration(item, k) : [])));
+  }), ...faitesSession.map((t) => el("li", { class: "amel amel-faite" }, el("p", {}, el("span", { class: "amel-point", "aria-hidden": "true" }), el("span", { text: t }), el("span", { class: "amel-page", text: tr("memo.js.ameliorations.fait") })))));
   const etatChap = !s ? null : !s.redigee ? tr("memo.js.etat.a_rediger") : s.modifie ? tr("teaser.js.modifie") : tr("memo.js.etat.redige");
   const zoneEdition = el("div", { class: "panneau-edition" });
-  remplacer($("#panneau"), 
+  const relu = etat.relecture?.date ? tr("memo.js.relecture.date", { date: new Date(etat.relecture.date * 1000).toLocaleDateString(langue() === "fr" ? "fr-FR" : "en-US") }) : null;
+  remplacer($("#panneau"),
     el("p", { class: "etiquette", text: tr("memo.js.presentation.page_n", { n: pres.idx + 1 }) }),
     el("h2", { class: "panneau-titre", text: titrePage(d) }),
     s ? el("p", { class: "panneau-etat" }, el("span", { class: `pastille-etat ${!s.redigee ? "a-faire" : "ok"}`, text: etatChap }), tr("memo.js.panneau.chapitre", { court: s.court })) : null,
-    el("section", { class: "panneau-bloc" }, el("h3", { text: tr("memo.js.panneau.recommandations") }),
-      s ? (recos.length ? el("ul", { class: "panneau-recos" }, ...recos.map((r) => el("li", {}, el("span", { text: r.texte }), r.action ? el("button", { type: "button", class: "lien-simple", onclick: r.action.faire }, `${r.action.libelle} →`) : null)))
-        : el("p", { class: "petit ok-reco", text: tr("memo.js.panneau.rien") }))
-        : el("p", { class: "petit", text: tr("memo.js.panneau.automatique") })),
+    el("section", { class: "panneau-bloc", "aria-labelledby": "titre-ameliorer" }, el("h3", { id: "titre-ameliorer", text: tr("memo.js.ameliorations.titre") }),
+      el("p", { class: "petit amel-resume" }, l.length ? tr("memo.js.ameliorations.resume", { n: l.length, i: indisp }) : tr("memo.js.panneau.rien"), relu ? ` · ${relu}` : ""),
+      etat.sections.some((x) => x.redigee) ? el("button", { type: "button", class: "btn btn-contour btn-mini amel-relire", disabled: !etat.analyse_photos, onclick: (ev) => relire(ev.currentTarget) }, tr("memo.js.relecture.bouton")) : null,
+      ul,
+      l.some((x) => x.importance === "indispensable") ? el("p", { class: "amel-legende petit" }, el("span", { class: "amel-point indisp", "aria-hidden": "true" }), tr("memo.js.ameliorations.indispensable")) : null),
     s ? el("section", { class: "panneau-bloc" }, el("h3", { text: tr("memo.js.panneau.actions") }),
       el("div", { class: "panneau-actions" },
         el("button", { type: "button", class: "btn btn-noir btn-mini", disabled: !etat.deverrouille.ok, onclick: (ev) => rediger(s.cle, ev.currentTarget) }, s.redigee ? tr("memo.js.outils.rediger_nouveau") : tr("memo.js.panneau.rediger_chapitre")),
         s.redigee ? el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => editer(zoneEdition, s) }, tr("memo.js.panneau.modifier_texte")) : null),
       zoneEdition) : null);
+  if (focusAmel != null) {
+    const titres = [...$("#panneau").querySelectorAll(".amel-titre")];
+    const cible = titres.find((b) => b.getAttribute("aria-expanded") === "true") || titres[Math.min(focusAmel, titres.length - 1)];
+    focusAmel = null;
+    (cible || $("#titre-ameliorer"))?.focus?.();
+  }
 }
 $("#page-prec").addEventListener("click", () => allerPage(pres.idx - 1));
 $("#page-suiv").addEventListener("click", () => allerPage(pres.idx + 1));
@@ -880,6 +1010,100 @@ function decouper() {
       courante = suite;
     }
   }
+}
+
+// ------------------------------------------------------------------ Pages presque vides (mesure à la surface)
+const estFusionnable = (d) => d.classList.contains("im-page") && Boolean(d.querySelector(".im-num"));
+const titreDe3 = (d) => (d.querySelector(".im-entete h3")?.textContent || "").replace(/ \((suite|continued)\)$/, "");
+/** Part de la zone de contenu couverte (lignes de texte, graphiques, photos, tuiles), le texte à sa taille normale. */
+function couvertureDe(d) {
+  const z = d.querySelector(".im-zone");
+  if (!z) return 1;
+  const k = d.style.getPropertyValue("--k");
+  d.style.setProperty("--k", "1");
+  const rects = [];
+  const w = document.createTreeWalker(z, NodeFilter.SHOW_TEXT);
+  for (let n = w.nextNode(); n; n = w.nextNode()) { if (!n.textContent.trim()) continue; const r = document.createRange(); r.selectNodeContents(n); rects.push(...r.getClientRects()); }
+  for (const e of z.querySelectorAll("svg, img, .im-tuile-kpi, .im-photo, .im-photo-vide, .im-eq-initiales")) rects.push(e.getBoundingClientRect());
+  const c = surfaceCouverte(z.getBoundingClientRect(), rects);
+  if (k) d.style.setProperty("--k", k); else d.style.removeProperty("--k");
+  return c;
+}
+/** Parties des pages, dans l'ordre : une page d'ouverture fixe la partie des pages qui la suivent. */
+function partiesDes(l) { let partie = 0; return l.map((d) => { if (d.classList.contains("im-ouverture")) partie = Number(d.dataset.partie); return partie; }); }
+
+/**
+ * Chapitres sans donnée (non rédigés et sous le seuil sur toutes leurs pages) : retirés et regroupés, avec les demandes
+ * « à compléter » des chapitres de la partie, sur une page « Éléments à compléter » en fin de partie. Puis chaque page
+ * sous le seuil (16 % de surface couverte) est fusionnée avec sa voisine de la même partie, si tout tient.
+ */
+function regrouperPages() {
+  let l = diapos(), parties = partiesDes(l);
+  const couv = new Map(l.filter(estFusionnable).map((d) => [d, couvertureDe(d)]));
+  for (const pt of etat.parties || []) {
+    const pages = l.filter((d, k) => parties[k] === pt.n && d.classList.contains("im-page") && d.querySelector(".im-num"));
+    if (!pages.length) continue;
+    const secs = etat.sections.filter((x) => x.partie === pt.n);
+    const vides = secs.filter((x) => !x.redigee && pages.some((d) => d.dataset.section === x.cle) && pages.filter((d) => d.dataset.section === x.cle).every((d) => (couv.get(d) ?? 1) < SEUIL_PAGE_VIDE));
+    const vus = new Set();
+    const items = [...vides.map((x) => [x.court, tr("memo.js.elements.a_rediger")]), ...secs.filter((x) => x.redigee).flatMap((x) => (x.a_completer || []).map((d) => [x.court, d]))]
+      .filter(([, d]) => { const k = String(d).trim().toLowerCase(); if (vus.has(k) && d !== tr("memo.js.elements.a_rediger")) return false; vus.add(k); return true; });
+    for (const x of vides) for (const d of pages.filter((d) => d.dataset.section === x.cle)) d.remove();
+    if (!items.length) continue;
+    const derniere = pages.filter((d) => d.isConnected).at(-1) || l.find((d) => d.classList.contains("im-ouverture") && d.dataset.partie === String(pt.n));
+    const pe = page({ titre: tr("memo.js.elements.titre"), message: tr("memo.js.elements.message", { partie: pt.titre }), classe: "im-elements",
+      contenu: [el("ul", { class: "im-elements-liste", "data-decoupable": "" }, ...items.map(([sec, txt]) => el("li", {}, el("small", { text: sec }), el("span", { text: txt }))))],
+      sources: [SOURCES.dirigeant] });
+    if (vides.length) { pe.dataset.sections = vides.map((x) => x.cle).join(" "); for (const x of vides) pe.querySelector(".im-zone").append(el("span", { id: `s-${x.cle}`, class: "im-ancre" })); }
+    derniere?.after(pe);
+  }
+  l = diapos(); parties = partiesDes(l);
+  const infos = l.map((d, k) => ({ partie: parties[k], fusionnable: estFusionnable(d), couverture: estFusionnable(d) ? (couv.get(d) ?? couvertureDe(d)) : 1 }));
+  for (const [a, b] of planFusion(infos)) fusionner(l[a], l[b]);
+}
+
+/** Fusion de la page B dans la page A (B la suit) ; annulée si le contenu déborde, même resserré. */
+function fusionner(A, B) {
+  const zA = A.querySelector(".im-zone"), zB = B.querySelector(".im-zone");
+  const memeTitre = titreDe3(A) === titreDe3(B);
+  const message = B.querySelector(".im-message")?.textContent;
+  const enfantsB = [...zB.childNodes];
+  const bloc = el("div", { class: "im-fusion" }, memeTitre ? null : el("h4", { class: "im-intertitre im-fusion-titre", text: titreDe3(B) }), !memeTitre && message ? el("p", { class: "im-fusion-message", text: message }) : null, ...enfantsB);
+  // Hauteurs de tous les éléments des deux pages avant la fusion : une fusion qui compresserait un graphique, une carte
+  // ou un texte (flex, hauteur minimale nulle) est refusée, pas seulement celle qui fait déborder la zone
+  const hauteurs = new Map([...zA.querySelectorAll("*"), ...zB.querySelectorAll("*")].map((e) => [e, e.getBoundingClientRect().height]));
+  zA.append(bloc);
+  const deborde = () => {
+    if (zA.scrollHeight > zA.clientHeight + 2) return true;
+    const bas = zA.getBoundingClientRect().bottom + 2;
+    for (const [e, h] of hauteurs) { const r = e.getBoundingClientRect(); if (r.height < h - 1.5 || (r.height && r.bottom > bas)) return true; }
+    return false;
+  };
+  const serreAvant = A.classList.contains("serre");
+  if (deborde()) { zB.append(...enfantsB); bloc.remove(); A.classList.toggle("serre", serreAvant); return false; }
+  const sections = new Set([A.dataset.section, ...(A.dataset.sections || "").split(" "), B.dataset.section, ...(B.dataset.sections || "").split(" ")].filter(Boolean));
+  A.dataset.sections = [...sections].join(" ");
+  if (B.id) { const ancre = B.id; B.removeAttribute("id"); bloc.prepend(el("span", { id: ancre, class: "im-ancre" })); }
+  const srcA = A.querySelector(".im-sources"), srcB = B.querySelector(".im-sources");
+  if (srcB && srcA && !srcA.textContent.includes(srcB.textContent.replace(/^[^:]*:\s*/, ""))) srcA.textContent = `${srcA.textContent} ; ${srcB.textContent.replace(/^[^:]*:\s*/, "")}`;
+  else if (srcB && !srcA) A.querySelector(".im-pied-sources").prepend(srcB);
+  B.remove();
+  return true;
+}
+
+/** Numéros « partie.page », numéros de page, renvois du sommaire et des points forts (memo-pages.js, numeroter). */
+function numeroterPages() {
+  const l = diapos();
+  const r = numeroter(l.map((d) => ({ type: d.classList.contains("im-ouverture") ? "ouverture" : d.querySelector(".im-num") ? "page" : "hors", partie: Number(d.dataset.partie) || 0,
+    sections: [d.dataset.section, ...(d.dataset.sections || "").split(" ")].filter(Boolean), suite: Boolean(d.dataset.suite) })));
+  l.forEach((d, k) => {
+    const np = d.querySelector(".im-page-num"); if (np) np.textContent = String(k + 1);
+    const num = d.querySelector(".im-num"); if (num) num.textContent = r.numeros[k] || "";
+  });
+  $("#memo").querySelectorAll("[data-renvoi]").forEach((x) => { const k = r.pageDe[x.dataset.renvoi]; x.textContent = k ? (x.classList.contains("im-voir") ? tr("memo.js.voir_page", { n: k }) : String(k)) : ""; });
+  $("#memo").querySelectorAll("[data-renvoi-partie]").forEach((x) => { const k = r.ouvertures[x.dataset.renvoiPartie]; x.textContent = k ? String(k) : ""; });
+  $("#memo").querySelectorAll(".im-som a").forEach((a) => { const h = $("#memo").querySelector(`${a.getAttribute("href")} .im-entete h3`); if (h) a.textContent = h.textContent; });
+  $("#memo").querySelectorAll("[data-num-section]").forEach((x) => { x.textContent = r.numeroDe[x.dataset.numSection] || ""; });
 }
 
 /**
@@ -936,9 +1160,12 @@ $("#form-site").addEventListener("submit", async (ev) => {
   finally { b.disabled = false; }
 });
 $("#btn-tout").addEventListener("click", async (ev) => {
-  const b = ev.currentTarget; b.disabled = true;
-  for (const s of etat.sections.filter((x) => !x.redigee)) await rediger(s.cle);
-  b.disabled = false;
+  const b = ev.currentTarget; b.disabled = true; redactionEnCours = true;
+  try {
+    for (const s of etat.sections.filter((x) => !x.redigee)) await rediger(s.cle);
+    // Passage automatique de la relecture critique à la fin de la rédaction
+    if (etat.analyse_photos && etat.sections.every((x) => x.redigee) && !etat.relecture) await relire();
+  } finally { redactionEnCours = false; b.disabled = !etat.deverrouille.ok; }
 });
 $("#btn-imprimer").addEventListener("click", () => window.print());
 /** Arrivée depuis la page du dossier : #section-<clé> ouvre la page du chapitre, #donnees ouvre les photos et le
@@ -952,6 +1179,10 @@ async function suivreLien() {
 (async () => {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
-  try { etat = await api(base); tout(); suivreLien(); } catch (e) { if (e.message !== "non_connecte") message(e.message, true); }
+  try {
+    const [m, a] = await Promise.all([api(base), api(`/api/dossiers/${id}/answers`).catch(() => ({ reponses: {} }))]);
+    etat = m; reponses = a.reponses || {};
+    tout(); suivreLien();
+  } catch (e) { if (e.message !== "non_connecte") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();

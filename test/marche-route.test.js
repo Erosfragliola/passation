@@ -3,11 +3,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 
-vi.mock("../src/lib/claude.js", () => ({
+vi.mock("../src/lib/claude.js", async (original) => ({
+  ...(await original()),
   claudeDisponible: (env) => Boolean(env.ANTHROPIC_API_KEY),
   rechercherMarche: vi.fn(),
-  cleRefusee: (e) => e?.status === 401 || e?.status === 403,
-  MESSAGE_CLE_REFUSEE: "clé refusée",
 }));
 vi.mock("../src/sources/secteur.js", async (original) => ({
   ...(await original()),

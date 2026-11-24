@@ -123,10 +123,4 @@ describe("photos du site : filtre à la lecture", () => {
   });
 });
 
-describe("photos du mémorandum : une page par usage", () => {
-  it("1re en couverture, 2e pour l'activité, 4e pour l'équipe ; sans répéter la couverture", async () => {
-    const { rangPhoto } = await import("../public/js/memo-format.js");
-    expect([0, 1, 2, 3, 6].map((n) => [rangPhoto("couverture", n), rangPhoto("activite", n), rangPhoto("equipe", n)])).toEqual([
-      [null, null, null], [0, 0, null], [0, 1, null], [0, 1, 2], [0, 1, 3]]);
-  });
-});
+// Placement des photos du mémorandum : par catégorie validée, sans doublon (test/photos.test.js, placementPhotos).

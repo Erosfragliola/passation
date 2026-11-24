@@ -27,3 +27,19 @@ export function contenuConcis({ introduction = "", points = [] } = {}) {
     .map((p) => `- **${p.titre}** : ${p.texte.replace(/^./, (c) => c.toUpperCase())}`);
   return [intro, lignes.join("\n")].filter(Boolean).join("\n\n");
 }
+
+/**
+ * Un texte de chapitre respecte-t-il encore les longueurs après une correction (« Oui, corriger ») ? Introduction de
+ * deux phrases et 320 caractères au plus, 6 points au plus de deux phrases et 240 caractères chacun ; un texte libre
+ * (modifié à la main par le dirigeant) ne doit pas s'allonger de plus d'un cinquième.
+ */
+export function contenuRespecteConcision(contenu, avant = null) {
+  const blocs = String(contenu ?? "").split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+  const lignes = blocs.flatMap((b) => b.split("\n")).filter((l) => /^- \*\*.+?\*\* : /.test(l));
+  const structure = lignes.length > 0 && blocs.every((b, i) => i === 0 || b.split("\n").every((l) => /^- \*\*.+?\*\* : /.test(l)));
+  if (!structure) return avant == null || String(contenu).length <= String(avant).length * 1.2;
+  const intro = /^- \*\*/.test(blocs[0]) ? "" : blocs[0];
+  if (phrases(intro).length > LIMITES.introPhrases || propre(intro).length > LIMITES.introCaracteres) return false;
+  if (lignes.length > LIMITES.points) return false;
+  return lignes.every((l) => { const t = l.replace(/^- \*\*.+?\*\* : /, ""); return phrases(t).length <= LIMITES.textePhrases && propre(t).length <= LIMITES.texteCaracteres; });
+}

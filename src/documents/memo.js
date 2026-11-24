@@ -10,6 +10,7 @@ import { DETENTION, MURS, MURS_CESSION } from "../../public/js/parcours.js";
 import { montant, pourcent, multiple } from "../../public/js/memo-format.js";
 import { projet } from "./nom-de-code.js";
 import { t as tr, T, avecTextes } from "../../public/js/i18n.js";
+import { equipePourClaude } from "../../public/js/equipe.js";
 
 /** Parties du mémorandum, chacune ouverte par une page d'ouverture (convention des banques d'affaires). */
 export const PARTIES_MEMO = [
@@ -36,7 +37,7 @@ export const SECTIONS_MEMO = [
     donnees: ["activite", "faits:activite,produits,qualite"] },
   { cle: "organisation", titre: T, court: T, partie: 2, point_fort: 2,
     consigne: "Décris l'organisation : effectif, métiers clés, encadrement intermédiaire, ce que fait aujourd'hui le dirigeant et ce qui dépend de lui. Le repreneur cherche à savoir si l'entreprise peut fonctionner sans son dirigeant actuel : réponds avec les faits fournis, et signale ce qui reste à organiser.",
-    donnees: ["entreprise", "activite", "dirigeant_role", "faits:equipe"] },
+    donnees: ["entreprise", "activite", "dirigeant_role", "equipe", "faits:equipe"] },
   { cle: "marche", titre: T, court: T, partie: 3, point_fort: 3,
     consigne: "Présente le marché de l'entreprise comme une banque d'affaires : structure du secteur (nombre d'entreprises, fragmentation, place de l'entreprise par sa taille, à partir de « structure_du_secteur »), puis taille et évolution du marché, moteurs de la demande, réglementation et concurrence, uniquement à partir des « faits_de_marche_sources ». Une puce par thème. Cite l'organisme source entre parenthèses après chaque chiffre de marché (par exemple « (INSEE, 2024) »). Si les faits de marché manquent, dis-le et ajoute la demande à a_completer.",
     donnees: ["entreprise", "activite", "marche"] },
@@ -255,12 +256,16 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
     }
     else if (cle === "clients") d.clients = { ...(reponses.clients || {}), principaux: ch.clients.lignes.map((x) => ({ client: `Client ${x.rang}`, part_du_ca: pourcent(x.part, { decimales: 0 }), client_depuis: x.anciennete == null ? null : `${x.anciennete} ans`, activite: x.secteur })) };
     else if (cle === "dirigeant_role") { const dg = reponses.dirigeant || {}; d.organisation_declaree = { role_actuel_du_dirigeant: dg.role_dirigeant ?? null, encadrement_en_place: dg.encadrement ?? null, anciennete_moyenne_des_salaries: dg.anciennete_equipe ?? null }; }
+    else if (cle === "equipe") { const l = equipePourClaude(reponses.equipe); if (l.length) d.equipe_dirigeante = l; }
     else if (cle === "indicateurs") d.indicateurs_calcules = ch.indicateurs;
     else if (cle === "compte_resultat") d.compte_de_resultat = { annees: ch.cr.annees, exercices_consecutifs: ch.cr.consecutifs, lignes: ch.cr.lignes.map((l) => ({ libelle: l.libelle, valeurs: l.valeurs.map((v) => (v == null ? null : l.type === "ratio" ? pourcent(v, { signe: l.cle === "croissance" }) : montant(v))) })) };
     else if (cle === "ebe_retraite") d.passage_ebe_comptable_ebe_retraite = { annees: ch.ebeR.annees, ebe_comptable: ch.ebeR.ebe_comptable.map(montant), retraitements: ch.ebeR.retraitements.map((r) => ({ nature: r.libelle, montants: r.valeurs.map((v) => (v == null ? null : montant(v))) })), ebe_retraite: ch.ebeR.ebe_retraite.map(montant), justifications: (reponses.retraitements?.exceptionnels || []).map((e) => ({ annee: e.annee, libelle: e.libelle, justification: e.justification })) };
     else if (cle === "endettement") d.endettement = ch.endet ? { exercice: ch.endet.annee, composantes: ch.endet.lignes.map((l) => ({ libelle: l.libelle, montant: montant(l.montant) })), total: ch.endet.total < 0 ? `trésorerie nette de ${montant(-ch.endet.total)}` : `dette nette de ${montant(ch.endet.total)}`, bfr_jours_de_ca: ch.endet.bfr.map((b) => ({ annee: b.annee, jours: b.jours == null ? null : Math.round(b.jours) })) } : null;
     else if (cle.startsWith("faits:")) { const cats = cle.slice(6).split(","); d.faits_du_site_valides = faitsValides.filter((f) => cats.includes(f.categorie)).map((f) => ({ fait: f.fait, source: f.source })); }
   }
+  // Réponses du dirigeant aux demandes « à compléter » de ce chapitre (panneau d'amélioration)
+  const complements = (reponses.complements?.[section.cle] || []).filter((c) => c?.demande && c?.reponse);
+  if (complements.length) d.complements_du_dirigeant = complements.map((c) => ({ demande: String(c.demande).slice(0, 300), reponse: String(c.reponse).slice(0, 600) }));
   return d;
 }
 

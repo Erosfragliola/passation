@@ -13,7 +13,9 @@ import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
 import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
 import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
-import { rangPhoto } from "/js/memo-format.js";
+import { placementPhotos } from "/js/memo-format.js";
+import { listePhotos } from "/js/photos-fiches.js";
+import { ROLES, FORMATIONS, TYPES_EXPERIENCE, APRES, PERSONNES_MAX, EXPERIENCES_MAX, BORNES, normaliserEquipe, nouvelId, initiales, libelleRole, libelleApres, personneComplete } from "/js/equipe.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
 import { contradictions, nomLisible, faitsEssentiels, faitsParTheme, limiterChoix, lireDate, lignesDates, phraseActivite, TYPES_EVENEMENT } from "/js/faits-site.js";
@@ -72,6 +74,8 @@ function etapeCourante() {
   if (siteAValider()) return "site";
   if (photosAChoisir()) return "photos";
   const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues));
+  // Équipe dirigeante : juste après la question sur l'équipe (une fois), sinon avant la rédaction
+  if (equipeAPresenter() && (iq < 0 || iq > QUESTIONS.findIndex((q) => q.id === "equipe"))) return "equipe";
   if (iq >= 0) { S.q = iq; return "questions"; }
   if (!S.reponses.suivi?.pret_envoye && !S.complet) return "redaction";
   return "pret";
@@ -88,6 +92,7 @@ function etapeDemandee() {
     const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues)); S.q = Math.max(0, iq); return "questions";
   }
   if (e === "photos") return S.reponses.site?.url ? "photos" : null;
+  if (e === "equipe") return "equipe";
   if (e === "redaction" || e === "pret") return e;
   return null;
 }
@@ -120,7 +125,7 @@ async function rafraichirEtat() {
 function aller(etape) {
   if (etape === "questions" && S.etape !== "questions") { S.aPoser = null; rafraichirPropositions().then(() => { if (S.etape === "questions" && S.q >= 0) questions(); }); }
   S.etape = etape; dessinerEtapes(); rafraichirEtat();
-  ({ accueil, comptes, saisie, chiffres, questions, site, photos, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
+  ({ accueil, comptes, saisie, chiffres, questions, site, photos, equipe, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
 }
 const titre = (texte, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: texte }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
@@ -615,6 +620,8 @@ function suivante(q) {
   }
   // Lecture du site terminée pendant la question : on valide ses faits, son logo et ses photos maintenant
   if (siteAValider()) { aller("site"); return; }
+  // Après la question sur l'équipe : les personnes de l'équipe dirigeante (une fois)
+  if (q.id === "equipe" && equipeAPresenter()) { aller("equipe"); return; }
   // Question suivante encore sans réponse (celles validées dans le récapitulatif sont sautées)
   const i = QUESTIONS.indexOf(q);
   const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
@@ -801,48 +808,42 @@ async function site() {
     el("p", { class: "q-usage", text: t("demarrer.js.site.usage_faits") }));
 }
 
-/** Logo et photos du site : le logo trouvé est présélectionné ; le dirigeant clique les photos à utiliser (6 au plus)
- *  et coche une seule fois la case de droits. Ce qui est choisi va sur la couverture, l'activité et l'équipe. */
-const PHOTOS_MAX = 6;
+/** Logo et photos : le logo trouvé est présélectionné ; le dirigeant clique les photos du site à ajouter (12 au plus,
+ *  case de droits cochée une fois) ou dépose les siennes. Sous chaque photo ajoutée, le jugement de Claude
+ *  (catégorie, note, usage et légende proposés) avec « Utiliser comme proposé » et « Ignorer » ; l'ordre se change
+ *  aux flèches ou en glissant. La couverture, l'activité, les réalisations et l'équipe sont choisies par catégorie. */
+let focusPhotoParcours = null;
 async function photos() {
   const memo = S.memo?.site ? S.memo : await api(`${base}/documents/memo`).catch(() => null);
   S.memo = memo;
   const s = memo?.site || S.reponses.site || {};
+  const max = memo?.photos_max || 12;
   const deja = memo?.photos || [];
-  const candidates = (s.photos_candidates || []).slice(0, 12);
-  const choisies = new Set(deja.map((p) => p.origine).filter((u) => candidates.includes(u)));
-  const propres = deja.filter((p) => !p.origine || !candidates.includes(p.origine)); // déposées par le dirigeant
+  const candidates = (s.photos_candidates || []).filter((u) => !deja.some((p) => p.origine === u)).slice(0, Math.max(0, max - deja.length));
+  const ecartees = s.photos_ecartees || [];
   const logos = s.logos || [];
   let logo = memo?.logo ? "garde" : logos[0]?.url ?? null;
-  const compte = el("p", { class: "guide-compte", "aria-live": "polite" });
-  const bouton = el("button", { type: "button", class: "btn btn-vert" });
-  const grille = el("div", { class: "photos-grille", role: "group", "aria-labelledby": "photos-titre" });
-  const maj = () => {
-    const n = choisies.size + propres.length;
-    for (const b of grille.querySelectorAll(".photo-tuile")) b.disabled = b.getAttribute("aria-pressed") !== "true" && n >= PHOTOS_MAX;
-    compte.textContent = t("demarrer.js.photos.compte", { n, max: PHOTOS_MAX });
-    bouton.replaceChildren(n ? t("demarrer.js.photos.utiliser", { n }) : t("demarrer.js.photos.sans_photo"), fleche());
-  };
-  grille.append(...candidates.map((u, k) => el("button", { type: "button", class: "photo-tuile", "aria-pressed": String(choisies.has(u)), "aria-label": t("demarrer.js.photos.photo_n", { n: k + 1 }), onclick: (ev) => {
-    const b = ev.currentTarget, on = b.getAttribute("aria-pressed") !== "true";
-    b.setAttribute("aria-pressed", String(on));
-    if (on) choisies.add(u); else choisies.delete(u);
-    maj();
-  } }, el("img", { src: u, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.currentTarget.closest(".photo-tuile")?.remove() }), el("span", { class: "photo-coche", "aria-hidden": "true" }))),
-  ...propres.map((p) => el("figure", { class: "photo-tuile photo-propre", "aria-pressed": "true" }, el("img", { src: `${base}/documents/memo/photos/${p.n}?v=${Date.now()}`, alt: p.legende || t("demarrer.js.photos.deposee") }),
-    el("button", { type: "button", class: "lien-simple", onclick: async () => { try { S.memo = await api(`${base}/documents/memo/photos/${p.n}`, { method: "DELETE" }); photos(); } catch (e) { message(e.message, true); } } }, t("espace.js.retirer")))));
   const droits = el("input", { type: "checkbox", id: "photos-droits" });
+  const baseMemo = `${base}/documents/memo`;
+  const ajouter = async (corps, bouton) => {
+    if (!droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); return; }
+    if (bouton) bouton.disabled = true;
+    try { S.memo = await api(`${baseMemo}/photos`, { method: "POST", body: corps }); message(""); photos(); }
+    catch (e) { message(e.message, true); if (bouton) bouton.disabled = false; }
+  };
+  const grille = el("div", { class: "photos-grille", role: "group", "aria-labelledby": "photos-site-titre" }, ...candidates.map((u, k) => el("button", { type: "button", class: "photo-tuile", "aria-label": t("demarrer.js.photos.ajouter_n", { n: k + 1 }), onclick: (ev) => ajouter(JSON.stringify({ url: u, attestation: true }), ev.currentTarget) },
+    el("img", { src: u, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.currentTarget.closest(".photo-tuile")?.remove() }), el("span", { class: "photo-coche", "aria-hidden": "true", text: "+" }))));
   const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "photos-fichier", class: "visuellement-cache", multiple: true });
   fichier.addEventListener("change", async () => {
     if (!droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); fichier.value = ""; return; }
-    for (const f of [...fichier.files].slice(0, PHOTOS_MAX)) {
+    for (const f of [...fichier.files].slice(0, Math.max(0, max - deja.length))) {
       const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", "oui");
-      try { S.memo = await api(`${base}/documents/memo/photos`, { method: "POST", body: fd }); } catch (e) { message(e.message, true); break; }
+      try { S.memo = await api(`${baseMemo}/photos`, { method: "POST", body: fd }); } catch (e) { message(e.message, true); break; }
     }
     photos();
   });
   // Logo : présélectionné ; « Changer » ouvre les autres candidats, le dépôt et « aucun »
-  const apercuLogo = () => (logo === "garde" ? `${base}/documents/memo/logo?v=${Date.now()}` : logo);
+  const apercuLogo = () => (logo === "garde" ? `${baseMemo}/logo?v=${Date.now()}` : logo);
   const zoneLogo = el("div", { class: "logo-ligne" });
   const dessinerLogo = (ouvert = false) => remplacer(zoneLogo,
     el("span", { class: "logo-apercu" }, apercuLogo() ? el("img", { src: apercuLogo(), alt: t("demarrer.js.site.votre_logo"), referrerpolicy: "no-referrer" }) : el("span", { class: "petit", text: t("demarrer.js.photos.aucun_logo") })),
@@ -852,39 +853,137 @@ async function photos() {
       ...logos.map((l, k) => { const r = el("input", { type: "radio", name: "logo", id: `logo-${k}`, checked: logo === l.url, class: "visuellement-cache" }); r.addEventListener("change", () => { logo = l.url; dessinerLogo(true); }); return el("label", { class: "logo-choix", for: `logo-${k}` }, r, el("img", { src: l.url, alt: l.origine, referrerpolicy: "no-referrer" })); }),
       (() => { const r = el("input", { type: "radio", name: "logo", id: "logo-aucun", class: "visuellement-cache", checked: !logo }); r.addEventListener("change", () => { logo = null; dessinerLogo(true); }); return el("label", { class: "logo-choix logo-aucun", for: "logo-aucun" }, r, t("demarrer.js.site.aucun_logo")); })()) : null);
   dessinerLogo();
+  const bouton = el("button", { type: "button", class: "btn btn-vert" }, deja.length ? t("demarrer.js.photos.utiliser", { n: deja.length }) : t("demarrer.js.photos.sans_photo"), fleche());
   bouton.addEventListener("click", async () => {
-    const aAjouter = [...choisies].filter((u) => !deja.some((p) => p.origine === u));
-    if (aAjouter.length && !droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); return; }
     bouton.disabled = true; message(t("demarrer.js.photos.enregistrement"));
-    const echecs = [];
     try {
-      if (logo && logo !== "garde") await api(`${base}/documents/memo/logo`, { method: "POST", body: JSON.stringify({ url: logo }) }).catch(() => echecs.push("logo"));
-      // Photos du site décochées : retirées (de la dernière à la première, les numéros se décalent)
-      for (const p of [...deja].reverse()) if (p.origine && candidates.includes(p.origine) && !choisies.has(p.origine)) S.memo = await api(`${base}/documents/memo/photos/${p.n}`, { method: "DELETE" });
-      for (const u of aAjouter) {
-        try { S.memo = await api(`${base}/documents/memo/photos`, { method: "POST", body: JSON.stringify({ url: u, attestation: true }) }); }
-        catch { echecs.push(u); }
-      }
+      if (logo && logo !== "garde") await api(`${baseMemo}/logo`, { method: "POST", body: JSON.stringify({ url: logo }) }).catch(() => message(t("demarrer.js.photos.echecs", { n: 1 }), true));
       await marquerVue("photos");
-      message(echecs.length ? t("demarrer.js.photos.echecs", { n: echecs.length }) : "", Boolean(echecs.length));
+      message("");
       aller(etapeCourante());
     } catch (e) { message(e.message, true); bouton.disabled = false; }
   });
-  maj();
+  const liste = listePhotos({ memo, baseMemo, message, focus: focusPhotoParcours, maj: (m, cible) => { if (m) S.memo = m; focusPhotoParcours = cible || null; photos(); } });
+  focusPhotoParcours = null;
   remplir(
-    el("p", { class: "q-compteur", text: new URL(s.url).hostname }),
-    ...titre(t("demarrer.js.photos.titre"), t("demarrer.js.photos.aide")),
+    s.url ? el("p", { class: "q-compteur", text: new URL(s.url).hostname }) : null,
+    ...titre(t("demarrer.js.photos.titre"), t("demarrer.js.photos.aide_jugement")),
     zoneLogo,
-    candidates.length || propres.length ? el("div", { class: "guide-champ" },
-      el("p", { class: "guide-lib", id: "photos-titre", text: t("demarrer.js.photos.cliquez") }),
-      el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max: PHOTOS_MAX }) }),
-      grille, compte) : el("p", { class: "petit", text: t("demarrer.js.photos.aucune") }),
+    el("div", { class: "guide-champ" },
+      el("p", { class: "guide-lib", text: t("demarrer.js.photos.vos_photos", { n: deja.length, max }) }),
+      liste || el("p", { class: "petit", text: t("demarrer.js.photos.aucune_choisie") })),
     el("label", { class: "photos-droits", for: "photos-droits" }, droits, el("span", { text: t("demarrer.js.photos.droits") })),
-    el("p", { class: "petit" }, el("label", { class: "lien-simple", for: "photos-fichier", tabindex: "0", onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fichier.click(); } } }, t("demarrer.js.photos.deposer")), fichier, " ", t("demarrer.js.photos.formats")),
+    candidates.length ? el("div", { class: "guide-champ" },
+      el("p", { class: "guide-lib", id: "photos-site-titre", text: t("demarrer.js.photos.cliquez_ajouter") }),
+      el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max }) }), grille) : null,
+    ecartees.length ? el("p", { class: "petit", text: t("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => t(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null,
+    deja.length < max ? el("p", { class: "petit" }, el("label", { class: "lien-simple", for: "photos-fichier", tabindex: "0", onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fichier.click(); } } }, t("demarrer.js.photos.deposer")), fichier, " ", t("demarrer.js.photos.formats")) : el("p", { class: "petit", text: t("memo.js.photos.limite", { max }) }),
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => aller("site") }, t("demarrer.js.retour")),
+      el("button", { type: "button", class: "lien-simple", onclick: () => aller(s.url ? "site" : etapeCourante()) }, t("demarrer.js.retour")),
       bouton),
     el("p", { class: "q-usage", text: t("demarrer.js.photos.ou_va") }));
+}
+
+// ================================================================== Équipe dirigeante (mémorandum seulement)
+const equipeAPresenter = () => !S.vues.includes("equipe_dirigeante");
+/** Une carte repliable par personne (1 à 4) : nom, rôle, ancienneté et expérience, formation, 1 à 3 expériences,
+ *  place après la cession, photo facultative avec le consentement de la personne. Sauvegarde automatique. */
+let equipeEtat = null, equipeOuverte = null, sauverEquipeMinuteur = null;
+function sauverEquipe(immediat = false) {
+  clearTimeout(sauverEquipeMinuteur);
+  const go = () => api(`${base}/answers/equipe`, { method: "PUT", body: JSON.stringify({ data: { personnes: equipeEtat.personnes.map(({ photo, ...x }) => x) } }) })
+    .then(() => { S.reponses.equipe = normaliserEquipe(equipeEtat, S.reponses.equipe); }).catch((e) => message(e.message, true));
+  if (immediat) return go();
+  sauverEquipeMinuteur = setTimeout(go, 600);
+  return Promise.resolve();
+}
+function equipe() {
+  if (!equipeEtat) {
+    equipeEtat = { personnes: (S.reponses.equipe?.personnes || []).map((p) => ({ ...p, experiences: [...(p.experiences || [])] })) };
+    if (!equipeEtat.personnes.length) equipeEtat.personnes.push({ id: nouvelId(), nom: "", experiences: [] });
+    equipeOuverte = equipeEtat.personnes.find((p) => !personneComplete(p))?.id || equipeEtat.personnes[0].id;
+  }
+  const L = equipeEtat.personnes;
+  const carte = (p, k) => {
+    const pref = `pers-${p.id}`;
+    const champ = (cle, valeur) => { p[cle] = valeur; sauverEquipe(); };
+    const curseur = (cle, [min, max], libelle) => {
+      const out = el("output", { id: `${pref}-${cle}-v`, text: p[cle] == null ? t("demarrer.js.equipe.non_renseigne") : t("demarrer.js.equipe.ans", { n: p[cle] }) });
+      const r = el("input", { type: "range", min: String(min), max: String(max), value: String(p[cle] ?? min), id: `${pref}-${cle}`, class: p[cle] == null ? "curseur-vide" : null, "aria-describedby": `${pref}-${cle}-v` });
+      r.addEventListener("input", () => { r.classList.remove("curseur-vide"); out.textContent = t("demarrer.js.equipe.ans", { n: Number(r.value) }); champ(cle, Number(r.value)); });
+      return el("div", { class: "eq-curseur" }, el("label", { class: "tres-petit", for: `${pref}-${cle}`, text: libelle }), out, r);
+    };
+    const puces = (nom, valeurs, courant, libelle, surChoix) => el("div", { class: "puces-choix", role: "radiogroup", "aria-label": libelle }, ...valeurs.map((v) => {
+      const r = el("input", { type: "radio", name: `${pref}-${nom}`, value: v, checked: courant === v, class: "visuellement-cache", id: `${pref}-${nom}-${v}` });
+      r.addEventListener("change", () => surChoix(v));
+      return el("label", { class: "puce-case", for: `${pref}-${nom}-${v}` }, r, libelleChoix(nom, v));
+    }));
+    const libelleChoix = (nom, v) => (nom === "formation" ? t(`memo.equipe.formations.${v}`) : t(`memo.equipe.apres.${v}`));
+    const mois = p.apres === "accompagne" ? curseur("mois", BORNES.mois, t("demarrer.js.equipe.pendant")) : null;
+    if (mois) mois.querySelector("output").textContent = p.mois == null ? t("demarrer.js.equipe.non_renseigne") : t("demarrer.js.equipe.mois", { n: p.mois });
+    mois?.querySelector("input").addEventListener("input", (e) => { mois.querySelector("output").textContent = t("demarrer.js.equipe.mois", { n: Number(e.target.value) }); });
+    const exps = el("div", { class: "eq-experiences" }, ...p.experiences.map((x, j) => el("div", { class: "eq-exp" },
+      el("select", { "aria-label": t("demarrer.js.equipe.type_experience", { n: j + 1 }), onchange: (e) => { x.type = e.target.value; sauverEquipe(); } },
+        el("option", { value: "", text: t("demarrer.js.equipe.choisir") }), ...TYPES_EXPERIENCE.map((ty) => el("option", { value: ty, selected: x.type === ty, text: t(`memo.equipe.experiences.${ty}`) }))),
+      el("input", { type: "text", maxlength: "80", value: x.precision || "", placeholder: t("demarrer.js.equipe.precision_exemple"), "aria-label": t("demarrer.js.equipe.precision", { n: j + 1 }), oninput: (e) => { x.precision = e.target.value; sauverEquipe(); } }),
+      el("button", { type: "button", class: "lien-simple", onclick: () => { p.experiences.splice(j, 1); sauverEquipe(); equipe(); } }, t("espace.js.retirer")))),
+      p.experiences.length < EXPERIENCES_MAX ? el("button", { type: "button", class: "lien-simple", onclick: () => { p.experiences.push({ type: "", precision: "" }); equipeOuverte = p.id; equipe(); } }, t("demarrer.js.equipe.ajouter_experience")) : null);
+    const consent = el("input", { type: "checkbox", id: `${pref}-consent` });
+    const fichierPhoto = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: `${pref}-fichier`, class: "visuellement-cache" });
+    fichierPhoto.addEventListener("change", async () => {
+      const f = fichierPhoto.files[0]; fichierPhoto.value = ""; if (!f) return;
+      if (!consent.checked) { message(t("demarrer.js.equipe.cochez_consentement"), true); consent.focus(); return; }
+      if (!p.nom.trim()) { message(t("demarrer.js.equipe.nom_d_abord"), true); return; }
+      await sauverEquipe(true);
+      const fd = new FormData(); fd.append("fichier", f); fd.append("consentement", "oui");
+      try { const m = await api(`${base}/documents/memo/equipe/${p.id}/photo`, { method: "POST", body: fd }); p.photo = { a: true }; S.memo = m; message(t("demarrer.js.equipe.photo_enregistree")); equipe(); }
+      catch (e) { message(e.message, true); }
+    });
+    const zonePhoto = p.photo
+      ? el("div", { class: "eq-photo-zone" }, el("img", { class: "eq-apercu", src: `${base}/documents/memo/equipe/${p.id}/photo?v=${Date.now()}`, alt: t("memo.js.equipe.photo_de", { nom: p.nom }) }),
+        el("div", {}, el("p", { class: "petit", text: t("demarrer.js.equipe.accord_enregistre") }),
+          el("button", { type: "button", class: "lien-simple", onclick: async () => { try { await api(`${base}/documents/memo/equipe/${p.id}/photo`, { method: "DELETE" }); delete p.photo; equipe(); } catch (e) { message(e.message, true); } } }, t("demarrer.js.equipe.retirer_photo"))))
+      : el("div", { class: "eq-photo-zone" }, el("span", { class: "eq-apercu eq-vide", "aria-hidden": "true", text: initiales(p.nom) }),
+        el("div", {}, el("p", { class: "tres-petit", text: t("demarrer.js.equipe.photo_facultative") }),
+          el("label", { class: "case", for: `${pref}-consent` }, consent, el("span", {}, el("strong", { text: t("demarrer.js.equipe.consentement") }), " ", t("demarrer.js.equipe.consentement_aide"))),
+          el("label", { class: "btn btn-contour btn-mini", for: `${pref}-fichier`, tabindex: "0", onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fichierPhoto.click(); } } }, t("demarrer.js.equipe.ajouter_photo")), fichierPhoto));
+    const d = el("details", { class: "eq-personne", open: equipeOuverte === p.id, ontoggle: (e) => { if (e.currentTarget.open) equipeOuverte = p.id; } },
+      el("summary", {},
+        p.photo ? el("span", { class: "eq-av" }, el("img", { src: `${base}/documents/memo/equipe/${p.id}/photo?v=${Date.now()}`, alt: "" })) : el("span", { class: "eq-av", "aria-hidden": "true", text: initiales(p.nom) }),
+        el("span", { class: "eq-resume" }, el("strong", { text: p.nom || t("demarrer.js.equipe.nouvelle_personne") }), el("small", { text: [libelleRole(p), libelleApres(p)].filter(Boolean).join(" · ") || t("demarrer.js.equipe.a_completer") })),
+        el("span", { class: `pastille-etat ${personneComplete(p) ? "ok" : "a-faire"}`, text: personneComplete(p) ? t("demarrer.js.equipe.complet") : t("demarrer.js.equipe.a_completer") })),
+      el("div", { class: "eq-fiche" },
+        el("div", { class: "eq-deux" },
+          el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: `${pref}-nom`, text: t("demarrer.js.equipe.nom") }), el("input", { type: "text", id: `${pref}-nom`, maxlength: "80", value: p.nom || "", autocomplete: "off", oninput: (e) => champ("nom", e.target.value), onchange: () => equipe() })),
+          el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: `${pref}-role`, text: t("demarrer.js.equipe.role") }),
+            el("select", { id: `${pref}-role`, onchange: (e) => { champ("role", e.target.value || null); equipe(); } }, el("option", { value: "", text: t("demarrer.js.equipe.choisir") }), ...ROLES.map((r) => el("option", { value: r, selected: p.role === r, text: t(`memo.equipe.roles.${r}`) }))),
+            p.role === "autre" ? el("input", { type: "text", maxlength: "60", value: p.role_autre || "", "aria-label": t("demarrer.js.equipe.role_autre"), placeholder: t("demarrer.js.equipe.role_autre"), oninput: (e) => champ("role_autre", e.target.value) }) : null)),
+        el("div", { class: "eq-deux" }, curseur("anciennete", BORNES.anciennete, t("demarrer.js.equipe.anciennete")), curseur("experience", BORNES.experience, t("demarrer.js.equipe.experience"))),
+        el("fieldset", { class: "eq-groupe" }, el("legend", { text: t("demarrer.js.equipe.formation") }), puces("formation", FORMATIONS, p.formation, t("demarrer.js.equipe.formation"), (v) => champ("formation", v))),
+        el("fieldset", { class: "eq-groupe" }, el("legend", { text: t("demarrer.js.equipe.experiences", { max: EXPERIENCES_MAX }) }), exps),
+        el("fieldset", { class: "eq-groupe" }, el("legend", { text: t("demarrer.js.equipe.apres") }), puces("apres", APRES, p.apres, t("demarrer.js.equipe.apres"), (v) => { champ("apres", v); if (v !== "accompagne") p.mois = null; equipeOuverte = p.id; equipe(); }), mois),
+        zonePhoto,
+        L.length > 1 ? el("button", { type: "button", class: "lien-simple eq-retirer", onclick: async () => { L.splice(k, 1); await sauverEquipe(true); equipe(); } }, t("demarrer.js.equipe.retirer_personne", { nom: p.nom || t("demarrer.js.equipe.nouvelle_personne") })) : null));
+    return d;
+  };
+  const ajouterP = el("button", { type: "button", class: "eq-ajouter", disabled: L.length >= PERSONNES_MAX, onclick: () => { const n = { id: nouvelId(), nom: "", experiences: [] }; L.push(n); equipeOuverte = n.id; equipe(); document.getElementById(`pers-${n.id}-nom`)?.focus(); } },
+    L.length >= PERSONNES_MAX ? t("demarrer.js.equipe.max", { max: PERSONNES_MAX }) : t("demarrer.js.equipe.ajouter", { n: L.length, max: PERSONNES_MAX }));
+  const continuer = el("button", { type: "button", class: "btn btn-vert" }, t("demarrer.js.continuer"), fleche());
+  continuer.addEventListener("click", async () => {
+    continuer.disabled = true;
+    await sauverEquipe(true);
+    await marquerVue("equipe_dirigeante");
+    equipeEtat = null;
+    const i = QUESTIONS.findIndex((q) => q.id === "equipe");
+    const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
+    if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante());
+  });
+  remplir(
+    ...titre(t("demarrer.js.equipe.titre"), t("demarrer.js.equipe.aide")),
+    el("div", { class: "eq-personnes" }, ...L.map(carte), ajouterP),
+    el("p", { class: "petit eq-rgpd", text: t("demarrer.js.equipe.rgpd") }),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { sauverEquipe(true); equipeEtat = null; const i = QUESTIONS.findIndex((q) => q.id === "equipe"); S.q = i; questions(); } }, t("demarrer.js.retour")), continuer),
+    el("p", { class: "q-usage", text: t("demarrer.js.equipe.ou_va") }));
 }
 
 // ================================================================== 0. Accueil de l'analyse approfondie
@@ -943,6 +1042,8 @@ async function redaction() {
     ["datapack", t("dossier.documents.datapack"), () => api(`${base}/documents/datapack`, { method: "POST" })],
     ["teaser", t("dossier.documents.teaser"), () => api(`${base}/documents/teaser`, { method: "POST" })],
     ...SECTIONS.map(([k, nom]) => [`memo-${k}`, t("demarrer.js.redaction.memo_section", { section: nom }), () => api(`${base}/documents/memo/sections/${k}`, { method: "POST" })]),
+    // Passage automatique de la relecture critique, une fois les chapitres rédigés (remarques dans le panneau)
+    ["relecture", t("demarrer.js.redaction.relecture"), () => api(`${base}/documents/memo/relecture`, { method: "POST" })],
   ];
   const libelle = Object.fromEntries(taches.map(([k, lib]) => [k, lib]));
   // Réponses indispensables au mémorandum : vérifiées avant de lancer quoi que ce soit (sinon 9 échecs sans issue)
@@ -956,15 +1057,16 @@ async function redaction() {
     if (d.documents?.teaser) deja.add("teaser");
     for (const x of m.sections || []) if (x.redigee) deja.add(`memo-${x.cle}`);
     if (m.marche?.date) deja.add("etude-marche");
+    if (m.relecture?.date) deja.add("relecture");
   } catch { /* on refait tout */ }
-  const lignes = Object.fromEntries(taches.map(([k, lib]) => [k, el("li", { class: deja.has(k) ? "fait" : incompletes.length && k.startsWith("memo-") ? "attente" : null }, el("span", { class: "etat", "aria-hidden": "true" }), lib)]));
+  const lignes = Object.fromEntries(taches.map(([k, lib]) => [k, el("li", { class: deja.has(k) ? "fait" : incompletes.length && (k.startsWith("memo-") || k === "relecture") ? "attente" : null }, el("span", { class: "etat", "aria-hidden": "true" }), lib)]));
   const chrono = el("span", { class: "petit guide-chrono", "aria-hidden": "true" });
   remplir(...titre(t("demarrer.js.redaction.titre"), t("demarrer.js.redaction.aide")),
     chrono, el("ul", { class: "guide-taches" }, ...Object.values(lignes)), el("div", { id: "redaction-suite" }));
   const debut = Date.now(), minuterie = setInterval(() => { const s = Math.round((Date.now() - debut) / 1000); chrono.textContent = t("demarrer.js.redaction.chrono", { s, n: $("#ecran .guide-taches")?.querySelectorAll("li.fait").length ?? 0, total: taches.length }); }, 1000);
   const erreurs = [];
   const executer = async ([k, , f]) => {
-    if (deja.has(k) || (incompletes.length && k.startsWith("memo-"))) return;
+    if (deja.has(k) || (incompletes.length && (k.startsWith("memo-") || k === "relecture"))) return;
     lignes[k].classList.add("en-cours");
     try { await f(); lignes[k].classList.replace("en-cours", "fait"); }
     catch (e) { lignes[k].classList.replace("en-cours", "erreur"); erreurs.push({ k, message: e.message, statut: e.statut }); }
@@ -976,9 +1078,10 @@ async function redaction() {
     const marche = executer(taches[1]);
     const citent = new Set(["memo-marche", "memo-synthese", "memo-perspectives"]);
     const memo = taches.filter(([k]) => k.startsWith("memo-"));
-    await enParallele([...taches.slice(2).filter(([k]) => !k.startsWith("memo-")), ...memo.filter(([k]) => !citent.has(k))], 4, executer);
+    await enParallele([...taches.slice(2).filter(([k]) => !k.startsWith("memo-") && k !== "relecture"), ...memo.filter(([k]) => !citent.has(k))], 4, executer);
     await marche;
     await enParallele(memo.filter(([k]) => citent.has(k)), 3, executer);
+    if (!erreurs.some((e) => e.k.startsWith("memo-"))) await executer(taches.find(([k]) => k === "relecture"));
   } finally { clearInterval(minuterie); }
 
   const suite = $("#redaction-suite");
@@ -997,7 +1100,7 @@ async function redaction() {
     return;
   }
   // 2. Échecs passagers (service de rédaction indisponible, délai) : un message par cause, et « Réessayer »
-  const nonBloquants = new Set(["teaser", "etude-marche"]);
+  const nonBloquants = new Set(["teaser", "etude-marche", "relecture"]);
   const bloquantes = erreurs.filter((e) => !nonBloquants.has(e.k));
   if (bloquantes.length) {
     const causes = new Map();
@@ -1028,7 +1131,8 @@ async function pret() {
   const etatDoc = (d) => el("span", { class: `etat etat-${d.etat}`, text: d.badge || t(`espace.js.etats.${d.etat}`) });
   // Le mémorandum, document principal : miniature de sa couverture (nom de code, logo et photo choisis)
   const m = doc("memo");
-  const photo = memo?.photos?.length ? `${base}/documents/memo/photos/${rangPhoto("couverture", memo.photos.length)}` : null;
+  const nCouv = placementPhotos(memo?.photos || []).couverture;
+  const photo = nCouv != null ? `${base}/documents/memo/photos/${nCouv}` : null;
   const couverture = el("div", { class: "fin-couverture", "aria-hidden": "true" },
     photo ? el("span", { class: "fin-couv-photo", style: `background-image:url('${photo}')` }) : null,
     memo?.logo ? el("img", { class: "fin-couv-logo", src: `${base}/documents/memo/logo`, alt: "" }) : null,

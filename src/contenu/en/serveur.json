@@ -51,7 +51,19 @@
       "injoignable": "The website isn’t responding or doesn’t return a readable page.",
       "adresse": "Invalid website address.",
       "impossible": "Couldn’t read the website. Please try again later."
-    }
+    },
+    "photo_deja_ajoutee": "This photo is already in your memorandum.",
+    "analyse_photo_indisponible": "Photo analysis is not available: the photo can still be used as is.",
+    "image_a_reduire": "The image sent for analysis must be 1,568 pixels or less on each side.",
+    "analyse_photo_echouee": "This photo could not be analyzed. It can still be used as is.",
+    "ordre_invalide": "Invalid photo order: please reload the page.",
+    "personne_introuvable": "This person is no longer in the team: please reload the page.",
+    "consentement_photo": "First tick the box confirming this person agreed to have their photo in the memorandum. Without their consent, the photo is not saved.",
+    "rien_a_relire": "Draft at least one chapter first: the review covers the drafted text.",
+    "relecture_echouee": "The review did not complete. Your memorandum has not changed.",
+    "remarque_sans_correction": "This comment cannot be fixed in the text: follow the suggested link.",
+    "passage_modifie": "The passage has changed since the review: run the critical review again.",
+    "correction_trop_longue": "This change would make the chapter too long: it was not applied."
   },
   "pieces": {
     "envoyez_fichier": "Send a file.",
@@ -557,7 +569,8 @@
     }
   },
   "claude": {
-    "cle_refusee": "Automatic reading and drafting are temporarily unavailable: the site’s Claude API key was refused. The site administrator needs to replace it."
+    "cle_refusee": "Automatic reading and drafting are temporarily unavailable: the site’s Claude API key was refused. The site administrator needs to replace it.",
+    "credit_epuise": "Drafting is temporarily unavailable. Your answers have been saved."
   },
   "express": {
     "avertissement": "EBITDA negative or missing: estimate based on revenue, less certain."

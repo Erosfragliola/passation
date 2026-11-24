@@ -4,6 +4,8 @@
 export const MODELS = {
   deep: "claude-sonnet-5-5", // valorisation approfondie, info memo, teaser, chat
   fast: "claude-haiku-5-5", // commentaire express, extraction de chiffres
+  photos: "claude-haiku-5-5", // jugement des photos du mémorandum (vision), modèle léger choisi le 24/11/2026
+  relecture: "claude-sonnet-5-5", // relecture critique du mémorandum (lecture de tout le document)
 };
 
 /**
@@ -36,3 +38,18 @@ export const LIASSE = { tailleMax: 10 * 1024 * 1024, fichiersMax: 3, lecturesMax
 
 /** Étude de marché du mémorandum (recherche web par Claude, coût maîtrisé) : nombre d'études par dossier. */
 export const MARCHE = { etudesMaxParDossier: 3 };
+
+/**
+ * Photos du mémorandum : nombre (une seule définition, transmise au navigateur par l'API du mémorandum), poids par
+ * photo, plus grand côté de l'image envoyée à Claude (réduite dans le navigateur avant l'envoi), largeur minimale pour
+ * une couverture ou une page d'ouverture, et filtre des images lues sur le site.
+ */
+export const PHOTOS_MAX = 12;
+export const PHOTOS = {
+  max: PHOTOS_MAX, poidsMax: 3_000_000, coteAnalyseMax: 1568, poidsAnalyseMax: 1_500_000, largeurPleinePage: 1200,
+  site: { largeurMin: 500, hauteurMin: 300, allongementMax: 2.6, mesureesMax: 20, retenuesMax: 16 },
+};
+/** Équipe dirigeante (mémorandum uniquement) : nombre de personnes, expériences par personne, poids d'une photo. */
+export const EQUIPE = { personnesMax: 4, experiencesMax: 3, photoPoidsMax: 3_000_000 };
+/** Relecture critique : remarques gardées au plus. */
+export const RELECTURE = { remarquesMax: 10 };

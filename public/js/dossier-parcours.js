@@ -17,7 +17,7 @@ export const ETAPES_PARCOURS = [["estimation"], ["chiffres"], ["reponses"], ["re
 // Libellés : src/contenu/<langue>/dossier.json, lus à chaque accès (élément 1 de chaque paire).
 for (const e of ETAPES_PARCOURS) Object.defineProperty(e, 1, { get: () => t(`dossier.etapes.${e[0]}`), enumerable: true, configurable: true });
 /** Écran du parcours guidé → étape du fil. Le site est une question de « Vos réponses ». */
-export const ETAPE_DE_L_ECRAN = { accueil: "chiffres", photos: "reponses", comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", questions: "reponses", site: "reponses", redaction: "redaction", pret: "relecture" };
+export const ETAPE_DE_L_ECRAN = { accueil: "chiffres", photos: "reponses", equipe: "reponses", comptes: "chiffres", saisie: "chiffres", chiffres: "chiffres", questions: "reponses", site: "reponses", redaction: "redaction", pret: "relecture" };
 /** Étiquettes de la valeur, identiques partout (fiche de l'accueil, page du dossier, parcours guidé, valorisation). */
 export const etiquetteExpress = () => t("dossier.etiquette_express");
 export const etiquetteTitres = () => t("dossier.etiquette_titres");

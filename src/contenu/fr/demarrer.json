@@ -191,7 +191,8 @@
       "cause": "{liste} : ",
       "conserve": "Ce qui est terminé est conservé : seules ces rédactions seront relancées.",
       "relancer": "Relancer ces rédactions",
-      "teaser_anonymat": "Le teaser n'a pas passé le contrôle d'anonymat : reprenez-le depuis sa page (une réponse contient sans doute un nom ou une marque)."
+      "teaser_anonymat": "Le teaser n'a pas passé le contrôle d'anonymat : reprenez-le depuis sa page (une réponse contient sans doute un nom ou une marque).",
+      "relecture": "Relecture critique du mémorandum"
     },
     "pret": {
       "valo_titre": "Valorisation détaillée",
@@ -264,12 +265,17 @@
         "other": "{n} éléments n'ont pas pu être récupérés depuis votre site : vous pouvez les déposer vous-même."
       },
       "cliquez": "Cliquez sur les photos à utiliser",
-      "usage": "{max} au plus. La première sert de couverture ; les suivantes illustrent l'activité et l'équipe.",
+      "usage": "{max} au plus. Elles sont placées selon leur catégorie : couverture, activité, réalisations, équipe.",
       "aucune": "Nous n'avons pas trouvé de photo utilisable sur votre site (les icônes, bandeaux et petites images sont écartés).",
       "droits": "Ces photos appartiennent à l'entreprise, ou j'ai le droit de les utiliser.",
       "deposer": "Déposer mes propres photos",
       "formats": "(PNG, JPEG ou WebP, 3 Mo au plus)",
-      "ou_va": "Le logo va sur la couverture et le pied de page ; les photos sur la couverture, l'activité et l'équipe."
+      "ou_va": "Le logo va sur la couverture et le pied de page ; chaque photo va là où sa catégorie le permet, jamais deux fois.",
+      "aide_jugement": "Claude regarde chaque photo ajoutée : ce qu'elle montre, sa qualité et où la placer. Rien n'est appliqué sans vous.",
+      "vos_photos": "Vos photos ({n} sur {max} au plus)",
+      "aucune_choisie": "Aucune photo pour l'instant.",
+      "cliquez_ajouter": "Photos trouvées sur votre site : cliquez pour ajouter",
+      "ajouter_n": "Ajouter la photo {n} du site"
     },
     "accueil": {
       "surtitre": "Analyse approfondie · une vingtaine de minutes",
@@ -286,6 +292,44 @@
       "reprise": "Vous pouvez vous arrêter à tout moment : tout est enregistré.",
       "deja": "Déjà fait :",
       "deja_estimation": "estimation express de {fourchette}."
+    },
+    "equipe": {
+      "titre": "Votre équipe dirigeante",
+      "aide": "Une à quatre personnes, vous compris. Le mémorandum, remis après un accord de confidentialité, en fera une page de présentation. Le teaser ne citera jamais de nom ni de parcours.",
+      "nom": "Prénom et nom",
+      "role": "Rôle",
+      "role_autre": "Précisez le rôle",
+      "choisir": "Choisir…",
+      "anciennete": "Dans l'entreprise depuis",
+      "experience": "Expérience dans le métier",
+      "ans": "{n} ans",
+      "mois": "{n} mois",
+      "non_renseigne": "Non renseigné",
+      "pendant": "Pendant",
+      "formation": "Formation",
+      "experiences": "Expériences marquantes (1 à {max})",
+      "type_experience": "Type de l'expérience {n}",
+      "precision": "Précision de l'expérience {n}",
+      "precision_exemple": "Précision courte, par exemple « chef d'atelier, 8 ans »",
+      "ajouter_experience": "+ Ajouter une expérience",
+      "apres": "Après la cession",
+      "photo_facultative": "Photo facultative (portrait, 3 Mo au plus).",
+      "consentement": "Cette personne a accepté que sa photo figure dans le mémorandum.",
+      "consentement_aide": "Sans cette case, la photo n'est pas enregistrée : la page affiche les initiales.",
+      "ajouter_photo": "Ajouter la photo",
+      "cochez_consentement": "Cochez d'abord la case : cette personne a accepté que sa photo figure dans le mémorandum.",
+      "nom_d_abord": "Écrivez d'abord le nom de la personne.",
+      "photo_enregistree": "Photo enregistrée, avec l'accord de la personne.",
+      "accord_enregistre": "Photo publiée avec l'accord de la personne.",
+      "retirer_photo": "Retirer la photo",
+      "nouvelle_personne": "Nouvelle personne",
+      "a_completer": "À compléter",
+      "complet": "Complet",
+      "ajouter": "+ Ajouter une personne ({n} sur {max})",
+      "max": "{max} personnes au plus",
+      "retirer_personne": "Retirer {nom} de l'équipe",
+      "rgpd": "Les noms, parcours et photos ne servent qu'au mémorandum. Ils sont supprimés avec votre dossier.",
+      "ou_va": "Ces réponses nourrissent la page « L'équipe dirigeante » du mémorandum : Claude rédige chaque parcours à partir de vos seules réponses."
     }
   }
 }

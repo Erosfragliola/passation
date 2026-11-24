@@ -1,6 +1,7 @@
 // Lecture du site internet de l'entreprise (pour le mémorandum) : adresse donnée par le dirigeant, même domaine,
 // 8 pages au plus, robots.txt respecté, ni réseaux sociaux ni avis. Fonctions pures + lecture avec fetch injectable.
-import { USER_AGENT } from "../config.js";
+import { USER_AGENT, PHOTOS } from "../config.js";
+import { dimensionsImage, empreinte, raisonEcartPhoto } from "./images.js";
 
 export const PAGES_MAX = 8;
 const TAILLE_MAX = 1_500_000;
@@ -191,5 +192,33 @@ export async function lireSite(adresse, { fetch: f = fetch } = {}) {
       if (html) { pages.push({ url, ...texteDepuisHtml(html) }); for (const p of candidatsPhotos(html, new URL(url))) if (!photos.some((x) => cleImage(x) === cleImage(p))) photos.push(p); }
     } catch { /* page ignorée */ }
   }
-  return { url: base.href, pages, logos, photos: photos.slice(0, 16) };
+  const mesure = await mesurerPhotos(photos.slice(0, PHOTOS.site.mesureesMax), f);
+  return { url: base.href, pages, logos, photos: mesure.photos, photos_ecartees: mesure.ecartees };
+}
+
+/**
+ * Filtre des photos du site par leurs vraies dimensions, même quand la page ne les donne pas : chaque candidate est
+ * téléchargée (3 Mo et 6 secondes au plus), sa taille lue dans l'en-tête, son empreinte calculée. Écartées : format
+ * non reconnu (SVG, GIF…), petite image (pictogramme), bandeau allongé, doublon (même fichier sous deux adresses).
+ * Une image injoignable est écartée aussi : elle ne pourrait pas être ajoutée au mémorandum.
+ * @returns { photos: [url], ecartees: [{ url, raison }] }
+ */
+export async function mesurerPhotos(urls, f = fetch) {
+  const lues = await Promise.all(urls.map(async (url) => {
+    try {
+      const r = await fetchPublic(url, { headers: { "user-agent": USER_AGENT, accept: "image/*" }, signal: AbortSignal.timeout(6000) }, f);
+      if (!r.ok || Number(r.headers.get("content-length") || 0) > PHOTOS.poidsMax) return { url, raison: "injoignable" };
+      const octets = new Uint8Array(await r.arrayBuffer());
+      if (octets.length > PHOTOS.poidsMax) return { url, raison: "injoignable" };
+      const raison = raisonEcartPhoto(dimensionsImage(octets), PHOTOS.site);
+      return raison ? { url, raison } : { url, cle: await empreinte(octets) };
+    } catch { return { url, raison: "injoignable" }; }
+  }));
+  const vues = new Set(), photos = [], ecartees = [];
+  for (const x of lues) {
+    if (x.raison) { ecartees.push({ url: x.url, raison: x.raison }); continue; }
+    if (vues.has(x.cle)) { ecartees.push({ url: x.url, raison: "doublon" }); continue; }
+    vues.add(x.cle); photos.push(x.url);
+  }
+  return { photos: photos.slice(0, PHOTOS.site.retenuesMax), ecartees };
 }

@@ -191,7 +191,8 @@
       "cause": "{liste}: ",
       "conserve": "What’s finished is kept: only these drafts will be restarted.",
       "relancer": "Restart these drafts",
-      "teaser_anonymat": "The teaser didn’t pass the anonymity check: rework it from its page (an answer probably contains a name or a brand)."
+      "teaser_anonymat": "The teaser didn’t pass the anonymity check: rework it from its page (an answer probably contains a name or a brand).",
+      "relecture": "Critical review of the memorandum"
     },
     "pret": {
       "valo_titre": "Detailed valuation",
@@ -264,12 +265,17 @@
         "other": "{n} items couldn’t be retrieved from your website: you can upload them yourself."
       },
       "cliquez": "Click the photos to use",
-      "usage": "{max} at most. The first one is the cover; the others illustrate the business and the team.",
+      "usage": "{max} at most. They are placed by category: cover, business, past work, team.",
       "aucune": "We didn’t find a usable photo on your website (icons, banners and small images are left out).",
       "droits": "These photos belong to the company, or I have the right to use them.",
       "deposer": "Upload my own photos",
       "formats": "(PNG, JPEG or WebP, 3 MB at most)",
-      "ou_va": "The logo goes on the cover and in the footer; the photos on the cover, the business and the team pages."
+      "ou_va": "The logo goes on the cover and in the footer; each photo goes where its category fits, never twice.",
+      "aide_jugement": "Claude looks at each photo you add: what it shows, its quality and where to place it. Nothing is applied without you.",
+      "vos_photos": "Your photos ({n} of {max} max)",
+      "aucune_choisie": "No photos yet.",
+      "cliquez_ajouter": "Photos found on your website: click to add",
+      "ajouter_n": "Add website photo {n}"
     },
     "accueil": {
       "surtitre": "Detailed valuation · about twenty minutes",
@@ -286,6 +292,44 @@
       "reprise": "You can stop at any time: everything is saved.",
       "deja": "Already done:",
       "deja_estimation": "quick estimate of {fourchette}."
+    },
+    "equipe": {
+      "titre": "Your management team",
+      "aide": "One to four people, including you. The memorandum, shared only after a confidentiality agreement, will present them on one page. The teaser never names anyone or describes their background.",
+      "nom": "First and last name",
+      "role": "Role",
+      "role_autre": "Specify the role",
+      "choisir": "Choose…",
+      "anciennete": "With the company for",
+      "experience": "Experience in the trade",
+      "ans": "{n} years",
+      "mois": "{n} months",
+      "non_renseigne": "Not specified",
+      "pendant": "For",
+      "formation": "Education",
+      "experiences": "Key experience (1 to {max})",
+      "type_experience": "Type of experience {n}",
+      "precision": "Detail of experience {n}",
+      "precision_exemple": "Short detail, for example “workshop manager, 8 years”",
+      "ajouter_experience": "+ Add an experience",
+      "apres": "After the sale",
+      "photo_facultative": "Optional photo (portrait, 3 MB max).",
+      "consentement": "This person agreed to have their photo in the memorandum.",
+      "consentement_aide": "Without this box, the photo is not saved: the page shows initials instead.",
+      "ajouter_photo": "Add the photo",
+      "cochez_consentement": "First tick the box confirming this person agreed to have their photo in the memorandum.",
+      "nom_d_abord": "Enter the person's name first.",
+      "photo_enregistree": "Photo saved, with the person's consent.",
+      "accord_enregistre": "Photo published with the person's consent.",
+      "retirer_photo": "Remove the photo",
+      "nouvelle_personne": "New person",
+      "a_completer": "To complete",
+      "complet": "Complete",
+      "ajouter": "+ Add a person ({n} of {max})",
+      "max": "{max} people at most",
+      "retirer_personne": "Remove {nom} from the team",
+      "rgpd": "Names, backgrounds and photos are used only in the memorandum. They are deleted with your file.",
+      "ou_va": "These answers feed the “Management team” page of the memorandum: Claude writes each background from your answers only."
     }
   }
 }

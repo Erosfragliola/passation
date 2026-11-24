@@ -42,7 +42,52 @@
       "entreprise": "Company photo",
       "a_ajouter": "{quoi}: to be added",
       "ou": "Memorandum page, step 1 (company photos)",
-      "cliquez": "Click the photos to use (tick the box above first):"
+      "cliquez": "Click the photos to use (tick the box above first):",
+      "titre_max": "Memorandum photos ({n} of {max} max): placed by category (cover, business, past work, team).",
+      "limite": "{max} photos at most: remove one to add another.",
+      "ecartees": "{n} website images left out automatically ({raisons}).",
+      "raisons": {
+        "format": "drawing or non-photo format",
+        "petite": "too small",
+        "bandeau": "elongated banner",
+        "doublon": "duplicate",
+        "injoignable": "unreachable"
+      },
+      "liste": "Selected photos, in order",
+      "note": "Quality {n} out of 5",
+      "utilisee": "✓ Used as suggested",
+      "ignoree": "Suggestion ignored: the photo stays, with no set placement.",
+      "utiliser": "Use as suggested",
+      "ignorer": "Ignore",
+      "propose": "Suggested:",
+      "legende": "caption “{legende}”",
+      "analyse_en_cours": "Analyzing the photo…",
+      "sans_analyse": "Photo usable as is, without analysis.",
+      "monter": "Move photo {n} up",
+      "descendre": "Move photo {n} down",
+      "categories": {
+        "atelier": "Workshop, production",
+        "produits": "Products",
+        "realisations": "Past work",
+        "equipe": "Team",
+        "locaux": "Premises",
+        "exterieur": "Exterior",
+        "autre": "Other"
+      },
+      "usages": {
+        "couverture": "cover",
+        "activite": "business",
+        "realisations": "past work",
+        "equipe": "team",
+        "eviter": "avoid"
+      },
+      "signalements": {
+        "dessin": "Drawing, not a photo",
+        "publicite": "Advertising visual",
+        "floue": "Blurry",
+        "trop_petite": "Too small for a full page",
+        "identifiante": "Not for the teaser: identifying"
+      }
     },
     "themes": {
       "taille": "Market size",
@@ -442,6 +487,141 @@
       "en_cours": "Drafting the section… (about 20 seconds)",
       "fait": "Chapter drafted. Review it before sharing it."
     },
-    "logo_entreprise": "{nom} logo"
+    "logo_entreprise": "{nom} logo",
+    "equipe": {
+      "titre": "Management team",
+      "photo_de": "Photo of {nom}",
+      "sans_photo": "{nom}, no photo",
+      "dans_entreprise": "with the company",
+      "de_metier": "in the trade",
+      "photos_accord": "Photos published with the consent of the people shown."
+    },
+    "realisations": {
+      "titre": "Past work"
+    },
+    "elements": {
+      "titre": "Items to complete",
+      "message": "What is still missing from “{partie}”, for the next version",
+      "a_rediger": "Chapter to draft: information is still missing."
+    },
+    "ameliorations": {
+      "titre": "To improve",
+      "resume": "{n} improvements · {i} essential",
+      "page": "page {n}",
+      "indispensable": "Essential",
+      "valider": "Confirm",
+      "ignorer": "Ignore",
+      "non": "No",
+      "oui_corriger": "Yes, fix it",
+      "fait": "Done ✓",
+      "votre_reponse": "Your answer",
+      "pas_de_chiffre": "Your own words, as written: Passation adds no figures.",
+      "choisissez": "Choose an answer.",
+      "ecrivez": "Write your answer.",
+      "enregistre": "Answer saved.",
+      "mise_a_jour": "Updating…",
+      "chapitre_mis_a_jour": "Answer saved, chapter updated.",
+      "reponse_gardee": "Answer saved. The chapter could not be updated: {erreur}",
+      "ignoree": "Improvement dismissed: nothing changed.",
+      "corrige": "Fix applied to the chapter.",
+      "titres": {
+        "anciennete_equipe": "State the team's tenure",
+        "encadrement": "Describe the management in place",
+        "zone": "State the sales area",
+        "motif": "State the reason for selling",
+        "calendrier": "State the target timeline",
+        "accompagnement": "State the handover support offered",
+        "equipe": "Present the management team",
+        "jugements": "Review the photo suggestions",
+        "photo_equipe": "Add a team photo",
+        "photo_activite": "Add a workshop photo",
+        "marche": "Run the market study"
+      },
+      "questions": {
+        "anciennete_equipe": "Average employee tenure",
+        "encadrement": "Do you have managers in place?",
+        "zone": "Where are your customers?",
+        "motif": "Why are you selling?",
+        "calendrier": "When would you like to sell?",
+        "accompagnement": "How long will you support the buyer?"
+      },
+      "explications": {
+        "equipe": "One page presents the managers (photo, background, role after the sale): it is what a buyer looks at first.",
+        "jugements": "Claude reviewed your photos: use or ignore each suggestion.",
+        "photo_equipe": "No team photo confirmed: the “Team” box stays empty.",
+        "photo_activite": "A photo of the workshop or products illustrates the business page.",
+        "marche": "The “Market” chapter has no sourced market figures."
+      },
+      "actions": {
+        "photos": "Choose a photo",
+        "marche": "Run the study",
+        "equipe": "Present the team",
+        "comptes": "Complete your accounts"
+      }
+    },
+    "relecture": {
+      "bouton": "Critical review",
+      "en_cours": "Critical review in progress…",
+      "fait": "Review complete: {n} comments.",
+      "date": "reviewed {date}",
+      "chiffre": "Passation never changes a figure: check it in your accounts or your valuation.",
+      "types": {
+        "non_sourcee": "Unsourced claim",
+        "contradiction": "Contradiction between pages",
+        "repetition": "Repetition",
+        "promotionnel": "Promotional tone",
+        "photo": "Poor photo choice",
+        "page_vide": "Page too empty",
+        "incoherence_registres": "Inconsistent with public records",
+        "chiffre": "Figure to check"
+      }
+    }
+  },
+  "equipe": {
+    "roles": {
+      "fondateur": "Founder and owner",
+      "cogerant": "Co-manager",
+      "commercial": "Sales director",
+      "production": "Production director",
+      "raf": "Finance and administration manager",
+      "autre": "Other"
+    },
+    "formations": {
+      "cap_bep": "Vocational certificate (CAP-BEP)",
+      "bac_pro": "Vocational high-school diploma",
+      "bts_dut": "Two-year technical degree",
+      "licence": "Bachelor's degree",
+      "master_ecole": "Master's degree",
+      "autodidacte": "Self-taught"
+    },
+    "experiences": {
+      "formation": "Training or apprenticeship",
+      "meme_metier": "Same trade, another company",
+      "encadrement": "Team management",
+      "creation": "Started or took over a business",
+      "grand_groupe": "Large company",
+      "autre": "Other"
+    },
+    "apres": {
+      "reste": "Stays",
+      "accompagne": "Supports the buyer",
+      "part": "Leaves"
+    },
+    "apres_libelle": {
+      "reste": "Stays after the sale",
+      "accompagne": "Supports the buyer",
+      "accompagne_mois": "Supports the buyer for {n} months",
+      "part": "Leaves after the sale"
+    },
+    "transition": {
+      "restent": "{n} of the {total} managers stay",
+      "accompagne_mois": "transition support: {n} months",
+      "accompagnent": "{n} support the transition",
+      "partent": "{n} leave after the sale",
+      "restent_un": "1 of the {total} managers stays",
+      "accompagne_un": "1 supports the transition",
+      "partent_un": "1 leaves after the sale",
+      "separateur": "; "
+    }
   }
 }
