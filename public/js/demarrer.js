@@ -346,13 +346,16 @@ function ligneAVerifier(annee, cle, cellule) {
   const c = CHAMPS.find((x) => x.cle === cle);
   const input = el("input", { type: "text", inputmode: "decimal", value: cellule?.valeur != null ? fmt.format(cellule.valeur) : "", "aria-label": `${libelleEcran(c)}, ${annee}` });
   input.addEventListener("input", () => { input.value = formaterSaisie(input.value); }); // séparateurs de milliers en direct
-  return el("div", { class: "guide-ligne" }, el("label", { text: libelleEcran(c) || cle }), input,
-    el("button", { type: "button", class: "btn btn-mini", onclick: async () => {
+  // A line in alert already approved says so (24/11/2026): it stays here, to be corrected if needed
+  const validee = Boolean(cellule?.valide);
+  return el("div", { class: `guide-ligne${validee ? " validee" : ""}` }, el("label", { text: libelleEcran(c) || cle }), input,
+    validee ? el("span", { class: "pastille-ok", text: t("demarrer.js.chiffres.ligne_validee") }) : null,
+    el("button", { type: "button", class: validee ? "btn btn-mini btn-contour" : "btn btn-mini", onclick: async () => {
       const v = lireNombre(input.value);
       if (v === null || Number.isNaN(v)) { message(t("demarrer.js.chiffres.montant_lisible"), true); input.focus(); return; }
       try { S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs: { [cle]: v }, valider: true }) }); message(""); chiffres(); }
       catch (e) { message(e.message, true); }
-    } }, t("demarrer.js.chiffres.valider_ligne")));
+    } }, validee ? t("demarrer.js.chiffres.corriger_ligne") : t("demarrer.js.chiffres.valider_ligne")));
 }
 
 // ================================================================== 1 ter. Les deux exercices précédents

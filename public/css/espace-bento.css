@@ -1024,3 +1024,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .bandeau-etape p { margin: 0; flex: 1 1 260px; font-size: 15px; color: var(--espresso); }
 .bandeau-etape .btn { white-space: normal; }
 .valeur-revalider { margin: 4px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--g-cuivre-pale, #F6E9DC); color: var(--g-cuivre-texte, #8E5530); font-weight: 600; font-size: 14px; }
+/* Line in alert already approved (24/11/2026): « Approved » next to the field, the button becomes « Correct » */
+.guide-ligne.validee { grid-template-columns: 1fr 160px auto auto; }
+.guide-ligne.validee .pastille-ok { justify-self: start; }
+@media (max-width: 600px) { .guide-ligne.validee { grid-template-columns: 1fr; } }

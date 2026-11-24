@@ -64,7 +64,9 @@
       "autre_liasse": "Upload another tax return",
       "mode_detaille": "Detailed mode (all lines)",
       "montant_lisible": "Enter a readable amount.",
-      "valider_ligne": "Confirm"
+      "valider_ligne": "Confirm",
+      "ligne_validee": "Approved",
+      "corriger_ligne": "Correct"
     },
     "continuer": "Continue ",
     "clients": {

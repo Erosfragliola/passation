@@ -64,7 +64,9 @@
       "autre_liasse": "Déposer une autre liasse",
       "mode_detaille": "Mode détaillé (toutes les lignes)",
       "montant_lisible": "Indiquez un montant lisible.",
-      "valider_ligne": "Valider"
+      "valider_ligne": "Valider",
+      "ligne_validee": "Validée",
+      "corriger_ligne": "Corriger"
     },
     "continuer": "Continuer ",
     "clients": {
