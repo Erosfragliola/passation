@@ -4,10 +4,11 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { unzipSync, strFromU8 } from "fflate";
 import { creerClasseur, POLICE_DATAPACK, TAILLES_DATAPACK } from "../src/documents/xlsx.js";
 
-const racine = new URL("../", import.meta.url).pathname;
+const racine = fileURLToPath(new URL("../", import.meta.url));
 const lire = (f) => readFileSync(join(racine, f), "utf8");
 const INTERDITES = /Big Shoulders|Instrument Serif|instrument-serif|big-shoulders/i;
 

@@ -2,6 +2,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import worker from "../src/index.js";
 import { politiqueContenu, avecEntetes } from "../src/lib/entetes.js";
 import { fetchPublic, hoteSur, adressePublique, lireSite } from "../src/documents/site.js";
@@ -35,7 +36,7 @@ describe("en-têtes de sécurité (SEC-04)", () => {
   });
   it("aucune page ne contient de script en ligne ni de gestionnaire onclick=\"…\" (la CSP les bloquerait)", () => {
     const pages = [];
-    (function parcourir(d) { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) parcourir(p); else if (p.endsWith(".html")) pages.push(p); } })(new URL("../public/", import.meta.url).pathname);
+    (function parcourir(d) { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) parcourir(p); else if (p.endsWith(".html")) pages.push(p); } })(fileURLToPath(new URL("../public/", import.meta.url)));
     expect(pages.length).toBeGreaterThan(5);
     for (const p of pages) {
       const html = readFileSync(p, "utf8");

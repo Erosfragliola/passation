@@ -4,9 +4,10 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { CHAMPS, libelleEcran, aideEcran } from "../public/js/champs-financiers.js";
 
-const racine = new URL("../public/", import.meta.url).pathname;
+const racine = fileURLToPath(new URL("../public/", import.meta.url));
 function pagesHtml(dossier) {
   return readdirSync(dossier).flatMap((f) => {
     const p = join(dossier, f);
