@@ -506,7 +506,8 @@
     },
     "ameliorations": {
       "titre": "To improve",
-      "resume": "{n} improvements · {i} essential",
+      "resume": { "one": "{n} improvement", "other": "{n} improvements" },
+      "resume_indispensables": { "one": "{n} essential", "other": "{n} essential" },
       "page": "page {n}",
       "indispensable": "Essential",
       "valider": "Confirm",

@@ -964,7 +964,7 @@ function panneau(d) {
     el("h2", { class: "panneau-titre", text: titrePage(d) }),
     s ? el("p", { class: "panneau-etat" }, el("span", { class: `pastille-etat ${!s.redigee ? "a-faire" : "ok"}`, text: etatChap }), tr("memo.js.panneau.chapitre", { court: s.court })) : null,
     el("section", { class: "panneau-bloc", "aria-labelledby": "titre-ameliorer" }, el("h3", { id: "titre-ameliorer", text: tr("memo.js.ameliorations.titre") }),
-      el("p", { class: "petit amel-resume" }, l.length ? tr("memo.js.ameliorations.resume", { n: l.length, i: indisp }) : tr("memo.js.panneau.rien"), relu ? ` · ${relu}` : ""),
+      el("p", { class: "petit amel-resume" }, l.length ? [tr("memo.js.ameliorations.resume", { n: l.length }), indisp ? tr("memo.js.ameliorations.resume_indispensables", { n: indisp }) : null].filter(Boolean).join(" · ") : tr("memo.js.panneau.rien"), relu ? ` · ${relu}` : ""),
       etat.sections.some((x) => x.redigee) ? el("button", { type: "button", class: "btn btn-contour btn-mini amel-relire", disabled: !etat.analyse_photos, onclick: (ev) => relire(ev.currentTarget) }, tr("memo.js.relecture.bouton")) : null,
       ul,
       l.some((x) => x.importance === "indispensable") ? el("p", { class: "amel-legende petit" }, el("span", { class: "amel-point indisp", "aria-hidden": "true" }), tr("memo.js.ameliorations.indispensable")) : null),
@@ -977,7 +977,10 @@ function panneau(d) {
     const titres = [...$("#panneau").querySelectorAll(".amel-titre")];
     const cible = titres.find((b) => b.getAttribute("aria-expanded") === "true") || titres[Math.min(focusAmel, titres.length - 1)];
     focusAmel = null;
-    (cible || $("#titre-ameliorer"))?.focus?.();
+    // Focus sans faire défiler la page quand le titre est déjà visible (l'en-tête flottant recouvrait le mémorandum)
+    const c = cible || $("#titre-ameliorer"), r = c?.getBoundingClientRect?.();
+    c?.focus?.({ preventScroll: true });
+    if (r && (r.top < 90 || r.bottom > innerHeight)) c.scrollIntoView({ block: "nearest" });
   }
 }
 $("#page-prec").addEventListener("click", () => allerPage(pres.idx - 1));
@@ -1068,15 +1071,19 @@ function fusionner(A, B) {
   const memeTitre = titreDe3(A) === titreDe3(B);
   const message = B.querySelector(".im-message")?.textContent;
   const enfantsB = [...zB.childNodes];
-  const bloc = el("div", { class: "im-fusion" }, memeTitre ? null : el("h4", { class: "im-intertitre im-fusion-titre", text: titreDe3(B) }), !memeTitre && message ? el("p", { class: "im-fusion-message", text: message }) : null, ...enfantsB);
+  const bloc = el("div", { class: "im-fusion", "data-fusion": memeTitre || !B.dataset.section ? null : B.dataset.section }, memeTitre ? null : el("h4", { class: "im-intertitre im-fusion-titre" }, B.dataset.section ? el("span", { class: "im-num-fusion", "data-num-section": B.dataset.section }) : null, el("span", { text: titreDe3(B) })), !memeTitre && message ? el("p", { class: "im-fusion-message", text: message }) : null, ...enfantsB);
   // Hauteurs de tous les éléments des deux pages avant la fusion : une fusion qui compresserait un graphique, une carte
   // ou un texte (flex, hauteur minimale nulle) est refusée, pas seulement celle qui fait déborder la zone
   const hauteurs = new Map([...zA.querySelectorAll("*"), ...zB.querySelectorAll("*")].map((e) => [e, e.getBoundingClientRect().height]));
+  const coupe = (e) => e.clientHeight && e.scrollHeight > e.clientHeight + 2 && getComputedStyle(e).overflowY !== "visible";
+  const coupesAvant = new Set([...zA.querySelectorAll("*"), ...zB.querySelectorAll("*")].filter(coupe));
   zA.append(bloc);
   const deborde = () => {
     if (zA.scrollHeight > zA.clientHeight + 2) return true;
     const bas = zA.getBoundingClientRect().bottom + 2;
     for (const [e, h] of hauteurs) { const r = e.getBoundingClientRect(); if (r.height < h - 1.5 || (r.height && r.bottom > bas)) return true; }
+    // Encadré qui coupe son contenu (overflow masqué) : la fusion le rendrait illisible
+    for (const e of zA.querySelectorAll("*")) if (!coupesAvant.has(e) && coupe(e)) return true;
     return false;
   };
   const serreAvant = A.classList.contains("serre");
@@ -1095,7 +1102,8 @@ function fusionner(A, B) {
 function numeroterPages() {
   const l = diapos();
   const r = numeroter(l.map((d) => ({ type: d.classList.contains("im-ouverture") ? "ouverture" : d.querySelector(".im-num") ? "page" : "hors", partie: Number(d.dataset.partie) || 0,
-    sections: [d.dataset.section, ...(d.dataset.sections || "").split(" ")].filter(Boolean), suite: Boolean(d.dataset.suite) })));
+    sections: [d.dataset.section, ...(d.dataset.sections || "").split(" ")].filter(Boolean), suite: Boolean(d.dataset.suite),
+    fusion: [...d.querySelectorAll(".im-fusion[data-fusion]")].map((x) => x.dataset.fusion) })));
   l.forEach((d, k) => {
     const np = d.querySelector(".im-page-num"); if (np) np.textContent = String(k + 1);
     const num = d.querySelector(".im-num"); if (num) num.textContent = r.numeros[k] || "";

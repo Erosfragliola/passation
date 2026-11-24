@@ -575,3 +575,4 @@
 .im-maj { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(255, 253, 248, .8); color: var(--im-encre); font-family: var(--titre-police); font-weight: var(--titre-graisse); letter-spacing: var(--titre-interlettrage); font-size: 1.8cqw; }
 @media print { .im-maj { display: none; } }
 
+.im-num-fusion { color: var(--im-accent); margin-right: .45em; }
