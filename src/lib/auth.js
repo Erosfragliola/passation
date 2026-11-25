@@ -7,7 +7,7 @@ import { t as tr } from "../../public/js/i18n.js";
 const NOM_COOKIE = "passation_session";
 
 /** Secure random string (base64url, 32 bytes by default). */
-export function aleatoire(octets = 32) {
+function aleatoire(octets = 32) {
   const b = crypto.getRandomValues(new Uint8Array(octets));
   return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }

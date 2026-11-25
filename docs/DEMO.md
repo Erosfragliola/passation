@@ -37,7 +37,7 @@ production. Record it again the day before if the interface has changed.
 | Step | Action | What we show |
 |---|---|---|
 | 1 | Home page: enter the SIREN or the name | Public profile (business directory, INPI, BODACC); the range stays hidden without an account (not sent by the server) |
-| 2 | "Create my account": email, 6-digit code, then a password | Address verified by a hashed single-use code; password hashed (PBKDF2), quick range visible once signed in |
+| 2 | "Create my account": email, then the 6-digit code | Hashed single-use code (10 minutes, 5 attempts); the account is created, the quick range is visible once signed in |
 | 3 | Upload `liasse-fictive.pdf` (or enter the amounts below) | Reading by Claude is **proposed**, never approved automatically; automatic checks (the revenue differs from the published accounts of the chosen company: alert expected) |
 | 4 | Confirm fiscal years 2024 and 2025 (2023 skipped knowingly) | Approval by the owner; the screen says what the range loses without a third fiscal year |
 | 5 | Adjustments, net debt and scope, then « Your value » | The bridge from EBITDA to the value of the shares, visible without a click; adjusted net assets below the range: a floor; « I approve these figures », after which the memorandum starts |

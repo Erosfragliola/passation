@@ -18,17 +18,7 @@
       "one": "Incorrect code. {n} attempt left.",
       "other": "Incorrect code. {n} attempts left."
     },
-    "envoi": "If the address is valid, a 6-digit code has just been sent to you. It’s valid for 10 minutes.",
-    "identifiants_invalides": "Incorrect email address or password.",
-    "trop_echecs": "Too many wrong attempts. Sign-in is suspended for {n} minutes. You can also choose “Forgot your password?”.",
-    "ticket_expire": "The time to choose your password has run out. Ask for a new code.",
-    "mot_de_passe_trop_court": "The password must be at least {n} characters long.",
-    "mot_de_passe_trop_long": "This password is too long (256 characters at most).",
-    "mot_de_passe_trop_courant": "This password is too common. Choose another one, for example a short phrase of a few words.",
-    "sans_mot_de_passe": "Your account has no password yet: sign out, then choose “Forgot your password?”.",
-    "actuel_incorrect": "Incorrect current password.",
-    "mot_de_passe_identique": "The new password must be different from the current one.",
-    "mot_de_passe_change": "Password changed. Your other sessions are closed; this one stays open."
+    "envoi": "If the address is valid, a 6-digit code has just been sent to you. It’s valid for 10 minutes."
   },
   "documents": {
     "validez_abord_chiffres_moins": "First approve your figures (at least one complete fiscal year) to generate the datapack.",
@@ -135,11 +125,11 @@
   "email": {
     "bonjour": "Hello,",
     "code": {
-      "sujet": "{code}: your Passation code",
-      "intro": "Here is your code to verify your email address on Passation:",
-      "validite": "It is valid for 10 minutes and works only once. Type it in the window you left open, then choose your password.",
-      "ignorer": "If you didn’t request anything, ignore this message: no one can create or change your account without this code.",
-      "texte": "Your Passation code: {code} (valid for 10 minutes, single use). It verifies your address before you choose your password. If you didn’t request anything, ignore this message."
+      "sujet": "{code}: your Passation sign-in code",
+      "intro": "Here is your code to open your Passation file:",
+      "validite": "It is valid for 10 minutes and works only once. Type it in the sign-in window you left open.",
+      "ignorer": "If you didn’t request anything, ignore this message: no one can sign in without this code.",
+      "texte": "Your Passation sign-in code: {code} (valid for 10 minutes, single use). If you didn’t request anything, ignore this message."
     },
     "pourquoi": "You are receiving this message because you opened a file on Passation. You can delete your file at any time from your space.",
     "lien_texte": "{bouton}: {lien}",

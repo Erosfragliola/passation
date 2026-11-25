@@ -64,19 +64,7 @@ describe("sign-in by code", () => {
     expect(ligne.code_hash).toMatch(/^[0-9a-f]{64}$/);
     expect(JSON.stringify(env.DB.sqlite.prepare("SELECT * FROM login_codes").all())).not.toContain(`"${code}"`);
   });
-  it("the right code only verifies the address: a ticket, no session, no account yet", async () => {
-    const { code } = await demanderCode("dirigeant@exemple.fr");
-    const r = await verifier("dirigeant@exemple.fr", code);
-    expect(r.status).toBe(200);
-    expect(r.headers.get("set-cookie")).toBeNull();
-    const d = await r.json();
-    expect(d).toMatchObject({ ok: true, etape: "mot_de_passe" });
-    expect(d.ticket.length).toBeGreaterThanOrEqual(40);
-    expect(env.DB.sqlite.prepare("SELECT COUNT(*) n FROM users").get().n).toBe(0);
-    // only the ticket's hash is stored
-    expect(JSON.stringify(env.DB.sqlite.prepare("SELECT * FROM password_tickets").all())).not.toContain(d.ticket);
-  });
-  it("the password then opens a session (cookie HttpOnly, Secure, SameSite=Lax) and creates the SIREN's file", async () => {
+  it("the right code opens a session (cookie HttpOnly, Secure, SameSite=Lax) and creates the account and the SIREN's file", async () => {
     const { r, d } = await seConnecter("dirigeant@exemple.fr");
     expect(r.status).toBe(200);
     const c = r.headers.get("set-cookie");

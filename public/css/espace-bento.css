@@ -368,7 +368,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
   .drive-dossiers { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; padding-bottom: 4px; }
   .cta-tel { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--creme) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--trait); }
   .cta-tel .btn { width: 100%; min-height: 50px; font-weight: 600; }
-  /* room for the sticky button: « Gérer mon dossier » (password, deletion) was hidden under it (24/11/2026) */
+  /* room for the sticky button: « Gérer mon dossier » (deletion) was hidden under it (24/11/2026) */
   .dossier-leger { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 }
 @media (prefers-reduced-motion: reduce) { .anneau .val, .jauge-pieces span { transition: none; } }

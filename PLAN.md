@@ -688,3 +688,8 @@ model to be defined later by the user (business plan in progress).
   - D. Logo and photos guided: screen always offered, attestation above the upload, several files with progress,
     reduction in the browser, advice for every error, place of each photo in the memorandum.
   - Local check without the Claude API: `scripts/claude-simule.mjs`. Tests: 649.
+- **25/11/2026, branch `no-password`** (PR not merged, not deployed), decision of the owner: the account stays required
+  after the SIREN, but sign-up and sign-in use only the 6-digit code sent by email (single use, 10 minutes,
+  5 attempts, stored hashed). Password, tickets, failure counters and PBKDF2 removed; migration `0004` deleted before
+  it was ever applied in production. The masking of amounts without a session, the public card and the two-stage
+  flow are kept.

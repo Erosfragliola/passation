@@ -63,7 +63,7 @@ describe("GET /api/maquette/:siren: nothing wrong in the cache", () => {
     vi.stubGlobal("fetch", fauxFetch({ bodacc: 500 }).f);
     const r = await appel();
     expect(r.status).toBe(200);
-    // Without a session the range is masked since 24/11/2026 (test/mot-de-passe.test.js); the published accounts are read
+    // Without a session the range is masked since 24/11/2026 (test/acces-par-code.test.js); the published accounts are read
     const d = await r.json();
     expect(d).toMatchObject({ estimation: null, estimation_masquee: true });
     expect(d.exercices_publies.length).toBeGreaterThan(0);

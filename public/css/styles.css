@@ -291,9 +291,6 @@ section { padding: 88px 0; }
 .form-carte label { font-weight: 500; }
 .form-carte input { min-height: 50px; border-radius: 14px; border: 1px solid var(--trait-fort); background: var(--creme); padding: 0 16px; font: inherit; color: var(--espresso); }
 .form-carte input:focus { outline: 2px solid var(--vert); outline-offset: 1px; }
-/* "Show the password": box and label on one line */
-.form-carte .cx-afficher { display: flex; align-items: center; gap: 10px; font-weight: 400; }
-.form-carte .cx-afficher input { min-height: 0; width: 18px; height: 18px; margin: 0; padding: 0; accent-color: var(--vert); }
 .form-carte .btn { justify-self: start; }
 .message-carte { margin-top: 20px; padding: 16px 20px; border-radius: 16px; background: var(--sable); }
 .message-carte.erreur { border-left: 4px solid var(--espresso); }

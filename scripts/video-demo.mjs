@@ -5,7 +5,7 @@
 // Une fois par machine : npx playwright-core install ffmpeg (encodeur vidéo de Playwright, 1,4 Mo, dans son cache).
 // Le script :
 //   1. place l'entreprise fictive dans le cache de la base locale (aucun appel aux API publiques pour elle) ;
-//   2. lance son propre « wrangler dev » (port 8798), lit le code dans son terminal et choisit un mot de passe tiré au hasard ;
+//   2. lance son propre « wrangler dev » (port 8798) et lit le code de connexion dans son terminal ;
 //   3. filme en 1440 × 900 : accueil, recherche, connexion, dossier, valorisation, mémorandum, teaser ;
 //   4. arrête le serveur et écrit la vidéo (.webm, lisible dans Chrome, VLC, QuickTime récent).
 // Rien n'est envoyé en production ; le dossier créé reste dans la base locale (.wrangler/).
@@ -22,7 +22,6 @@ const SORTIE = resolve(arg("sortie", `passation-demo-${LANGUE}.webm`));
 const CHROME = arg("chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
 const PORT = 8798, B = `http://127.0.0.1:${PORT}`, P = LANGUE === "fr" ? "/fr" : "";
 const EMAIL = `demo-${Date.now()}@exemple.fr`;
-const MOT_DE_PASSE = `demo-${crypto.randomUUID()}`; // drawn at every run, never written anywhere
 
 // 1. Entreprise fictive dans le cache local (date lointaine : jamais périmée)
 const sql = `INSERT OR REPLACE INTO api_cache (key, payload_json, fetched_at) VALUES ('maquette:v2:000000018', '${JSON.stringify(FICTIVE).replace(/'/g, "''")}', 4102444800)`;
@@ -76,7 +75,7 @@ try {
   await page.locator("#resultat").scrollIntoViewIfNeeded();
   await attendre(4000);
 
-  // Account creation (24/11/2026): email, code read in the terminal of the local server, then a password
+  // Account creation: email, then the code read in the terminal of the local server
   await page.evaluate(() => import("/js/connexion-code.js").then((m) => m.ouvrirConnexion({ siren: "000000018", mode: "creer" })));
   await attendre(800);
   await page.locator("#dialog-connexion .cx-email input[type=email]").pressSequentially(EMAIL, { delay: 45 });
@@ -84,11 +83,7 @@ try {
   await page.locator("#dialog-connexion .cx-code input").waitFor({ timeout: 15000 });
   await attendre(900);
   await page.locator("#dialog-connexion .cx-code input").pressSequentially(await code(), { delay: 180 });
-  await page.locator("#dialog-connexion .cx-mdp:not([hidden])").waitFor({ timeout: 15000 });
-  await page.locator("#dialog-connexion .cx-mdp input[name=mdp]").fill(MOT_DE_PASSE);
-  await page.locator("#dialog-connexion .cx-mdp input[name=mdp2]").fill(MOT_DE_PASSE);
-  await attendre(700);
-  await Promise.all([page.waitForURL(/\/espace\//, { timeout: 15000 }), page.locator("#dialog-connexion .cx-mdp button[type=submit]").click()]);
+  await page.waitForURL(/\/espace\//, { timeout: 15000 }).catch(async () => { await page.locator("#dialog-connexion .cx-code .btn").first().click(); await page.waitForURL(/\/espace\//, { timeout: 15000 }); });
   const id = new URL(page.url()).searchParams.get("dossier");
   const cookie = (await ctx.cookies()).find((c) => c.name === "passation_session").value;
   await attendre(2500);
