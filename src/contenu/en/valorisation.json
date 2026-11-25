@@ -68,7 +68,7 @@
     "corriger": "Correct my answers",
     "validez_exercice": "Approve a complete fiscal year (revenue, expenses and balance sheet) to get a valuation.",
     "completer_chiffres": "Complete my figures",
-    "fondee": "Based on your industry’s EBITDA (EBE) multiples, the benchmark for small-business sales, after debt and cash. Checked against adjusted net assets (negotiation floor): {plancher}.",
+    "fondee": "Based on your industry’s EBITDA multiples, the benchmark for SME sales, after debt and cash.",
     "mention": "Indicative, non-binding estimate. It does not replace the opinion of an accountant or an M&A advisor.",
     "telecharger_datapack": "Download the Excel datapack ",
     "ff_multiples": "EBITDA multiples",
@@ -108,7 +108,7 @@
       "plus": "One point higher"
     },
     "ff_titre": "Your range and its check",
-    "ff_legende": "Equity value. Bar: industry-multiples range; dot: adjusted net assets, used as a check and a floor.",
+    "ff_legende": "Equity value. Bar: industry-multiples range; dot: adjusted net assets, the asset value, to compare with the range.",
     "points_attention": "Points to watch ({n})",
     "comment": "How the range is calculated",
     "titre_pont_ebe": "From reported to normalized EBITDA",

@@ -1,6 +1,6 @@
-// Page d'accueil : champ SIREN partagé (hero, en-tête, relance) branché sur l'estimation express et l'écran de
-// résultat ; vidéo. Textes : src/contenu/<langue>/accueil.json, posés par le Worker dans <script id="textes"> (sous-arbre
-// « js »).
+// Home page: shared SIREN field (hero, header, final call to action) connected to the quick estimate and the
+// result screen; video. Texts: src/contenu/<language>/accueil.json, placed by the Worker in <script id="textes"> (subtree
+// "js").
 import { creerChampPartage } from "/js/landing/champ-siren.js";
 import { surveillerChamps } from "/js/landing/barres.js";
 import { lancerVideo } from "/js/landing/video.js";
@@ -22,10 +22,10 @@ lancerVideo({ hero: $("#accueil"), textes: T.video });
 
 async function estimer(siren, emplacement) {
   champ.dire("");
-  document.activeElement?.blur?.();   // referme le clavier du téléphone
+  document.activeElement?.blur?.();   // closes the phone's keyboard
   const r = await resultat.charger(chargerEntreprise(siren));
   if (r.ok) return resultat.afficher(r.donnees);
-  // Erreur : message sous le champ utilisé (région aria-live), qu'on ramène à l'écran s'il n'est pas fixe
+  // Error: message under the field used (aria-live region), brought back on screen if it is not fixed
   resultat.masquer();
   champ.dire(T.erreurs?.[r.code] || T.erreurs?.source_indisponible, emplacement);
   const m = champ.montures.find((x) => x.nom === emplacement);
@@ -39,7 +39,7 @@ $("#btn-autre")?.addEventListener("click", () => {
   champ.focaliser();
 });
 
-// Liens #comment-1, -2, -3 et #livrables (tuiles du hero) : ancres ordinaires, les étapes sont toutes visibles.
+// Links #comment-1, -2, -3 and #livrables (hero tiles): ordinary anchors, the steps are all visible.
 
 lancerApparitions();
 lancerEtapes();

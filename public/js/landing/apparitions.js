@@ -1,8 +1,8 @@
-// Apparitions au défilement : titres et cartes des sections situées après l'histoire apparaissent en douceur
-// (opacité et léger décalage vertical, jamais la mise en page : aucun décalage de mise en page).
-// Rien sans IntersectionObserver, ni quand le visiteur a demandé à réduire les animations ; ce qui est déjà à
-// l'écran (ou au-dessus) au chargement reste visible tout de suite. Le hero, le résultat et l'histoire ont leurs
-// propres animations et ne sont pas concernés.
+// Reveals on scroll: titles and cards of the sections after the story appear smoothly
+// (opacity and slight vertical offset, never the layout: no layout shift).
+// Nothing without IntersectionObserver, nor when the visitor asked for reduced motion; what is already on
+// screen (or above) at load time stays visible immediately. The hero, the result and the story have their
+// own animations and are not affected.
 const CIBLES = [
   "#comment .surtitre", "#comment h2", "#comment .parcours-etape",
   "#confidentialite .confid-bloc",
@@ -10,8 +10,8 @@ const CIBLES = [
   "#questions .surtitre", "#questions h2", "#questions .faq > *",
   "#relance .carte-relance",
 ];
-const PAS = 70;       // ms entre deux éléments d'un même groupe
-const RETARD_MAX = 5; // au-delà, tout le reste du groupe arrive ensemble
+const PAS = 70;       // ms between two elements of the same group
+const RETARD_MAX = 5; // beyond that, the rest of the group arrives together
 
 export function lancerApparitions() {
   if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -20,7 +20,7 @@ export function lancerApparitions() {
   }, { rootMargin: "0px 0px -6% 0px", threshold: 0.06 });
   const rangs = new Map();
   for (const el of CIBLES.flatMap((s) => [...document.querySelectorAll(s)])) {
-    if (el.getBoundingClientRect().top < innerHeight) continue; // déjà vu ou à l'écran : pas d'effet
+    if (el.getBoundingClientRect().top < innerHeight) continue; // already seen or on screen: no effect
     const n = rangs.get(el.parentElement) ?? 0;
     rangs.set(el.parentElement, n + 1);
     el.style.setProperty("--retard", `${Math.min(n, RETARD_MAX) * PAS}ms`);

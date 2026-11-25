@@ -14,6 +14,7 @@ vi.mock("../src/lib/claude.js", async (original) => ({
 import { lireLiasse, redigerTeaser, extraireSite, redigerSectionMemo } from "../src/lib/claude.js";
 import worker from "../src/index.js";
 import { d1Memoire, r2Memoire } from "./aide/environnement.js";
+import { creerCompte } from "./aide/connexion.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
@@ -30,15 +31,13 @@ function appel(chemin, { methode = "GET", corps, cookie, brut } = {}) {
   return worker.fetch(new Request(BASE + chemin, { method: methode, headers, body: brut ?? (corps ? JSON.stringify(corps) : undefined) }), env);
 }
 async function seConnecter(email) {
-  const espion = vi.spyOn(console, "log").mockImplementation(() => {});
-  await appel("/api/auth/request", { methode: "POST", corps: { email } });
-  const code = espion.mock.calls.flat().join("\n").match(/Code de connexion pour \S+ : (\d{6})/)[1];
-  espion.mockRestore();
-  const r = await appel("/api/auth/code", { methode: "POST", corps: { email, code, siren: SIREN } });
-  const d = await r.json();
-  return { cookie: r.headers.get("set-cookie").split(";")[0], id: new URL(d.destination, BASE).searchParams.get("dossier") };
+  const { cookie, id } = await creerCompte(appel, email, { siren: SIREN });
+  return { cookie, id };
 }
 const pdf = (texte = "%PDF-1.4 liasse") => { const f = new FormData(); f.append("fichier", new File([texte], "liasse.pdf", { type: "application/pdf" })); return f; };
+
+/** Figures approved (« Je valide ces chiffres »), as the server records it: the memorandum can be drafted. */
+const chiffresValides = (id) => env.DB.sqlite.prepare("INSERT OR REPLACE INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'validation', ?, 1)").run(id, JSON.stringify({ le: 1 }));
 
 beforeEach(async () => {
   env = { DB: d1Memoire(), FILES: r2Memoire() };
@@ -90,18 +89,20 @@ describe("chiffres", () => {
     expect(Object.keys(v.exercices)).toEqual(["2024"]);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
     expect(detail.parcours.exercices).toEqual({ dernier: 2024, dernier_complet: false, recommandes: [2023, 2022], recommandes_manquants: [2023, 2022], anciens: [] });
-    // Les questions du parcours guidé (9) et celle du site : 10, aucune faite
-    expect(detail.parcours.questions).toEqual({ faits: 0, total: 10, pct: 0 });
+    // Les questions du mémorandum (7) et celle du site : 8, aucune faite (24/11/2026 : les questions qui changent la
+    // valeur sont dans le premier temps, « Votre valorisation »)
+    expect(detail.parcours.questions).toMatchObject({ faits: 0, total: 8, pct: 0 });
+    expect(detail.parcours.etapes).toEqual({ exercices_passes: false, retraitements: false, dette: false, validation: null, photos: false, equipe: false });
     // 15 (dossier) + 10 (estimation express) = 25
     expect(detail.avancement.global).toBe(25);
   });
   it("écrans vus du parcours guidé enregistrés : « Passer » compte comme une réponse, côté serveur aussi", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { aucun: true } } });
-    expect((await appel(`/api/dossiers/${id}/answers/parcours`, { methode: "PUT", cookie, corps: { data: { vues: ["remuneration", "histoire"] } } })).status).toBe(200);
+    expect((await appel(`/api/dossiers/${id}/answers/parcours`, { methode: "PUT", cookie, corps: { data: { vues: ["distinctions", "histoire"] } } })).status).toBe(200);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
-    // site + 2 écrans passés = 3 sur 10 ; 3 / 10 = 30 %
-    expect(detail.parcours.questions).toEqual({ faits: 3, total: 10, pct: 30 });
+    // site + 2 écrans passés = 3 sur 8 ; 3 / 8 = 37,5 → 38 %
+    expect(detail.parcours.questions).toMatchObject({ faits: 3, total: 8, pct: 38 });
   });
   it("refuse une année absurde", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
@@ -316,6 +317,7 @@ describe("mémorandum", () => {
     expect((await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).status).toBe(409);
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { faits: [
       { id: 1, categorie: "histoire", fait: "Fondée en 1980.", source: "s", valide: true },
       { id: 2, categorie: "histoire", fait: "Leader mondial.", source: "s", valide: false }] } } });
@@ -334,6 +336,7 @@ describe("mémorandum", () => {
     const { cookie, id } = await seConnecter("titres@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     redigerSectionMemo.mockResolvedValue({ titre: "Une entreprise fondée en 1980, dirigée par la même famille.", accroche: "Quarante ans d'activité continue.", contenu: "- **1980** : création.", a_completer: [] });
     let m = await (await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie })).json();
     expect(m.sections.find((x) => x.cle === "histoire")).toMatchObject({ titre_affirme: "Une entreprise fondée en 1980, dirigée par la même famille", accroche: "Quarante ans d'activité continue", point_fort: null, partie: 2, court: "Histoire" });
@@ -416,6 +419,7 @@ describe("mémorandum : rédactions en parallèle", () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     redigerSectionMemo.mockResolvedValue({ contenu: "Texte.", a_completer: [] });
     const cles = ["synthese", "histoire", "activite", "marche", "organisation", "finances", "perspectives", "operation"];
     await Promise.all(cles.map((k) => appel(`/api/dossiers/${id}/documents/memo/sections/${k}`, { methode: "POST", cookie })));
@@ -476,6 +480,7 @@ describe("quotas des traitements par Claude (SEC-01)", () => {
   const preparer = async (cookie, id) => {
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
   };
   it("quota quotidien par utilisateur : au-delà, 429 sans appel à Claude ; un autre utilisateur n'est pas touché", async () => {
     env.ANTHROPIC_API_KEY = "cle-de-test";

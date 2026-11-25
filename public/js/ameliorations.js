@@ -54,7 +54,7 @@ export function ameliorations({ etat, reponses = {}, placement = {}, ignores = [
     if (options?.length) l.push({ ...q, genre: "qcm", titre: t(`memo.js.ameliorations.titres.${q.id}`), options });
   }
   // Demandes « à compléter » des chapitres rédigés : réponse proposée, corrigée par le dirigeant
-  const vues = new Set(); // une même demande posée par deux chapitres n'apparaît qu'une fois (au premier)
+  const vues = new Set(); // a request raised by two chapters is shown only once (under the first)
   for (const s of sections) {
     if (!s.redigee) continue;
     const deja = new Set((reponses.complements?.[s.cle] || []).map((c) => c.demande));

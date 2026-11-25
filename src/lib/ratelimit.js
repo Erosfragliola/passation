@@ -1,9 +1,9 @@
-// Limites de débit et quotas (table rate_limits). La clé (IP, e-mail, utilisateur) n'est jamais stockée en clair :
-// seule une empreinte salée (secret serveur) l'est. Le compteur est incrémenté avant l'action, de façon atomique.
+// Rate limits and quotas (rate_limits table). The key (IP, email, user) is never stored in clear:
+// only a salted hash (server secret) is. The counter is incremented before the action, atomically.
 import { empreinte } from "./auth.js";
 import { t as tr } from "../../public/js/i18n.js";
 
-/** Limite par adresse IP (empreinte), par heure. Retourne { autorise, restant }. */
+/** Limit per IP address (hash), per hour. Returns { autorise, restant }. */
 export async function verifierDebit(db, request, env, nom, maxParHeure) {
   return verifierDebitCle(db, env, nom, request.headers.get("cf-connecting-ip") || "local", maxParHeure);
 }
@@ -11,9 +11,9 @@ export async function verifierDebit(db, request, env, nom, maxParHeure) {
 const JOUR = 86_400;
 
 /**
- * Limite par clé quelconque. Fenêtre horaire par défaut ; { parJour: true } pour un quota quotidien.
- * { siIndisponible: "refuser" } : si la base ne répond pas, l'action est refusée (quotas de coût) au lieu d'être
- * autorisée (limites anti-abus des routes publiques, qui ont d'autres garde-fous).
+ * Limit for any key. Hourly window by default; { parJour: true } for a daily quota.
+ * { siIndisponible: "refuser" }: if the database does not respond, the action is refused (cost quotas) instead of
+ * being allowed (anti-abuse limits of the public routes, which have other safeguards).
  */
 export async function verifierDebitCle(db, env, nom, cle, max, { parJour = false, siIndisponible = "autoriser" } = {}) {
   const duree = parJour ? JOUR : 3600;
@@ -28,10 +28,10 @@ export async function verifierDebitCle(db, env, nom, cle, max, { parJour = false
       "ON CONFLICT(bucket) DO UPDATE SET count = count + 1 RETURNING count",
     ).bind(bucket, fenetre * duree).first();
   } catch (e) {
-    console.warn("limite de débit indisponible", e.message);
+    console.warn("rate limit unavailable", e.message);
     return { autorise: siIndisponible !== "refuser", restant: null };
   }
-  // Ménage occasionnel des fenêtres expirées (horaires : après 2 h ; quotidiennes : après 2 jours)
+  // Occasional cleanup of expired windows (hourly: after 2 h; daily: after 2 days)
   if (Math.random() < 0.05) {
     const t = Math.floor(Date.now() / 1000);
     await db.prepare("DELETE FROM rate_limits WHERE (bucket NOT LIKE 'jour-%' AND window_start < ?) OR (bucket LIKE 'jour-%' AND window_start < ?)")
@@ -41,8 +41,8 @@ export async function verifierDebitCle(db, env, nom, cle, max, { parJour = false
 }
 
 /**
- * Quota quotidien des traitements par Claude (lecture de liasse ou de site, rédactions, étude de marché), par
- * utilisateur, tous dossiers confondus. Refusé si la base ne répond pas. Retourne null si autorisé, sinon { message }.
+ * Daily quota of Claude processing (reading a tax return or website, drafting, market research), per user, across
+ * all files. Refused if the database does not respond. Returns null if allowed, otherwise { message }.
  */
 export async function quotaClaude(env, userId, max) {
   const q = await verifierDebitCle(env.DB, env, "claude", userId, max, { parJour: true, siIndisponible: "refuser" });

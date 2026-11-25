@@ -6,6 +6,8 @@ import { surfaceCouverte, planFusion, numeroter, SEUIL_PAGE_VIDE } from "/js/mem
 import { ameliorations, reponsePour } from "/js/ameliorations.js";
 import { libelleRole, libelleApres, initiales, parcoursDeSecours, transitionEquipe } from "/js/equipe.js";
 import { listePhotos } from "/js/photos-fiches.js";
+import { dateCourte } from "/js/dossier-parcours.js";
+import { zoneDepotPhotos, zoneLogo } from "/js/depot-photos.js";
 import { lien, t as tr, langue } from "/js/i18n.js";
 import { libelleOption } from "/js/questionnaire.js";
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -47,44 +49,36 @@ function dessinerSite() {
       });
       return el("label", { class: "fait", for: `fait-${f.id}` }, cb, el("span", {}, el("span", { text: f.fait }), el("a", { href: f.source, target: "_blank", rel: "noopener", class: "petit", text: tr("memo.js.site.source") })));
     })) : null);
-  const logos = s?.logos || [];
-  const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "fichier-logo", class: "visuellement-cache" });
-  fichier.addEventListener("change", async () => {
-    const f = fichier.files[0]; if (!f) return;
-    const fd = new FormData(); fd.append("fichier", f);
-    try { etat = await api(`${base}/logo`, { method: "POST", body: fd }); etat.versionPhotos = Date.now(); tout(); message(tr("memo.js.site.logo_enregistre")); } catch (e) { message(e.message, true); }
-  });
-  remplacer($("#logos"), el("div", { class: "logos" },
-    el("p", { class: "petit", text: etat.logo ? tr("memo.js.site.logo_retenu") : tr("memo.js.site.choisir_logo") }),
-    el("div", { class: "logos-liste" }, ...logos.map((l) => el("button", { type: "button", class: "logo-choix", title: l.origine, onclick: async () => {
-      try { etat = await api(`${base}/logo`, { method: "POST", body: JSON.stringify({ url: l.url }) }); tout(); message(tr("memo.js.site.logo_enregistre")); } catch (e) { message(e.message, true); }
-    } }, el("img", { src: l.url, alt: tr("memo.js.site.candidat", { origine: l.origine }), loading: "lazy", referrerpolicy: "no-referrer" })))),
-    el("label", { class: "btn btn-contour btn-mini", for: "fichier-logo" }, tr("memo.js.site.deposer_logo")), fichier));
+  // Logo with its preview next to the buttons (defect 3 of 24/11/2026), saved at once
+  remplacer($("#logos"), zoneLogo({ memo: etat, baseMemo: base, logos: s?.logos || [], idBase: "memo-logo",
+    surChange: (m) => { etat = { ...m, versionPhotos: Date.now() }; tout(); } }));
 }
 
+// Photos: attestation above the upload (inactive until ticked, files kept), several files at once with progress,
+// reduced in the browser when too heavy; the photos of the website are added with the same attestation
+let depotMemo = null;
 function dessinerPhotos() {
   const s = etat.site || {};
   const max = etat.photos_max || 12;
-  const atteste = el("input", { type: "checkbox", id: "attestation-photo" });
-  const ajouter = async (corpsRequete) => {
-    if (!atteste.checked) { message(tr("memo.js.photos.cochez"), true); atteste.focus(); return; }
-    try { etat = await api(`${base}/photos`, { method: "POST", body: corpsRequete }); etat.versionPhotos = Date.now(); tout(); message(tr("memo.js.photos.ajoutee")); } catch (e) { message(e.message, true); }
-  };
-  const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "fichier-photo", class: "visuellement-cache" });
-  fichier.addEventListener("change", () => { const f = fichier.files[0]; if (!f) return; const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", atteste.checked ? "oui" : "non"); ajouter(fd); fichier.value = ""; });
   const n = (etat.photos || []).length;
   const candidates = (s.photos_candidates || []).filter((u) => !(etat.photos || []).some((ph) => ph.origine === u));
   const ecartees = s.photos_ecartees || [];
+  // The upload zone is kept from one drawing to the next: its progress rows and pending files are not lost
+  depotMemo ||= zoneDepotPhotos({ memo: etat, baseMemo: base, idBase: "memo-photos",
+    surAjout: (m) => { etat = { ...m, versionPhotos: Date.now() }; tout(); }, surCandidate: (m) => { etat = { ...m, versionPhotos: Date.now() }; tout(); } });
+  depotMemo.majMemo(etat); // a photo removed frees a place
   remplacer($("#photos"), el("div", { class: "photos-panneau" },
     el("p", { class: "petit", text: tr("memo.js.photos.titre_max", { n, max }) }),
-    listePhotos({ memo: etat, baseMemo: base, version: etat.versionPhotos, message, focus: focusPhoto,
-      maj: (m, cible) => { if (m) { etat = { ...m, versionPhotos: etat.versionPhotos }; } focusPhoto = cible || null; tout(); } }),
+    depotMemo,
     candidates.length && n < max ? el("p", { class: "guide-lib", text: tr("memo.js.photos.cliquez") }) : null,
-    el("label", { class: "fait", for: "attestation-photo" }, atteste, el("span", { text: tr("memo.js.photos.attestation") })),
-    n < max ? el("div", { class: "logos-liste" },
-      ...candidates.slice(0, max - n).map((u) => el("button", { type: "button", class: "logo-choix photo-choix", title: tr("memo.js.photos.ajouter_site"), onclick: () => ajouter(JSON.stringify({ url: u, attestation: atteste.checked })) }, el("img", { src: u, alt: tr("memo.js.photos.candidate"), loading: "lazy", referrerpolicy: "no-referrer" })))) : null,
+    n < max && candidates.length ? el("div", { class: "logos-liste" },
+      ...candidates.slice(0, max - n).map((u) => el("button", { type: "button", class: "logo-choix photo-choix", title: tr("memo.js.photos.ajouter_site"), onclick: async (ev) => {
+        const b = ev.currentTarget; b.disabled = true;
+        if (!(await depotMemo.ajouterSite(u, (texte) => message(texte, true)))) b.disabled = false;
+      } }, el("img", { src: u, alt: tr("memo.js.photos.candidate"), loading: "lazy", referrerpolicy: "no-referrer" })))) : null,
     ecartees.length ? el("p", { class: "petit", text: tr("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => tr(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null,
-    n < max ? el("label", { class: "btn btn-contour btn-mini", for: "fichier-photo" }, tr("memo.js.photos.deposer")) : el("p", { class: "petit", text: tr("memo.js.photos.limite", { max }) }), fichier));
+    listePhotos({ memo: etat, baseMemo: base, version: etat.versionPhotos, message, focus: focusPhoto,
+      maj: (m, cible) => { if (m) { etat = { ...m, versionPhotos: etat.versionPhotos }; } focusPhoto = cible || null; tout(); } })));
   focusPhoto = null;
 }
 
@@ -117,9 +111,14 @@ function dessinerMarche() {
 
 function dessinerVerrou() {
   const v = etat.deverrouille;
-  remplacer($("#verrou"), v.ok ? "" : el("div", { class: "message-carte" }, el("p", { text: tr("memo.js.verrou.avant") }),
+  // Figures modified since their approval: the memorandum says so (24/11/2026)
+  const revalider = etat.validation?.a_jour === false
+    ? el("div", { class: "bandeau-etape", role: "status", "data-genre": "revalider" }, el("p", { text: tr("dossier.bandeau.revalider", { date: dateCourte(etat.validation.le) }) }),
+      el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/demarrer/?dossier=${id}&etape=valeur`) }, tr("dossier.bandeau.bouton_revalider"), " →"))
+    : "";
+  remplacer($("#verrou"), v.ok ? revalider : el("div", { class: "message-carte" }, el("p", { text: tr("memo.js.verrou.avant") }),
     el("ul", {}, ...v.manque.map((m) => el("li", { text: m }))),
-    el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/valorisation/?dossier=${id}#entreprise`) }, tr("memo.js.verrou.questionnaire"))));
+    el("a", { class: "btn btn-noir btn-mini", href: lien(`/espace/demarrer/?dossier=${id}`) }, tr("memo.js.verrou.questionnaire"))));
   $("#btn-tout").disabled = !v.ok || redactionEnCours;
 }
 

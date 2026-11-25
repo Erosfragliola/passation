@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { typeImage, dimensionsImage, raisonEcartPhoto, empreinte } from "../src/documents/images.js";
 import { mesurerPhotos } from "../src/documents/site.js";
 import { PHOTOS, PHOTOS_MAX } from "../src/config.js";
@@ -58,9 +59,9 @@ describe("limite de 12 photos, définie une seule fois", () => {
     expect(PHOTOS_MAX).toBe(12);
     expect(PHOTOS.max).toBe(12);
     const fichiers = (d) => readdirSync(d).flatMap((f) => { const p = join(d, f); return statSync(p).isDirectory() ? fichiers(p) : p.endsWith(".js") ? [p] : []; });
-    const racine = new URL("../", import.meta.url).pathname;
+    const racine = fileURLToPath(new URL("../", import.meta.url));
     const definitions = [...fichiers(join(racine, "src")), ...fichiers(join(racine, "public/js"))].filter((f) => /\bPHOTOS_MAX\s*=/.test(readFileSync(f, "utf8")));
-    expect(definitions.map((f) => f.replace(racine, ""))).toEqual(["src/config.js"]);
+    expect(definitions.map((f) => f.replace(racine, "").replaceAll("\\", "/"))).toEqual(["src/config.js"]);
   });
 });
 

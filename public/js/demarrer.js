@@ -10,11 +10,14 @@
 //      la page du dossier)
 import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe as texteAideEbe } from "/js/champs-financiers.js";
 import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
-import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe } from "/js/parcours.js";
-import { ETAPES_PARCOURS, ETAPE_DE_L_ECRAN, etiquetteExpress, etatParcours, ecranFinal } from "/js/dossier-parcours.js";
+import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe, VALORISATION, champsVisibles, manquesValorisation, etatValorisation, MURS } from "/js/parcours.js";
+import { TEMPS, ETAPE_DE_L_ECRAN, etiquetteExpress, etiquetteTitres, etatParcours, ecranFinal, alertesDirigeant, explicationEcart, resumeValorisation } from "/js/dossier-parcours.js";
+import { apercuRetraitements, ebeExercice, kEuros, fois, pontValeur, situationAncc, texteAncc } from "/js/valeur-pont.js";
+import { moisSource } from "/js/landing/estimation.js";
 import { fourchette } from "/js/landing/estimation.js";
 import { placementPhotos } from "/js/memo-format.js";
 import { listePhotos } from "/js/photos-fiches.js";
+import { zoneDepotPhotos, zoneLogo } from "/js/depot-photos.js";
 import { ROLES, FORMATIONS, TYPES_EXPERIENCE, APRES, PERSONNES_MAX, EXPERIENCES_MAX, BORNES, normaliserEquipe, nouvelId, initiales, libelleRole, libelleApres, personneComplete } from "/js/equipe.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
@@ -65,18 +68,29 @@ const exercicesComplets = () => Object.entries(S.chiffres?.manquants || {}).filt
 /** Le dernier exercice (le seul indispensable, règle partagée exercicesAttendus) est-il confirmé ? */
 const dernierConfirme = () => exercicesAttendus(S.chiffres?.exercices).dernier_complet;
 const aDesChiffresAValider = () => Object.values(S.chiffres?.exercices || {}).some((l) => Object.values(l).some((x) => x.valeur != null && x.source !== "inpi"));
+/** The two previous fiscal years: confirmed, or skipped knowingly ("exercices_passes"). */
+const exercicesFaits = () => { const x = exercicesAttendus(S.chiffres?.exercices); return x.dernier_complet && (!x.recommandes_manquants.length || S.vues.includes("exercices_passes")); };
+/** First stage ("Your valuation") validated: the memorandum can start. */
+const valeurValidee = () => Boolean(etatValorisation(S.reponses, S.vues).validation);
 function etapeCourante() {
   // Accueil de l'analyse approfondie : une fois, avant toute saisie
   if (!S.vues.includes("accueil") && !dernierConfirme() && !aDesChiffresAValider() && !S.complet) return "accueil";
+  // 1. Votre valorisation : chiffres (3 exercices), retraitements, dette nette et périmètre, valeur validée
   if (!dernierConfirme()) return aDesChiffresAValider() ? "chiffres" : "comptes";
+  if (!exercicesFaits()) return "exercices";
+  const ev = etatValorisation(S.reponses, S.vues);
+  if (!ev.retraitements) return "retraitements";
+  if (!ev.dette) return "dette";
+  // not approved yet, or figures modified since the approval (state given by the server)
+  if (!ev.validation || S.dossier?.parcours?.etapes?.validation?.a_jour === false) return "valeur";
+  // 2. Votre mémorandum, seulement après la validation des chiffres : entreprise (site, puis questions), photos et
+  // logo, équipe dirigeante, rédaction
   if (siteARepondre() && !S.complet && !S.reponses.suivi?.pret_envoye) { S.q = -1; return "questions"; }
-  // Site lu : ses faits, puis son logo et ses photos, avant les questions restantes
   if (siteAValider()) return "site";
-  if (photosAChoisir()) return "photos";
   const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues));
-  // Équipe dirigeante : juste après la question sur l'équipe (une fois), sinon avant la rédaction
-  if (equipeAPresenter() && (iq < 0 || iq > QUESTIONS.findIndex((q) => q.id === "equipe"))) return "equipe";
   if (iq >= 0) { S.q = iq; return "questions"; }
+  if (!S.vues.includes("photos")) return "photos";
+  if (equipeAPresenter()) return "equipe";
   if (!S.reponses.suivi?.pret_envoye && !S.complet) return "redaction";
   return "pret";
 }
@@ -91,9 +105,11 @@ function etapeDemandee() {
     if (siteARepondre()) { S.q = -1; return "questions"; }
     const iq = QUESTIONS.findIndex((q) => !questionRepondue(q, S.reponses, S.vues)); S.q = Math.max(0, iq); return "questions";
   }
-  if (e === "photos") return S.reponses.site?.url ? "photos" : null;
-  if (e === "equipe") return "equipe";
-  if (e === "redaction" || e === "pret") return e;
+  if (e === "exercices") return dernierConfirme() ? "exercices" : null;
+  if (["retraitements", "dette", "valeur"].includes(e)) return dernierConfirme() ? e : null;
+  // The memorandum starts once the figures are validated
+  if (["photos", "equipe", "redaction"].includes(e)) return valeurValidee() || S.complet ? e : null;
+  if (e === "pret") return e;
   return null;
 }
 const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
@@ -102,8 +118,12 @@ const siteARepondre = () => !S.reponses.site?.url && !S.reponses.site?.aucun;
 function dessinerEtapes() {
   const ici = ETAPE_DE_L_ECRAN[S.etape];
   const etats = Object.fromEntries((S.etat?.etapes || []).map((x) => [x.cle, x.etat]));
-  remplacer($("#guide-etapes"), ...ETAPES_PARCOURS.map(([k, libelle], j) => el("li", { class: k === ici ? "actif" : etats[k] === "fait" ? "fait" : null, "aria-current": k === ici ? "step" : null },
-    el("span", { text: etats[k] === "fait" && k !== ici ? "✓" : String(j + 1) }), libelle, el("span", { class: "visuellement-cache", text: etats[k] === "fait" ? t("demarrer.js.faite") : "" }))));
+  // Two stages, each with its steps: "1. Your valuation" then "2. Your memorandum"
+  let j = 0;
+  remplacer($("#guide-etapes"), ...TEMPS.map((tp, n) => el("li", { class: `temps${tp.etapes.includes(ici) ? " temps-actif" : ""}` },
+    el("span", { class: "temps-titre", text: `${n + 1}. ${tp.titre}` }),
+    el("ol", { class: "temps-etapes" }, ...tp.etapes.map((k) => { j += 1; return el("li", { class: k === ici ? "actif" : etats[k] === "fait" ? "fait" : null, "aria-current": k === ici ? "step" : null },
+      el("span", { text: etats[k] === "fait" && k !== ici ? "✓" : String(j) }), t(`dossier.etapes.${k}`), el("span", { class: "visuellement-cache", text: etats[k] === "fait" ? t("demarrer.js.faite") : "" })); })))));
   const pct = S.etat?.avancement ?? 0;
   $("#guide-barre span").style.width = `${pct}%`;
   $("#guide-barre").setAttribute("aria-valuenow", String(pct));
@@ -125,7 +145,7 @@ async function rafraichirEtat() {
 function aller(etape) {
   if (etape === "questions" && S.etape !== "questions") { S.aPoser = null; rafraichirPropositions().then(() => { if (S.etape === "questions" && S.q >= 0) questions(); }); }
   S.etape = etape; dessinerEtapes(); rafraichirEtat();
-  ({ accueil, comptes, saisie, chiffres, questions, site, photos, equipe, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
+  ({ accueil, comptes, saisie, chiffres, exercices, retraitements, dette, valeur, questions, site, photos, equipe, redaction, pret })[etape](); $("#ecran").querySelector("h1, h2")?.focus?.(); window.scrollTo({ top: 0 });
 }
 const titre = (texte, aide) => [el("h1", { class: "guide-titre", tabindex: "-1", text: texte }), aide ? el("p", { class: "chapo-petit", text: aide }) : null].filter(Boolean);
 
@@ -326,13 +346,261 @@ function ligneAVerifier(annee, cle, cellule) {
   const c = CHAMPS.find((x) => x.cle === cle);
   const input = el("input", { type: "text", inputmode: "decimal", value: cellule?.valeur != null ? fmt.format(cellule.valeur) : "", "aria-label": `${libelleEcran(c)}, ${annee}` });
   input.addEventListener("input", () => { input.value = formaterSaisie(input.value); }); // séparateurs de milliers en direct
-  return el("div", { class: "guide-ligne" }, el("label", { text: libelleEcran(c) || cle }), input,
-    el("button", { type: "button", class: "btn btn-mini", onclick: async () => {
+  // A line in alert already approved says so (24/11/2026): it stays here, to be corrected if needed
+  const validee = Boolean(cellule?.valide);
+  return el("div", { class: `guide-ligne${validee ? " validee" : ""}` }, el("label", { text: libelleEcran(c) || cle }), input,
+    validee ? el("span", { class: "pastille-ok", text: t("demarrer.js.chiffres.ligne_validee") }) : null,
+    el("button", { type: "button", class: validee ? "btn btn-mini btn-contour" : "btn btn-mini", onclick: async () => {
       const v = lireNombre(input.value);
       if (v === null || Number.isNaN(v)) { message(t("demarrer.js.chiffres.montant_lisible"), true); input.focus(); return; }
       try { S.chiffres = await api(`${base}/financials`, { method: "PUT", body: JSON.stringify({ annee, valeurs: { [cle]: v }, valider: true }) }); message(""); chiffres(); }
       catch (e) { message(e.message, true); }
-    } }, t("demarrer.js.chiffres.valider_ligne")));
+    } }, validee ? t("demarrer.js.chiffres.corriger_ligne") : t("demarrer.js.chiffres.valider_ligne")));
+}
+
+// ================================================================== 1 ter. Les deux exercices précédents
+/** A buyer reasons over 3 years: the two previous fiscal years are asked for; the owner may skip them, knowing what
+ *  the range loses (the EBITDA used then rests on fewer years). */
+function exercices() {
+  const x = exercicesAttendus(S.chiffres?.exercices);
+  const manque = [...x.recommandes_manquants].sort((a, b) => b - a);
+  if (!x.dernier_complet || !manque.length) { aller(etapeCourante()); return; }
+  const complets = [x.dernier, ...x.recommandes].filter((a) => !manque.includes(a)).sort((a, b) => a - b);
+  const lecture = S.chiffres?.lecture_automatique !== false;
+  remplir(...titre(t("demarrer.js.exercices.titre"), t("demarrer.js.exercices.aide", { dernier: x.dernier })),
+    el("ul", { class: "exercices-manquants" }, ...manque.map((a) => el("li", { class: "carte" },
+      el("strong", { text: t("demarrer.js.chiffres.exercice", { annee: a }) }),
+      el("button", { type: "button", class: "btn btn-noir btn-mini", onclick: () => { S.saisie = { annee: a, valeurs: {}, ecran: 1 }; aller("saisie"); } }, t("demarrer.js.exercices.saisir", { annee: a }))))),
+    lecture ? el("p", { class: "petit" }, t("demarrer.js.exercices.liasse"), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, t("demarrer.js.exercices.deposer"))) : null,
+    el("div", { class: "carte exercices-perte" }, el("p", { class: "etiquette", text: t("demarrer.js.exercices.perte_titre") }),
+      el("p", { text: t("demarrer.js.exercices.perte", { annees: complets.join(", ") }) })),
+    el("div", { class: "q-nav" },
+      el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.retour")),
+      el("button", { type: "button", class: "btn btn-contour", onclick: async (ev) => { ev.currentTarget.disabled = true; await marquerVue("exercices_passes"); aller(etapeCourante()); } }, t("demarrer.js.exercices.passer"), fleche())));
+}
+
+// ================================================================== Valorisation : champs communs
+/** Values of a fiscal year as a plain object { cle: valeur } (the lines entered or read, approved or not). */
+const valeursExercice = (annee) => Object.fromEntries(Object.entries(S.chiffres?.exercices?.[annee] || {}).filter(([, c]) => c?.valeur != null).map(([k, c]) => [k, c.valeur]));
+const reponse = (c) => S.reponses[c.etape]?.[c.cle];
+/** Amount field of a valuation screen: label, help, formatted field + slider; never a proposed value. */
+function montantValorisation(c, surChange) {
+  const id = `v-${c.etape}-${c.cle}`;
+  const comp = champMontant({ id, libelle: c.libelle, etiquette: `${id}-lib`, unite: "€", min: 0, max: Math.max(c.max, Number(reponse(c)) || 0), valeur: Number.isFinite(reponse(c)) ? reponse(c) : null });
+  comp.addEventListener("input", () => surChange?.());
+  comp.dataset.cle = c.cle;
+  return { comp, noeud: el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", id: `${id}-lib`, for: id }, c.libelle), c.aide ? el("p", { class: "guide-aide", text: c.aide }) : null, comp) };
+}
+/** Single choice (chips), never preselected unless the owner already answered. */
+function choixValorisation(c, valeurs, surChange) {
+  const groupe = el("div", { class: "puces-choix", role: "radiogroup", "aria-labelledby": `v-${c.cle}-lib` });
+  groupe.append(...c.options.map((o) => el("button", { type: "button", role: "radio", class: `puce${valeurs[c.cle] === o ? " choisie" : ""}`, "aria-checked": String(valeurs[c.cle] === o), onclick: (ev) => {
+    valeurs[c.cle] = o;
+    for (const b of groupe.children) { const oui = b === ev.currentTarget; b.classList.toggle("choisie", oui); b.setAttribute("aria-checked", String(oui)); }
+    surChange?.();
+  } }, libelleOption(c.cle, o))));
+  return el("div", { class: "guide-champ" }, el("p", { class: "guide-lib", id: `v-${c.cle}-lib`, text: c.libelle }), c.aide ? el("p", { class: "guide-aide", text: c.aide }) : null, groupe);
+}
+const signe = (v) => (v > 0 ? `+${kEuros(v)}` : kEuros(v));
+/** Saves several answers (one request per step) and the screen as validated. */
+async function enregistrerValorisation(valeurs, vue) {
+  const parEtape = {};
+  for (const [chemin, v] of Object.entries(valeurs)) { const [e, k] = chemin.split("."); (parEtape[e] ||= {})[k] = v; }
+  for (const [e, l] of Object.entries(parEtape)) {
+    S.reponses[e] = { ...(S.reponses[e] || {}), ...l };
+    await api(`${base}/answers/${e}`, { method: "PUT", body: JSON.stringify({ data: S.reponses[e] }) });
+  }
+  await marquerVue(vue);
+}
+
+// ================================================================== 2. Retraitements
+/** One required screen, never validated in bulk: pay, rent, exceptional items, leasing. Each block shows its effect
+ *  live, and the total: "Reported EBITDA 89 k€ → restated EBITDA X k€" (same rule as the engine). */
+function retraitements() {
+  const C = Object.fromEntries(VALORISATION.retraitements.map((c) => [c.cle, c]));
+  const x = exercicesAttendus(S.chiffres?.exercices);
+  const annee = x.dernier;
+  const ebeComptable = ebeExercice(valeursExercice(annee));
+  const choix = { murs: S.reponses.retraitements?.murs ?? null, exceptionnel_signale: S.reponses.retraitements?.exceptionnel_signale ?? null };
+  const annees = [x.dernier, ...x.recommandes].filter((a) => a != null);
+  // Exceptional items: an expense is added back (+), an income removed (−); stored as a signed amount (unchanged format)
+  const liste = (Array.isArray(S.reponses.retraitements?.exceptionnels) ? S.reponses.retraitements.exceptionnels : [])
+    .map((e) => ({ annee: e.annee ?? annee, libelle: e.libelle || "", sens: Number(e.montant) < 0 ? "produit" : "charge", montant: Number.isFinite(Number(e.montant)) ? Math.abs(Number(e.montant)) : null, justification: e.justification || "" }));
+  const effets = {};
+  const total = el("p", { class: "retraitements-total", "aria-live": "polite" });
+  const lire = () => {
+    const v = (cle) => champs[cle]?.comp.lire().valeur ?? null;
+    const exc = choix.exceptionnel_signale === "Oui" ? liste.filter((e) => Number.isFinite(e.montant) && e.montant !== 0).map((e) => ({ annee: Number(e.annee), libelle: e.libelle.trim().slice(0, 120), montant: e.sens === "produit" ? -e.montant : e.montant, justification: e.justification.trim().slice(0, 300) })) : [];
+    const loyer = choix.murs === MURS.dirigeant;
+    return { remuneration_dirigeant_reelle: v("remuneration_dirigeant_reelle"), remuneration_normative: v("remuneration_normative"),
+      loyer_paye: loyer ? v("loyer_paye") : null, loyer_marche: loyer ? v("loyer_marche") : null, exceptionnels: exc };
+  };
+  const maj = () => {
+    const r = lire();
+    const a = apercuRetraitements(ebeComptable, r, annee);
+    const de = (cle) => (a?.lignes || []).filter((l) => l.cle === cle).reduce((s, l) => s + l.montant, 0);
+    effets.dirigeant.textContent = Number.isFinite(r.remuneration_dirigeant_reelle) && Number.isFinite(r.remuneration_normative) ? t("demarrer.js.retraitements.effet", { montant: signe(r.remuneration_dirigeant_reelle - r.remuneration_normative) }) : t("demarrer.js.retraitements.effet_attente");
+    effets.loyer.textContent = Number.isFinite(r.loyer_paye) && Number.isFinite(r.loyer_marche) ? t("demarrer.js.retraitements.effet", { montant: signe(r.loyer_paye - r.loyer_marche) }) : choix.murs && choix.murs !== MURS.dirigeant ? t("demarrer.js.retraitements.sans_effet") : t("demarrer.js.retraitements.effet_attente");
+    effets.exceptionnel.textContent = choix.exceptionnel_signale === "Non" ? t("demarrer.js.retraitements.sans_effet") : t("demarrer.js.retraitements.effet_annee", { montant: signe(de("exceptionnel")), annee });
+    blocLoyer.hidden = choix.murs !== MURS.dirigeant;
+    blocExc.hidden = choix.exceptionnel_signale !== "Oui";
+    remplacer(total, a ? [t("demarrer.js.retraitements.total_avant", { annee }), " ", el("strong", { text: kEuros(a.ebe_comptable) }), " → ", t("demarrer.js.retraitements.total_apres"), " ", el("strong", { text: kEuros(a.ebe_retraite) })] : t("demarrer.js.retraitements.total_inconnu"));
+  };
+  const champs = Object.fromEntries(["remuneration_dirigeant_reelle", "remuneration_normative", "loyer_paye", "loyer_marche"].map((k) => [k, montantValorisation(C[k], () => maj())]));
+  for (const k of ["dirigeant", "loyer", "exceptionnel"]) effets[k] = el("p", { class: "retraitement-effet", "aria-live": "polite" });
+  const blocLoyer = el("div", { class: "saisie-deux" }, champs.loyer_paye.noeud, champs.loyer_marche.noeud);
+  const lignesExc = el("div", { class: "exceptionnels" });
+  const dessinerExc = () => remplacer(lignesExc, ...liste.map((e, k) => {
+    const montant = el("input", { type: "text", inputmode: "decimal", value: e.montant != null ? formaterSaisie(String(e.montant)) : "", placeholder: t("demarrer.js.exc.montant_euros"), "aria-label": t("demarrer.js.exc.montant") });
+    montant.addEventListener("input", () => { montant.value = formaterSaisie(montant.value); e.montant = lireMontant(montant.value); maj(); });
+    const sens = el("select", { "aria-label": t("demarrer.js.retraitements.sens"), onchange: (ev) => { e.sens = ev.target.value; maj(); } },
+      el("option", { value: "charge", selected: e.sens === "charge", text: t("demarrer.js.retraitements.charge") }), el("option", { value: "produit", selected: e.sens === "produit", text: t("demarrer.js.retraitements.produit") }));
+    const an = el("select", { "aria-label": t("demarrer.js.exc.exercice"), onchange: (ev) => { e.annee = Number(ev.target.value); maj(); } }, ...annees.map((a) => el("option", { value: String(a), selected: Number(e.annee) === a, text: String(a) })));
+    return el("div", { class: "exc" }, an, sens,
+      el("input", { type: "text", value: e.libelle, placeholder: t("demarrer.js.exc.libelle"), "aria-label": t("demarrer.js.exc.libelle"), oninput: (ev) => { e.libelle = ev.target.value; } }),
+      montant,
+      el("input", { type: "text", value: e.justification, placeholder: t("demarrer.js.exc.pourquoi"), "aria-label": t("demarrer.js.exc.justification"), oninput: (ev) => { e.justification = ev.target.value; } }),
+      el("button", { type: "button", class: "lien-simple", onclick: () => { liste.splice(k, 1); dessinerExc(); maj(); } }, t("espace.js.retirer")));
+  }), el("button", { type: "button", class: "btn btn-contour btn-mini", onclick: () => { liste.push({ annee, libelle: "", sens: "charge", montant: null, justification: "" }); dessinerExc(); lignesExc.querySelectorAll(".exc input")[0]?.focus(); } }, t("demarrer.js.exc.ajouter")));
+  if (!liste.length) liste.push({ annee, libelle: "", sens: "charge", montant: null, justification: "" });
+  dessinerExc();
+  const blocExc = el("div", {}, lignesExc);
+  const bloc = (titreBloc, aide, ...contenu) => el("section", { class: "carte retraitement" }, el("h2", { text: titreBloc }), aide ? el("p", { class: "petit", text: aide }) : null, ...contenu);
+  const valider = el("button", { type: "button", class: "btn btn-vert" }, t("demarrer.js.retraitements.valider"), fleche());
+  valider.addEventListener("click", async () => {
+    for (const k of Object.keys(champs)) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
+    const r = lire();
+    const futur = { ...S.reponses, dirigeant: { ...(S.reponses.dirigeant || {}), ...r }, retraitements: { ...(S.reponses.retraitements || {}), ...choix, loyer_paye: r.loyer_paye, loyer_marche: r.loyer_marche, exceptionnels: r.exceptionnels } };
+    const manque = manquesValorisation("retraitements", futur);
+    if (manque.length) { message(t("demarrer.js.retraitements.il_manque", { liste: manque.map((c) => c.libelle).join(", ") }), true); return; }
+    if (choix.exceptionnel_signale === "Oui" && !r.exceptionnels.length) { message(t("demarrer.js.retraitements.exc_vide"), true); return; }
+    valider.disabled = true;
+    try {
+      await enregistrerValorisation({ "dirigeant.remuneration_dirigeant_reelle": r.remuneration_dirigeant_reelle, "dirigeant.remuneration_normative": r.remuneration_normative,
+        "retraitements.murs": choix.murs, "retraitements.loyer_paye": r.loyer_paye, "retraitements.loyer_marche": r.loyer_marche,
+        "retraitements.exceptionnel_signale": choix.exceptionnel_signale, "retraitements.exceptionnels": r.exceptionnels }, "retraitements");
+      message(""); aller(etapeCourante() === "retraitements" ? "dette" : etapeCourante());
+    } catch (e) { message(e.message, true); valider.disabled = false; }
+  });
+  remplir(...titre(t("demarrer.js.retraitements.titre"), t("demarrer.js.retraitements.aide")),
+    el("div", { class: "carte retraitements-tete" }, total),
+    bloc(t("demarrer.js.retraitements.dirigeant_titre"), t("demarrer.js.retraitements.dirigeant_aide"), el("div", { class: "saisie-deux" }, champs.remuneration_dirigeant_reelle.noeud, champs.remuneration_normative.noeud), effets.dirigeant),
+    bloc(t("demarrer.js.retraitements.loyer_titre"), null, choixValorisation(C.murs, choix, maj), blocLoyer, effets.loyer),
+    bloc(t("demarrer.js.retraitements.exc_titre"), null, choixValorisation(C.exceptionnel_signale, choix, maj), blocExc, effets.exceptionnel),
+    bloc(t("demarrer.js.retraitements.credit_bail_titre"), t("demarrer.js.retraitements.credit_bail_aide")),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller(exercicesFaits() ? "chiffres" : "exercices") }, t("demarrer.js.retour")), valider),
+    el("p", { class: "q-usage", text: t("demarrer.js.retraitements.usage") }));
+  maj();
+}
+
+// ================================================================== 3. Dette nette et périmètre
+function dette() {
+  const C = Object.fromEntries(VALORISATION.dette.map((c) => [c.cle, c]));
+  const annee = exercicesAttendus(S.chiffres?.exercices).dernier;
+  const ex = valeursExercice(annee);
+  const choix = { detention: S.reponses.operation?.detention ?? null, murs_cession: S.reponses.retraitements?.murs_cession ?? null, part_cedee: S.reponses.operation?.part_cedee ?? null };
+  const mursAVous = S.reponses.retraitements?.murs === MURS.dirigeant;
+  const champs = Object.fromEntries(["comptes_courants_remboursables", "credit_bail_restant", "dividendes_a_verser", "actifs_hors_exploitation"].map((k) => [k, montantValorisation(C[k])]));
+  // What the balance sheet already says (latest fiscal year), read only: corrected on "Your figures"
+  const bilan = [["tresorerie", 1], ["placements", 1], ["emprunts", -1], ["provisions_risques", -1]].filter(([k]) => ex[k] != null);
+  const valider = el("button", { type: "button", class: "btn btn-vert" }, t("demarrer.js.dette.valider"), fleche());
+  valider.addEventListener("click", async () => {
+    for (const k of Object.keys(champs)) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
+    const v = (k) => champs[k].comp.lire().valeur;
+    const futur = { ...S.reponses, operation: { ...(S.reponses.operation || {}), detention: choix.detention, part_cedee: choix.part_cedee }, retraitements: { ...(S.reponses.retraitements || {}), murs_cession: choix.murs_cession } };
+    const manque = manquesValorisation("dette", futur);
+    if (manque.length) { message(t("demarrer.js.retraitements.il_manque", { liste: manque.map((c) => c.libelle).join(", ") }), true); return; }
+    valider.disabled = true;
+    try {
+      await enregistrerValorisation({ ...Object.fromEntries(Object.keys(champs).map((k) => [`bilan.${k}`, v(k)])),
+        "operation.detention": choix.detention, "operation.part_cedee": choix.part_cedee, ...(mursAVous ? { "retraitements.murs_cession": choix.murs_cession } : {}) }, "dette");
+      message(""); aller(etapeCourante() === "dette" ? "valeur" : etapeCourante());
+    } catch (e) { message(e.message, true); valider.disabled = false; }
+  });
+  remplir(...titre(t("demarrer.js.dette.titre"), t("demarrer.js.dette.aide")),
+    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.bilan_titre", { annee }) }),
+      bilan.length ? el("dl", { class: "guide-resume dette-bilan" }, ...bilan.map(([k, s]) => el("div", {}, el("dt", { text: libelleEcran(CHAMPS.find((c) => c.cle === k)) }), el("dd", { text: kEuros(s * ex[k]) })))) : el("p", { class: "petit", text: t("demarrer.js.dette.bilan_vide") }),
+      el("p", { class: "petit" }, t("demarrer.js.dette.bilan_aide"), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.dette.corriger")))),
+    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.autres_titre") }), el("p", { class: "petit", text: t("demarrer.js.dette.autres_aide") }),
+      el("div", { class: "saisie-deux" }, ...Object.values(champs).map((x) => x.noeud))),
+    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.perimetre_titre") }), el("p", { class: "petit", text: t("demarrer.js.dette.perimetre_aide") }),
+      choixValorisation(C.detention, choix),
+      el("p", { class: "petit dette-murs" }, t("demarrer.js.dette.murs", { murs: S.reponses.retraitements?.murs ? libelleOption("murs", S.reponses.retraitements.murs) : "–" }), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.dette.modifier"))),
+      mursAVous ? choixValorisation(C.murs_cession, choix) : null,
+      choixValorisation(C.part_cedee, choix)),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.retour")), valider),
+    el("p", { class: "q-usage", text: t("demarrer.js.dette.usage") }));
+}
+
+// ================================================================== 4. Votre valeur
+/** Summary a banker can read: the bridge visible without a click (k€, negatives in brackets), the points of attention
+ *  visible, the adjusted net assets presented consistently, the passage from the quick estimate, and "I approve these
+ *  figures". Everything comes from the engine's result (POST …/valuation). */
+async function valeur() {
+  remplir(...titre(t("demarrer.js.valeur.titre"), t("demarrer.js.valeur.calcul")));
+  let d;
+  try { d = await api(`${base}/valuation`, { method: "POST" }); }
+  catch (e) { message(e.message, true); return; }
+  if (S.etape !== "valeur") return;
+  await rafraichirEtat();
+  const r = d.resultat, v = resumeValorisation(r);
+  const etatV = S.dossier?.parcours?.etapes?.validation || null;
+  const aRevalider = etatV?.a_jour === false;
+  const validee = etatV && !aRevalider ? etatV : null;
+  const modifier = el("p", { class: "petit valeur-modifier" },
+    t("demarrer.js.valeur.modifier"), " ",
+    el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("dossier.etapes.chiffres")), " · ",
+    el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("dossier.etapes.retraitements")), " · ",
+    el("button", { type: "button", class: "lien-simple", onclick: () => aller("dette") }, t("dossier.etapes.dette")));
+  const bouton = el("button", { type: "button", class: "btn btn-vert" }, validee ? t("demarrer.js.valeur.continuer") : t("demarrer.js.valeur.valider"), fleche());
+  bouton.addEventListener("click", async () => {
+    bouton.disabled = true;
+    try {
+      const x = await api(`${base}/valuation/validation`, { method: "POST" });
+      S.reponses.validation = x.validation;
+      await rafraichirEtat();
+      if (S.dossier?.entreprise?.naf && !S.complet) lancerEtudeMarche(); // the memorandum starts now
+      message(""); aller(etapeCourante());
+    } catch (e) { message(e.message, true); bouton.disabled = false; }
+  });
+  if (r?.statut !== "ok" || !v) {
+    remplir(...titre(t("demarrer.js.valeur.titre"), t("demarrer.js.valeur.impossible")),
+      el("ul", { class: "alertes" }, ...alertesDirigeant(r?.alertes || r?.synthese?.alertes || []).map((a) => el("li", { text: a }))),
+      modifier, el("div", { class: "q-nav" }, el("span"), r?.statut === "ok" ? bouton : null));
+    return;
+  }
+  const p = pontValeur(r);
+  const dettes = Object.fromEntries(r.dette_nette.lignes.map((l) => [`dette_${l.cle}`, l.libelle]));
+  const libelle = (l) => (dettes[l.cle] ? `${l.bas >= 0 ? "+" : "−"} ${dettes[l.cle]}`
+    : l.cle === "ebe_comptable" ? t(p.annees.length > 1 ? "demarrer.js.valeur.pont.ebe_comptable_moyen" : "demarrer.js.valeur.pont.ebe_comptable", { annees: p.annees.join(", ") })
+    : t(`demarrer.js.valeur.pont.${l.cle}`));
+  const cellule = (x) => (l) => (l.cle === "multiples" ? fois(l[x]) : kEuros(l[x]));
+  const lignes = p ? p.lignes.map((l) => el("tr", { class: l.cle === "titres" ? "total fort" : l.total ? "total" : null },
+    el("th", { scope: "row", text: libelle(l) }),
+    // EBITDA lines: the same amount for both ends of the range, written in both columns
+    ...(Number.isFinite(l.montant) ? [0, 1].map(() => el("td", { class: "num", text: l.cle === "ebe_comptable" || l.total ? kEuros(l.montant) : signe(l.montant) })) : [el("td", { class: "num", text: cellule("bas")(l) }), el("td", { class: "num", text: cellule("haut")(l) })]))) : [];
+  const mois = moisSource(r.multiples?.source);
+  const ancc = texteAncc(situationAncc(v.bas, v.haut, r.ancc.valeur), v);
+  // Points of attention, visible; the adjusted-net-assets alert is replaced by the sentence below the bridge
+  const points = alertesDirigeant(r.synthese.alertes).filter((a) => !/actif net corrigé de l'entreprise|company’s adjusted net assets/i.test(a));
+  const ecart = explicationEcart(S.dossier?.estimation, v);
+  remplir(...titre(t("demarrer.js.valeur.titre"), t("demarrer.js.valeur.aide")),
+    el("div", { class: "carte valeur-tete" }, el("p", { class: "etiquette", text: etiquetteTitres() }), el("p", { class: "valeur-fourchette chiffre", text: fourchette(v.bas, v.haut) }),
+      ecart ? el("p", { class: "petit", text: ecart }) : null,
+      validee ? el("p", { class: "petit valeur-validee", text: t("demarrer.js.valeur.validee_le", { date: new Date(validee.le * 1000).toLocaleDateString(locale()) }) }) : null,
+      aRevalider ? el("p", { class: "valeur-revalider", role: "status", text: t("dossier.taches.valeur.a_revalider") }) : null),
+    p ? el("section", { class: "carte valeur-pont" }, el("h2", { text: t("demarrer.js.valeur.pont_titre") }),
+      el("div", { class: "tableau-defile", tabindex: "0" }, el("table", { class: "tableau-resultat" },
+        el("caption", { class: "visuellement-cache", text: t("demarrer.js.valeur.pont_titre") }),
+        el("thead", {}, el("tr", {}, el("th", { scope: "col", text: t("demarrer.js.valeur.pont.etape") }), el("th", { scope: "col", class: "num", text: t("demarrer.js.valeur.pont.bas") }), el("th", { scope: "col", class: "num", text: t("demarrer.js.valeur.pont.haut") }))),
+        el("tbody", {}, ...lignes))),
+      el("p", { class: "petit", text: t("demarrer.js.valeur.source_multiples", { mois: mois || "–" }) })) : null,
+    points.length ? el("section", { class: "carte valeur-points" }, el("h2", { text: t("demarrer.js.valeur.points_titre", { n: points.length }) }), el("ul", { class: "alertes" }, ...points.map((a) => el("li", { text: a })))) : null,
+    ancc ? el("section", { class: "carte valeur-ancc" }, el("h2", { text: t("demarrer.js.valeur.ancc_titre") }), el("p", { text: ancc })) : null,
+    modifier,
+    el("p", { class: "petit" }, el("a", { href: lien(`/espace/valorisation/?dossier=${id}#valorisation`), text: t("demarrer.js.valeur.detail") })),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("dette") }, t("demarrer.js.retour")), bouton),
+    el("p", { class: "q-usage", text: t("demarrer.js.valeur.usage") }));
 }
 
 // ================================================================== 3. Questions (une par écran)
@@ -604,7 +872,7 @@ const ordre = (cle) => (cle === "site" ? -1 : QUESTIONS.findIndex((q) => q.id ==
 function precedente() {
   const i = (S.aPoser || []).indexOf(cleEcran());
   const prec = i > 0 ? S.aPoser[i - 1] : null;
-  if (prec == null) { aller("chiffres"); return; }
+  if (prec == null) { aller("valeur"); return; }
   S.q = ordre(prec); questions();
 }
 /** Le site vient d'être lu : ses faits, son logo et ses photos sont à valider (juste après la lecture). */
@@ -620,8 +888,6 @@ function suivante(q) {
   }
   // Lecture du site terminée pendant la question : on valide ses faits, son logo et ses photos maintenant
   if (siteAValider()) { aller("site"); return; }
-  // Après la question sur l'équipe : les personnes de l'équipe dirigeante (une fois)
-  if (q.id === "equipe" && equipeAPresenter()) { aller("equipe"); return; }
   // Question suivante encore sans réponse (celles validées dans le récapitulatif sont sautées)
   const i = QUESTIONS.indexOf(q);
   const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
@@ -749,7 +1015,7 @@ const cleFaits = (f) => `f-${f.id}`;
 async function site() {
   if (S.lectureSite) { message(t("demarrer.js.site.lecture")); await S.lectureSite; message(""); }
   const s = S.reponses.site || {};
-  if (!s.url || !((s.faits || []).length || (s.logos || []).length)) { aller(photosAChoisir() ? "photos" : etapeCourante()); return; }
+  if (!s.url || !((s.faits || []).length || (s.logos || []).length)) { aller(etapeCourante()); return; }
   const faits = (s.faits || []).map((f) => ({ ...f, valide: s.confirme ? f.valide !== false : true }));
   const conflits = contradictions(faits, S.dossier?.entreprise || {});
   const enConflit = new Set(conflits.map((c) => c.id));
@@ -802,86 +1068,69 @@ async function site() {
           await api(`${base}/answers/site`, { method: "PUT", body: JSON.stringify({ data: site }) });
           S.reponses.site = site; S.memo = memo;
           rafraichirPropositions();
-          aller(photosAChoisir() ? "photos" : etapeCourante());
+          aller(etapeCourante());
         } catch (e) { message(e.message, true); bouton.disabled = false; }
       } }, faits.length ? t("demarrer.js.site.valider_faits") : t("demarrer.js.continuer"), fleche())),
     el("p", { class: "q-usage", text: t("demarrer.js.site.usage_faits") }));
 }
 
-/** Logo et photos : le logo trouvé est présélectionné ; le dirigeant clique les photos du site à ajouter (12 au plus,
- *  case de droits cochée une fois) ou dépose les siennes. Sous chaque photo ajoutée, le jugement de Claude
- *  (catégorie, note, usage et légende proposés) avec « Utiliser comme proposé » et « Ignorer » ; l'ordre se change
- *  aux flèches ou en glissant. La couverture, l'activité, les réalisations et l'équipe sont choisies par catégorie. */
+/** « Photos et logo » (part D, 24/11/2026), with or without a website: 1. the logo, chosen among those of the website
+ *  or uploaded, with its preview; 2. the photos of the website to click and the upload of several files at once
+ *  (drag and drop, progress per file, reduction in the browser), the attestation above, never lost; 3. the photos
+ *  kept, each with Claude's assessment and where it will appear in the memorandum. */
 let focusPhotoParcours = null;
 async function photos() {
-  const memo = S.memo?.site ? S.memo : await api(`${base}/documents/memo`).catch(() => null);
+  const memo = await api(`${base}/documents/memo`).catch(() => S.memo);
   S.memo = memo;
   const s = memo?.site || S.reponses.site || {};
   const max = memo?.photos_max || 12;
   const deja = memo?.photos || [];
+  const baseMemo = `${base}/documents/memo`;
   const candidates = (s.photos_candidates || []).filter((u) => !deja.some((p) => p.origine === u)).slice(0, Math.max(0, max - deja.length));
   const ecartees = s.photos_ecartees || [];
-  const logos = s.logos || [];
-  let logo = memo?.logo ? "garde" : logos[0]?.url ?? null;
-  const droits = el("input", { type: "checkbox", id: "photos-droits" });
-  const baseMemo = `${base}/documents/memo`;
-  const ajouter = async (corps, bouton) => {
-    if (!droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); return; }
-    if (bouton) bouton.disabled = true;
-    try { S.memo = await api(`${baseMemo}/photos`, { method: "POST", body: corps }); message(""); photos(); }
-    catch (e) { message(e.message, true); if (bouton) bouton.disabled = false; }
+  // A decision, a new order or an assessment redraws the list only: the upload rows (and their advice) and the logo
+  // status stay in place
+  const redessiner = (m, cible) => { if (m) S.memo = m; focusPhotoParcours = cible || null; majListe(); };
+  // Upload: the list below is redrawn after each photo, the upload zone (and its progress rows) stays in place
+  const depot = zoneDepotPhotos({ memo, baseMemo, idBase: "parcours-photos",
+    surAjout: (m) => { S.memo = m; majListe(); }, surCandidate: (m) => { S.memo = m; majListe(); } });
+  const zoneListe = el("div", { class: "guide-champ" });
+  const majListe = () => {
+    const m = S.memo || {};
+    depot.majMemo(m); // a photo removed frees a place
+    const liste = listePhotos({ memo: m, baseMemo, message, focus: focusPhotoParcours, maj: redessiner });
+    focusPhotoParcours = null;
+    remplacer(zoneListe, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.vos_photos", { n: (m.photos || []).length, max }) }),
+      liste || el("p", { class: "petit", text: t("demarrer.js.photos.aucune_choisie") }));
+    bouton.replaceChildren((m.photos || []).length ? t("demarrer.js.photos.utiliser", { n: m.photos.length }) : t("demarrer.js.photos.sans_photo"), fleche());
   };
-  const grille = el("div", { class: "photos-grille", role: "group", "aria-labelledby": "photos-site-titre" }, ...candidates.map((u, k) => el("button", { type: "button", class: "photo-tuile", "aria-label": t("demarrer.js.photos.ajouter_n", { n: k + 1 }), onclick: (ev) => ajouter(JSON.stringify({ url: u, attestation: true }), ev.currentTarget) },
-    el("img", { src: u, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.currentTarget.closest(".photo-tuile")?.remove() }), el("span", { class: "photo-coche", "aria-hidden": "true", text: "+" }))));
-  const fichier = el("input", { type: "file", accept: "image/png,image/jpeg,image/webp", id: "photos-fichier", class: "visuellement-cache", multiple: true });
-  fichier.addEventListener("change", async () => {
-    if (!droits.checked) { message(t("demarrer.js.photos.cochez_droits"), true); droits.focus(); fichier.value = ""; return; }
-    for (const f of [...fichier.files].slice(0, Math.max(0, max - deja.length))) {
-      const fd = new FormData(); fd.append("fichier", f); fd.append("attestation", "oui");
-      try { S.memo = await api(`${baseMemo}/photos`, { method: "POST", body: fd }); } catch (e) { message(e.message, true); break; }
-    }
-    photos();
-  });
-  // Logo : présélectionné ; « Changer » ouvre les autres candidats, le dépôt et « aucun »
-  const apercuLogo = () => (logo === "garde" ? `${baseMemo}/logo?v=${Date.now()}` : logo);
-  const zoneLogo = el("div", { class: "logo-ligne" });
-  const dessinerLogo = (ouvert = false) => remplacer(zoneLogo,
-    el("span", { class: "logo-apercu" }, apercuLogo() ? el("img", { src: apercuLogo(), alt: t("demarrer.js.site.votre_logo"), referrerpolicy: "no-referrer" }) : el("span", { class: "petit", text: t("demarrer.js.photos.aucun_logo") })),
-    el("div", { class: "logo-texte" }, el("strong", { text: t("demarrer.js.site.votre_logo") }), el("span", { class: "petit", text: logo ? t("demarrer.js.photos.logo_aide") : t("demarrer.js.photos.logo_aucun_aide") })),
-    logos.length > 1 || !logo ? el("button", { type: "button", class: "btn btn-contour btn-mini", "aria-expanded": String(ouvert), onclick: () => dessinerLogo(!ouvert) }, t("demarrer.js.photos.changer")) : null,
-    ouvert ? el("div", { class: "logos-liste", role: "radiogroup", "aria-label": t("demarrer.js.site.choix_logo") },
-      ...logos.map((l, k) => { const r = el("input", { type: "radio", name: "logo", id: `logo-${k}`, checked: logo === l.url, class: "visuellement-cache" }); r.addEventListener("change", () => { logo = l.url; dessinerLogo(true); }); return el("label", { class: "logo-choix", for: `logo-${k}` }, r, el("img", { src: l.url, alt: l.origine, referrerpolicy: "no-referrer" })); }),
-      (() => { const r = el("input", { type: "radio", name: "logo", id: "logo-aucun", class: "visuellement-cache", checked: !logo }); r.addEventListener("change", () => { logo = null; dessinerLogo(true); }); return el("label", { class: "logo-choix logo-aucun", for: "logo-aucun" }, r, t("demarrer.js.site.aucun_logo")); })()) : null);
-  dessinerLogo();
-  const bouton = el("button", { type: "button", class: "btn btn-vert" }, deja.length ? t("demarrer.js.photos.utiliser", { n: deja.length }) : t("demarrer.js.photos.sans_photo"), fleche());
+  const grille = candidates.length ? el("div", { class: "photos-grille", role: "group", "aria-labelledby": "photos-site-titre" }, ...candidates.map((u, k) => el("button", { type: "button", class: "photo-tuile", "aria-label": t("demarrer.js.photos.ajouter_n", { n: k + 1 }), onclick: async (ev) => {
+    const b = ev.currentTarget; b.disabled = true;
+    const ok = await depot.ajouterSite(u, (texte) => message(texte, true));
+    if (ok) { b.remove(); message(""); } else b.disabled = false;
+  } }, el("img", { src: u, alt: "", loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.currentTarget.closest(".photo-tuile")?.remove() }), el("span", { class: "photo-coche", "aria-hidden": "true", text: "+" })))) : null;
+  const bouton = el("button", { type: "button", class: "btn btn-vert" });
   bouton.addEventListener("click", async () => {
-    bouton.disabled = true; message(t("demarrer.js.photos.enregistrement"));
-    try {
-      if (logo && logo !== "garde") await api(`${baseMemo}/logo`, { method: "POST", body: JSON.stringify({ url: logo }) }).catch(() => message(t("demarrer.js.photos.echecs", { n: 1 }), true));
-      await marquerVue("photos");
-      message("");
-      aller(etapeCourante());
-    } catch (e) { message(e.message, true); bouton.disabled = false; }
+    bouton.disabled = true;
+    try { await marquerVue("photos"); message(""); aller(etapeCourante()); }
+    catch (e) { message(e.message, true); bouton.disabled = false; }
   });
-  const liste = listePhotos({ memo, baseMemo, message, focus: focusPhotoParcours, maj: (m, cible) => { if (m) S.memo = m; focusPhotoParcours = cible || null; photos(); } });
-  focusPhotoParcours = null;
   remplir(
-    s.url ? el("p", { class: "q-compteur", text: new URL(s.url).hostname }) : null,
+    s.url ? el("p", { class: "q-compteur", text: new URL(/^https?:/.test(s.url) ? s.url : `https://${s.url}`).hostname }) : null,
     ...titre(t("demarrer.js.photos.titre"), t("demarrer.js.photos.aide_jugement")),
-    zoneLogo,
-    el("div", { class: "guide-champ" },
-      el("p", { class: "guide-lib", text: t("demarrer.js.photos.vos_photos", { n: deja.length, max }) }),
-      liste || el("p", { class: "petit", text: t("demarrer.js.photos.aucune_choisie") })),
-    el("label", { class: "photos-droits", for: "photos-droits" }, droits, el("span", { text: t("demarrer.js.photos.droits") })),
-    candidates.length ? el("div", { class: "guide-champ" },
-      el("p", { class: "guide-lib", id: "photos-site-titre", text: t("demarrer.js.photos.cliquez_ajouter") }),
-      el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max }) }), grille) : null,
-    ecartees.length ? el("p", { class: "petit", text: t("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => t(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null,
-    deja.length < max ? el("p", { class: "petit" }, el("label", { class: "lien-simple", for: "photos-fichier", tabindex: "0", onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fichier.click(); } } }, t("demarrer.js.photos.deposer")), fichier, " ", t("demarrer.js.photos.formats")) : el("p", { class: "petit", text: t("memo.js.photos.limite", { max }) }),
+    el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.logo_titre") }),
+      zoneLogo({ memo, baseMemo, logos: s.logos || [], idBase: "parcours-logo", surChange: (m) => { S.memo = m; } })),
+    el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.ajouter_titre") }),
+      el("p", { class: "petit", text: s.url ? t("demarrer.js.photos.aide_site") : t("demarrer.js.photos.aide_sans_site") }),
+      depot,
+      grille ? el("div", { class: "guide-champ" }, el("p", { class: "guide-lib", id: "photos-site-titre", text: t("demarrer.js.photos.cliquez_ajouter") }), el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max }) }), grille) : null,
+      ecartees.length ? el("p", { class: "petit", text: t("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => t(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null),
+    zoneListe,
     el("div", { class: "q-nav" },
-      el("button", { type: "button", class: "lien-simple", onclick: () => aller(s.url ? "site" : etapeCourante()) }, t("demarrer.js.retour")),
+      el("button", { type: "button", class: "lien-simple", onclick: () => { S.q = QUESTIONS.length - 1; aller("questions"); } }, t("demarrer.js.retour")),
       bouton),
     el("p", { class: "q-usage", text: t("demarrer.js.photos.ou_va") }));
+  majListe();
 }
 
 // ================================================================== Équipe dirigeante (mémorandum seulement)
@@ -954,7 +1203,9 @@ function equipe() {
         el("span", { class: `pastille-etat ${personneComplete(p) ? "ok" : "a-faire"}`, text: personneComplete(p) ? t("demarrer.js.equipe.complet") : t("demarrer.js.equipe.a_completer") })),
       el("div", { class: "eq-fiche" },
         el("div", { class: "eq-deux" },
-          el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: `${pref}-nom`, text: t("demarrer.js.equipe.nom") }), el("input", { type: "text", id: `${pref}-nom`, maxlength: "80", value: p.nom || "", autocomplete: "off", oninput: (e) => champ("nom", e.target.value), onchange: () => equipe() })),
+          el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: `${pref}-nom`, text: t("demarrer.js.equipe.nom") }), el("input", { type: "text", id: `${pref}-nom`, maxlength: "80", value: p.nom || "", autocomplete: "off", oninput: (e) => champ("nom", e.target.value),
+            // Summary updated in place: redrawing the screen on blur swallowed the click on « Continuer » (24/11/2026)
+            onchange: (e) => { const det = e.target.closest(".eq-personne"); det.querySelector(".eq-resume strong").textContent = p.nom || t("demarrer.js.equipe.nouvelle_personne"); const av = det.querySelector("summary .eq-av"); if (av && !p.photo) av.textContent = initiales(p.nom); } })),
           el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", for: `${pref}-role`, text: t("demarrer.js.equipe.role") }),
             el("select", { id: `${pref}-role`, onchange: (e) => { champ("role", e.target.value || null); equipe(); } }, el("option", { value: "", text: t("demarrer.js.equipe.choisir") }), ...ROLES.map((r) => el("option", { value: r, selected: p.role === r, text: t(`memo.equipe.roles.${r}`) }))),
             p.role === "autre" ? el("input", { type: "text", maxlength: "60", value: p.role_autre || "", "aria-label": t("demarrer.js.equipe.role_autre"), placeholder: t("demarrer.js.equipe.role_autre"), oninput: (e) => champ("role_autre", e.target.value) }) : null)),
@@ -974,15 +1225,13 @@ function equipe() {
     await sauverEquipe(true);
     await marquerVue("equipe_dirigeante");
     equipeEtat = null;
-    const i = QUESTIONS.findIndex((q) => q.id === "equipe");
-    const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
-    if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante());
+    aller(etapeCourante());
   });
   remplir(
     ...titre(t("demarrer.js.equipe.titre"), t("demarrer.js.equipe.aide")),
     el("div", { class: "eq-personnes" }, ...L.map(carte), ajouterP),
     el("p", { class: "petit eq-rgpd", text: t("demarrer.js.equipe.rgpd") }),
-    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { sauverEquipe(true); equipeEtat = null; const i = QUESTIONS.findIndex((q) => q.id === "equipe"); S.q = i; questions(); } }, t("demarrer.js.retour")), continuer),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { sauverEquipe(true); equipeEtat = null; aller("photos"); } }, t("demarrer.js.retour")), continuer),
     el("p", { class: "q-usage", text: t("demarrer.js.equipe.ou_va") }));
 }
 
@@ -1072,7 +1321,7 @@ async function redaction() {
     catch (e) { lignes[k].classList.replace("en-cours", "erreur"); erreurs.push({ k, message: e.message, statut: e.statut }); }
   };
   try {
-    await executer(taches[0]); // la valorisation d'abord : le datapack, le teaser et le mémorandum s'en servent
+    await executer(taches[0]); // the valuation first: the datapack, the teaser and the memorandum rely on it
     // L'étude de marché tourne pendant tout le reste ; seuls les chapitres qui la citent (marché, synthèse,
     // perspectives) l'attendent, et ils passent en dernier
     const marche = executer(taches[1]);
@@ -1150,7 +1399,9 @@ async function pret() {
       etatDoc(d),
       a ? el("a", { class: "fin-ouvrir", href: a.href, download: a.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: a.libelle, objet: d.titre }) }, a.libelle) : el("span"));
   });
+  const b = e.nouvelleEtape;
   remplir(...titre(f.titre, f.aide),
+    b ? el("div", { class: "bandeau-etape", role: "status", "data-genre": b.genre }, el("p", { text: b.texte }), el("a", { class: "btn btn-noir btn-mini", href: b.href }, b.bouton, " →")) : null,
     v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), el("a", { href: v.lien.href, text: v.lien.texte })) : null,
     restent.length ? el("div", { class: "fin-reste" }, el("h2", { text: f.resteTitre }),
       el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }), x.detail ? el("span", { class: "petit", text: ` · ${x.detail}` }) : null)))) : null,
@@ -1184,7 +1435,7 @@ async function pret() {
     // Documents déjà rédigés : on rouvre sur l'écran final (récapitulatif et points à compléter), pas sur une question
     // facultative laissée vide ; ?etape=… permet toujours d'y revenir (audit, point 17)
     aller(etapeDemandee() || (S.complet || S.reponses.suivi?.pret_envoye ? "pret" : etapeCourante()));
-    if (!S.complet && dossier.entreprise?.naf) lancerEtudeMarche(); // pendant les questions, pas à la fin
+    if (!S.complet && dossier.entreprise?.naf && valeurValidee()) lancerEtudeMarche(); // pendant les questions du mémorandum, pas à la fin
   } catch (e) { if (e.message !== "non_connecte") message(e.message, true); }
   $("main").removeAttribute("aria-busy");
 })();

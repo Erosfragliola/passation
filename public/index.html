@@ -159,7 +159,7 @@
 
   <!-- Résultat de l'estimation (public/js/landing/resultat.js) : l'analyse en quatre étapes (inchangée), puis une fiche
        de synthèse (lot 1) : nom de code, fourchette et barre bas / central / haut, sources datées, une seule action.
-       Aucun compte n'est demandé avant de voir la valeur. -->
+       Since 24/11/2026 the range is shown only to a signed-in owner: before that, the public card and "Create my access". -->
   <section id="resultat" class="resultat" aria-labelledby="titre-resultat" hidden>
     <div class="carte-large carte-verte nuit resultat-grille">
       <div class="resultat-texte" aria-live="polite">
@@ -194,6 +194,12 @@
               <p class="estimation-valeur chiffre" id="estimation-valeur"></p>
               <ul class="resultat-methodes" id="estimation-methodes"></ul>
               <p class="resultat-note" id="estimation-note"></p>
+            </div>
+            <!-- Before an account (24/11/2026): no amount reaches the page; the server sends none without a session. -->
+            <div class="resultat-masque" id="resultat-masque" hidden>
+              <p class="resultat-libelle" data-t="js.resultat.fourchette_titre"></p>
+              <p class="estimation-cachee" aria-hidden="true"><span></span><span></span></p>
+              <p class="resultat-note" data-t="js.resultat.masque"></p>
             </div>
             <form id="form-comptes" class="form-comptes" hidden>
               <p data-t="js.resultat.confidentiels"></p>

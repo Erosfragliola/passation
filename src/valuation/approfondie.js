@@ -1,50 +1,38 @@
-// Valorisation approfondie (PLAN.md § 5.2) : code déterministe, testé. Claude ne calcule jamais ; il commente.
-// Entrées : exercices (compte de résultat + bilan simplifiés, validés par le dirigeant), retraitements, compléments
-// de bilan, prévisions, décotes/primes ; hypothèses sourcées (src/data/hypotheses.json).
+// Detailed valuation (PLAN.md § 5.2): deterministic, tested code. Claude never calculates; it comments.
+// Inputs: fiscal years (simplified income statement + balance sheet, approved by the owner), adjustments, balance-sheet
+// complements, forecasts, discounts/premiums; sourced assumptions (src/data/hypotheses.json).
 import MULTIPLES from "../data/multiples.json";
 import { t as tr, langue, locale } from "../../public/js/i18n.js";
+import { lignesRetraitement, ebeExercice } from "../../public/js/valeur-pont.js";
 
 const n = (x) => (Number.isFinite(Number(x)) ? Number(x) : 0);
 const moyenne = (l) => (l.length ? l.reduce((a, b) => a + b, 0) / l.length : null);
 
-// ---------------------------------------------------------------- EBE et retraitements
+// ---------------------------------------------------------------- EBITDA and adjustments
 /**
- * EBE = CA + autres produits d'exploitation − achats consommés − charges externes − impôts et taxes − personnel.
- * Calculé seulement si le CA et les trois charges obligatoires sont renseignés (un 0 saisi est un vrai zéro) ;
- * « autres produits » et « impôts et taxes » sont des postes facultatifs de la saisie : absents, ils valent 0.
- * Sinon, l'EBE publié (comptes INPI) est pris tel quel ; à défaut, l'EBE n'est pas déterminable (null).
+ * EBITDA = revenue + other operating income − purchases consumed − external expenses − taxes and duties − personnel.
+ * Calculated only if revenue and the three required expenses are filled in (an entered 0 is a real zero);
+ * "other income" and "taxes and duties" are optional items of the entry: if missing, they count as 0.
+ * Otherwise, the published EBITDA (INPI accounts) is taken as is; failing that, EBITDA cannot be determined (null).
  */
-const CHARGES_OBLIGATOIRES = ["achats_consommes", "charges_externes", "charges_personnel"];
-const renseigne = (x) => x !== null && x !== undefined && x !== "" && Number.isFinite(Number(x));
-export function ebe(ex) {
-  if (renseigne(ex.chiffre_affaires) && CHARGES_OBLIGATOIRES.every((k) => renseigne(ex[k]))) {
-    return n(ex.chiffre_affaires) + n(ex.autres_produits) - n(ex.achats_consommes) - n(ex.charges_externes) - n(ex.impots_taxes) - n(ex.charges_personnel);
-  }
-  return renseigne(ex.ebe) ? Number(ex.ebe) : null;
-}
+// Single definition shared with the restatements screen (public/js/valeur-pont.js)
+export const ebe = ebeExercice;
 
 /**
- * Pont EBE comptable → EBE retraité, par exercice.
- * Dirigeant : rémunération réelle − normative (charges comprises) ; loyer : payé − marché ; exceptionnels de l'année.
+ * Bridge from reported EBITDA → adjusted EBITDA, per fiscal year.
+ * Owner: actual − normalized pay (charges included); rent: paid − market; non-recurring items of the year.
  */
 export function pontEbe(exercices, r = {}) {
   return exercices.map((ex) => {
-    const lignes = [];
-    if (Number.isFinite(r.remuneration_dirigeant_reelle) && Number.isFinite(r.remuneration_normative)) {
-      lignes.push({ cle: "dirigeant", libelle: tr("serveur.valorisation_moteur.retraitements.dirigeant"), montant: r.remuneration_dirigeant_reelle - r.remuneration_normative });
-    }
-    if (Number.isFinite(r.loyer_paye) && Number.isFinite(r.loyer_marche)) {
-      lignes.push({ cle: "loyer", libelle: tr("serveur.valorisation_moteur.retraitements.loyer"), montant: r.loyer_paye - r.loyer_marche });
-    }
-    for (const e of r.exceptionnels || []) {
-      if (e.annee === ex.annee && Number.isFinite(e.montant)) lignes.push({ cle: "exceptionnel", libelle: e.libelle || tr("serveur.valorisation_moteur.retraitements.exceptionnel"), montant: e.montant, justification: e.justification || "" });
-    }
+    // A single definition of the restatements, shared with the restatements screen (public/js/valeur-pont.js)
+    const lignes = lignesRetraitement(r, ex.annee).map((l) => ({ ...l,
+      libelle: l.cle === "exceptionnel" ? l.libelle || tr("serveur.valorisation_moteur.retraitements.exceptionnel") : tr(`serveur.valorisation_moteur.retraitements.${l.cle}`) }));
     const comptable = ebe(ex);
     return { annee: ex.annee, ebe_comptable: comptable, lignes, ebe_retraite: comptable + lignes.reduce((a, l) => a + l.montant, 0) };
   });
 }
 
-/** EBE normatif : moyenne des exercices retraités (3 au plus) ou dernier exercice, au choix du dirigeant. */
+/** Normalized EBITDA: average of the adjusted fiscal years (3 at most) or latest fiscal year, as the owner chooses. */
 export function ebeNormatif(pont, mode = "moyenne") {
   const l = pont.slice(-3);
   if (!l.length) return { valeur: null, mode, annees: [] };
@@ -52,12 +40,12 @@ export function ebeNormatif(pont, mode = "moyenne") {
   return { valeur: moyenne(l.map((x) => x.ebe_retraite)), mode: "moyenne", annees: l.map((x) => x.annee) };
 }
 
-// ---------------------------------------------------------------- BFR et dette nette
-/** BFR d'exploitation = stocks + créances clients − dettes fournisseurs − dettes fiscales et sociales. */
+// ---------------------------------------------------------------- Working capital and net debt
+/** Operating working capital = inventory + trade receivables − trade payables − tax and social liabilities. */
 export function bfr(ex) {
   return n(ex.stocks) + n(ex.creances_clients) - n(ex.dettes_fournisseurs) - n(ex.dettes_fiscales_sociales);
 }
-/** BFR normatif : moyenne des BFR en jours de CA, appliquée au CA du dernier exercice. */
+/** Normalized working capital: average of working capital in days of revenue, applied to the latest year's revenue. */
 export function bfrNormatif(exercices) {
   const l = exercices.filter((e) => n(e.chiffre_affaires) > 0);
   const jours = moyenne(l.map((e) => (bfr(e) / n(e.chiffre_affaires)) * 365));
@@ -65,8 +53,8 @@ export function bfrNormatif(exercices) {
   return { jours, valeur: jours == null ? null : (jours / 365) * n(dernier.chiffre_affaires), par_exercice: l.map((e) => ({ annee: e.annee, bfr: bfr(e), jours: (bfr(e) / n(e.chiffre_affaires)) * 365 })) };
 }
 /**
- * Dette nette = emprunts + crédit-bail restant + comptes courants remboursables + provisions pour risques
- * + dividendes votés non versés − trésorerie − placements. Négative = trésorerie nette.
+ * Net debt = borrowings + remaining leasing + repayable shareholder current accounts + provisions for risks
+ * + dividends declared but unpaid − cash − investments. Negative = net cash.
  */
 export function detteNette(ex, c = {}) {
   const lignes = [
@@ -81,8 +69,8 @@ export function detteNette(ex, c = {}) {
   return { total: lignes.reduce((a, l) => a + l.montant, 0), lignes };
 }
 
-// ---------------------------------------------------------------- Impôt, CMPC, DCF
-/** IS : 15 % jusqu'au plafond si le taux réduit s'applique, 25 % au-delà (service-public, vérifié le 17/02/2026). */
+// ---------------------------------------------------------------- Tax, WACC, DCF
+/** Corporate tax: 15% up to the ceiling if the reduced rate applies, 25% above (service-public, checked on 17/02/2026). */
 export function impotSocietes(resultat, { tauxReduit = false } = {}, H) {
   const is = H.impot_societes;
   if (!(resultat > 0)) return 0;
@@ -92,8 +80,8 @@ export function impotSocietes(resultat, { tauxReduit = false } = {}, H) {
 }
 
 /**
- * CMPC = E/(D+E) × kₑ + D/(D+E) × k_d × (1 − t), avec kₑ = taux sans risque + bêta endetté × prime de risque + prime de taille
- * et bêta endetté = bêta désendetté × (1 + (1 − t) × D/E) (structure cible = ratio D/E du secteur, Damodaran).
+ * WACC = E/(D+E) × kₑ + D/(D+E) × k_d × (1 − t), with kₑ = risk-free rate + levered beta × risk premium + size premium
+ * and levered beta = unlevered beta × (1 + (1 − t) × D/E) (target structure = the industry's D/E ratio, Damodaran).
  */
 export function cmpc({ primeTaille, secteur, detteSurCapitaux = null }, H) {
   const b = H.betas.secteurs[secteur];
@@ -115,9 +103,9 @@ export function cmpc({ primeTaille, secteur, detteSurCapitaux = null }, H) {
 }
 
 /**
- * DCF simplifié sur 5 ans (convention de fin d'année).
- * Flux = EBIT − IS(EBIT) + amortissements − investissements − variation du BFR ; EBIT = EBE − amortissements.
- * Valeur terminale (Gordon-Shapiro) = flux an 5 × (1 + g) / (CMPC − g). Erreur si CMPC ≤ g.
+ * Simplified 5-year DCF (end-of-year convention).
+ * Flow = EBIT − tax(EBIT) + depreciation − capital expenditure − change in working capital; EBIT = EBITDA − depreciation.
+ * Terminal value (Gordon-Shapiro) = year-5 flow × (1 + g) / (WACC − g). Error if WACC ≤ g.
  */
 export function dcf({ ca0, croissance, marge_ebe, amortissements_pct, investissements_pct, bfr_jours, cmpc: k, g, tauxReduit = false }, H) {
   if (!(k > g)) throw new Error(`CMPC (${(k * 100).toFixed(2)} %) inférieur ou égal à la croissance à l'infini (${(g * 100).toFixed(2)} %) : valeur terminale impossible.`);
@@ -139,8 +127,8 @@ export function dcf({ ca0, croissance, marge_ebe, amortissements_pct, investisse
   return { flux, valeur_terminale, vt_actualisee, somme_flux_actualises: somme, ve: somme + vt_actualisee, part_vt: vt_actualisee / (somme + vt_actualisee) };
 }
 
-// ---------------------------------------------------------------- ANCC, décotes
-/** ANCC = capitaux propres + plus-values latentes − frais d'établissement − créances douteuses (valeur des titres). */
+// ---------------------------------------------------------------- ANCC, discounts
+/** ANCC = equity + unrealized gains − start-up costs − doubtful receivables (value of the shares). */
 export function ancc(ex, c = {}) {
   const lignes = [
     { cle: "capitaux_propres", libelle: tr("demarrer.js.chiffres.cp"), montant: n(ex.capitaux_propres) },
@@ -150,7 +138,7 @@ export function ancc(ex, c = {}) {
   ];
   return { valeur: lignes.reduce((a, l) => a + l.montant, 0), lignes };
 }
-/** Décotes et primes : pourcentages additionnés → facteur multiplicatif appliqué aux valeurs d'entreprise. */
+/** Discounts and premiums: percentages added up → multiplying factor applied to the enterprise values. */
 export function facteurDecotes(facteurs = []) {
   return 1 + facteurs.reduce((a, f) => a + (Number.isFinite(f.pct) ? f.pct : 0), 0);
 }
@@ -165,7 +153,7 @@ function croissanceHistorique(exs) {
 
 /**
  * @param e { secteur, exercices[], retraitements, complements, previsions, decotes[], primeTaille, tauxReduit, modeEbe, ponderation }
- * @param H hypothèses (hypotheses.json, éventuellement modifiées par le dirigeant)
+ * @param H assumptions (hypotheses.json, possibly changed by the owner)
  */
 export function valorisationApprofondie(e, H, table = MULTIPLES) {
   if (e.erreurs?.length) return { statut: "hypotheses_invalides", annees: [], erreurs: e.erreurs, alertes: e.erreurs.map((x) => x.message) };
@@ -186,12 +174,14 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
   const bfrN = bfrNormatif(exs);
   const ecartBfr = bfrN.valeur == null ? 0 : bfr(dernier) - bfrN.valeur;
   const dn = detteNette(dernier, e.complements || {});
+  // Leasing (convention FIN-05 kept on 24/11/2026, docs/decisions-methode.md): stated, not changed
+  if (n(e.complements?.credit_bail_restant) > 0) alertes.push(tr("serveur.valorisation_moteur.alertes.credit_bail"));
   const facteur = facteurDecotes(e.decotes || []);
   const hors = n(e.complements?.actifs_hors_exploitation);
   const versTitres = (ve) => ve * facteur - dn.total + ecartBfr + hors;
   const pont_titres = { facteur_decotes: facteur, dette_nette: dn.total, ecart_bfr: ecartBfr, hors_exploitation: hors };
 
-  // Méthode 1 : multiples
+  // Method 1: multiples
   const secteurM = table.secteurs.find((s) => s.cle === e.secteur);
   let multiples;
   if (!(ebeN.valeur > 0)) {
@@ -206,7 +196,7 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
     multiples = { statut: "ok", multiples: m, source: secteurM.source, ve, titres: { bas: versTitres(ve.bas), central: versTitres(ve.central), haut: versTitres(ve.haut) } };
   }
 
-  // Méthode 2 : DCF
+  // Method 2: DCF
   const p = e.previsions || {};
   const caD = n(dernier.chiffre_affaires);
   const hist = croissanceHistorique(exs);
@@ -235,7 +225,7 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
       const central = calc(c.valeur);
       const bas = calc(c.valeur + 0.01);
       let haut = null;
-      try { haut = calc(c.valeur - 0.01); } catch { /* CMPC − 1 pt ≤ g */ }
+      try { haut = calc(c.valeur - 0.01); } catch { /* WACC − 1 pt ≤ g */ }
       dcfR = {
         statut: "ok", cmpc: c, hypotheses: hyp, detail: central, ve: { bas: bas.ve, central: central.ve, haut: haut?.ve ?? null },
         titres: { bas: versTitres(bas.ve), central: versTitres(central.ve), haut: haut ? versTitres(haut.ve) : null },
@@ -247,12 +237,12 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
     }
   }
 
-  // Méthode 3 : ANCC (plancher, présenté à part)
+  // Method 3: ANCC (floor, presented separately)
   const anc = ancc(dernier, e.complements || {});
   if (anc.valeur < 0) alertes.push(tr("serveur.valorisation_moteur.alertes.cp_negatifs"));
 
-  // Synthèse : multiples seuls par défaut (décision du 18/11/2026), DCF en option par la pondération ; DCF seul si
-  // les multiples ne s'appliquent pas
+  // Summary: multiples only by default (decision of 18/11/2026), DCF as an option through the weighting; DCF only if
+  // the multiples do not apply
   let poids = { ...(e.ponderation || { multiples: H.ponderation.multiples, dcf: H.ponderation.dcf }) };
   const okM = multiples.statut === "ok", okD = dcfR.statut === "ok";
   if (okM && !okD) { poids = { multiples: 1, dcf: 0 }; if (e.ponderation && e.ponderation.dcf > 0) alertes.push(tr("serveur.valorisation_moteur.alertes.dcf_option")); }
@@ -264,14 +254,14 @@ export function valorisationApprofondie(e, H, table = MULTIPLES) {
     return poids.multiples * m + poids.dcf * d;
   };
   const synthese = { bas: comb("bas"), central: comb("central"), haut: comb("haut"), ponderation: poids, plancher_ancc: anc.valeur, alertes };
-  // Information, sans sigle : toute la fourchette (son haut compris) est sous l'actif net corrigé calculé ci-dessus
+  // Information, without an acronym: the whole range (its top included) is below the adjusted net assets calculated above
   if (synthese.haut != null && Number.isFinite(anc.valeur) && synthese.haut < anc.valeur) {
     const n = new Intl.NumberFormat(locale(), { maximumFractionDigits: 0 }).format(Math.round(anc.valeur));
     const euros = langue() === "fr" ? `${n} €` : `€${n}`;
     alertes.push(tr("serveur.valorisation_moteur.alertes.sous_ancc", { montant: euros }));
   }
 
-  // Sensibilités : multiple ± 1x, CMPC ± 1 pt, croissance terminale ± 0,5 pt (valeur des titres)
+  // Sensitivities: multiple ± 1x, WACC ± 1 pt, terminal growth ± 0.5 pt (value of the shares)
   const sensibilites = {};
   if (okM) {
     sensibilites.multiple = { moins: versTitres(ebeN.valeur * (multiples.multiples.central - 1)), central: multiples.titres.central, plus: versTitres(ebeN.valeur * (multiples.multiples.central + 1)) };

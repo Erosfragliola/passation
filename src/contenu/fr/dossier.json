@@ -49,11 +49,14 @@
     }
   },
   "etapes": {
-    "estimation": "Estimation",
     "chiffres": "Vos chiffres",
-    "reponses": "Vos réponses",
-    "redaction": "Rédaction",
-    "relecture": "Relecture et envoi"
+    "redaction": "Rédaction et relecture",
+    "retraitements": "Retraitements",
+    "dette": "Dette nette et périmètre",
+    "valeur": "Votre valeur",
+    "entreprise": "Votre entreprise",
+    "photos": "Photos et logo",
+    "equipe": "Équipe dirigeante"
   },
   "etiquette_express": "Valeur d'entreprise estimée",
   "etiquette_titres": "Valeur de vos titres",
@@ -95,7 +98,9 @@
       },
       "titre": "Répondre aux {n} questions",
       "detail_reste": "{faits} sur {total} déjà faites",
-      "detail": "Des écrans courts, la plupart en un clic"
+      "detail": "Des écrans courts, la plupart en un clic",
+      "titre_une": "Répondre à la question « {question} »",
+      "detail_noms": "Restent : {liste}"
     },
     "redaction": {
       "terminer": "Terminer la rédaction",
@@ -123,8 +128,8 @@
       }
     },
     "exercices": {
-      "titre": "Ajouter {annees} pour fiabiliser la fourchette (facultatif)",
-      "detail": "La fourchette repose déjà sur {annee} ; les exercices précédents la confirment"
+      "titre": "Ajouter vos exercices {annees}",
+      "detail": "Un repreneur raisonne sur trois ans ; vous pouvez aussi passer cette étape"
     },
     "photo": {
       "titre_premiere": "Ajouter une photo de l'atelier ou des produits",
@@ -154,6 +159,29 @@
         "one": "{n} pièce sur {total}",
         "other": "{n} pièces sur {total}"
       }
+    },
+    "retraitements": {
+      "titre": "Corriger vos comptes : rémunération, loyer, exceptionnels",
+      "detail": "Le retraitement qui pèse le plus sur la valeur"
+    },
+    "dette": {
+      "titre": "Indiquer votre dette nette et le périmètre de la cession",
+      "detail": "Ce qui sépare la valeur de l'entreprise de celle de vos titres"
+    },
+    "valeur": {
+      "titre": "Vérifier et valider votre valeur",
+      "detail": "Le calcul complet, ligne par ligne",
+      "detail_calculee": "Calculée : {fourchette} ; à vérifier ligne par ligne",
+      "a_revalider": "Modifiés depuis votre validation : à revalider",
+      "detail_revalider": "Validés le {date} ; vos chiffres ont changé depuis"
+    },
+    "photos": {
+      "titre": "Choisir votre logo et vos photos",
+      "detail": "Ceux de votre site, ou les vôtres"
+    },
+    "equipe": {
+      "titre": "Présenter votre équipe dirigeante",
+      "detail": "Une page du mémorandum, jamais dans le teaser"
     }
   },
   "guillemets": "« {texte} »",
@@ -168,7 +196,8 @@
     "ouvrir": "Ouvrir",
     "excel": "Télécharger l'Excel",
     "choisir": "Choisir",
-    "relire_envoyer": "Relire et envoyer"
+    "relire_envoyer": "Relire et envoyer",
+    "verifier": "Vérifier"
   },
   "relire_envoyer": "Relire et envoyer votre dossier",
   "documents": {
@@ -181,7 +210,7 @@
     "version": "version {n}",
     "prete": "Prête",
     "calculee_redaction": "Calculée à l'étape Rédaction, avec vos réponses.",
-    "debloque_chiffres_reponses": "Se débloque avec vos chiffres et vos réponses.",
+    "debloque_chiffres_reponses": "Calculée à l'étape « Votre valeur », après vos retraitements et votre dette.",
     "prepare_chiffres": "Préparé à partir de vos chiffres confirmés",
     "debloque_exercice": "Se débloque dès qu'un exercice est confirmé.",
     "parties_a_rediger": {
@@ -193,7 +222,10 @@
     "chapitres_a_rediger": {
       "one": "{n} chapitre sur {total} à rédiger",
       "other": "{n} chapitres sur {total} à rédiger"
-    }
+    },
+    "validee_le": "Validée le {date}",
+    "a_valider": "Calculée, à vérifier et valider",
+    "apres_validation": "Rédigé après la validation de vos chiffres"
   },
   "valeur": {
     "base_titres": "Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, après dettes et trésorerie.",
@@ -202,7 +234,9 @@
     "base_express": "Estimée sur les derniers comptes publics et les multiples du secteur, avant dettes et trésorerie ; vos chiffres la préciseront.",
     "voir_calcul": "Voir le calcul",
     "base_aucune": "Les comptes publics ne suffisent pas pour une première estimation : vos chiffres permettront de la calculer.",
-    "saisir": "Saisir vos chiffres"
+    "saisir": "Saisir vos chiffres",
+    "base_titres_a_valider": "Calculée à partir de vos chiffres, après dettes et trésorerie ; vérifiez-la ligne par ligne, puis validez-la.",
+    "verifier": "Vérifier et valider"
   },
   "final": {
     "pret_titre": "Votre dossier est prêt",
@@ -211,7 +245,12 @@
     "redige_titre": "Votre dossier est rédigé",
     "non_redige_titre": "Votre dossier n'est pas encore rédigé",
     "non_pret_aide": "Il n'est pas encore prêt à être envoyé : {pct} % du parcours. Voici ce qui reste.",
-    "reste": "Ce qui reste à faire"
+    "reste": "Ce qui reste à faire",
+    "redige_reste": {
+      "one": "Votre dossier est rédigé : il reste {n} étape",
+      "other": "Votre dossier est rédigé : il reste {n} étapes"
+    },
+    "prochaine": "Prochaine étape : {tache}."
   },
   "formats": {
     "nd": "n.d.",
@@ -219,5 +258,21 @@
     "exercices": "exercices {de} à {a}"
   },
   "relire_detail": "Vos documents sont rédigés. Relisez le mémorandum, puis choisissez à qui l'envoyer.",
-  "relire_detail_non_redige": "Voyez ce qui est prêt et ce qui reste avant l'envoi."
+  "relire_detail_non_redige": "Voyez ce qui est prêt et ce qui reste avant l'envoi.",
+  "ancc": {
+    "dans": "L'actif net corrigé ({ancc}) se situe dans la fourchette ({bas} – {haut}) : valeur patrimoniale et valeur de rentabilité concordent.",
+    "plancher": "L'actif net corrigé ({ancc}) est inférieur à toute la fourchette ({bas} – {haut}) : il sert de plancher de négociation.",
+    "au_dessus": "Valeur patrimoniale supérieure à la valeur de rentabilité : l'actif net corrigé ({ancc}) dépasse la fourchette tirée des multiples ({bas} – {haut}). Votre entreprise vaut davantage par ce qu'elle possède que par ce qu'elle gagne. En négociation, préparez cet argument avec votre conseil : quels actifs expliquent l'écart (trésorerie abondante, immobilier, stocks) et comment les faire valoir, dans le prix ou en dehors.",
+    "negatif": "L'actif net corrigé est négatif ({ancc}) : il ne soutient pas la valeur, qui repose entièrement sur la rentabilité."
+  },
+  "temps": {
+    "valorisation": "Votre valorisation",
+    "memo": "Votre mémorandum"
+  },
+  "question_site": "Votre site internet",
+  "bandeau": {
+    "nouvelle_etape": "Nouvelle étape : vérifiez et validez vos chiffres. Vos réponses sont conservées.",
+    "revalider": "Vos chiffres ont été modifiés depuis votre validation du {date} : vérifiez la nouvelle valeur, puis validez-la de nouveau.",
+    "bouton_revalider": "Vérifier et valider"
+  }
 }

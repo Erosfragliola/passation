@@ -68,6 +68,14 @@
       "datapack": "Excel, 9 tabs",
       "teaser": "One-page PDF, anonymous",
       "memo": "Presentation to review and print"
+    },
+    "mdp": {
+      "titre": "Change my password",
+      "actuel": "Current password",
+      "nouveau": "New password",
+      "confirmation": "Confirm the new password",
+      "bouton": "Change the password",
+      "sessions": "Your other sessions (other devices) will be closed."
     }
   }
 }

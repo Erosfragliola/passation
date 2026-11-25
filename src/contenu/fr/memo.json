@@ -87,6 +87,15 @@
         "floue": "Floue",
         "trop_petite": "Trop petite pour une page entière",
         "identifiante": "Pas pour le teaser : identifiante"
+      },
+      "endroit": "Dans le mémorandum :",
+      "endroits": {
+        "couverture": "en couverture",
+        "activite": "page Activité",
+        "realisations": "page Réalisations",
+        "equipe": "page Équipe",
+        "ouverture": "page d'ouverture d'une partie",
+        "non_placee": "pas placée pour l'instant (choisissez « Utiliser comme proposé » ou changez l'ordre)"
       }
     },
     "themes": {
@@ -119,7 +128,7 @@
     },
     "verrou": {
       "avant": "Avant de rédiger le mémorandum :",
-      "questionnaire": "Ouvrir le questionnaire"
+      "questionnaire": "Reprendre le parcours guidé"
     },
     "a_rediger": "{quoi} : à rédiger.",
     "sources": {
@@ -506,8 +515,14 @@
     },
     "ameliorations": {
       "titre": "À améliorer",
-      "resume": { "one": "{n} amélioration", "other": "{n} améliorations" },
-      "resume_indispensables": { "one": "{n} indispensable", "other": "{n} indispensables" },
+      "resume": {
+        "one": "{n} amélioration",
+        "other": "{n} améliorations"
+      },
+      "resume_indispensables": {
+        "one": "{n} indispensable",
+        "other": "{n} indispensables"
+      },
       "page": "p. {n}",
       "indispensable": "Indispensable",
       "valider": "Valider",
@@ -576,6 +591,40 @@
         "incoherence_registres": "Incohérence avec les registres",
         "chiffre": "Chiffre à vérifier"
       }
+    },
+    "depot": {
+      "attestation": "J'atteste que ces photos appartiennent à l'entreprise (ou qu'elle a le droit de les utiliser) et qu'elles peuvent figurer dans le mémorandum.",
+      "glisser": "Glissez vos photos ici",
+      "choisir": "Choisir des photos",
+      "formats": "ou choisissez-les. JPEG, PNG ou WebP ; les photos lourdes sont réduites avant l'envoi. Encore {max} possibles.",
+      "plus_de_place": "Les {max} photos sont atteintes : retirez-en une pour en ajouter une autre.",
+      "cochez_d_abord": "Cochez d'abord la case ci-dessus : vos photos partiront dès qu'elle sera cochée.",
+      "en_attente": {
+        "one": "{n} photo en attente : cochez la case ci-dessus pour l'envoyer.",
+        "other": "{n} photos en attente : cochez la case ci-dessus pour les envoyer."
+      },
+      "en_file": "En attente…",
+      "reduction": "Réduction de la photo ({poids} Mo)…",
+      "envoi": "Envoi…",
+      "envoi_reduite": "Envoi de la photo réduite ({avant} → {apres} Mo)…",
+      "ajoutee": "Ajoutée",
+      "ajoutee_reduite": "Ajoutée, réduite à {apres} Mo",
+      "logo_aide": "Sur la couverture du mémorandum et du datapack, jamais dans le teaser. JPEG, PNG ou WebP ; un logo lourd est réduit avant l'envoi.",
+      "erreurs": {
+        "heic": "Format HEIC (iPhone) : exportez la photo en JPEG, ou réglez l'iPhone sur Réglages > Appareil photo > Formats > « Le plus compatible », puis ajoutez-la de nouveau.",
+        "format": "Ce fichier n'est pas une photo JPEG, PNG ou WebP : enregistrez-la dans l'un de ces formats, puis ajoutez-la de nouveau.",
+        "trop_lourd": "Même réduite, la photo dépasse {poids} Mo : réduisez-la dans votre logiciel de photos, puis ajoutez-la de nouveau.",
+        "trop_de_photos": "Les {max} photos sont atteintes : retirez une photo de la liste pour ajouter celle-ci.",
+        "doublon": "Cette photo est déjà dans la liste : rien à faire.",
+        "attestation": "Attestation manquante : cochez la case au-dessus des photos, puis ajoutez-la de nouveau.",
+        "image_injoignable": "Le site ne livre pas cette image : enregistrez-la sur votre ordinateur, puis déposez-la.",
+        "analyse_indisponible": "La photo est enregistrée, mais l'analyse automatique n'est pas disponible : vous pouvez l'utiliser telle quelle, ou revenir plus tard.",
+        "quota_atteint": "La photo est enregistrée ; l'analyse automatique a atteint sa limite du jour : elle reprendra demain, rien n'est perdu.",
+        "reduction": "Votre navigateur ne sait pas lire cette image : enregistrez-la en JPEG, puis ajoutez-la de nouveau.",
+        "reseau": "Connexion interrompue : vérifiez votre réseau, puis ajoutez la photo de nouveau.",
+        "autre": "La photo n'a pas pu être ajoutée : réessayez ; si cela se reproduit, enregistrez-la en JPEG."
+      },
+      "taille": "{poids} Mo"
     }
   },
   "equipe": {

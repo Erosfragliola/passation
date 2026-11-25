@@ -1,4 +1,4 @@
-/** Réponse JSON avec en-têtes de sécurité de base. */
+/** JSON response with basic security headers. */
 export function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
     status,

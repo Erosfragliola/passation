@@ -1,8 +1,8 @@
-// Règles du dossier (module pur, partagé entre le Worker, le navigateur et les tests) :
-// checklist « Votre préparation » et calcul de l'avancement (par bloc, et global selon les étapes du parcours).
+// Rules of the file (pure module, shared by the Worker, the browser and the tests):
+// "Your preparation" checklist and calculation of progress (per block, and overall based on the steps of the flow).
 import { t, T, avecTextes } from "./i18n.js";
 
-/** Pièces habituellement demandées par un repreneur lors de l'audit d'acquisition. Liste indicative. */
+/** Documents usually requested by a buyer during the acquisition due diligence. Indicative list. */
 export const CHECKLIST = [
   { cle: "juridique", groupe: T, items: [
     ["statuts", T],
@@ -36,7 +36,7 @@ export const CHECKLIST = [
     ["autorisations", T],
   ] },
 ];
-// Textes (groupes et pièces) : src/contenu/<langue>/dossier.json, lus à chaque accès dans la langue courante.
+// Texts (groups and documents): src/contenu/<language>/dossier.json, read at each access in the current language.
 for (const g of CHECKLIST) {
   avecTextes(g, `dossier.checklist.${g.cle}`);
   for (const item of g.items) Object.defineProperty(item, 1, { get: () => t(`dossier.checklist.${g.cle}.items.${item[0]}`), enumerable: true, configurable: true });
@@ -44,14 +44,14 @@ for (const g of CHECKLIST) {
 export const CLES_CHECKLIST = new Set(CHECKLIST.flatMap((g) => g.items.map(([k]) => k)));
 
 /**
- * Avancement de 0 à 100 par bloc, et global : les étapes du parcours (liste unique ETAPES_PARCOURS), pondérées.
- * Le dirigeant ne part pas de zéro : le dossier existe, donc l'entreprise est identifiée (15) ; une première valeur,
- * express ou approfondie (10) ; le dernier exercice confirmé (25, le seul indispensable : les exercices précédents
- * sont facultatifs et n'entrent pas dans le pourcentage) ; les questions du parcours (15, au prorata) ; valorisation
- * approfondie (15) ; documents (20, au prorata des 3). La checklist « Votre préparation » reste à part.
- * Ce calcul n'est lu qu'à un endroit pour l'affichage : etatParcours (dossier-parcours.js).
+ * Progress from 0 to 100 per block, and overall: the steps of the flow (single list ETAPES_PARCOURS), weighted.
+ * The owner does not start from zero: the file exists, so the company is identified (15); a first value,
+ * quick or detailed (10); the latest fiscal year confirmed (25, the only required one: the previous fiscal years
+ * are optional and do not count in the percentage); the questions of the flow (15, pro rata); detailed
+ * valuation (15); documents (20, pro rata of the 3). The "Your preparation" checklist stays separate.
+ * This calculation is read in only one place for display: etatParcours (dossier-parcours.js).
  * @param d { estimation_express: bool, dernier_exercice: bool, questions_pct: 0..100, valorisation_approfondie: bool,
- *            documents: n (0..3), checklist: Set de clés cochées }
+ *            documents: n (0..3), checklist: Set of ticked keys }
  */
 export function avancement(d) {
   const preparation = Math.round(100 * [...(d.checklist || [])].filter((k) => CLES_CHECKLIST.has(k)).length / CLES_CHECKLIST.size);

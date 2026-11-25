@@ -1,4 +1,4 @@
-// GET /api/maquette/:siren : données d'une entreprise pour « Votre maquette » et la frise.
+// GET /api/maquette/:siren : a company's data for "Your model" and the timeline.
 import { json } from "../http.js";
 import { chargerMaquette, CLE_MAQUETTE } from "../maquette/donnees.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
@@ -8,6 +8,7 @@ import { MAQUETTE_RATE_LIMIT } from "../config.js";
 import { estimationExpress } from "../valuation/express.js";
 import { teaserExpress } from "../documents/teaser-express.js";
 import { t as tr } from "../../public/js/i18n.js";
+import { utilisateurConnecte } from "../lib/auth.js";
 
 export async function routeMaquette(request, env, sirenBrut) {
   const siren = nettoyerSiren(sirenBrut);
@@ -32,5 +33,17 @@ export async function routeMaquette(request, env, sirenBrut) {
   if (!donnees.actif) {
     return json({ erreur: "inactive", message: tr("serveur.maquette.cette_entreprise_plus_active") }, 404);
   }
-  return json({ ...donnees, estimation: estimationExpress(donnees), ...teaserExpress(donnees) });
+  // Without a valid session, no amount leaves the server: neither the range nor the published figures (24/11/2026).
+  // The public card keeps the name, industry, region, headcount band and the years of the published accounts.
+  if (!(await utilisateurConnecte(request, env).catch(() => null))) {
+    return json({ ...sansMontants(donnees), estimation: null, estimation_masquee: true, ...teaserExpress(donnees) },
+      200, { "cache-control": "private, no-store" });
+  }
+  return json({ ...donnees, estimation: estimationExpress(donnees), ...teaserExpress(donnees) }, 200, { "cache-control": "private, no-store" });
+}
+
+/** Public data without any amount: the series of revenue and EBITDA are replaced by their years. */
+export function sansMontants(d) {
+  const { ca = [], ebe = [], ...reste } = d;
+  return { ...reste, exercices_publies: [...new Set(ca.map((x) => x.annee))].sort(), ebe_publie: ebe.length > 0 };
 }

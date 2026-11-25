@@ -5,7 +5,7 @@
 // Une fois par machine : npx playwright-core install ffmpeg (encodeur vidéo de Playwright, 1,4 Mo, dans son cache).
 // Le script :
 //   1. place l'entreprise fictive dans le cache de la base locale (aucun appel aux API publiques pour elle) ;
-//   2. lance son propre « wrangler dev » (port 8798) et lit le code de connexion dans son terminal ;
+//   2. lance son propre « wrangler dev » (port 8798), lit le code dans son terminal et choisit un mot de passe tiré au hasard ;
 //   3. filme en 1440 × 900 : accueil, recherche, connexion, dossier, valorisation, mémorandum, teaser ;
 //   4. arrête le serveur et écrit la vidéo (.webm, lisible dans Chrome, VLC, QuickTime récent).
 // Rien n'est envoyé en production ; le dossier créé reste dans la base locale (.wrangler/).
@@ -14,6 +14,7 @@ import { mkdtempSync, readdirSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { chromium } from "playwright-core";
+import { ENTREPRISE_EXEMPLE as FICTIVE, remplirDossierExemple } from "./dossier-exemple.mjs";
 
 const arg = (nom, defaut) => { const i = process.argv.indexOf(`--${nom}`); return i > -1 ? process.argv[i + 1] : defaut; };
 const LANGUE = arg("langue", "fr");
@@ -21,12 +22,14 @@ const SORTIE = resolve(arg("sortie", `passation-demo-${LANGUE}.webm`));
 const CHROME = arg("chrome", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
 const PORT = 8798, B = `http://127.0.0.1:${PORT}`, P = LANGUE === "fr" ? "/fr" : "";
 const EMAIL = `demo-${Date.now()}@exemple.fr`;
+const MOT_DE_PASSE = `demo-${crypto.randomUUID()}`; // drawn at every run, never written anywhere
 
 // 1. Entreprise fictive dans le cache local (date lointaine : jamais périmée)
-const FICTIVE = { siren: "000000018", nom: "MENUISERIE EXEMPLE", ville: "Exempleville", code_postal: "44000", ville_creation: "Exempleville", naf: "16.23Z", section_naf: "C", date_creation: "1998-03-01", tranche_effectif: { code: "12", annee: 2024 }, actif: true, ca: [{ annee: 2024, valeur: 2200000 }, { annee: 2025, valeur: 2400000 }], ebe: [{ annee: 2024, valeur: 320000 }, { annee: 2025, valeur: 380000 }], evenements: [], comptes_confidentiels: false, exercices_non_publies: [] };
 const sql = `INSERT OR REPLACE INTO api_cache (key, payload_json, fetched_at) VALUES ('maquette:v2:000000018', '${JSON.stringify(FICTIVE).replace(/'/g, "''")}', 4102444800)`;
 execFileSync("npx", ["wrangler", "d1", "migrations", "apply", "passation", "--local"], { stdio: "ignore" });
 execFileSync("npx", ["wrangler", "d1", "execute", "passation", "--local", "--command", sql], { stdio: "ignore" });
+// Local rate limits reset (10 code requests per hour and per IP: repeated recordings would hit them)
+execFileSync("npx", ["wrangler", "d1", "execute", "passation", "--local", "--command", "DELETE FROM rate_limits"], { stdio: "ignore" });
 
 // 2. Serveur local ; le code de connexion s'affiche dans sa sortie (src/lib/email.js, mode développement)
 let journal = "";
@@ -73,27 +76,27 @@ try {
   await page.locator("#resultat").scrollIntoViewIfNeeded();
   await attendre(4000);
 
-  // Connexion par code (lu dans le terminal du serveur local)
-  await page.evaluate(() => import("/js/connexion-code.js").then((m) => m.ouvrirConnexion({ siren: "000000018" })));
+  // Account creation (24/11/2026): email, code read in the terminal of the local server, then a password
+  await page.evaluate(() => import("/js/connexion-code.js").then((m) => m.ouvrirConnexion({ siren: "000000018", mode: "creer" })));
   await attendre(800);
-  await page.locator("#dialog-connexion input[type=email]").pressSequentially(EMAIL, { delay: 45 });
-  await page.locator("#dialog-connexion .cx-email button").click();
+  await page.locator("#dialog-connexion .cx-email input[type=email]").pressSequentially(EMAIL, { delay: 45 });
+  await page.locator("#dialog-connexion .cx-email button[type=submit]").click();
   await page.locator("#dialog-connexion .cx-code input").waitFor({ timeout: 15000 });
   await attendre(900);
   await page.locator("#dialog-connexion .cx-code input").pressSequentially(await code(), { delay: 180 });
-  await page.waitForURL(/\/espace\//, { timeout: 15000 }).catch(async () => { await page.locator("#dialog-connexion .cx-code .btn").first().click(); await page.waitForURL(/\/espace\//, { timeout: 15000 }); });
+  await page.locator("#dialog-connexion .cx-mdp:not([hidden])").waitFor({ timeout: 15000 });
+  await page.locator("#dialog-connexion .cx-mdp input[name=mdp]").fill(MOT_DE_PASSE);
+  await page.locator("#dialog-connexion .cx-mdp input[name=mdp2]").fill(MOT_DE_PASSE);
+  await attendre(700);
+  await Promise.all([page.waitForURL(/\/espace\//, { timeout: 15000 }), page.locator("#dialog-connexion .cx-mdp button[type=submit]").click()]);
   const id = new URL(page.url()).searchParams.get("dossier");
   const cookie = (await ctx.cookies()).find((c) => c.name === "passation_session").value;
   await attendre(2500);
 
-  // Chiffres fictifs de docs/DEMO.md (saisis par l'API pour gagner du temps), puis valorisation
+  // Fictitious figures and answers of docs/DEMO.md (through the API to save time), figures approved
   const H = { origin: B, "content-type": "application/json", cookie: `passation_session=${cookie}` };
-  const EX = {
-    2024: { chiffre_affaires: 2200000, autres_produits: 0, achats_consommes: 880000, charges_externes: 320000, impots_taxes: 40000, charges_personnel: 640000, dotations_amortissements: 66000, stocks: 180000, creances_clients: 370000, placements: 50000, tresorerie: 210000, capitaux_propres: 590000, provisions_risques: 20000, emprunts: 340000, dettes_fournisseurs: 230000, dettes_fiscales_sociales: 140000 },
-    2025: { chiffre_affaires: 2400000, autres_produits: 0, achats_consommes: 960000, charges_externes: 340000, impots_taxes: 40000, charges_personnel: 680000, dotations_amortissements: 72000, stocks: 200000, creances_clients: 400000, placements: 50000, tresorerie: 250000, capitaux_propres: 700000, provisions_risques: 20000, emprunts: 300000, dettes_fournisseurs: 250000, dettes_fiscales_sociales: 150000 },
-  };
-  for (const [annee, valeurs] of Object.entries(EX)) await fetch(`${B}/api/dossiers/${id}/financials`, { method: "PUT", headers: H, body: JSON.stringify({ annee: Number(annee), valeurs, valider: true }) });
-  await fetch(`${B}/api/dossiers/${id}/valuation`, { method: "POST", headers: H });
+  const appel = (chemin, { methode = "GET", corps } = {}) => fetch(B + chemin, { method: methode, headers: H, body: corps ? JSON.stringify(corps) : undefined });
+  await remplirDossierExemple(appel, id);
 
   const etapes = [
     [`${P}/espace/?dossier=${id}`, 4000],

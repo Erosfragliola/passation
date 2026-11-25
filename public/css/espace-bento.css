@@ -368,6 +368,8 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
   .drive-dossiers { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; padding-bottom: 4px; }
   .cta-tel { display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--creme) 94%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--trait); }
   .cta-tel .btn { width: 100%; min-height: 50px; font-weight: 600; }
+  /* room for the sticky button: « Gérer mon dossier » (password, deletion) was hidden under it (24/11/2026) */
+  .dossier-leger { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 }
 @media (prefers-reduced-motion: reduce) { .anneau .val, .jauge-pieces span { transition: none; } }
 
@@ -917,3 +919,114 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .eq-apercu { width: 72px; height: 90px; }
 }
 
+
+/* ---------- Two stages (24/11/2026, part C): "1. Your valuation", then "2. Your memorandum" ----------
+   Guided steps (left column, horizontal bars under 900 px) and the file page (light thread). */
+.page-guidee .guide-etapes li.temps { display: block; padding: 0 0 12px; gap: 0; color: var(--espresso); }
+.page-guidee .guide-etapes li.temps > span.temps-titre { display: block; width: auto; height: auto; border: 0; background: none; box-shadow: none; font-size: 12.5px; font-weight: 600; letter-spacing: .02em; color: var(--pierre-texte); margin: 0 0 2px; }
+.page-guidee .guide-etapes li.temps-actif > span.temps-titre { color: var(--vert); }
+.page-guidee .temps-etapes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.page-guidee .temps-etapes li { display: flex; align-items: center; }
+.fil-leger { column-gap: 30px; }
+.fil-leger > li.fil-temps { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.fil-leger > li.fil-temps::before, .fil-leger > li.fil-temps + li.fil-temps::before { content: none; }
+.fil-temps-titre { font-size: 12.5px; font-weight: 600; letter-spacing: .02em; color: var(--pierre-texte); }
+.fil-temps.fait .fil-temps-titre { color: var(--vert); }
+.fil-etapes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; }
+.dossier-leger .valeur-ecart { margin: 6px 0 0; font-size: 14px; line-height: 1.45; color: #DCE5DF; max-width: 62ch; }
+@media (max-width: 900px) {
+  .page-guidee .guide-etapes li.temps { display: flex; align-items: center; gap: 6px; padding: 0; font-size: 13.5px; }
+  .page-guidee .guide-etapes li.temps:not(.temps-actif) > span.temps-titre { display: none; }
+  .page-guidee .guide-etapes li.temps > span.temps-titre { margin: 0 4px 0 0; }
+  .page-guidee .temps-etapes { flex-direction: row; gap: 5px; flex-wrap: wrap; }
+  .page-guidee .temps-etapes li.actif { font-size: 13.5px; }
+  .page-guidee .guide-etapes { flex-wrap: wrap; row-gap: 6px; max-width: 100%; }
+  .page-guidee .temps-etapes li span:first-child { width: 18px; }
+}
+@media (max-width: 760px) {
+  .fil-leger { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------- First stage screens: previous fiscal years, adjustments, net debt and scope, your value ---------- */
+.exercices-manquants { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.exercices-manquants li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 18px; }
+.exercices-perte { padding: 16px 20px; background: var(--g-sable-doux, #F3EBDD); border: 0; }
+.exercices-perte p { margin: 0; }
+.exercices-perte .etiquette { margin-bottom: 4px; }
+.retraitement { display: grid; gap: 12px; padding: 20px 22px; }
+.retraitement h2 { margin: 0; font: 600 17px var(--b-serif, inherit); text-transform: none; letter-spacing: -.01em; color: var(--espresso); }
+.retraitement .petit { margin: 0; }
+.retraitement-effet { margin: 0; font-size: 14px; font-weight: 500; color: var(--vert); }
+.retraitements-tete { position: sticky; top: 76px; z-index: 2; padding: 14px 20px; background: var(--g-vert-pale, #E6EEE8); border: 0; }
+.retraitements-total { margin: 0; font-size: 15px; color: var(--espresso); }
+.retraitements-total strong { font-variant-numeric: tabular-nums; }
+.retraitement .exceptionnels { display: grid; gap: 10px; }
+.retraitement .exc { display: grid; grid-template-columns: 90px minmax(0, 1.3fr) minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: 8px; align-items: center; }
+.retraitement .exc input, .retraitement .exc select { min-width: 0; width: 100%; }
+.dette-bilan { margin: 0; }
+.valeur-tete { display: grid; gap: 6px; padding: 22px 24px; }
+.valeur-tete .valeur-fourchette { margin: 0; font: 500 clamp(30px, 4vw, 42px)/1.05 var(--titre-police, inherit); letter-spacing: var(--titre-interlettrage, -.02em); color: var(--vert); }
+.valeur-tete p { margin: 0; }
+.valeur-pont { display: grid; gap: 10px; padding: 20px 22px; }
+.valeur-pont h2, .valeur-points h2, .valeur-ancc h2 { margin: 0; font: 600 17px var(--b-serif, inherit); text-transform: none; letter-spacing: -.01em; color: var(--espresso); }
+.valeur-pont .tableau-resultat { width: 100%; }
+.valeur-pont .tableau-resultat td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.valeur-pont .tableau-resultat tr.total th, .valeur-pont .tableau-resultat tr.total td { font-weight: 600; border-top: 1px solid var(--trait-fort); }
+.valeur-pont .tableau-resultat tr.fort th, .valeur-pont .tableau-resultat tr.fort td { color: var(--vert); font-size: 1.05em; }
+.valeur-points, .valeur-ancc { display: grid; gap: 8px; padding: 18px 22px; }
+.valeur-ancc p { margin: 0; }
+.valeur-modifier { margin: 0; }
+@media (max-width: 760px) {
+  .retraitement .exc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .retraitements-tete { top: 64px; }
+  .exercices-manquants li { flex-direction: column; align-items: flex-start; }
+}
+/* ---------- Logo and photos, guided (part D, 24/11/2026): attestation above an upload zone inactive until it is
+   ticked, several files with one progress bar each, logo with its preview, where each photo will appear ---------- */
+.photos-bloc { display: grid; gap: 12px; padding: 20px 22px; }
+.photos-sous-titre { margin: 0; font: 600 17px var(--b-serif, inherit); text-transform: none; letter-spacing: -.01em; color: var(--espresso); }
+.depot-photos { display: grid; gap: 10px; min-width: 0; }
+.depot-attestation { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; background: var(--g-sable-doux, #F3EBDD); border-radius: 12px; font-size: 14.5px; cursor: pointer; }
+.depot-attestation input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--vert); flex: none; }
+.depot-attente { margin: 0; padding: 8px 12px; border-left: 3px solid var(--cuivre); background: var(--g-cuivre-pale, #F6E9DC); font-size: 14px; border-radius: 6px; }
+.depot-zone { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 18px; border: 1.5px dashed var(--trait-fort); border-radius: 14px; background: #FFFDF8; min-width: 0; }
+.depot-zone.survol { border-color: var(--vert); background: var(--g-vert-pale, #E6EEE8); }
+.depot-zone.inactive { opacity: .55; }
+.depot-zone.inactive .btn { cursor: not-allowed; }
+.depot-zone-texte { margin: 0; flex: 1 1 240px; min-width: 0; }
+.depot-fichiers { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.depot-fichier { display: grid; grid-template-columns: minmax(0, 1fr) auto 90px; gap: 4px 12px; align-items: center; padding: 8px 12px; border: 1px solid var(--trait); border-radius: 10px; background: #FFFDF8; font-size: 14px; }
+.depot-nom { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.depot-barre { height: 6px; border-radius: 6px; background: var(--g-trait-moyen, rgba(35, 30, 24, .16)); overflow: hidden; }
+.depot-barre span { display: block; height: 100%; width: 0; background: var(--vert); transition: width .2s; }
+.depot-statut { grid-column: 1 / -1; font-size: 13.5px; color: var(--pierre-texte); }
+.depot-fichier.ok .depot-statut { color: var(--vert); font-weight: 500; }
+.depot-fichier.erreur { border-color: #C98A80; background: #FBF1EE; }
+.depot-fichier.erreur .depot-statut { color: #8A2E21; }
+.depot-fichier.erreur .depot-barre { visibility: hidden; }
+.logo-zone { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; min-width: 0; }
+.logo-zone .logo-texte { display: grid; gap: 8px; flex: 1 1 240px; min-width: 0; }
+.logo-zone .logos-liste { display: flex; flex-wrap: wrap; gap: 8px; }
+.logo-statut { margin: 0; }
+.logo-statut.erreur { color: #8A2E21; }
+.ph-texte { display: grid; gap: 6px; min-width: 0; }
+.ph-endroit { margin: 0; font-size: 13.5px; color: var(--pierre-texte); }
+.ph-endroit strong { color: var(--vert); font-weight: 600; }
+.ph-endroit.non-placee strong { color: var(--pierre-texte); font-weight: 500; }
+@media (max-width: 760px) {
+  .ph-texte { grid-column: 1 / -1; }
+  .depot-fichier { grid-template-columns: minmax(0, 1fr) 70px; }
+  .depot-fichier > .petit { display: none; }
+  .photos-grille { max-width: 100%; }
+}
+
+/* ---------- Banners (24/11/2026): new step for a file drafted before the two stages, figures modified since their
+   approval; always with the button that leads to the screen concerned ---------- */
+.bandeau-etape { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 14px 18px; border-radius: 16px; background: var(--g-cuivre-pale, #F6E9DC); border-left: 4px solid var(--cuivre); }
+.bandeau-etape p { margin: 0; flex: 1 1 260px; font-size: 15px; color: var(--espresso); }
+.bandeau-etape .btn { white-space: normal; }
+.valeur-revalider { margin: 4px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--g-cuivre-pale, #F6E9DC); color: var(--g-cuivre-texte, #8E5530); font-weight: 600; font-size: 14px; }
+/* Line in alert already approved (24/11/2026): « Approved » next to the field, the button becomes « Correct » */
+.guide-ligne.validee { grid-template-columns: 1fr 160px auto auto; }
+.guide-ligne.validee .pastille-ok { justify-self: start; }
+@media (max-width: 600px) { .guide-ligne.validee { grid-template-columns: 1fr; } }

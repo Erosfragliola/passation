@@ -21,6 +21,7 @@
 <main id="contenu" class="espace espace-bento dossier-parcours" aria-busy="true">
   <div class="conteneur dossier-leger">
     <ol class="fil-leger" id="fil" data-t-attr="aria-label=votre_parcours"></ol>
+    <div class="bandeau-etape" id="bandeau-etape" role="status" hidden><p id="bandeau-texte"></p><a class="btn btn-noir btn-mini" id="bandeau-lien" href="#"></a></div>
 
     <div class="dossier-tete">
       <section class="tuile tuile-vert tuile-dossier" aria-labelledby="dossier-nom">
@@ -30,6 +31,7 @@
           <p class="valeur-etiquette" id="valeur-etiquette" data-t-html="valorisation"></p>
           <p class="valeur-montant" id="valeur-montant">–</p>
           <p class="valeur-base"><span id="valeur-base"></span> <a class="valeur-lien" id="valeur-lien" href="/espace/valorisation/"></a></p>
+          <p class="valeur-ecart" id="valeur-ecart" hidden></p>
         </div>
       </section>
 
@@ -69,6 +71,7 @@
 
     <details class="gerer-dossier">
       <summary data-t-html="gerer_mon_dossier"></summary>
+      <div id="changer-mdp"></div>
       <p class="petit" data-t-html="suppression_efface_definitivement_dossier_vos"></p>
       <button class="btn btn-danger" type="button" id="btn-supprimer" data-t-html="supprimer_mon_dossier"></button>
     </details>

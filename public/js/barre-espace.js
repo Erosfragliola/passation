@@ -1,5 +1,5 @@
-// Barre du haut, commune à toutes les pages de l'espace : « Mon dossier » (et le fil d'Ariane des documents) ramène
-// au dossier ouvert ; « Se déconnecter » ferme la session.
+// Top bar, shared by all the pages of the owner's space: "My file" (and the documents' breadcrumb) leads back
+// to the open file; "Sign out" closes the session.
 import { lien } from "/js/i18n.js";
 const id = new URLSearchParams(location.search).get("dossier") || "";
 if (/^[0-9a-f-]{36}$/.test(id)) {

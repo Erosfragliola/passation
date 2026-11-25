@@ -97,9 +97,9 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
   const locale = /^47|^56|^96/.test(entreprise.naf || "");
   ajouter("clients", { "activite.zone": locale ? "Locale" : "Régionale", "clients.regions": region ? [region] : null }, SOURCES_PROPOSITION.secteur);
 
-  ajouter("remuneration", { "retraitements.exceptionnel_signale": "Non" }, SOURCES_PROPOSITION.frequent);
-  ajouter("detention", { "operation.detention": "En direct, à titre personnel" }, SOURCES_PROPOSITION.frequent);
-  ajouter("operation", { "operation.part_cedee": "100 %", "operation.calendrier": "6 à 12 mois", "operation.accompagnement": "6 mois" }, SOURCES_PROPOSITION.frequent);
+  // Nothing that changes the value is ever prepared (24/11/2026): exceptional items, holding of the shares and share
+  // sold are asked in the first stage, on screens the owner validates as a whole. Only questions of the memorandum here.
+  ajouter("operation", { "operation.calendrier": "6 à 12 mois", "operation.accompagnement": "6 mois" }, SOURCES_PROPOSITION.frequent);
 
   const c = croissanceProposee(tcam);
   if (c != null) ajouter("perspectives", { "perspectives.croissance": c }, SOURCES_PROPOSITION.comptes);

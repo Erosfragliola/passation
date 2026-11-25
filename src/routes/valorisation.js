@@ -20,6 +20,8 @@ import { controlerExercice, lignesBloquees } from "../valuation/controles.js";
 import { valorisationApprofondie } from "../valuation/approfondie.js";
 import { erreursEtape } from "../valuation/validation.js";
 import HYPOTHESES_FR from "../data/hypotheses.json";
+import MULTIPLES from "../data/multiples.json";
+import { empreinte } from "../lib/auth.js";
 import { t as tr, langue, valeur } from "../../public/js/i18n.js";
 
 /** Hypothèses avec leurs libellés dans la langue de la requête (valeurs, sources et dates inchangées) :
@@ -185,6 +187,43 @@ export async function calculer(env, row) {
   return { resultat, entree, hypotheses: H };
 }
 
+/**
+ * Key of what the calculation depends on (24/11/2026): approved figures, answers used by the engine, assumptions and
+ * multiples table. Independent of the language (French assumptions, no message): the same inputs give the same key.
+ * Used to save a calculation only when its inputs changed, and to tell when the approved figures changed since.
+ */
+export async function cleDuCalcul(env, row) {
+  const entreprise = JSON.parse(row.company_json || "{}");
+  const { entree, H } = assemblerEntree(entreprise, await lireChiffres(env, row.id), await lireReponses(env, row.id), HYPOTHESES_FR);
+  const { erreurs, ...e } = entree;
+  return empreinte(JSON.stringify({ e, H, m: MULTIPLES.version }));
+}
+
+/** Approval of the figures: null if never given; otherwise { le, a_jour } (a_jour: inputs unchanged since). */
+export async function etatValidation(env, row, reponses) {
+  const v = reponses?.validation;
+  if (!Number.isFinite(v?.le)) return null;
+  return { le: v.le, a_jour: !v.cle || v.cle === await cleDuCalcul(env, row) };
+}
+
+/**
+ * Calculation of « Your value », saved only if its inputs changed since the last one saved (no new row at every visit).
+ * In another language than the saved one, the result is recalculated (labels in the right language) but not saved.
+ */
+async function calculerEtEnregistrer(env, row) {
+  const cle = await cleDuCalcul(env, row);
+  const dernier = await env.DB.prepare("SELECT inputs_json, result_json FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC, rowid DESC LIMIT 1").bind(row.id).first();
+  const precedent = dernier ? JSON.parse(dernier.inputs_json) : null;
+  if (precedent?.cle === cle) {
+    if (precedent.langue === langue()) return { resultat: JSON.parse(dernier.result_json), entree: precedent.entree, hypotheses: precedent.hypotheses, cle, enregistre: false };
+    return { ...(await calculer(env, row)), cle, enregistre: false };
+  }
+  const { resultat, entree, hypotheses: H } = await calculer(env, row);
+  await env.DB.prepare("INSERT INTO valuations (id, dossier_id, kind, inputs_json, result_json, created_at) VALUES (?, ?, 'approfondie', ?, ?, ?)")
+    .bind(crypto.randomUUID(), row.id, JSON.stringify({ entree, hypotheses: H, cle, langue: langue() }), JSON.stringify(resultat), maintenant()).run();
+  return { resultat, entree, hypotheses: H, cle, enregistre: true };
+}
+
 export async function routeValorisation(request, env, row, sous, item) {
   const m = request.method;
   const toucher = () => env.DB.prepare("UPDATE dossiers SET updated_at = ? WHERE id = ?").bind(maintenant(), row.id).run();
@@ -237,13 +276,26 @@ export async function routeValorisation(request, env, row, sous, item) {
     }
   }
 
+  // "I approve these figures" (24/11/2026): the valuation is calculated and saved, and the approval recorded by the
+  // server only (the browser cannot write the "validation" step). The memorandum and the datapack use these figures;
+  // they can still be changed afterwards (a new calculation keeps the date of approval).
+  if (sous === "valuation" && item === "validation" && m === "POST") {
+    const { resultat, cle } = await calculerEtEnregistrer(env, row);
+    if (resultat?.statut !== "ok") return json({ erreur: "valorisation_impossible", message: tr("serveur.valorisation.validation_impossible") }, 409);
+    const t = maintenant();
+    // cle: inputs approved; when they change, the figures are « modified since your approval: to approve again »
+    const validation = { le: t, bas: resultat.synthese?.bas ?? null, haut: resultat.synthese?.haut ?? null, cle };
+    await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'validation', ?, ?)
+      ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`)
+      .bind(row.id, JSON.stringify(validation), t).run();
+    await toucher();
+    return json({ ok: true, validation, resultat });
+  }
   if (sous === "valuation" && !item) {
     if (m === "POST") {
-      const { resultat, entree, hypotheses } = await calculer(env, row);
-      await env.DB.prepare("INSERT INTO valuations (id, dossier_id, kind, inputs_json, result_json, created_at) VALUES (?, ?, 'approfondie', ?, ?, ?)")
-        .bind(crypto.randomUUID(), row.id, JSON.stringify({ entree, hypotheses }), JSON.stringify(resultat), maintenant()).run();
-      await toucher();
-      return json({ resultat, entree, hypotheses });
+      const { resultat, entree, hypotheses, enregistre } = await calculerEtEnregistrer(env, row);
+      if (enregistre) await toucher();
+      return json({ resultat, entree, hypotheses, enregistre });
     }
     if (m === "GET") {
       const v = await env.DB.prepare("SELECT inputs_json, result_json, created_at FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();

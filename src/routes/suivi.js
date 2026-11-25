@@ -1,5 +1,5 @@
-// Suivi du parcours : « dossier prêt » (une seule fois, quand tout est généré) et rappel unique après 3 jours
-// d'inactivité (tâche planifiée quotidienne). Aucun autre e-mail n'est envoyé.
+// Follow-up of the flow: "file ready" (only once, when everything is generated) and a single reminder after 3 days
+// of inactivity (daily scheduled task). No other email is sent.
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { envoyerMessage } from "../lib/email.js";
@@ -17,7 +17,7 @@ async function ecrireSuivi(env, dossierId, suivi) {
     ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(dossierId, JSON.stringify(suivi), maintenant()).run();
 }
 
-/** Le dossier est complet : valorisation, datapack, teaser et toutes les sections du mémorandum (SECTIONS_MEMO). */
+/** The file is complete: valuation, datapack, teaser and all the memorandum sections (SECTIONS_MEMO). */
 async function dossierComplet(env, dossierId) {
   const docs = await env.DB.prepare("SELECT kind, id FROM documents WHERE dossier_id = ?").bind(dossierId).all();
   const kinds = new Set(docs.results.map((d) => d.kind));
@@ -27,7 +27,7 @@ async function dossierComplet(env, dossierId) {
   return Boolean(val) && kinds.has("datapack") && kinds.has("teaser") && n >= SECTIONS_MEMO.length;
 }
 
-/** POST /api/dossiers/:id/termine : envoie « Votre dossier est prêt » une seule fois. */
+/** POST /api/dossiers/:id/termine : sends "Your file is ready" only once. */
 export async function routeTermine(request, env, row, user) {
   if (!(await dossierComplet(env, row.id))) return json({ erreur: "incomplet", message: tr("serveur.suivi.dossier_encore_complet") }, 409);
   const suivi = await lireSuivi(env, row.id);
@@ -39,7 +39,7 @@ export async function routeTermine(request, env, row, user) {
   return json({ ok: true, envoye: r.envoye });
 }
 
-/** Dossiers à relancer : inactifs depuis 3 jours, incomplets, jamais relancés. */
+/** Files to remind: inactive for 3 days, incomplete, never reminded. */
 export async function dossiersARelancer(env, t = maintenant()) {
   const { results } = await env.DB.prepare(`SELECT d.id, d.company_json, u.email FROM dossiers d JOIN users u ON u.id = d.user_id
     WHERE d.updated_at < ? AND NOT EXISTS (SELECT 1 FROM answers a WHERE a.dossier_id = d.id AND a.step = 'suivi' AND (a.data_json LIKE '%"rappel_envoye"%' OR a.data_json LIKE '%"pret_envoye"%'))
@@ -49,7 +49,7 @@ export async function dossiersARelancer(env, t = maintenant()) {
   return liste;
 }
 
-/** Tâche planifiée : un seul rappel par dossier. */
+/** Scheduled task: a single reminder per file. */
 export async function relancer(env, base = env.APP_URL || "https://passation.eros-fragliola-freedom.workers.dev") {
   let n = 0;
   for (const d of await dossiersARelancer(env)) {

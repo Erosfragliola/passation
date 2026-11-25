@@ -1,71 +1,74 @@
-# Décisions de méthode à prendre (FIN-03, FIN-05)
+# Method decisions to be made (FIN-03, FIN-05)
 
-Audit du 18/11/2026. **Aucune de ces deux conventions n'a été modifiée dans le code** : la décision revient à l'équipe.
-Si une convention change, il faut modifier **en même temps** le moteur (`src/valuation/approfondie.js`), le datapack
-(`src/documents/datapack.js`), les tests (`test/approfondie.test.js`, `test/datapack.test.js`, `test/demo.test.js`), le
-calcul de référence (`scripts/reference-valorisation.py`) et `docs/valorisation-calculs.md`, puis recalculer les valeurs
-attendues indépendamment.
+Audit of 18/11/2026. **Neither of these two conventions has been changed in the code**: the decision lies with the team.
+If a convention changes, the following must be changed **together**: the engine (`src/valuation/approfondie.js`), the
+datapack (`src/documents/datapack.js`), the tests (`test/approfondie.test.js`, `test/datapack.test.js`,
+`test/demo.test.js`), the reference calculation (`scripts/reference-valorisation.py`) and
+`docs/valorisation-calculs.md`; the expected values must then be recalculated independently.
 
-Les écarts ci-dessous ont été calculés par un script Python indépendant du code du site. Les références
-méthodologiques sont à apporter par l'équipe (manuel ou cours utilisé) : **aucune n'est citée ici faute de l'avoir
-vérifiée**.
+The differences below were calculated by a Python script independent of the site's code. The methodological references
+are to be provided by the team (textbook or course used): **none is cited here, since none has been checked**.
 
-## FIN-03 : où appliquer les décotes et primes
+## FIN-03: where to apply discounts and premiums
 
-**Convention actuelle** (`approfondie.js`, `versTitres`) : valeur des titres = VE × (1 + Σ décotes) − dette nette
-+ écart de BFR + actifs hors exploitation. La décote porte sur la **valeur d'entreprise**.
+**Current convention** (`approfondie.js`, `versTitres`): equity value = EV × (1 + Σ discounts) − net debt
++ working capital gap + non-operating assets. The discount applies to **enterprise value**.
 
-**Autre convention possible** : valeur des titres = (VE − dette nette + écart de BFR + actifs hors exploitation)
-× (1 + Σ décotes). La décote porte sur la **valeur des titres**.
+**Other possible convention**: equity value = (EV − net debt + working capital gap + non-operating assets)
+× (1 + Σ discounts). The discount applies to **equity value**.
 
-Impact d'une décote de −20 % (multiple central) :
+Impact of a −20% discount (central multiple):
 
-| Profil | Convention actuelle | Décote sur les titres | Écart |
+| Profile | Current convention | Discount on equity | Difference |
 |---|---:|---:|---:|
-| Scénario de démonstration (dette nette 20 000 €) | 1 549 818 € | 1 553 455 € | +0,2 % |
-| Société endettée (VE 1 680 000 €, dette nette 1 200 000 €) | 144 000 € | 384 000 € | +166,7 % |
-| Société à trésorerie nette (VE 1 680 000 €, trésorerie nette 500 000 €) | 1 844 000 € | 1 744 000 € | −5,4 % |
+| Demonstration scenario (net debt €20,000) | €1,549,818 | €1,553,455 | +0.2% |
+| Indebted company (EV €1,680,000, net debt €1,200,000) | €144,000 | €384,000 | +166.7% |
+| Company with net cash (EV €1,680,000, net cash €500,000) | €1,844,000 | €1,744,000 | −5.4% |
 
-**Limites de la convention actuelle** : l'effet de la décote est amplifié par l'endettement : dans le cas endetté, une décote de 20 % retire 70 % de
-la valeur des titres (480 000 € sans décote, 144 000 € avec). La trésorerie nette, elle, échappe à la décote.
+**Limitations of the current convention**: the effect of the discount is amplified by debt: in the indebted case, a 20%
+discount removes 70% of the equity value (€480,000 without the discount, €144,000 with it). Net cash, on the other
+hand, escapes the discount.
 
-**Arguments possibles pour chaque convention, à vérifier dans la littérature** :
-- les facteurs proposés (dépendance au dirigeant, concentration des clients, récurrence, croissance) qualifient
-  l'exploitation : ils peuvent se défendre sur la VE, comme un ajustement du multiple ;
-- le facteur « Taille et liquidité des titres » qualifie les titres : il se défendrait plutôt sur la valeur des titres.
+**Possible arguments for each convention, to be checked in the literature**:
+- the factors offered (dependence on the owner, customer concentration, recurrence, growth) describe the operations:
+  they can be defended on EV, like an adjustment of the multiple;
+- the "Size and liquidity of the shares" factor describes the shares: it would rather be defended on equity value.
 
-**Décision à prendre** : (a) garder la convention et l'expliquer dans le README et la présentation ; (b) appliquer toutes
-les décotes sur les titres ; (c) distinguer les facteurs d'exploitation (sur la VE) et le facteur de liquidité (sur les
-titres).
+**Decision to be made**: (a) keep the convention and explain it in the README and the presentation; (b) apply all
+discounts to equity value; (c) separate the operating factors (on EV) from the liquidity factor (on equity value).
 
-## FIN-05 : crédit-bail
+## FIN-05: lease financing
 
-**Convention actuelle** : le crédit-bail restant dû est ajouté à la dette nette (`detteNette`, ligne `credit_bail`)
-alors que les loyers de crédit-bail restent dans les charges externes, donc dans l'EBE. Le financement est alors
-compté deux fois : une fois dans l'EBE (loyers) et une fois dans la dette.
+**Current convention**: the remaining lease financing due is added to net debt (`detteNette`, line `credit_bail`)
+whereas the lease payments remain in external expenses, and therefore in EBITDA. The financing is then counted twice:
+once in EBITDA (payments) and once in debt.
 
-Exemple : loyers de 50 000 €/an, restant dû 150 000 €, EBE 350 000 €, multiple 5,6, autre dette nette 20 000 €.
+Example: payments of €50,000 a year, €150,000 remaining due, EBITDA €350,000, multiple 5.6, other net debt €20,000.
 
-| Convention | Valeur des titres (multiple central) |
+| Convention | Equity value (central multiple) |
 |---|---:|
-| (1) Actuelle : loyers dans l'EBE et restant dû dans la dette | 1 790 000 € |
-| (2) Crédit-bail traité comme une dette : loyers ajoutés à l'EBE, restant dû dans la dette | 2 070 000 € |
-| (3) Crédit-bail traité comme une location : loyers dans l'EBE, rien dans la dette | 1 940 000 € |
+| (1) Current: payments in EBITDA and remaining amount in debt | €1,790,000 |
+| (2) Lease financing treated as debt: payments added back to EBITDA, remaining amount in debt | €2,070,000 |
+| (3) Lease financing treated as a rental: payments in EBITDA, nothing in debt | €1,940,000 |
 
-**Limites de la convention actuelle** : elle sous-évalue les entreprises qui financent leurs équipements par
-crédit-bail (−150 000 € par rapport à (3), −280 000 € par rapport à (2) dans l'exemple). Pour être juste, (2) suppose de
-connaître les loyers annuels (champ absent aujourd'hui) et de vérifier si les multiples sources (Argos, Dealsuite,
-Captain, Damodaran) mesurent l'EBE avant ou après loyers de location (IFRS 16 pour les sociétés cotées).
+**Limitations of the current convention**: it undervalues companies that finance their equipment through lease
+financing (−€150,000 compared with (3), −€280,000 compared with (2) in the example). To be fair, (2) requires knowing
+the annual payments (a field that does not exist today) and checking whether the source multiples (Argos, Dealsuite,
+Captain, Damodaran) measure EBITDA before or after rental payments (IFRS 16 for listed companies).
 
-**Décision à prendre** : (2) demande un nouveau champ « loyers de crédit-bail de l'exercice » et un retraitement de
-l'EBE. (3) est la plus simple : retirer la ligne de la dette nette. À défaut, garder (1) en le signalant à
-l'utilisateur.
+**Decision to be made**: (2) needs a new field "lease financing payments for the fiscal year" and an EBITDA adjustment.
+(3) is the simplest: remove the line from net debt. Failing that, keep (1) and flag it to the user.
 
-## Autres conventions documentées (P2 de l'audit, non modifiées)
+**Status on 24/11/2026 (part C of the flow)**: convention (1) kept, as decided by the team for this PR. The new
+"Adjustments" screen explains that leasing does not change EBITDA and that its remaining principal is entered with
+the net debt; when a remaining principal is entered, a point of attention says that the convention may undervalue
+the company. No calculation changed.
 
-- ANCC : pas d'impôt latent déduit des plus-values latentes ; provisions pour risques comptées à 100 % dans la dette
-  nette, avant impôt.
-- DCF : la valeur terminale reprend le flux de l'an 5, dont la variation de BFR calculée à la croissance de l'an 5
-  et non à la croissance à l'infini.
-- Si CMPC − 1 point ≤ croissance à l'infini, la borne haute du DCF n'existe pas : la synthèse haute reprend alors la
-  valeur centrale du DCF.
+## Other documented conventions (P2 items of the audit, not changed)
+
+- ANCC (adjusted book net assets): no deferred tax deducted from unrealized gains; provisions for risks counted at 100%
+  in net debt, before tax.
+- DCF: the terminal value uses the year-5 cash flow, including the change in working capital calculated at the year-5
+  growth rate and not at the perpetual growth rate.
+- If WACC − 1 point ≤ perpetual growth, the upper bound of the DCF does not exist: the upper summary then uses the
+  central DCF value.

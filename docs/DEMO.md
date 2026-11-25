@@ -1,81 +1,80 @@
-# Démonstration de Passation : scénario reproductible
+# Passation demonstration: a reproducible scenario
 
-Ce scénario utilise **uniquement des données fictives** pour les chiffres : la liasse
-`test/fixtures/liasse-fictive.pdf` (« Atelier Exemple SAS », entreprise fictive, sans SIREN). Les valeurs attendues
-sont vérifiées par `test/demo.test.js` et ont été calculées indépendamment (script Python sans import du code du site).
+This scenario uses **only fictitious data** for the figures: the tax return `test/fixtures/liasse-fictive.pdf`
+("Atelier Exemple SAS", a fictitious company with no SIREN). The expected values are checked by `test/demo.test.js` and
+were calculated independently (Python script that does not import the site's code).
 
-## Avant la démonstration (la veille)
+## Before the demonstration (the day before)
 
-1. Vérifier le site : `https://passation.eros-fragliola-freedom.workers.dev/api/health` doit répondre `{"ok":true}`.
-2. Vérifier que l'envoi des codes de connexion fonctionne (secret `BREVO_API_KEY` en production) : demander un code.
-   Sans Brevo, la connexion n'est possible qu'en local (`npm run dev`), où le code s'affiche dans le terminal.
-3. Vérifier la clé Anthropic (lecture de la liasse, teaser, mémorandum). Sans clé, la saisie manuelle, la
-   valorisation et le datapack fonctionnent ; la lecture de la liasse et les rédactions sont indisponibles (503).
-4. **Préparer un dossier de secours** déjà rempli (session ouverte dans un second navigateur) et des captures
-   d'écran : les API publiques peuvent répondre lentement ou refuser des requêtes (HTTP 429).
-5. Choisir une entreprise active de l'industrie (section NAF C) pour l'estimation express. Le dossier qui lui sera
-   rattaché contiendra des chiffres fictifs : ne pas diffuser ses documents et **supprimer le dossier après la
-   démonstration** (Mon dossier → Supprimer).
+1. Check the site: `https://passation.eros-fragliola-freedom.workers.dev/api/health` must answer `{"ok":true}`.
+2. Check that sign-in codes are sent (`BREVO_API_KEY` secret in production): request a code. Without Brevo, sign-in
+   only works locally (`npm run dev`), where the code appears in the terminal.
+3. Check the Anthropic key (tax-return reading, teaser, memorandum). Without a key, manual entry, the valuation and the
+   datapack work; tax-return reading and drafting are unavailable (503).
+4. **Prepare a backup file** that is already filled in (session open in a second browser) and screenshots: the public
+   APIs can be slow or reject requests (HTTP 429).
+5. Pick an active manufacturing company (NAF section C) for the quick estimate. The file attached to it will contain
+   fictitious figures: do not share its documents and **delete the file after the demonstration** (My file → Delete).
 
-## Plan B : vidéo du parcours (si le réseau, Brevo ou Claude font défaut)
+## Plan B: a video of the flow (if the network, Brevo or Claude fail)
 
-La démonstration en direct dépend de Brevo (code de connexion), de l'API Claude (rédactions) et des API publiques.
-Une vidéo d'une minute du parcours complet s'enregistre en local, sans aucune de ces dépendances, avec l'entreprise
-et les chiffres fictifs de ce document (« Menuiserie Exemple », SIREN 000000018, nom de code « Projet Chêne ») :
+The live demonstration depends on Brevo (sign-in code), the Claude API (drafting) and the public APIs. A one-minute
+video of the full flow can be recorded locally, without any of these dependencies, using the company and the
+fictitious figures of this document ("Menuiserie Exemple", SIREN 000000018, code name "Projet Chêne"):
 
 ```
-npx playwright-core install ffmpeg      # une fois par machine
+npx playwright-core install ffmpeg      # once per machine
 npm run demo:video -- --langue fr --sortie ~/Desktop/Passation-demo-fr.webm
 npm run demo:video -- --langue en --sortie ~/Desktop/Passation-demo-en.webm
 ```
 
-Le script (`scripts/video-demo.mjs`) lance son propre serveur local, lit le code de connexion dans son terminal et
-filme en 1440 × 900 : accueil, estimation express, connexion, dossier, chiffres, valorisation, mémorandum, teaser.
-Rien n'est envoyé en production. La relancer la veille si l'interface a changé.
+The script (`scripts/video-demo.mjs`) starts its own local server, reads the sign-in code in its terminal and records
+at 1440 × 900: home page, quick estimate, sign-in, file, figures, valuation, memorandum, teaser. Nothing is sent to
+production. Record it again the day before if the interface has changed.
 
-## Déroulé (environ 5 minutes)
+## Running order (about 5 minutes)
 
-| Étape | Action | Ce qu'on montre |
+| Step | Action | What we show |
 |---|---|---|
-| 1 | Accueil : saisir le SIREN ou le nom | Données publiques (annuaire, INPI, BODACC), fourchette express à partir de multiples sourcés |
-| 2 | « Ouvrir mon dossier » : e-mail puis code à 6 chiffres | Connexion sans mot de passe, code haché, usage unique |
-| 3 | Déposer `liasse-fictive.pdf` (ou saisir les montants ci-dessous) | Lecture par Claude **proposée**, jamais validée d'office ; contrôles automatiques (le CA diffère des comptes publiés de l'entreprise choisie : alerte attendue) |
-| 4 | Confirmer les exercices 2024 et 2025 | Validation par le dirigeant ; un exercice incomplet est écarté du calcul et signalé |
-| 5 | Valorisation | Multiples seuls, fourchette sans valeur centrale (décision du 19/11/2026) ; l'actif net corrigé en contrôle ; phrase qui explique l'écart avec l'estimation express |
-| 6 | « Affiner » : EBE retenu, décotes et primes, Recalculer | Le DCF n'est plus affiché ni réglable à l'écran ; il reste calculé dans le datapack (onglet DCF) |
-| 7 | Télécharger le datapack | présentation avec logo et sommaire cliquable, 8 onglets numérotés par section, formules vivantes : modifier une cellule cuivre recalcule tout |
-| 8 | Teaser, mémorandum (si la clé Claude est active) | Rédaction à partir des seuls faits validés ; contrôle d'anonymat du teaser |
+| 1 | Home page: enter the SIREN or the name | Public profile (business directory, INPI, BODACC); the range stays hidden without an account (not sent by the server) |
+| 2 | "Create my account": email, 6-digit code, then a password | Address verified by a hashed single-use code; password hashed (PBKDF2), quick range visible once signed in |
+| 3 | Upload `liasse-fictive.pdf` (or enter the amounts below) | Reading by Claude is **proposed**, never approved automatically; automatic checks (the revenue differs from the published accounts of the chosen company: alert expected) |
+| 4 | Confirm fiscal years 2024 and 2025 (2023 skipped knowingly) | Approval by the owner; the screen says what the range loses without a third fiscal year |
+| 5 | Adjustments, net debt and scope, then « Your value » | The bridge from EBITDA to the value of the shares, visible without a click; adjusted net assets below the range: a floor; « I approve these figures », after which the memorandum starts |
+| 6 | "Fine-tune": EBITDA used, discounts and premiums, Recalculate | The DCF is no longer shown or adjustable on screen; it is still calculated in the datapack (DCF tab) |
+| 7 | Download the datapack | Overview with logo and clickable contents, 8 tabs numbered by section, live formulas: changing a copper cell recalculates everything |
+| 8 | Teaser, memorandum (if the Claude key is active) | Drafting from approved facts only; anonymity check on the teaser |
 
-**La prime de taille de 3 % est une hypothèse de démonstration, pas une donnée sourcée.** Aucune source publique
-gratuite n'a été trouvée (`src/data/hypotheses.json`, `prime_taille`) : c'est au dirigeant ou à son conseil de la
-fixer et de la justifier. C'est pourquoi le DCF n'est pas calculé par défaut.
+**The 3% size premium is a demonstration assumption, not sourced data.** No free public source was found
+(`src/data/hypotheses.json`, `prime_taille`): it is up to the owner or their advisor to set and justify it. That is why
+the DCF is not calculated by default.
 
-## Montants de la liasse fictive (en euros)
+## Amounts in the fictitious tax return (in euros)
 
-| Poste | 2024 | 2025 |
+| Item | 2024 | 2025 |
 |---|---:|---:|
-| Chiffre d'affaires | 2 200 000 | 2 400 000 |
-| Achats consommés (achats + variation de stock) | 880 000 | 960 000 |
-| Autres achats et charges externes | 320 000 | 340 000 |
-| Impôts et taxes | 40 000 | 40 000 |
-| Salaires et charges sociales | 640 000 | 680 000 |
-| Dotations aux amortissements | 66 000 | 72 000 |
-| Stocks / Clients | 180 000 / 370 000 | 200 000 / 400 000 |
-| Disponibilités / Placements | 210 000 / 50 000 | 250 000 / 50 000 |
-| Capitaux propres | 590 000 | 700 000 |
-| Emprunts / Provisions pour risques | 340 000 / 20 000 | 300 000 / 20 000 |
-| Fournisseurs / Dettes fiscales et sociales | 230 000 / 140 000 | 250 000 / 150 000 |
+| Revenue | 2,200,000 | 2,400,000 |
+| Cost of goods and materials (purchases + change in inventory) | 880,000 | 960,000 |
+| Other purchases and external expenses | 320,000 | 340,000 |
+| Taxes and duties | 40,000 | 40,000 |
+| Wages and payroll taxes | 640,000 | 680,000 |
+| Depreciation and amortization | 66,000 | 72,000 |
+| Inventories / Trade receivables | 180,000 / 370,000 | 200,000 / 400,000 |
+| Cash / Investments | 210,000 / 50,000 | 250,000 / 50,000 |
+| Shareholders' equity | 590,000 | 700,000 |
+| Borrowings / Provisions for risks | 340,000 / 20,000 | 300,000 / 20,000 |
+| Trade payables / Tax and social security liabilities | 230,000 / 140,000 | 250,000 / 150,000 |
 
-## Résultats attendus (valeur des titres, secteur industrie)
+## Expected results (equity value, manufacturing industry)
 
-| | Basse | Centrale | Haute |
+| | Low | Central | High |
 |---|---:|---:|---:|
-| Multiples d'EBE (4 / 5,6 / 7 × EBE normatif 350 000) | 1 381 818 | 1 941 818 | 2 431 818 |
-| DCF, prime de taille 3 % (CMPC 11,21 % ± 1 pt) | 2 530 797 | 2 819 933 | 3 180 021 |
-| **Synthèse par défaut (multiples seuls)** | **1 381 818** | **1 941 818** | **2 431 818** |
-| Synthèse avec le DCF en option à 40 % | 1 841 410 | 2 293 064 | 2 731 099 |
-| Actif net comptable corrigé (plancher) | | 700 000 | |
+| EBITDA multiples (4 / 5.6 / 7 × normalized EBITDA of 350,000) | 1,381,818 | 1,941,818 | 2,431,818 |
+| DCF, 3% size premium (WACC 11.21% ± 1 pt) | 2,530,797 | 2,819,933 | 3,180,021 |
+| **Default summary (multiples only)** | **1,381,818** | **1,941,818** | **2,431,818** |
+| Summary with the optional DCF at 40% | 1,841,410 | 2,293,064 | 2,731,099 |
+| Adjusted book net assets (floor) | | 700,000 | |
 
-Les multiples dépendent du secteur de l'entreprise choisie (`src/data/multiples.json`) : avec un autre secteur, les
-chiffres diffèrent. Les prévisions du DCF viennent de l'historique (croissance 9,09 %, marge d'EBE 14,58 %,
-amortissements et investissements 3 % du CA, BFR 30,14 jours).
+The multiples depend on the industry of the chosen company (`src/data/multiples.json`): with another industry, the
+figures differ. The DCF forecasts come from the history (growth 9.09%, EBITDA margin 14.58%, depreciation and capital
+expenditure 3% of revenue, working capital 30.14 days).

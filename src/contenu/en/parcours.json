@@ -76,59 +76,11 @@
         }
       }
     },
-    "remuneration": {
-      "titre": "What needs adjusting in your accounts",
-      "aide": "A buyer reasons on “normal” earnings: your pay at market rate, without events that won’t happen again.",
-      "pourquoi": "The gap with normal pay and one-off items are EBITDA adjustments, and therefore affect the value.",
-      "chapitre": "4.3 Adjusted EBITDA; “Adjustments” datapack tab",
-      "champs": {
-        "remuneration_dirigeant_reelle": {
-          "libelle": "What you cost the company per year",
-          "aide": "Salary and payroll taxes, or management fees and contributions."
-        },
-        "remuneration_normative": {
-          "libelle": "What a manager replacing you would cost",
-          "aide": "If you don’t know, keep the suggestion: it doesn’t change the valuation."
-        },
-        "exceptionnel_signale": {
-          "libelle": "Did a one-off expense or income affect your latest accounts?",
-          "aide": "For example: a dispute, an insurance claim, a one-time grant."
-        }
-      }
-    },
-    "detention": {
-      "titre": "The scope of the sale",
-      "aide": "A buyer always asks two questions: who are they buying the shares from, and are they also buying the premises?",
-      "pourquoi": "The legal structure chart and the scope; an unusual rent is adjusted.",
-      "chapitre": "5.2 Legal structure chart; 4.3 Adjusted EBITDA",
-      "champs": {
-        "detention": {
-          "libelle": "How do you hold your shares in the company?"
-        },
-        "murs": {
-          "libelle": "Who owns the company’s premises?"
-        },
-        "murs_cession": {
-          "libelle": "Are the premises part of the sale?"
-        },
-        "loyer_paye": {
-          "libelle": "Annual rent paid by the company"
-        },
-        "loyer_marche": {
-          "libelle": "Annual market rent for equivalent premises",
-          "aide": "If you don’t know, keep the suggestion: no adjustment."
-        }
-      }
-    },
     "operation": {
       "titre": "Your sale plan",
       "pourquoi": "Scope, timeline and transition support, presented without any price. Support reassures the buyer about keeping the customers and the know-how.",
       "chapitre": "5.2 Planned deal; teaser",
       "champs": {
-        "part_cedee": {
-          "libelle": "Share of the capital",
-          "requis": "the share of the capital being sold"
-        },
         "calendrier": {
           "libelle": "Preferred timeline"
         },
@@ -176,5 +128,67 @@
     "recrutement": "Key hire",
     "equipement": "New equipment",
     "autre": "Other"
+  },
+  "valorisation": {
+    "retraitements": {
+      "champs": {
+        "remuneration_dirigeant_reelle": {
+          "libelle": "What you cost the company per year",
+          "aide": "Salary and payroll taxes, or management fees and contributions."
+        },
+        "remuneration_normative": {
+          "libelle": "What a manager replacing you would cost",
+          "aide": "Salary and payroll taxes of a salaried manager doing your job. The same amount as yours: no adjustment."
+        },
+        "murs": {
+          "libelle": "Who owns the company’s premises?",
+          "aide": "If the company pays you rent, to you or your SCI, it is brought back to the market price."
+        },
+        "loyer_paye": {
+          "libelle": "Annual rent paid by the company"
+        },
+        "loyer_marche": {
+          "libelle": "Annual market rent for equivalent premises",
+          "aide": "What equivalent premises rented from an outside owner would cost."
+        },
+        "exceptionnel_signale": {
+          "libelle": "Did a one-off expense or income affect your latest accounts?",
+          "aide": "For example: a dispute, an insurance claim, a one-time grant."
+        },
+        "exceptionnels": {
+          "libelle": "One-off items",
+          "aide": "One line per item: fiscal year, expense or income, amount and reason."
+        }
+      }
+    },
+    "dette": {
+      "champs": {
+        "comptes_courants_remboursables": {
+          "libelle": "Shareholder loans to be repaid",
+          "aide": "Money you lent the company that it will have to pay back to you."
+        },
+        "credit_bail_restant": {
+          "libelle": "Lease financing: remaining payments due",
+          "aide": "Principal still due on the lease financing contracts."
+        },
+        "dividendes_a_verser": {
+          "libelle": "Dividends declared but not yet paid",
+          "aide": "Dividends voted at the general meeting and not yet paid."
+        },
+        "actifs_hors_exploitation": {
+          "libelle": "Non-operating assets (excess cash, unused property)",
+          "aide": "Cash beyond the needs of the business, an asset the company does not use."
+        },
+        "detention": {
+          "libelle": "How do you hold your shares in the company?"
+        },
+        "murs_cession": {
+          "libelle": "Are the premises part of the sale?"
+        },
+        "part_cedee": {
+          "libelle": "Share of the capital"
+        }
+      }
+    }
   }
 }

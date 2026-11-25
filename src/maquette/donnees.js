@@ -1,4 +1,4 @@
-// Assemble l'objet « maquette » à partir des trois sources normalisées.
+// Assembles the "maquette" object from the three normalized sources.
 import { rechercherBrut, normaliserEntreprise } from "../sources/entreprise.js";
 import { exercicesBruts, normaliserExercices } from "../sources/inpi.js";
 import { annoncesBrutes, normaliserAnnonces } from "../sources/bodacc.js";
@@ -6,7 +6,7 @@ import { casseVille, memeVille } from "../../public/js/regles.js";
 
 export function assembler(entreprise, exercices, annonces) {
   const villeActuelle = casseVille(entreprise.ville);
-  // Préférer l'orthographe accentuée du BODACC quand c'est la même ville (« Saint-Péreuse » plutôt que « Saint-Pereuse »).
+  // Prefer the BODACC's accented spelling when it is the same city ("Saint-Péreuse" rather than "Saint-Pereuse").
   const villesBodacc = annonces.villes || [];
   const ville = villesBodacc.find((v) => memeVille(v, villeActuelle)) || villeActuelle;
 
@@ -32,15 +32,15 @@ export function assembler(entreprise, exercices, annonces) {
   };
 }
 
-/** Clé de cache unique des données publiques d'une entreprise (v2 : code postal, pour la région du teaser). */
+/** Single cache key of a company's public data (v2: postal code, for the teaser's region). */
 export const CLE_MAQUETTE = (siren) => `maquette:v2:${siren}`;
 
 /**
- * Interroge les trois sources en parallèle. Retourne null si le SIREN est introuvable.
- * Une panne de l'annuaire ou des comptes (INPI) est une erreur, jamais une absence de comptes : elle est propagée
- * (sinon l'entreprise passerait pour avoir des comptes confidentiels, et ce faux constat serait mis en cache).
- * Une panne du BODACC (événements de la frise seulement) donne une réponse marquée sources_partielles, à ne pas
- * mettre en cache.
+ * Queries the three sources in parallel. Returns null if the SIREN cannot be found.
+ * An outage of the directory or of the accounts (INPI) is an error, never an absence of accounts: it is passed on
+ * (otherwise the company would appear to have confidential accounts, and this false finding would be cached).
+ * An outage of the BODACC (timeline events only) gives a response marked sources_partielles, not to be
+ * cached.
  */
 export async function chargerMaquette(siren, options = {}) {
   const [brutE, brutI, brutB] = await Promise.all([

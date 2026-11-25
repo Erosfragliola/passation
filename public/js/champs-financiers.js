@@ -1,11 +1,11 @@
-// Champs financiers d'un exercice : liste unique partagée par l'écran de saisie, le serveur, la lecture de liasse
-// et le datapack. Libellés en langage de dirigeant ; « aide » dit où trouver le chiffre dans la liasse fiscale
-// (formulaires 2033 du régime simplifié ou 2050 à 2059 du régime normal), sans numéro de ligne.
-// Textes : src/contenu/<langue>/champs.json (marqueur T, lus dans la langue de la page ou de la requête).
+// Financial fields of a fiscal year: single list shared by the entry screen, the server, the tax-return reading
+// and the datapack. Labels in the owner's language; "aide" says where to find the figure in the tax return
+// (forms 2033 of the simplified regime or 2050 to 2059 of the standard regime), without a line number.
+// Texts: src/contenu/<language>/champs.json (marker T, read in the language of the page or of the request).
 import { t, T, avecTextes } from "./i18n.js";
 
 export const CHAMPS = [
-  // Compte de résultat
+  // Income statement
   { cle: "chiffre_affaires", groupe: "resultat", libelle: T, aide: T, obligatoire: true },
   { cle: "autres_produits", groupe: "resultat", libelle: T, aide: T },
   { cle: "achats_consommes", groupe: "resultat", libelle: T, aide: T, obligatoire: true },
@@ -17,7 +17,7 @@ export const CHAMPS = [
   { cle: "dotations_amortissements", groupe: "resultat", libelle: T, aide: T },
   { cle: "resultat_exploitation", groupe: "resultat", libelle: T, aide: T },
   { cle: "resultat_net", groupe: "resultat", libelle: T, aide: T },
-  // Bilan
+  // Balance sheet
   { cle: "immobilisations_nettes", groupe: "bilan", libelle: T, aide: T },
   { cle: "stocks", groupe: "bilan", libelle: T, aide: T, obligatoire: true },
   { cle: "creances_clients", groupe: "bilan", libelle: T, aide: T, obligatoire: true },
@@ -36,35 +36,35 @@ for (const c of CHAMPS) avecTextes(c, `champs.champs.${c.cle}`);
 
 export const CLES_CHAMPS = new Set(CHAMPS.map((c) => c.cle));
 
-/** Libellé et aide montrés au dirigeant. `libelle` et `aide` restent ceux du datapack Excel et de la lecture de liasse
- *  (documents destinés aux repreneurs et aux conseils) ; `ecran` et `aideEcran` les remplacent à l'écran, sans jargon. */
+/** Label and help shown to the owner. `libelle` and `aide` remain those of the Excel datapack and of the tax-return
+ *  reading (documents meant for buyers and advisors); `ecran` and `aideEcran` replace them on screen, without jargon. */
 export const libelleEcran = (c) => c?.ecran ?? c?.libelle ?? "";
 export const aideEcran = (c) => c?.aideEcran ?? c?.aide ?? "";
-/** Explication de l'EBE, à la première occurrence de chaque écran (aide « ? » au survol, au clavier et au toucher). */
+/** Explanation of EBITDA, at the first occurrence on each screen ("?" help on hover, keyboard and touch). */
 export const aideEbe = () => t("champs.aide_ebe");
 export const EXERCICES_MAX = 3;
 
-/** Exercice → objet {cle: valeur} avec les seules valeurs validées (utilisées par le calcul). */
+/** Fiscal year → {cle: valeur} object with only the approved values (used by the calculation). */
 export function exerciceValide(lignes) {
   const ex = {};
   for (const [cle, v] of Object.entries(lignes)) if (v.valide && Number.isFinite(v.valeur)) ex[cle] = v.valeur;
   return ex;
 }
 
-/** Champs obligatoires encore manquants ou non validés pour un exercice. */
+/** Required fields still missing or not approved for a fiscal year. */
 const DETAIL_CHARGES = new Set(["achats_consommes", "charges_externes", "charges_personnel"]);
 export function manquants(lignes) {
   const ok = (cle) => lignes[cle]?.valide && Number.isFinite(lignes[cle]?.valeur);
-  // L'EBE publié validé remplace le détail des charges
+  // The approved published EBITDA replaces the detail of the expenses
   return CHAMPS.filter((c) => c.obligatoire && !ok(c.cle) && !(DETAIL_CHARGES.has(c.cle) && ok("ebe"))).map((c) => c.cle);
 }
 
 /**
- * Exercices demandés au dirigeant (règle unique, partagée par le parcours guidé, la page du dossier, la page
- * valorisation et le serveur) :
- *   - le dernier exercice connu est indispensable (c'est celui que demande le parcours guidé) ;
- *   - les deux exercices qui le précèdent immédiatement sont recommandés, jamais obligatoires ;
- *   - une année plus ancienne (par exemple publiée isolément à l'INPI) n'est jamais réclamée : simple information.
+ * Fiscal years requested from the owner (single rule, shared by the guided steps, the file page, the valuation
+ * page and the server):
+ *   - the latest known fiscal year is required (it is the one the guided steps ask for);
+ *   - the two fiscal years immediately before it are recommended, never required;
+ *   - an older year (for example published on its own at the INPI) is never requested: information only.
  * @param lignes { [annee]: { [cle]: { valeur, valide, source } } }
  * @returns { dernier, dernier_complet, recommandes: [n-1, n-2], recommandes_manquants, anciens }
  */
@@ -83,8 +83,8 @@ export function exercicesAttendus(lignes = {}) {
   };
 }
 
-/** Comptes publics à reprendre : le dernier exercice publié et, s'ils sont publiés, les deux qui le précèdent
- *  immédiatement. Une année plus ancienne, isolée (l'INPI saute parfois des exercices), n'est pas reprise. */
+/** Public accounts to reuse: the latest published fiscal year and, if they are published, the two immediately
+ *  before it. An older, isolated year (the INPI sometimes skips fiscal years) is not reused. */
 export function anneesAReprendre(annees = []) {
   const l = [...new Set(annees.filter(Number.isInteger))].sort((a, b) => a - b);
   const dernier = l.at(-1);

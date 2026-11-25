@@ -1,5 +1,5 @@
-// Valorisation express : fourchette de valeur d'entreprise (VE) à partir des derniers comptes publiés
-// et des multiples sectoriels de src/data/multiples.json. Calcul déterministe, aucun appel à l'IA.
+// Quick valuation: enterprise value (EV) range from the latest published accounts
+// and the industry multiples of src/data/multiples.json. Deterministic calculation, no call to the AI.
 import MULTIPLES from "../data/multiples.json";
 import { dernier } from "../../public/js/regles.js";
 import { t as tr } from "../../public/js/i18n.js";
@@ -11,9 +11,9 @@ export function secteurPour(section, table = MULTIPLES) {
 }
 
 /**
- * @param d objet maquette (section_naf, ca[], ebe[]) ; ou saisie du dirigeant { section_naf, ca: [{annee, valeur}], ebe: [...] }
+ * @param d maquette object (section_naf, ca[], ebe[]); or the owner's entry { section_naf, ca: [{annee, valeur}], ebe: [...] }
  * @returns { statut, exercice?, methode?, bas?, central?, haut?, multiples?, source? }
- *   statut : "ok" | "comptes_absents" | "reference_a_completer" | "non_calculable"
+ *   statut: "ok" | "comptes_absents" | "reference_a_completer" | "non_calculable"
  */
 export function estimationExpress(d, table = MULTIPLES) {
   const caD = dernier(d.ca);

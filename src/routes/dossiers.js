@@ -1,11 +1,11 @@
-// Dossiers du dirigeant. Toute route vérifie que le dossier appartient à l'utilisateur connecté ;
-// sinon elle répond 404 (sans révéler l'existence du dossier).
-//   GET    /api/dossiers                          liste
-//   POST   /api/dossiers            { siren }     création (un dossier par SIREN et par utilisateur)
-//   GET    /api/dossiers/:id                      détail + avancement
-//   DELETE /api/dossiers/:id                      suppression complète (base + fichiers R2)
+// The owner's files. Every route checks that the file belongs to the signed-in user;
+// otherwise it answers 404 (without revealing that the file exists).
+//   GET    /api/dossiers                          list
+//   POST   /api/dossiers            { siren }     creation (one file per SIREN and per user)
+//   GET    /api/dossiers/:id                      details + progress
+//   DELETE /api/dossiers/:id                      complete deletion (database + R2 files)
 //   PUT    /api/dossiers/:id/checklist/:item { done }
-//   financials, uploads, answers, valuation : voir routes/valorisation.js ; documents : routes/documents.js
+//   financials, uploads, answers, valuation: see routes/valorisation.js; documents: routes/documents.js
 import { json } from "../http.js";
 import { exigerUtilisateur, maintenant } from "../lib/auth.js";
 import { lireCache, ecrireCache } from "../lib/cache.js";
@@ -15,9 +15,9 @@ import { chargerMaquette, CLE_MAQUETTE } from "../maquette/donnees.js";
 import { estimationExpress } from "../valuation/express.js";
 import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
 import { manquants, exercicesAttendus } from "../../public/js/champs-financiers.js";
-import { avancementQuestions } from "../../public/js/parcours.js";
+import { avancementQuestions, etatValorisation, vuesDe } from "../../public/js/parcours.js";
 import { resumeValorisation } from "../../public/js/dossier-parcours.js";
-import { routeValorisation, lireChiffres, lireReponses } from "./valorisation.js";
+import { routeValorisation, lireChiffres, lireReponses, etatValidation } from "./valorisation.js";
 import { routePieces } from "./pieces.js";
 import { projet } from "../documents/nom-de-code.js";
 import { routeDocuments } from "./documents.js";
@@ -34,7 +34,7 @@ export async function listerDossiers(env, userId) {
   return results.map(resume);
 }
 
-/** Crée (ou retrouve) le dossier d'un utilisateur pour un SIREN, pré-rempli avec les données publiques. */
+/** Creates (or finds) a user's file for a SIREN, prefilled with the public data. */
 export async function creerDossierPourSiren(env, userId, siren) {
   const existant = await env.DB.prepare("SELECT id, siren, company_json, created_at FROM dossiers WHERE user_id = ? AND siren = ?").bind(userId, siren).first();
   if (existant) return resume(existant);
@@ -43,7 +43,7 @@ export async function creerDossierPourSiren(env, userId, siren) {
   const cle = CLE_MAQUETTE(siren);
   let donnees = await lireCache(env.DB, cle);
   if (!donnees) {
-    donnees = await chargerMaquette(siren); // panne d'une source : erreur propagée (voir routeDossiers)
+    donnees = await chargerMaquette(siren); // outage of a source: error passed on (see routeDossiers)
     if (!donnees) throw new Error("introuvable");
     if (!donnees.sources_partielles) await ecrireCache(env.DB, cle, donnees);
   }
@@ -69,9 +69,13 @@ async function detail(env, row) {
   const complets = Object.values(lignes).filter((l) => manquants(l).length === 0).length;
   const exercices = exercicesAttendus(lignes);
   const approfondie = await env.DB.prepare("SELECT result_json, created_at FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();
-  // Fourchette seulement (jamais de valeur centrale pour le dirigeant), et ce qui l'explique
+  // Range only (never a central value for the owner), and what explains it
   const valorisation = approfondie ? resumeValorisation(JSON.parse(approfondie.result_json)) : null;
-  const questions = avancementQuestions(await lireReponses(env, row.id));
+  const reponses = await lireReponses(env, row.id);
+  const vues = vuesDe(reponses);
+  const questions = avancementQuestions(reponses, vues);
+  // Steps of the two stages done or not, from the saved answers (same rule as the guided steps)
+  const etapes = { ...etatValorisation(reponses, vues), validation: await etatValidation(env, row, reponses), photos: vues.includes("photos"), equipe: vues.includes("equipe_dirigeante") };
   const docs = await env.DB.prepare("SELECT kind, MAX(version) AS version, MAX(created_at) AS le FROM documents WHERE dossier_id = ? GROUP BY kind").bind(row.id).all();
   return {
     id: row.id, siren: row.siren, cree_le: row.created_at, statut: row.status,
@@ -83,7 +87,7 @@ async function detail(env, row) {
     },
     estimation: entreprise.estimation ?? null,
     checklist: [...coches],
-    parcours: { exercices, exercices_complets: complets, questions, valorisation, valorisation_le: approfondie?.created_at ?? null },
+    parcours: { exercices, exercices_complets: complets, questions, etapes, valorisation, valorisation_le: approfondie?.created_at ?? null },
     documents: Object.fromEntries(docs.results.map((d) => [d.kind, { version: d.version, le: d.le }])),
     avancement: avancement({
       estimation_express: entreprise.estimation?.statut === "ok", checklist: coches,
@@ -92,7 +96,7 @@ async function detail(env, row) {
   };
 }
 
-/** Supprime un dossier et tout ce qui s'y rattache : lignes en base et fichiers R2 (préfixe dossiers/<id>/). */
+/** Deletes a file and everything attached to it: database rows and R2 files (prefix dossiers/<id>/). */
 async function supprimerDossier(env, id) {
   if (env.FILES) {
     let curseur;

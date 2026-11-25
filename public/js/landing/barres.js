@@ -1,6 +1,6 @@
-// Le champ ne disparaît jamais : quand celui du hero passe sous l'en-tête (il sort de la zone lisible par le haut),
-// il apparaît dans l'en-tête, centré (ordinateur) ou sur une seconde ligne pleine largeur (téléphone, < 768 px),
-// jusqu'en bas de la page. Classe posée sur <html> : champ-en-haut.
+// The field never disappears: when the hero's field goes under the header (it leaves the readable area at the top),
+// it appears in the header, centered (desktop) or on a second full-width line (phone, < 768 px),
+// down to the bottom of the page. Class set on <html>: champ-en-haut.
 
 export function surveillerChamps({ hero, auChangement = () => {} }) {
   const racine = document.documentElement;
@@ -13,7 +13,7 @@ export function surveillerChamps({ hero, auChangement = () => {} }) {
     racine.classList.toggle("champ-en-haut", heroPasse);
     if (avant !== heroPasse) auChangement();
   };
-  /** Recalcul immédiat (sans attendre l'observateur), par exemple avant de donner le focus au champ. */
+  /** Immediate recalculation (without waiting for the observer), for example before giving focus to the field. */
   const actualiser = () => {
     if (!ligne) return;
     heroPasse = ligne.getBoundingClientRect().bottom <= hautEntete();

@@ -1,99 +1,131 @@
+**English** | [Français](README.fr.md)
+
 # Passation
 
 [![Tests](https://github.com/Erosfragliola/passation/actions/workflows/tests.yml/badge.svg)](https://github.com/Erosfragliola/passation/actions/workflows/tests.yml)
 
-Plateforme web qui accompagne le dirigeant de PME française dans la préparation de la cession de son entreprise :
-de la première estimation à partir du SIREN jusqu'aux documents remis aux repreneurs (datapack Excel, teaser
-anonymisé, mémorandum d'information).
+A web platform that helps owners of French small and medium-sized businesses (SMEs) prepare the sale of their
+company: from a first estimate based on the SIREN number (the French company identification number) to the documents
+handed to potential buyers (Excel datapack, anonymized teaser, information memorandum).
 
-Projet du cours « Programming and AI for Corporate Finance » (EDHEC Business School, 2026).
+Project for the course "Programming and AI for Corporate Finance" (EDHEC Business School, 2026).
 
-**En ligne :** https://passation.eros-fragliola-freedom.workers.dev
+**Live:** https://passation.eros-fragliola-freedom.workers.dev (English at `/`, French at `/fr/`; the bilingual
+version is visible online once `main` has been deployed).
 
-## Ce que fait l'application
+## What the application does
 
-| Fonction | État | Dépend de |
+| Feature | Status | Depends on |
 |---|---|---|
-| Estimation express sans compte (SIREN ou nom) : fourchette de valeur d'entreprise par multiples d'EBE sourcés | Disponible | API publiques gratuites |
-| Connexion par code à 6 chiffres reçu par e-mail ; espace dirigeant ; parcours guidé avec reprise | Disponible | Brevo (en local : code affiché dans le terminal) |
-| Saisie des comptes et contrôles de cohérence (bilan équilibré, CA publié, unité, variation suspecte) | Disponible | — |
-| Lecture automatique d'une liasse fiscale PDF (montants proposés, jamais validés d'office) | Disponible | API Claude (payante) |
-| Valorisation approfondie : multiples d'EBE, DCF sur 5 ans, ANCC, retraitements, décotes, passage VE → titres, sensibilités | Disponible ; **le DCF demande une prime de taille** (aucune source publique gratuite : à régler par le dirigeant) | — |
-| Datapack Excel (9 onglets, formules vivantes) | Disponible | — |
-| Teaser anonymisé, avec contrôle d'anonymat automatique | Disponible | API Claude |
-| Mémorandum d'information (9 chapitres, faits validés, étude de marché sourcée) | Disponible | API Claude (recherche web pour l'étude de marché) |
-| Dépôt des pièces du dossier | Disponible | — |
-| Export Word du mémorandum | Non développé (version imprimable en PDF) | — |
-| Bibliothèque de ressources, chat « Expert cession » | Non développés | — |
-| Suppression du compte depuis l'espace | Non développée (la suppression du dossier, elle, est disponible) | — |
+| Public profile of the company without an account (SIREN or company name); quick estimate (enterprise value range based on sourced EBITDA multiples) once the account is created | Available | Free public APIs |
+| Account with a password: email verified by a 6-digit code, then a password (forgotten password: same path, other sessions closed); owner's space; guided steps that can be resumed | Available | Brevo (locally: code shown in the terminal) |
+| Bilingual interface, English (default, at `/`) and French (at `/fr/`), with an "EN \| FR" language switcher | Available | — |
+| Guided steps in two stages: 1. Your valuation (three fiscal years, adjustments, net debt and scope, « Your value » with the bridge from EBITDA to the value of the shares, approved by the owner), 2. Your memorandum (company, photos and logo, management team, drafting); the memorandum only after the approval | Available | — |
+| Entry of the accounts and consistency checks (balanced balance sheet, published revenue, unit, suspicious change, net income above EBITDA, negative equity, revenue up or down by more than 30 %) | Available | — |
+| Automatic reading of a PDF French tax return (*liasse fiscale*): amounts are proposed, never approved automatically | Available | Claude API (paid) |
+| Detailed valuation: EBITDA multiples, 5-year DCF, adjusted net assets (ANCC), adjustments, discounts, bridge from enterprise value (EV) to equity value, sensitivities | Available; **the DCF requires a size premium** (no free public source: to be set by the owner) | — |
+| Excel datapack (9 tabs, live formulas) | Available | — |
+| Anonymized teaser, with an automatic anonymity check | Available | Claude API |
+| Information memorandum (9 chapters, approved facts, sourced market research) | Available | Claude API (web search for the market research) |
+| Logo and photos: upload of several files with progress, reduced in the browser when heavy, attestation above, Claude's assessment and place in the memorandum for each photo | Available | Claude API (assessment) |
+| Upload of the file's supporting documents | Available | — |
+| Word export of the memorandum | Not developed (printable PDF version) | — |
+| Resource library, "Sale expert" chat | Not developed | — |
+| Account deletion from the owner's space | Not developed (deleting the file itself is available) | — |
 
-**Sans clé Anthropic**, l'estimation, la saisie, les contrôles, la valorisation approfondie et le datapack fonctionnent ;
-la lecture de liasse et les rédactions répondent « indisponible ».
+**Without an Anthropic key**, the estimate, data entry, checks, detailed valuation and datapack all work; tax-return
+reading and drafting answer "unavailable".
 
-## Principes
+## Principles
 
-- **L'IA rédige, le code calcule.** Toutes les valeurs sont produites par du code déterministe et testé. Claude lit
-  des documents (montants proposés au dirigeant) et rédige à partir des résultats ; il ne calcule aucune valeur.
-- **Aucune donnée inventée.** Multiples sectoriels et hypothèses sont stockés avec leur source et leur date dans
-  `src/data/`. Une valeur sans source reste « À compléter » (exemple : la prime de taille, d'où le DCF optionnel).
-- **Le dirigeant valide.** Seuls les exercices complets et validés entrent dans le calcul ; un exercice incomplet est
-  écarté et signalé, jamais complété par des zéros. Les réglages hors bornes sont refusés avec un message.
-- **Sécurité et RGPD** : code de connexion haché (sel + secret serveur), usage unique, 10 minutes, 5 essais ; cookie
-  `HttpOnly; Secure; SameSite=Lax` ; contrôle d'origine (CSRF) ; chaque route privée vérifie la propriété du dossier ;
-  limites de débit par empreinte d'IP ; quotas quotidiens des traitements par Claude ; suppression du dossier et de
-  ses fichiers en un clic (le compte, lui, n'est pas supprimé : voir `public/confidentialite.html`).
+- **AI drafts, code calculates.** Every value is produced by deterministic, tested code. Claude reads documents
+  (amounts proposed to the owner) and drafts text from the results; it does not calculate any value.
+- **No invented data.** Industry multiples and assumptions are stored with their source and date in `src/data/`. A
+  value without a source stays "To be completed" (for example the size premium, hence the optional DCF).
+- **The owner approves.** Only complete, approved fiscal years go into the calculation; an incomplete fiscal year is
+  left out and flagged, never filled with zeros. Out-of-range settings are rejected with a message.
+- **Security and GDPR**: no amount sent by the server without a session; password hashed with PBKDF2-SHA256 (100,000
+  iterations, 16-byte salt per account), compared in constant time, 12 characters at least, common passwords refused;
+  5 failed sign-ins → 15-minute block (per account and per IP), same message whether or not the address exists;
+  verification code hashed (salt + server secret), single use, 10 minutes, 5 attempts; cookie
+  `HttpOnly; Secure; SameSite=Lax`; origin check (CSRF); every private route checks that the file belongs to the user;
+  rate limits based on a hash of the IP address; daily quotas for Claude processing; one-click deletion of the file and
+  its documents (the account itself is not deleted: see `public/confidentialite.html`).
 
-## Sources de données
+## Data sources
 
-| Donnée | Source | Accès |
+| Data | Source | Access |
 |---|---|---|
-| Identité, NAF, effectif, siège | API Recherche d'entreprises (`recherche-entreprises.api.gouv.fr`) | Gratuit, sans clé |
-| CA, EBE, résultat publiés | Jeu `ratios_inpi_bce` (`data.economie.gouv.fr`) | Gratuit, sans clé |
-| Événements (création, transferts, reprises de fonds) | BODACC (`bodacc-datadila.opendatasoft.com`) | Gratuit, sans clé |
-| Multiples d'EBE par secteur | Croisement Argos Index Q2 2026, Dealsuite/Fusac (via Capital Stack), barème Captain 2026, Damodaran Europe 01/2026 : `src/data/multiples-sources.json`, calcul `npm run multiples` | Publications gratuites |
-| Taux sans risque, coût de la dette, prime de risque, bêtas, IS, croissance à l'infini | BCE, Banque de France, Damodaran, service-public.fr : `src/data/hypotheses.json` | Gratuit |
+| Identity, NAF code (French industry classification), headcount, headquarters | Company search API (`recherche-entreprises.api.gouv.fr`) | Free, no key |
+| Published revenue, EBITDA (French *EBE*), net income | `ratios_inpi_bce` dataset (`data.economie.gouv.fr`) | Free, no key |
+| Events (incorporation, moves, acquisitions of businesses) | BODACC, the French official bulletin of civil and commercial announcements (`bodacc-datadila.opendatasoft.com`) | Free, no key |
+| EBITDA multiples by industry | Cross-check of Argos Index Q2 2026, Dealsuite/Fusac (via Capital Stack), Captain 2026 scale, Damodaran Europe 01/2026: `src/data/multiples-sources.json`, calculated with `npm run multiples` | Free publications |
+| Risk-free rate, cost of debt, risk premium, betas, corporate income tax, perpetual growth | ECB, Banque de France, Damodaran, service-public.fr: `src/data/hypotheses.json` | Free |
+| English industry names (English version of the site) | Eurostat, NACE Rev. 2 division titles (same divisions as the French NAF Rev. 2): `src/data/naf-divisions-en.json` | Free publication |
 
-Réponses mises en cache 24 h (D1). Une panne d'API est signalée comme telle (jamais comme une absence de comptes) et
-n'est pas mise en cache.
+Responses are cached for 24 hours (D1). An API outage is reported as such (never as missing accounts) and is not
+cached.
 
-**Services externes payants ou à compte** : API Claude d'Anthropic (payante à l'usage, modèles `claude-sonnet-5-5` et
-`claude-haiku-5-5`, `src/config.js`) ; Brevo (offre gratuite limitée) ; Cloudflare Workers, D1 et R2 (offre gratuite).
-L'usage d'une API payante est à faire valider au regard de la consigne « sources gratuites » du cours.
+**Paid external services or services that need an account**: Anthropic's Claude API (pay-as-you-go, models
+`claude-sonnet-5-5` and `claude-haiku-5-5`, `src/config.js`); Brevo (limited free plan); Cloudflare Workers, D1 and R2
+(free plan). The use of a paid API needs to be approved with regard to the course's "free sources" requirement.
 
-## Installation locale
+## Local installation
 
-Prérequis : **Node.js 22.13 ou plus récent** (les tests utilisent `node:sqlite`, absent de Node 20 et de Node 22.12),
-npm. Aucun compte Cloudflare n'est nécessaire en local.
+Requirements: **Node.js 22.13 or later** (the tests use `node:sqlite`, which is missing from Node 20 and Node 22.12)
+and npm. No Cloudflare account is needed locally.
 
 ```bash
 git clone https://github.com/Erosfragliola/passation.git && cd passation
 npm ci
-npm test                       # suite Vitest, sans réseau ni clé
-cp .dev.vars.example .dev.vars # puis remplir les valeurs vous-même (fichier jamais commité)
-npm run db:migrate:local       # crée la base D1 locale (.wrangler/)
-npm run dev                    # http://127.0.0.1:8787
+npm test                       # Vitest suite, no network or key needed
+npm run i18n:check             # translation files: same keys in both languages, no empty value
+cp .dev.vars.example .dev.vars # then fill in the values yourself (file never committed)
+npm run db:migrate:local       # creates the local D1 database (.wrangler/)
+npm run dev                    # http://127.0.0.1:8787 (English) and http://127.0.0.1:8787/fr/ (French)
 ```
 
-Variables (`.dev.vars` en local, `npx wrangler secret put NOM` en production) :
+Variables (`.dev.vars` locally, `npx wrangler secret put NAME` in production):
 
-| Variable | Rôle | Sans elle |
+| Variable | Purpose | Without it |
 |---|---|---|
-| `SESSION_SECRET` | Secret des empreintes (codes de connexion, IP) | En local : fonctionne (secret de développement). **Hors local : l'API refuse de fonctionner (503).** |
-| `ANTHROPIC_API_KEY` | Lecture de liasse, rédactions | Ces fonctions répondent « indisponible » |
-| `BREVO_API_KEY`, `SENDER_EMAIL`, `SENDER_NAME` | Envoi des codes et notifications | En local : code affiché dans le terminal ; en production : connexion impossible |
+| `SESSION_SECRET` | Secret used for hashes (verification codes, IP addresses, failed sign-in counters) | Locally: works (development secret). **Elsewhere: the API refuses to run (503).** |
+| `ANTHROPIC_API_KEY` | Tax-return reading, drafting | These features answer "unavailable" |
+| `BREVO_API_KEY`, `SENDER_EMAIL`, `SENDER_NAME` | Sending sign-in codes and notifications | Locally: code shown in the terminal; in production: sign-in impossible |
 
-## Démonstration
+## Demonstration
 
-Scénario reproductible, avec une liasse **entièrement fictive** et les résultats attendus : [docs/DEMO.md](docs/DEMO.md).
-En local : `npm run dev`, saisir un SIREN, demander un code (il s'affiche dans le terminal), déposer
-`test/fixtures/liasse-fictive.pdf` (avec une clé Anthropic) ou saisir les montants du tableau de `docs/DEMO.md`.
+A reproducible scenario, with an **entirely fictitious** tax return and the expected results: [docs/DEMO.md](docs/DEMO.md).
+Locally: `npm run dev`, enter a SIREN, request a code (it appears in the terminal), upload
+`test/fixtures/liasse-fictive.pdf` (with an Anthropic key) or enter the amounts from the table in `docs/DEMO.md`.
 
-## Langues
+## Local check without the Claude API (simulated Claude)
 
-Le site est bilingue : **anglais** (langue par défaut, adresses d'origine) et **français** (sous `/fr/`). Sélecteur
-« EN | FR » en haut à droite de chaque page. Pour modifier un texte : `src/contenu/en/<page>.json` et
-`src/contenu/fr/<page>.json` (mêmes clés), en suivant [docs/glossaire-traduction.md](docs/glossaire-traduction.md).
-Contrôle : `npm run i18n:check` (mêmes clés, aucune valeur vide, valeurs identiques, textes restés en dur).
+To go through the whole flow locally (tax-return reading, drafting, photo assessment, market research) without a key
+or any call to Anthropic, start the simulated Claude in a second terminal, then the Worker wired to it:
+
+```bash
+node scripts/claude-simule.mjs 8790
+npx wrangler dev --var ANTHROPIC_BASE_URL:http://127.0.0.1:8790 --var ANTHROPIC_API_KEY:simule
+```
+
+`scripts/claude-simule.mjs` answers every call with a JSON that follows the requested schema
+(`output_config.format.schema`), with texts marked as fictitious; the tax return gives three fiscal years of
+consistent fictitious amounts. `ANTHROPIC_BASE_URL` is a development setting only: never set it in production.
+Sign-in codes appear in the `wrangler dev` terminal. The code request is limited to 10 per hour per IP; locally, the
+counters can be reset with `npx wrangler d1 execute passation --local --command "DELETE FROM rate_limits"`.
+
+## Languages
+
+The site is bilingual: **English** (default language, original addresses) and **French** (under `/fr/`). An
+"EN | FR" switcher sits at the top right of every page. To change a text: `src/contenu/en/<page>.json` and
+`src/contenu/fr/<page>.json` (same keys), following the translation glossary
+[docs/glossaire-traduction.md](docs/glossaire-traduction.md). Check: `npm run i18n:check` (same keys, no empty value,
+identical values, text left hard-coded).
+
+**Note for English-speaking readers:** documentation and code comments are in English, but the code itself (file,
+folder, function and variable names) is in French, as written by the team (for example `src/contenu/` = content,
+`valorisation` = valuation, `dossier` = sale file).
 
 ## Tests
 
@@ -101,83 +133,88 @@ Contrôle : `npm run i18n:check` (mêmes clés, aucune valeur vide, valeurs iden
 npm test
 ```
 
-**485 tests Vitest** (35 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
-simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les API publiques sont simulés.
+**649 Vitest tests** (47 files), run again by GitHub Actions (Node 22, Ubuntu 24.04) on every push. D1 is simulated
+with in-memory SQLite and the real migrations; R2, Claude and the public APIs are simulated.
 
-- **Valorisation** : trois méthodes, passage VE → titres, cas limites (EBE négatif, comptes absents, un seul
-  exercice, trésorerie nette, CMPC ≤ g, exercices incomplets écartés, réglages hors bornes). Deux cas de référence
-  calculés indépendamment en Python : `scripts/reference-valorisation.py` (détail dans
-  [docs/valorisation-calculs.md](docs/valorisation-calculs.md)) et le scénario de [docs/DEMO.md](docs/DEMO.md).
-- **Datapack** : un évaluateur de formules recalcule le classeur et le compare au moteur (il ne remplace pas une
-  ouverture dans Excel).
-- **Connexion et droits d'accès** : codes, sessions, accès refusé au dossier d'un autre, secret serveur exigé.
-- **Sources publiques** : normalisation sur réponses réelles enregistrées (`test/fixtures/`), pannes 429 et 500.
-- **Quotas** des traitements par Claude, anonymat du teaser, parcours guidé, contenus de la page d'accueil.
-- **Site bilingue** : mêmes clés dans les deux langues, aucune clé citée dans le code sans texte français, langue
-  des requêtes, adresses `/fr/`, pluriels, lecture des montants saisis (`test/i18n.test.js`, `npm run i18n:check`).
+- **Valuation**: three methods, EV-to-equity bridge, edge cases (negative EBITDA, missing accounts, a single fiscal
+  year, net cash, WACC ≤ g, incomplete fiscal years left out, out-of-range settings). Two reference cases calculated
+  independently in Python: `scripts/reference-valorisation.py` (details in
+  [docs/valorisation-calculs.md](docs/valorisation-calculs.md)) and the scenario in [docs/DEMO.md](docs/DEMO.md).
+- **Datapack**: a formula evaluator recalculates the workbook and compares it with the engine (it does not replace
+  opening the file in Excel).
+- **Sign-in and access rights**: codes, sessions, access to someone else's file refused, server secret required.
+- **Public sources**: normalization tested on recorded real responses (`test/fixtures/`), 429 and 500 outages.
+- **Quotas** for Claude processing, teaser anonymity, guided steps, home page content.
+- **Account and flow** (24/11/2026): no amount without a session, password hashing and blocking, forgotten and changed
+  password, two-stage flow, bridge from EBITDA to the value of the shares (values calculated by hand), approval and
+  « to approve again », upload queue of the photos (`test/mot-de-passe.test.js`, `test/valeur-pont.test.js`,
+  `test/parcours-v2.test.js`, `test/depot-photos.test.js`, `test/dossier-exemple.test.js`).
+- **Bilingual site**: same keys in both languages, no key used in the code without a French text, language of each
+  request, `/fr/` addresses, plurals, reading of entered amounts (`test/i18n.test.js`, `npm run i18n:check`).
 
-Une part importante des tests porte sur la page d'accueil et son illustration (environ 140). Le nombre de tests ne
-prouve pas à lui seul la justesse d'une méthode financière : voir [docs/decisions-methode.md](docs/decisions-methode.md).
+A large share of the tests covers the home page and its illustration (about 140). The number of tests does not by
+itself prove that a financial method is correct: see [docs/decisions-methode.md](docs/decisions-methode.md).
 
 ## Architecture
 
 ```
-Navigateur (HTML, CSS, JavaScript sans framework : public/)
+Browser (HTML, CSS, JavaScript without a framework: public/)
         │  fetch /api/*
         ▼
 Cloudflare Worker (src/)
-   ├── D1 « passation »           utilisateurs, sessions, dossiers, chiffres, valorisations, cache, limites
-   ├── R2 « passation-fichiers »  liasses, pièces, documents générés, logos, photos (préfixe dossiers/<id>/)
-   ├── API Claude                 lecture des liasses et des sites, rédaction, étude de marché
-   ├── Brevo                      e-mails de connexion et de suivi
-   └── API publiques              Recherche d'entreprises, ratios INPI/BCE, BODACC (cache 24 h)
+   ├── D1 "passation"            users, sessions, files, figures, valuations, cache, limits
+   ├── R2 "passation-fichiers"   tax returns, documents, generated files, logos, photos (prefix dossiers/<id>/)
+   ├── Claude API                reading tax returns and websites, drafting, market research
+   ├── Brevo                     sign-in and follow-up emails
+   └── Public APIs               Company search, INPI/BCE ratios, BODACC (24-hour cache)
 ```
 
-| Dossier | Contenu |
+| Folder | Contents |
 |---|---|
-| `src/index.js` | Routeur du Worker, garde de configuration, erreurs, tâche planifiée quotidienne |
-| `src/contenu/` | Textes du site, un dossier par langue (`en/`, `fr/`, mêmes clés) ; réglages communs dans `cles.json` |
-| `src/i18n.js`, `public/js/i18n.js` | Langue de la requête, adresses `/fr/`, `t()` partagé par le navigateur et le Worker |
-| `src/routes/` | Routes de l'API : connexion, recherche, estimation, dossiers, valorisation, documents, pièces, suivi |
-| `src/valuation/` | Moteurs express et approfondi, assemblage et validation des entrées, contrôles de cohérence |
-| `src/documents/` | Datapack Excel, teaser, contrôle d'anonymat, mémorandum, lecture du site de l'entreprise |
-| `src/sources/` | Normalisation des réponses des API publiques |
-| `src/lib/` | Authentification, cache, client Claude, e-mails, limites de débit et quotas |
-| `src/data/` | Multiples, hypothèses (et leurs bornes de saisie), nomenclatures : sourcés et datés |
-| `src/config.js` | Constantes uniques : modèles, limites, quotas, durées |
-| `public/` | Pages, styles, scripts du navigateur, polices, images |
-| `migrations/` | Schéma de la base D1 |
-| `test/` | Tests automatisés et jeux de données enregistrés |
-| `scripts/` | Génération des images, polices, multiples, jeux de test ; calcul de référence Python |
-| `docs/` | Démonstration, décisions de méthode, calculs de référence, livrables, maquettes en attente de choix |
+| `src/index.js` | Worker router, configuration guard, errors, daily scheduled task |
+| `src/contenu/` | Site text, one folder per language (`en/`, `fr/`, same keys); shared settings in `cles.json` |
+| `src/i18n.js`, `public/js/i18n.js` | Language of the request, `/fr/` addresses, `t()` shared by the browser and the Worker |
+| `src/routes/` | API routes: sign-in, search, estimate, files, valuation, documents, supporting documents, follow-up |
+| `src/valuation/` | Quick and detailed engines, assembly and validation of inputs, consistency checks |
+| `src/documents/` | Excel datapack, teaser, anonymity check, memorandum, reading of the company's website |
+| `src/sources/` | Normalization of public API responses |
+| `src/lib/` | Authentication, cache, Claude client, emails, rate limits and quotas |
+| `src/data/` | Multiples, assumptions (and their input limits), classifications: sourced and dated |
+| `src/config.js` | Single place for constants: models, limits, quotas, durations |
+| `public/` | Pages, styles, browser scripts, fonts, images |
+| `migrations/` | D1 database schema |
+| `test/` | Automated tests and recorded datasets |
+| `scripts/` | Generation of images, fonts, multiples and test datasets; Python reference calculation |
+| `docs/` | Demonstration, method decisions, reference calculations, deliverables, mockups awaiting a decision, screenshots of past audits (French interface) |
 
-## Limites connues
+## Known limitations
 
-- Le DCF n'est calculé qu'une fois la prime de taille renseignée (aucune source publique gratuite).
-- Conventions à arbitrer : décotes appliquées à la valeur d'entreprise, crédit-bail compté dans la dette nette sans
-  retraitement de l'EBE ([docs/decisions-methode.md](docs/decisions-methode.md)).
-- Le datapack est vérifié par un évaluateur de formules interne, pas par Excel.
-- Pages légales en brouillon (éditeur, contact, hébergement « À compléter ») ; suppression du compte non disponible.
-- Pas d'en-têtes CSP ni `frame-ancestors` sur les pages.
+- The DCF is only calculated once the size premium has been filled in (no free public source).
+- Conventions to be decided: discounts applied to enterprise value, lease financing counted in net debt without an
+  EBITDA adjustment ([docs/decisions-methode.md](docs/decisions-methode.md)).
+- The datapack is checked by an internal formula evaluator, not by Excel.
+- Legal pages are drafts (publisher, contact, hosting "To be completed"); account deletion is not available.
+- No CSP or `frame-ancestors` headers on the pages.
 
-## Mise en ligne (propriétaire du compte Cloudflare)
+## Deployment (owner of the Cloudflare account)
 
 ```bash
-npx wrangler secret list                    # vérifier SESSION_SECRET (obligatoire), ANTHROPIC_API_KEY, BREVO_API_KEY…
-npx wrangler secret put SESSION_SECRET      # idem pour les autres secrets manquants
+npx wrangler secret list                    # check SESSION_SECRET (required), ANTHROPIC_API_KEY, BREVO_API_KEY…
+npx wrangler secret put SESSION_SECRET      # same for the other missing secrets
 npx wrangler d1 migrations apply passation --remote
 npm run deploy
 ```
 
-## Documentation et livrables
+## Documentation and deliverables
 
-- [AI-USAGE.md](AI-USAGE.md) : usage de l'IA, contrôles humains, erreurs détectées.
-- [docs/livrables/](docs/livrables/) : brouillons du business plan et de la présentation.
-- [docs/DEMO.md](docs/DEMO.md) : scénario de démonstration.
-- [docs/decisions-methode.md](docs/decisions-methode.md) : conventions de valorisation à arbitrer.
-- [docs/valorisation-calculs.md](docs/valorisation-calculs.md) : calculs de référence.
-- [PLAN.md](PLAN.md) : plan initial et journal de développement daté.
-- [CLAUDE.md](CLAUDE.md) : règles données à l'assistant de code (Claude Code).
-- [public/img/CREDITS.md](public/img/CREDITS.md) : crédits et licences des images et bibliothèques.
+- [AI-USAGE.md](AI-USAGE.md): use of AI, human checks, errors detected.
+- [docs/livrables/](docs/livrables/): drafts of the business plan and the presentation.
+- [docs/DEMO.md](docs/DEMO.md): demonstration scenario.
+- [docs/decisions-methode.md](docs/decisions-methode.md): valuation conventions to be decided.
+- [docs/valorisation-calculs.md](docs/valorisation-calculs.md): reference calculations.
+- [docs/glossaire-traduction.md](docs/glossaire-traduction.md): translation glossary of the site (French → English).
+- [PLAN.md](PLAN.md): initial plan and dated development log.
+- [CLAUDE.md](CLAUDE.md): rules given to the coding assistant (Claude Code).
+- [public/img/CREDITS.md](public/img/CREDITS.md): credits and licenses for images and libraries.
 
-Les branches autres que `main` sont des étapes déjà fusionnées ou des archives (`archive/…`), conservées pour mémoire.
+Branches other than `main` are steps that have already been merged or archives (`archive/…`), kept for reference.

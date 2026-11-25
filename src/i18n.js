@@ -1,15 +1,15 @@
-// Langues côté Worker : dictionnaires (src/contenu/<langue>/*.json), langue de la requête en cours, adresses.
+// Languages on the Worker side: dictionaries (src/contenu/<language>/*.json), language of the current request, addresses.
 //
-// Langue d'une requête :
-//   page        : l'adresse fait foi (/fr/… = français, sinon anglais) ;
-//   API         : la page d'où vient l'appel (en-tête Referer), sinon le cookie « langue », sinon inconnue (textes en
-//                 français, liens sans préfixe) ;
-//   tâche planifiée (rappels) : français.
-// Le module public/js/i18n.js (t, lien…) lit cette langue : les modules partagés avec le navigateur l'utilisent tels quels.
+// Language of a request:
+//   page        : the address decides (/fr/… = French, otherwise English);
+//   API         : the page the call comes from (Referer header), otherwise the "langue" cookie, otherwise unknown
+//                 (texts in French, links without a prefix);
+//   scheduled task (reminders): French.
+// The module public/js/i18n.js (t, lien…) reads this language: the modules shared with the browser use it as is.
 import { AsyncLocalStorage } from "node:async_hooks";
 import { installerDictionnaire, sourceDeLangue, LANGUES, LANGUE_DEFAUT, PREFIXES } from "../public/js/i18n.js";
 import CLES from "./contenu/cles.json";
-// Un fichier par espace de noms et par langue (imports statiques : le Worker est empaqueté d'avance).
+// One file per namespace and per language (static imports: the Worker is bundled in advance).
 import fr_accueil from "./contenu/fr/accueil.json";
 import en_accueil from "./contenu/en/accueil.json";
 import fr_cgu from "./contenu/fr/cgu.json";
@@ -54,16 +54,16 @@ import en_valorisation from "./contenu/en/valorisation.json";
 export { LANGUES, LANGUE_DEFAUT, PREFIXES };
 export { CLES };
 
-/** Fichiers de traduction, par langue puis par espace de noms (= nom du fichier). Mêmes clés dans chaque langue. */
+/** Translation files, by language then by namespace (= file name). Same keys in every language. */
 export const SOURCES = {
   fr: { accueil: fr_accueil, cgu: fr_cgu, champs: fr_champs, commun: fr_commun, confidentialite: fr_confidentialite, connexion: fr_connexion, connexion_code: fr_connexion_code, demarrer: fr_demarrer, dossier: fr_dossier, erreur_404: fr_erreur_404, espace: fr_espace, estimation: fr_estimation, memo: fr_memo, mentions_legales: fr_mentions_legales, parcours: fr_parcours, questionnaire: fr_questionnaire, regles: fr_regles, serveur: fr_serveur, teaser: fr_teaser, valorisation: fr_valorisation },
   en: { accueil: en_accueil, cgu: en_cgu, champs: en_champs, commun: en_commun, confidentialite: en_confidentialite, connexion: en_connexion, connexion_code: en_connexion_code, demarrer: en_demarrer, dossier: en_dossier, erreur_404: en_erreur_404, espace: en_espace, estimation: en_estimation, memo: en_memo, mentions_legales: en_mentions_legales, parcours: en_parcours, questionnaire: en_questionnaire, regles: en_regles, serveur: en_serveur, teaser: en_teaser, valorisation: en_valorisation },
 };
 
-/** Valeur vide : chaîne blanche ou absente (la traduction manque, le français prend le relais). */
+/** Empty value: blank or missing string (the translation is missing, French takes over). */
 const manque = (v) => v === undefined || v === null || (typeof v === "string" && v.trim() === "");
 
-/** Dictionnaire d'une langue complété par le français pour chaque valeur absente ou vide (jamais de clé affichée). */
+/** Dictionary of a language completed with French for each missing or empty value (a key is never displayed). */
 export function completerParFrancais(langue, fr = SOURCES.fr, autre = SOURCES[langue]) {
   if (langue === "fr") return fr;
   const fusion = (a, b) => {
@@ -84,10 +84,10 @@ for (const l of LANGUES) installerDictionnaire(l, DICTIONNAIRES[l]);
 const contexte = new AsyncLocalStorage();
 sourceDeLangue(() => contexte.getStore()?.langue);
 
-/** Exécute fn avec la langue donnée comme langue courante (t(), lien()…). */
+/** Runs fn with the given language as the current language (t(), lien()…). */
 export const avecLangue = (langue, fn) => contexte.run({ langue }, fn);
 
-/** Langue et chemin sans préfixe d'une adresse : « /fr/cgu » → { langue: "fr", chemin: "/cgu" }. */
+/** Language and path without the prefix of an address: "/fr/cgu" → { langue: "fr", chemin: "/cgu" }. */
 export function decouper(pathname) {
   for (const l of LANGUES) {
     const p = PREFIXES[l];
@@ -96,13 +96,13 @@ export function decouper(pathname) {
   return { langue: LANGUE_DEFAUT, chemin: pathname };
 }
 
-/** Valeur du cookie « langue » (choix fait avec le sélecteur), ou null. */
+/** Value of the "langue" cookie (choice made with the switcher), or null. */
 export function langueDuCookie(request) {
   const m = (request.headers.get("cookie") || "").match(/(?:^|;\s*)langue=([a-z]{2})(?:;|$)/);
   return m && LANGUES.includes(m[1]) ? m[1] : null;
 }
 
-/** Langue d'une requête (voir l'en-tête du fichier), ou null si l'appel ne dit rien. */
+/** Language of a request (see the file header), or null if the call says nothing. */
 export function langueDeRequete(request) {
   const url = new URL(request.url);
   if (!url.pathname.startsWith("/api/")) return decouper(url.pathname).langue;
@@ -111,10 +111,10 @@ export function langueDeRequete(request) {
     try {
       const r = new URL(origine);
       if (r.origin === url.origin) return decouper(r.pathname).langue;
-    } catch { /* en-tête invalide */ }
+    } catch { /* invalid header */ }
   }
   return langueDuCookie(request);
 }
 
-/** Adresse d'un chemin dans une langue : adresse("/cgu", "fr") → « /fr/cgu ». */
+/** Address of a path in a language: adresse("/cgu", "fr") → "/fr/cgu". */
 export const adresse = (chemin, langue) => (PREFIXES[langue] ? (chemin === "/" ? `${PREFIXES[langue]}/` : PREFIXES[langue] + chemin) : chemin);

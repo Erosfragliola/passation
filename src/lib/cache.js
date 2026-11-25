@@ -1,7 +1,7 @@
-// Cache des réponses d'API publiques dans D1 (table api_cache).
+// Cache of public API responses in D1 (api_cache table).
 import { DURATIONS } from "../config.js";
 
-// Une panne du cache ne doit jamais faire échouer la réponse : on journalise et on continue sans cache.
+// A cache failure must never make the response fail: we log it and carry on without the cache.
 export async function lireCache(db, cle, dureeSecondes = DURATIONS.apiCache) {
   let ligne;
   try {
@@ -17,5 +17,5 @@ export async function ecrireCache(db, cle, valeur) {
     "INSERT INTO api_cache (key, payload_json, fetched_at) VALUES (?, ?, ?) " +
     "ON CONFLICT(key) DO UPDATE SET payload_json = excluded.payload_json, fetched_at = excluded.fetched_at",
   ).bind(cle, JSON.stringify(valeur), Math.floor(Date.now() / 1000)).run();
-  } catch (e) { console.warn("cache indisponible (écriture)", e.message); }
+  } catch (e) { console.warn("cache unavailable (write)", e.message); }
 }

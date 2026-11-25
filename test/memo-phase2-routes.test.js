@@ -15,6 +15,7 @@ vi.mock("../src/sources/secteur.js", async (original) => ({ ...(await original()
 import { redigerTeaser, redigerSectionMemo, analyserPhoto, relireMemo, extraireSite, rechercherMarche, lireLiasse } from "../src/lib/claude.js";
 import worker from "../src/index.js";
 import { d1Memoire, r2Memoire } from "./aide/environnement.js";
+import { creerCompte } from "./aide/connexion.js";
 import { normaliserEntreprise } from "../src/sources/entreprise.js";
 import { normaliserExercices } from "../src/sources/inpi.js";
 import { normaliserAnnonces } from "../src/sources/bodacc.js";
@@ -31,12 +32,8 @@ const appel = (chemin, { methode = "GET", corps, cookie, brut, referer } = {}) =
   return worker.fetch(new Request(BASE + chemin, { method: methode, headers, body: brut ?? (corps ? JSON.stringify(corps) : undefined) }), env);
 };
 async function seConnecter(email) {
-  const espion = vi.spyOn(console, "log").mockImplementation(() => {});
-  await appel("/api/auth/request", { methode: "POST", corps: { email } });
-  const code = espion.mock.calls.flat().join("\n").match(/Code de connexion pour \S+ : (\d{6})/)[1];
-  espion.mockRestore();
-  const r = await appel("/api/auth/code", { methode: "POST", corps: { email, code, siren: SIREN } });
-  return { cookie: r.headers.get("set-cookie").split(";")[0], id: new URL((await r.json()).destination, BASE).searchParams.get("dossier") };
+  const { cookie, id } = await creerCompte(appel, email, { siren: SIREN });
+  return { cookie, id };
 }
 // Images fictives : en-tête JPEG avec dimensions ; un octet varie pour que chaque photo soit différente
 const jpg = (l, h, k = 0) => new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 0, 1, k, 0, 0xff, 0xc0, 0, 17, 8, h >> 8, h & 255, l >> 8, l & 255, 3, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1]);
@@ -46,6 +43,9 @@ const JUGEMENT = { description: "Atelier avec stock de planches.", categorie: "a
 const CREDIT = Object.assign(new Error('400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API."}}'), { status: 400 });
 const MESSAGE_CREDIT = "La rédaction est momentanément indisponible. Vos réponses sont enregistrées.";
 const memo = (cookie, id) => appel(`/api/dossiers/${id}/documents/memo`, { cookie }).then((r) => r.json());
+
+/** Figures approved (« Je valide ces chiffres »), as the server records it: the memorandum can be drafted. */
+const chiffresValides = (id) => env.DB.sqlite.prepare("INSERT OR REPLACE INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'validation', ?, 1)").run(id, JSON.stringify({ le: 1 }));
 
 beforeEach(async () => {
   env = { DB: d1Memoire(), FILES: r2Memoire(), ANTHROPIC_API_KEY: "cle-factice-de-test" };
@@ -152,6 +152,7 @@ describe("équipe dirigeante", () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     await appel(`/api/dossiers/${id}/answers/equipe`, { methode: "PUT", cookie, corps: { data: { personnes: [personne] } } });
     await appel(`/api/dossiers/${id}/documents/memo/equipe/abc12345/photo`, { methode: "POST", cookie, brut: formPortrait(true) });
     redigerSectionMemo.mockResolvedValue({ titre: "Une équipe en place", accroche: "x", contenu: "Intro.", a_completer: [], parcours: { abc12345: "CAP, puis compagnonnage." } });
@@ -182,6 +183,7 @@ describe("relecture critique", () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     redigerSectionMemo.mockResolvedValue({ titre: "Une équipe de 23 salariés", accroche: "x", contenu: "L'entreprise compte 23 salariés.\n\n- **Équipe** : Les compagnons ont une ancienneté moyenne élevée.", a_completer: [] });
     await appel(`/api/dossiers/${id}/documents/memo/sections/organisation`, { methode: "POST", cookie });
     return { cookie, id };
@@ -221,6 +223,7 @@ describe("crédit Anthropic épuisé : même message clair pour toutes les réda
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/answers/activite`, { methode: "PUT", cookie, corps: { data: { description: "Fabrication." } } });
     await appel(`/api/dossiers/${id}/answers/operation`, { methode: "PUT", cookie, corps: { data: { part_cedee: "100 %" } } });
+    chiffresValides(id);
     for (const f of [redigerSectionMemo, redigerTeaser, extraireSite, rechercherMarche]) f.mockRejectedValue(CREDIT);
     const essais = [
       [`/api/dossiers/${id}/documents/memo/sections/histoire`, null],

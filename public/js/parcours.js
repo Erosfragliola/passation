@@ -49,29 +49,11 @@ export const QUESTIONS = [
       { etape: "clients", cle: "regions", type: "regions", libelle: T, replie: T, facultatif: true },
       { etape: "clients", cle: "principaux", type: "top_clients", libelle: T, replie: T, facultatif: true },
     ] },
-  { id: "remuneration", titre: T, aide: T,
-    chapitre: T, pourquoi: T,
-    champs: [
-      { etape: "dirigeant", cle: "remuneration_dirigeant_reelle", type: "montant", libelle: T, aide: T, max: 250000 },
-      { etape: "dirigeant", cle: "remuneration_normative", type: "montant", libelle: T, aide: T, max: 250000, propose: "dirigeant.remuneration_dirigeant_reelle" },
-      { etape: "retraitements", cle: "exceptionnel_signale", type: "choix", libelle: T, aide: T, options: ["Oui", "Non"] },
-    ],
-    suite: { si: (r) => r.retraitements?.exceptionnel_signale === "Oui", champs: [{ etape: "retraitements", cle: "exceptionnels", type: "exceptionnels" }] } },
-  { id: "detention", titre: T, aide: T,
-    chapitre: T, pourquoi: T,
-    champs: [
-      { etape: "operation", cle: "detention", type: "choix", libelle: T, options: Object.values(DETENTION) },
-      { etape: "retraitements", cle: "murs", type: "choix", libelle: T, options: Object.values(MURS) },
-    ],
-    suite: { si: (r) => r.retraitements?.murs === MURS.dirigeant, champs: [
-      { etape: "retraitements", cle: "murs_cession", type: "choix", libelle: T, options: Object.values(MURS_CESSION) },
-      { etape: "retraitements", cle: "loyer_paye", type: "montant", libelle: T, max: 200000 },
-      { etape: "retraitements", cle: "loyer_marche", type: "montant", libelle: T, aide: T, max: 200000, propose: "retraitements.loyer_paye" },
-    ] } },
+  // 24/11/2026 (part C): the questions that change the value (pay, rent, exceptional items, holding, walls, share sold)
+  // left this list for the first stage, "Your valuation" (VALORISATION below); the keys of the answers are unchanged.
   { id: "operation", titre: T,
     chapitre: T, pourquoi: T,
     champs: [
-      { etape: "operation", cle: "part_cedee", type: "choix", libelle: T, options: ["100 %", "Majoritaire", "Minoritaire", "À définir"], requis: T },
       { etape: "operation", cle: "calendrier", type: "choix", libelle: T, options: ["Moins de 6 mois", "6 à 12 mois", "1 à 2 ans", "Plus de 2 ans"] },
       { etape: "operation", cle: "motif", type: "choix", libelle: T, options: ["Départ à la retraite", "Nouveau projet", "Raisons personnelles", "Autre"] },
       { etape: "operation", cle: "accompagnement", type: "choix", libelle: T, options: ["3 mois", "6 mois", "12 mois", "Plus de 12 mois"] },
@@ -90,7 +72,52 @@ for (const q of QUESTIONS) {
   for (const c of [...q.champs, ...(q.suite?.champs || [])]) avecTextes(c, `parcours.questions.${q.id}.champs.${c.cle}`);
 }
 
+// ---------------------------------------------------------------- First stage: "Your valuation" (24/11/2026)
+// Two screens of answers that change the value, each validated as a whole by the owner and never pre-answered:
+// restatements (pay, rent, exceptional items; leasing explained) and net debt and scope. Same answer keys as before
+// (dirigeant.*, retraitements.*, bilan.*, operation.*): files already started keep their answers.
+// `si`: field shown only when the condition holds; `requis`: needed for the screen to count as done.
+const mursAVous = (r) => r.retraitements?.murs === MURS.dirigeant;
+export const VALORISATION = {
+  retraitements: [
+    { etape: "dirigeant", cle: "remuneration_dirigeant_reelle", libelle: T, aide: T, type: "montant", max: 250000, requis: true },
+    { etape: "dirigeant", cle: "remuneration_normative", libelle: T, aide: T, type: "montant", max: 250000, requis: true },
+    { etape: "retraitements", cle: "murs", libelle: T, aide: T, type: "choix", options: Object.values(MURS), requis: true },
+    { etape: "retraitements", cle: "loyer_paye", libelle: T, type: "montant", max: 200000, requis: true, si: mursAVous },
+    { etape: "retraitements", cle: "loyer_marche", libelle: T, aide: T, type: "montant", max: 200000, requis: true, si: mursAVous },
+    { etape: "retraitements", cle: "exceptionnel_signale", libelle: T, aide: T, type: "choix", options: ["Oui", "Non"], requis: true },
+    { etape: "retraitements", cle: "exceptionnels", libelle: T, aide: T, type: "exceptionnels", si: (r) => r.retraitements?.exceptionnel_signale === "Oui" },
+  ],
+  dette: [
+    { etape: "bilan", cle: "comptes_courants_remboursables", libelle: T, aide: T, type: "montant", max: 5000000 },
+    { etape: "bilan", cle: "credit_bail_restant", libelle: T, aide: T, type: "montant", max: 5000000 },
+    { etape: "bilan", cle: "dividendes_a_verser", libelle: T, aide: T, type: "montant", max: 5000000 },
+    { etape: "bilan", cle: "actifs_hors_exploitation", libelle: T, aide: T, type: "montant", max: 5000000 },
+    { etape: "operation", cle: "detention", libelle: T, type: "choix", options: Object.values(DETENTION), requis: true },
+    { etape: "retraitements", cle: "murs_cession", libelle: T, type: "choix", options: Object.values(MURS_CESSION), requis: true, si: mursAVous },
+    { etape: "operation", cle: "part_cedee", libelle: T, type: "choix", options: ["100 %", "Majoritaire", "Minoritaire", "À définir"], requis: true },
+  ],
+};
+for (const [ecran, champs] of Object.entries(VALORISATION)) for (const c of champs) avecTextes(c, `parcours.valorisation.${ecran}.champs.${c.cle}`);
+
 const rempli = (v) => v != null && v !== "" && !(typeof v === "string" && !v.trim()) && !(Array.isArray(v) && !v.length);
+/** Fields of a valuation screen shown for these answers. */
+export const champsVisibles = (ecran, r = {}) => VALORISATION[ecran].filter((c) => !c.si || c.si(r));
+/** Required answers of a valuation screen still empty (field definitions). */
+export const manquesValorisation = (ecran, r = {}) => champsVisibles(ecran, r).filter((c) => c.requis && !rempli(r[c.etape]?.[c.cle]));
+/**
+ * Where the first stage stands, from the saved answers only (same rule for the guided steps, the file page and the
+ * server). A screen is done only once the owner has validated it ("vues") and its required answers are filled: an
+ * answer given in the former flow is shown again on the screen, never counted as validated.
+ */
+export function etatValorisation(r = {}, vues = vuesDe(r)) {
+  return {
+    exercices_passes: vues.includes("exercices_passes"),
+    retraitements: vues.includes("retraitements") && !manquesValorisation("retraitements", r).length,
+    dette: vues.includes("dette") && !manquesValorisation("dette", r).length,
+    validation: Number.isFinite(r.validation?.le) ? { le: r.validation.le } : null,
+  };
+}
 /** Réponses indispensables au mémorandum encore vides sur cet écran (libellés), quel que soit le passage du dirigeant. */
 export const requisManquants = (q, r) => q.champs.filter((c) => c.requis && !rempli(r[c.etape]?.[c.cle])).map((c) => c.requis);
 /**
@@ -116,7 +143,8 @@ export const vuesDe = (r = {}) => (Array.isArray(r.parcours?.vues) ? r.parcours.
 /** Questions répondues sur le total, et leur pourcentage (pour l'avancement global). */
 export function avancementQuestions(r = {}, vues = vuesDe(r)) {
   const faits = QUESTIONS.filter((q) => questionRepondue(q, r, vues)).length + (siteRepondu(r) ? 1 : 0);
-  return { faits, total: NB_QUESTIONS, pct: Math.round((100 * faits) / NB_QUESTIONS) };
+  // restantes: identifiers of the questions still without an answer, so that every screen can name them
+  return { faits, total: NB_QUESTIONS, pct: Math.round((100 * faits) / NB_QUESTIONS), restantes: questionsAPoser(r, vues) };
 }
 /**
  * Questions qui restent à montrer, dans l'ordre du parcours : « site » d'abord s'il n'a pas de réponse, puis les
@@ -132,7 +160,8 @@ const MESSAGERIES = new Set(["gmail.com", "googlemail.com", "outlook.com", "outl
 /** Questions du questionnaire complet absentes du parcours guidé : facultatives (« Pour aller plus loin »), hors du
  *  pourcentage et de « À faire maintenant ». Celles qui ne servaient qu'aux flux actualisés (méthode écartée, rien
  *  ne les affiche) ne sont plus posées. */
-const CLES_DU_PARCOURS = new Set(QUESTIONS.flatMap((q) => [...q.champs, ...(q.suite?.champs || [])].map((c) => `${c.etape}.${c.cle}`)));
+// The restatements and the net-debt items are asked in the first stage only (a single place since 24/11/2026)
+const CLES_DU_PARCOURS = new Set([...QUESTIONS.flatMap((q) => [...q.champs, ...(q.suite?.champs || [])]), ...Object.values(VALORISATION).flat()].map((c) => `${c.etape}.${c.cle}`));
 const SANS_USAGE = new Set(["perspectives.investissements_pct", "bilan.capital_personnes_physiques"]);
 // Copie des étapes avec leurs accesseurs (les textes restent lus dans la langue courante, pas figés au chargement).
 export const POUR_ALLER_PLUS_LOIN = ETAPES

@@ -1,13 +1,13 @@
-// Authentification : codes de connexion, sessions, cookies, contrôle d'origine.
-// Les codes et identifiants de session ne sont jamais stockés en clair : seule leur empreinte SHA-256 l'est.
+// Authentication: sign-in codes, sessions, cookies, origin check.
+// Codes and session identifiers are never stored in clear: only their SHA-256 hash is.
 import { DURATIONS } from "../config.js";
 import { json } from "../http.js";
 import { t as tr } from "../../public/js/i18n.js";
 
 const NOM_COOKIE = "passation_session";
 
-/** Chaîne aléatoire sûre (base64url, 32 octets par défaut). */
-function aleatoire(octets = 32) {
+/** Secure random string (base64url, 32 bytes by default). */
+export function aleatoire(octets = 32) {
   const b = crypto.getRandomValues(new Uint8Array(octets));
   return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
@@ -19,14 +19,14 @@ export async function empreinte(texte) {
 
 export const maintenant = () => Math.floor(Date.now() / 1000);
 
-/** Code à 6 chiffres, tiré uniformément (rejet des valeurs qui biaiseraient le modulo). */
+/** 6-digit code, drawn uniformly (values that would bias the modulo are rejected). */
 export function codeAleatoire() {
   const b = new Uint32Array(1);
   do crypto.getRandomValues(b); while (b[0] >= 4_294_000_000);
   return String(b[0] % 1_000_000).padStart(6, "0");
 }
 
-/** Empreinte d'un code : sel propre à la ligne + secret serveur, pour qu'une copie de la base ne suffise pas. */
+/** Hash of a code: salt specific to the row + server secret, so that a copy of the database is not enough. */
 export const empreinteCode = (env, sel, code) => empreinte(`${env.SESSION_SECRET || ""}|${sel}|${code}`);
 
 export function emailValide(e) {
@@ -48,7 +48,7 @@ export function cookieSession(valeur, maxAge = DURATIONS.session) {
 }
 export const cookieEffacement = () => `${NOM_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
 
-/** Crée une session et renvoie la valeur du cookie (secret). */
+/** Creates a session and returns the cookie value (secret). */
 export async function creerSession(db, userId) {
   const secret = aleatoire();
   const t = maintenant();
@@ -57,8 +57,8 @@ export async function creerSession(db, userId) {
   return secret;
 }
 
-/** Utilisateur connecté, ou null. */
-async function utilisateurConnecte(request, env) {
+/** Signed-in user, or null. */
+export async function utilisateurConnecte(request, env) {
   const secret = lireCookie(request);
   if (!secret || secret.length < 20) return null;
   return env.DB.prepare(
@@ -66,15 +66,15 @@ async function utilisateurConnecte(request, env) {
   ).bind(await empreinte(secret), maintenant()).first();
 }
 
-/** Garde des routes privées : renvoie [utilisateur, null] ou [null, réponse 401]. */
+/** Guard for private routes: returns [user, null] or [null, 401 response]. */
 export async function exigerUtilisateur(request, env) {
   const u = await utilisateurConnecte(request, env);
   return u ? [u, null] : [null, json({ erreur: "non_connecte", message: tr("serveur.auth.connectez_vous_pour_acceder") }, 401)];
 }
 
 /**
- * Protection contre les requêtes intersites (CSRF) : toute requête qui modifie des données doit venir du site
- * lui-même (en-tête Origin identique à l'hôte). Le cookie SameSite=Lax en est la première barrière.
+ * Protection against cross-site requests (CSRF): any request that changes data must come from the site itself
+ * (Origin header identical to the host). The SameSite=Lax cookie is the first barrier.
  */
 export function origineAutorisee(request) {
   if (["GET", "HEAD", "OPTIONS"].includes(request.method)) return true;

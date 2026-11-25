@@ -46,7 +46,7 @@ function tete(fe, unite = tr("serveur.datapack.unite_euros")) {
   if (unite) fe.ecrire(1, c, unite, S.unite);
 }
 
-export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode = null, genereLe = new Date() }) {
+export function construireDatapack({ entreprise, entree, H, resultat, validation = null, nomDeCode = null, genereLe = new Date() }) {
   const wb = creerClasseur();
   const annees = resultat.annees;
   const nA = annees.length;
@@ -62,6 +62,8 @@ export function construireDatapack({ entreprise, entree, H, resultat, nomDeCode 
   cv.ecrire(5, 1, `SIREN ${String(entreprise.siren || "").replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3")}${entreprise.ville ? ` · ${entreprise.ville}` : ""}`);
   cv.ecrire(6, 1, tr("serveur.datapack.genere_le", { date: dateTxt }));
   cv.ecrire(7, 1, tr("serveur.datapack.strictement_confidentiel"), S.confidentiel);
+  // Figures changed since the owner approved them: said on the first sheet (24/11/2026)
+  if (validation && validation.a_jour === false) cv.ecrire(8, 1, tr("serveur.datapack.a_revalider", { date: new Date(validation.le * 1000).toLocaleDateString(locale(), { day: "numeric", month: "long", year: "numeric" }) }), S.confidentiel);
   let rc = 9;
   bandeau(cv, rc++, tr("serveur.datapack.sommaire"), 1);
   cv.ecrire(rc, 1, "N°", S.entete); cv.ecrire(rc, 2, tr("serveur.datapack.onglet"), S.entete); cv.ecrire(rc, 3, tr("serveur.datapack.contenu"), S.entete); cv.ecrire(rc, 4, tr("serveur.datapack.lien"), S.entete); rc++;

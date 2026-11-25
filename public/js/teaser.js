@@ -1,4 +1,4 @@
-// Page du teaser : rédaction (Claude, contrôlée par le serveur), relecture, modification par section, impression.
+// Teaser page: drafting (Claude, checked by the server), review, edit by section, printing.
 import { lien, t, locale } from "/js/i18n.js";
 const $ = (s) => document.querySelector(s);
 const id = new URLSearchParams(location.search).get("dossier") || "";
@@ -9,7 +9,7 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
-/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+/** Replaces the content of a node, ignoring null, undefined and false (otherwise the browser writes "null"). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 function message(texte, erreur = false) { const m = $("#message"); m.textContent = texte; m.hidden = !texte; m.classList.toggle("erreur", erreur); }
 async function api(chemin, options = {}) {
@@ -32,7 +32,7 @@ const titreSvg = (texte) => { const e = svg("title"); e.textContent = texte; ret
 const PALIERS_CA = ["< 1", "1-2", "2-5", "5-10", "10-20", "20-50", "> 50"];
 const paliersMarge = () => [t("teaser.js.marge_negative"), "< 5", "5-10", "10-15", "15-20", "> 20"].map((p, i) => (i ? t("teaser.js.pct", { n: p }) : p));
 
-// Pictogrammes originaux, trait simple
+// Original pictograms, simple line
 const PICTOS = {
   secteur: "M4 20V9l5 3V9l5 3V5h6v15H4z",
   region: "M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z",
@@ -160,7 +160,7 @@ async function charger() {
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
   try {
     const d = await api(base); rendu(d);
-    // Arrivée depuis le bouton « PDF » de la page du dossier : on propose l'enregistrement une fois le teaser affiché
+    // Arrival from the "PDF" button of the file page: saving is offered once the teaser is displayed
     if (d.teaser && new URLSearchParams(location.search).get("imprimer") === "1") { await document.fonts?.ready; window.print(); }
   } catch (e) { if (e.message !== "non_connecte") message(e.message, true); }
   $("main").removeAttribute("aria-busy");

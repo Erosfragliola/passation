@@ -87,6 +87,15 @@
         "floue": "Blurry",
         "trop_petite": "Too small for a full page",
         "identifiante": "Not for the teaser: identifying"
+      },
+      "endroit": "In the memorandum:",
+      "endroits": {
+        "couverture": "on the cover",
+        "activite": "Business page",
+        "realisations": "Projects page",
+        "equipe": "Team page",
+        "ouverture": "opening page of a part",
+        "non_placee": "not placed for now (choose “Use as suggested” or change the order)"
       }
     },
     "themes": {
@@ -119,7 +128,7 @@
     },
     "verrou": {
       "avant": "Before drafting the memorandum:",
-      "questionnaire": "Open the questionnaire"
+      "questionnaire": "Resume the guided steps"
     },
     "a_rediger": "{quoi}: to be drafted.",
     "sources": {
@@ -506,8 +515,14 @@
     },
     "ameliorations": {
       "titre": "To improve",
-      "resume": { "one": "{n} improvement", "other": "{n} improvements" },
-      "resume_indispensables": { "one": "{n} essential", "other": "{n} essential" },
+      "resume": {
+        "one": "{n} improvement",
+        "other": "{n} improvements"
+      },
+      "resume_indispensables": {
+        "one": "{n} essential",
+        "other": "{n} essential"
+      },
       "page": "page {n}",
       "indispensable": "Essential",
       "valider": "Confirm",
@@ -576,6 +591,40 @@
         "incoherence_registres": "Inconsistent with public records",
         "chiffre": "Figure to check"
       }
+    },
+    "depot": {
+      "attestation": "I certify that these photos belong to the company (or that it has the right to use them) and that they may appear in the memorandum.",
+      "glisser": "Drop your photos here",
+      "choisir": "Choose photos",
+      "formats": "or choose them. JPEG, PNG or WebP; heavy photos are reduced before sending. {max} more allowed.",
+      "plus_de_place": "The {max} photos are reached: remove one to add another.",
+      "cochez_d_abord": "First tick the box above: your photos will be sent as soon as it is ticked.",
+      "en_attente": {
+        "one": "{n} photo waiting: tick the box above to send it.",
+        "other": "{n} photos waiting: tick the box above to send them."
+      },
+      "en_file": "Waiting…",
+      "reduction": "Reducing the photo ({poids} MB)…",
+      "envoi": "Sending…",
+      "envoi_reduite": "Sending the reduced photo ({avant} → {apres} MB)…",
+      "ajoutee": "Added",
+      "ajoutee_reduite": "Added, reduced to {apres} MB",
+      "logo_aide": "On the cover of the memorandum and of the datapack, never in the teaser. JPEG, PNG or WebP; a heavy logo is reduced before sending.",
+      "erreurs": {
+        "heic": "HEIC format (iPhone): export the photo as JPEG, or set the iPhone to Settings > Camera > Formats > “Most Compatible”, then add it again.",
+        "format": "This file is not a JPEG, PNG or WebP photo: save it in one of these formats, then add it again.",
+        "trop_lourd": "Even reduced, the photo exceeds {poids} MB: reduce it in your photo software, then add it again.",
+        "trop_de_photos": "The {max} photos are reached: remove a photo from the list to add this one.",
+        "doublon": "This photo is already in the list: nothing to do.",
+        "attestation": "Certification missing: tick the box above the photos, then add it again.",
+        "image_injoignable": "The website does not deliver this image: save it on your computer, then upload it.",
+        "analyse_indisponible": "The photo is saved, but the automatic assessment is not available: you can use it as is, or come back later.",
+        "quota_atteint": "The photo is saved; the automatic assessment has reached its daily limit: it will resume tomorrow, nothing is lost.",
+        "reduction": "Your browser cannot read this image: save it as JPEG, then add it again.",
+        "reseau": "Connection interrupted: check your network, then add the photo again.",
+        "autre": "The photo could not be added: try again; if it happens again, save it as JPEG."
+      },
+      "taille": "{poids} MB"
     }
   },
   "equipe": {

@@ -53,13 +53,24 @@ function afficher({ checklist = true } = {}) {
   document.title = t("espace.js.titre_page", { nom: e.nom || t("espace.js.votre_dossier") });
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
 
-  // Fil du parcours : léger, libellés jamais tronqués (le bouton principal n'y est plus), étapes faites cliquables
-  remplacer($("#fil"), ...etat.etapes.map((x, i) => {
-    const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(i + 1) }), el("span", { class: "lib", text: x.libelle })];
-    if (x.etat === "fait") return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": t("espace.js.etape_faite", { etape: x.libelle }) }, contenu));
+  // Fil du parcours en deux temps (24/11/2026) : « 1. Votre valorisation », puis « 2. Votre mémorandum » ; léger,
+  // libellés jamais tronqués, étapes faites cliquables
+  let n = 0;
+  const etape = (x) => {
+    n += 1;
+    const contenu = [el("span", { class: "num", "aria-hidden": "true", text: x.etat === "fait" ? "✓" : String(n) }), el("span", { class: "lib", text: x.libelle })];
+    if (x.etat === "fait" && x.href) return el("li", { class: "fait" }, el("a", { href: x.href, "aria-label": t("espace.js.etape_faite", { etape: x.libelle }) }, contenu));
     if (x.etat === "actuelle") return el("li", { class: "actuelle" }, el("span", { class: "etape", "aria-current": "step" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_en_cours") })));
-    return el("li", {}, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: t("espace.js.etape_a_venir") })));
-  }));
+    return el("li", { class: x.etat === "fait" ? "fait" : null }, el("span", { class: "etape" }, contenu, el("span", { class: "visuellement-cache", text: x.etat === "fait" ? t("demarrer.js.faite") : t("espace.js.etape_a_venir") })));
+  };
+  remplacer($("#fil"), ...etat.temps.map((tp, i) => el("li", { class: `fil-temps${tp.fait ? " fait" : ""}` },
+    el("span", { class: "fil-temps-titre", text: `${i + 1}. ${tp.titre}` }),
+    el("ol", { class: "fil-etapes" }, ...tp.etapes.map(etape)))));
+
+  // Banner (24/11/2026): new step for a file drafted before the two stages, or figures modified since their approval
+  const b = etat.nouvelleEtape;
+  $("#bandeau-etape").hidden = !b;
+  if (b) { $("#bandeau-texte").textContent = b.texte; $("#bandeau-lien").textContent = `${b.bouton} →`; $("#bandeau-lien").href = b.href; $("#bandeau-etape").dataset.genre = b.genre; }
 
   // En-tête vert : nom de code, nom, fourchette, une seule ligne d'explication (le détail derrière « Voir le détail »)
   $("#nom-code").textContent = dossier.nom_de_code || "";
@@ -68,6 +79,8 @@ function afficher({ checklist = true } = {}) {
   $("#valeur-etiquette").textContent = v.etiquette;
   $("#valeur-montant").textContent = v.bas != null && v.haut != null ? fourchette(v.bas, v.haut) : t("espace.js.a_affiner");
   $("#valeur-base").textContent = v.base;
+  // From the quick estimate (enterprise value) to the value of the shares: explained here too (defect 6 of 24/11/2026)
+  $("#valeur-ecart").textContent = v.ecart || ""; $("#valeur-ecart").hidden = !v.ecart;
   $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
 
   // Action principale : jamais facultative (première tâche indispensable, sinon « Relire et envoyer »)
@@ -215,3 +228,40 @@ $("#confirmer-supprimer").addEventListener("click", async () => {
 });
 
 charger().catch((err) => { if (err.message !== "non_connecte") message(err.message, true); });
+
+// ================================================================== Change of password (24/11/2026)
+// Current password, then the new one (12 characters or more, the same rule as the server); every other session is
+// closed by the server, this one stays open.
+function changerMotDePasse() {
+  const zone = $("#changer-mdp");
+  if (!zone) return;
+  const champ = (id, lib, auto) => [el("label", { for: id, text: lib }), el("input", { id, type: "password", autocomplete: auto, required: true })];
+  const msg = el("p", { class: "message-carte", role: "status", hidden: true });
+  const form = el("form", { class: "form-carte mdp-form", novalidate: true },
+    el("h3", { text: t("espace.js.mdp.titre") }),
+    el("input", { type: "email", autocomplete: "username", value: "", hidden: true, tabindex: "-1", "aria-hidden": "true", class: "mdp-identifiant" }),
+    ...champ("mdp-actuel", t("espace.js.mdp.actuel"), "current-password"),
+    ...champ("mdp-nouveau", t("espace.js.mdp.nouveau"), "new-password"),
+    el("p", { class: "petit", text: t("connexion_code.mdp_regle", { n: 12 }) }),
+    ...champ("mdp-confirmation", t("espace.js.mdp.confirmation"), "new-password"),
+    el("button", { class: "btn btn-noir btn-mini", type: "submit" }, t("espace.js.mdp.bouton")),
+    el("p", { class: "petit", text: t("espace.js.mdp.sessions") }), msg);
+  const dire = (texte, erreur) => { msg.textContent = texte; msg.hidden = !texte; msg.classList.toggle("erreur", erreur); };
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const actuel = $("#mdp-actuel").value, nouveau = $("#mdp-nouveau").value;
+    if (!actuel) return dire(t("connexion_code.mdp_vide"), true);
+    if ([...nouveau].length < 12) return dire(t("connexion_code.mdp_court", { n: 12 }), true);
+    if (nouveau !== $("#mdp-confirmation").value) return dire(t("connexion_code.mdp_differents"), true);
+    const b = form.querySelector("button"); b.disabled = true;
+    try {
+      const r = await fetch("/api/auth/changer", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ actuel, nouveau }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.message || t("espace.js.erreur"));
+      form.reset(); dire(d.message, false);
+    } catch (err) { dire(err.message, true); } finally { b.disabled = false; }
+  });
+  zone.replaceChildren(form);
+  fetch("/api/me").then((r) => r.json()).then((m) => { form.querySelector(".mdp-identifiant").value = m.email || ""; }).catch(() => {});
+}
+changerMotDePasse();

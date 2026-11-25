@@ -1,13 +1,14 @@
-// Mode détaillé « Valorisation approfondie », en trois onglets (non numérotés : le fil du parcours est celui de la
-// page du dossier) : Vos chiffres (liasse PDF + validation ligne par ligne ; seul le dernier exercice est
-// indispensable), Pour aller plus loin (questions facultatives, absentes du parcours guidé), Votre valorisation
-// (calcul du serveur, réglages). Fourchette seule, jamais de valeur centrale ; multiples du secteur seulement,
-// l'actif net corrigé sert de contrôle. Aucun calcul de valeur ici : tout vient de l'API (code testé).
+// Detailed mode "Detailed valuation", in three tabs (not numbered: the progress line is that of the
+// file page): Your figures (PDF tax return + line-by-line approval; only the latest fiscal year is
+// required), Going further (optional questions, missing from the guided steps), Your valuation
+// (server calculation, settings). Range only, never a central value; industry multiples only,
+// the adjusted net assets serve as a check. No value calculation here: everything comes from the API (tested code).
 import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe as texteAideEbe } from "/js/champs-financiers.js";
 import { REGIONS, libelleOption } from "/js/questionnaire.js";
 import { POUR_ALLER_PLUS_LOIN as ETAPES } from "/js/parcours.js";
 import { etiquetteTitres, resumeValorisation, explicationEcart, alertesDirigeant } from "/js/dossier-parcours.js";
 import { fourchette } from "/js/landing/estimation.js";
+import { situationAncc, texteAncc } from "/js/valeur-pont.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -22,7 +23,7 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
-/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+/** Replaces the content of a node, ignoring null, undefined and false (otherwise the browser writes "null"). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const fmt = new Intl.NumberFormat(locale(), { maximumFractionDigits: 0 });
 const fr = () => langue() === "fr";
@@ -35,7 +36,7 @@ const court = (v) => {
   return fr() ? `${Math.round(v)} €` : `€${Math.round(v)}`;
 };
 const pct = (v, d = 1) => (v == null || !Number.isFinite(v) ? "–" : t("espace.js.pct", { n: (v * 100).toLocaleString(locale(), { maximumFractionDigits: d, minimumFractionDigits: d }) }));
-/** « 1 234 567 », « -12 000 », « 12,5 » → nombre ; vide → null. */
+/** "1 234 567", "-12 000", "12,5" → number; empty → null. */
 const lireNombre = (s) => lireNombreSaisi(s);
 
 function message(texte, erreur = false, cible = "#parcours-message") {
@@ -52,7 +53,7 @@ async function api(chemin, options = {}) {
 }
 const base = `/api/dossiers/${id}`;
 
-// ================================================================== Navigation entre les 3 étapes
+// ================================================================== Navigation between the 3 steps
 const PANNEAUX = ["chiffres", "entreprise", "valorisation"];
 function montrer() {
   const cle = PANNEAUX.includes(location.hash.slice(1)) ? location.hash.slice(1) : "chiffres";
@@ -60,10 +61,10 @@ function montrer() {
   document.querySelectorAll(".etapes a").forEach((a) => { if (a.dataset.etape === cle) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current"); });
   if (cle === "valorisation") calculer();
   if (cle === "entreprise") dessinerQuestionnaire();
-  window.scrollTo({ top: 0 }); // l'ancre ne fait plus glisser l'en-tête sous la barre du site
+  window.scrollTo({ top: 0 }); // the anchor no longer slides the header under the site bar
 }
 window.addEventListener("hashchange", () => { montrer(); $(`#titre-${location.hash.slice(1)}`)?.focus?.(); });
-// Onglets : pas de saut à l'ancre (l'en-tête resterait sous la barre du site), même sur l'onglet déjà ouvert
+// Tabs: no jump to the anchor (the header would stay under the site bar), even on the tab already open
 document.querySelectorAll(".etapes a[href^='#']").forEach((a) => a.addEventListener("click", (ev) => {
   ev.preventDefault();
   if (location.hash !== a.getAttribute("href")) history.pushState(null, "", a.getAttribute("href"));
@@ -72,13 +73,13 @@ document.querySelectorAll(".etapes a[href^='#']").forEach((a) => a.addEventListe
 }));
 window.addEventListener("popstate", montrer);
 
-// ================================================================== 1. Vos chiffres (un exercice à la fois)
-// Les lignes obligatoires sur deux colonnes (ce que l'entreprise gagne ; ce qu'elle possède et doit), les lignes
-// facultatives repliées : l'onglet tient sur un écran. Rôle de chaque exercice : le dernier est indispensable, les deux
-// précédents facultatifs, les plus anciens pour information. Rien n'entre dans le calcul sans validation.
+// ================================================================== 1. Your figures (one fiscal year at a time)
+// Required lines in two columns (what the company earns; what it owns and owes), optional lines
+// collapsed: the tab fits on one screen. Role of each fiscal year: the latest is required, the two
+// previous ones optional, the older ones for information. Nothing enters the calculation without approval.
 let chiffres = null;
 let anneeCourante = null;
-const SOURCE = { get inpi() { return t("valorisation.js.source_inpi"); }, get liasse() { return t("valorisation.js.source_liasse"); } }; // formulation de la légende de main
+const SOURCE = { get inpi() { return t("valorisation.js.source_inpi"); }, get liasse() { return t("valorisation.js.source_liasse"); } }; // wording of the legend by hand
 const DETAIL = new Set(["achats_consommes", "charges_externes", "charges_personnel"]);
 const aideEbe = () => el("span", { class: "aide-bulle" }, el("button", { type: "button", class: "aide-rond", "aria-describedby": "aide-ebe-chiffres", "aria-label": t("demarrer.js.saisie.quest_ce_ebe") }, "?"),
   el("span", { role: "tooltip", id: "aide-ebe-chiffres", text: texteAideEbe() }));
@@ -123,7 +124,7 @@ function dessinerChiffres() {
           el("a", { class: "btn btn-vert btn-petit", href: "#entreprise" }, t("valorisation.js.continuer_entreprise"), el("span", { class: "fleche", "aria-hidden": "true", text: "→" })))));
   }
 
-  // Seul le dernier exercice est réclamé ; les deux précédents sont proposés, jamais exigés ; les plus anciens, ignorés
+  // Only the latest fiscal year is requested; the two previous ones are offered, never required; older ones, ignored
   $("#etat-chiffres").textContent = att.dernier == null ? "" : att.dernier_complet ? `✓ ${att.dernier}` : t("valorisation.js.a_confirmer", { annee: att.dernier });
   const libelles = (l) => l.map((k) => libelleEcran(CHAMPS.find((c) => c.cle === k))).join(", ");
   const manqueDernier = att.dernier != null ? chiffres.manquants[att.dernier] || [] : [];
@@ -193,7 +194,7 @@ $("#fichier-liasse").addEventListener("change", async (ev) => {
   finally { $("#depot").removeAttribute("aria-busy"); $("#btn-liasse").disabled = !chiffres?.lecture_automatique; }
 });
 
-// ================================================================== 2. Votre entreprise
+// ================================================================== 2. Your company
 let reponses = {}, etapeQ = 0, minuterie = null;
 function dessinerSousEtapes() {
   remplacer($("#sous-etapes"), ...ETAPES.map((e, i) => el("li", {}, el("button", { type: "button", class: "lien-simple", "aria-current": i === etapeQ ? "true" : null, onclick: () => { etapeQ = i; dessinerQuestionnaire(); } }, e.titre))));
@@ -282,10 +283,10 @@ function programmerSauvegarde(etape) {
     } catch (err) { $("#etat-enregistrement").textContent = t("valorisation.js.non_enregistre", { erreur: err.message }); }
   }, 600);
 }
-/** Questions facultatives : pas de pourcentage (il ferait concurrence au décompte des questions du parcours). */
+/** Optional questions: no percentage (it would compete with the count of the flow's questions). */
 function majEtatQuestionnaire() { $("#etat-entreprise").textContent = t("valorisation.js.role.facultatif"); }
 
-// ================================================================== 3. Votre valorisation
+// ================================================================== 3. Your valuation
 let dernier = null, dossierCourant = null;
 async function calculer() {
   const zone = $("#resultat");
@@ -298,7 +299,7 @@ async function calculer() {
 }
 
 function footballField(lignes) {
-  // lignes : [{ libelle, bas, haut, point, fort }] — une seule teinte, la ligne porte l'identité ; jamais de valeur centrale
+  // lignes: [{ libelle, bas, haut, point, fort }] — a single hue, the row carries the identity; never a central value
   const valeurs = lignes.flatMap((l) => [l.bas, l.haut, l.point]).filter(Number.isFinite);
   if (!valeurs.length) return null;
   let min = Math.min(0, ...valeurs), max = Math.max(...valeurs);
@@ -311,7 +312,7 @@ function footballField(lignes) {
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", t("valorisation.js.ff_aria", { titre: etiquetteTitres(), lignes: lignes.map((l) => `${l.libelle} ${l.point != null ? court(l.point) : fourchette(l.bas, l.haut)}`).join(" ; ") }));
   const ns = (t, a) => { const n = document.createElementNS("http://www.w3.org/2000/svg", t); for (const [k, v] of Object.entries(a)) n.setAttribute(k, v); return n; };
-  // Graduations recessives
+  // Recessive gridlines
   const pas = Math.pow(10, Math.floor(Math.log10((max - min) / 4)));
   const pasR = [1, 2, 5, 10].map((k) => k * pas).find((p) => (max - min) / p <= 5) || pas * 10;
   for (let v = Math.ceil(min / pasR) * pasR; v <= max; v += pasR) {
@@ -376,26 +377,28 @@ function dessinerResultat() {
   $("#etat-valorisation").textContent = v ? fourchette(v.bas, v.haut) : t("teaser.js.a_completer_minuscule");
   const reg = reponses.reglages || {};
 
-  // --- Synthèse : la fourchette seule (même format et même étiquette que la page du dossier), et ce qui l'explique
+  // --- Summary: the range only (same format and same label as the file page), and what explains it
   const ecart = v ? explicationEcart(dossierCourant?.estimation, v) : null;
   const tete = el("div", { class: "synthese-valeur carte" },
     el("p", { class: "etiquette", text: etiquetteTitres() }),
     el("p", { class: "valeur-centrale chiffre", text: v ? fourchette(v.bas, v.haut) : t("teaser.js.a_completer") }),
-    el("p", { class: "petit", text: t("valorisation.js.fondee", { plancher: euros(s.plancher_ancc) }) }),
+    el("p", { class: "petit", text: t("valorisation.js.fondee") }),
+    // Adjusted net assets next to the range: "floor" only when they are below it (defect 5 of 24/11/2026)
+    v ? el("p", { class: "petit", text: texteAncc(situationAncc(v.bas, v.haut, s.plancher_ancc), v) }) : null,
     ecart ? el("p", { class: "petit", text: ecart }) : null,
     el("p", { class: "estimation-mention", text: t("valorisation.js.mention") }),
     el("a", { class: "btn btn-sable", href: `${base}/documents/datapack`, download: "" }, t("valorisation.js.telecharger_datapack"), el("span", { class: "fleche", "aria-hidden": "true", text: "↓" })));
-  const visibles = alertesDirigeant(s.alertes);
+  const visibles = alertesDirigeant(s.alertes).filter((a) => !/actif net corrigé de l'entreprise|company’s adjusted net assets/i.test(a));
   const alertes = visibles.length ? el("ul", { class: "alertes" }, ...visibles.map((a) => el("li", { text: a }))) : null;
 
-  // --- Fourchette et son contrôle : la barre des multiples, le point de l'actif net corrigé
+  // --- Range and its check: the multiples bar, the adjusted net assets point
   const m = r.multiples;
   const ff = footballField([
     { libelle: t("valorisation.js.ff_multiples"), bas: s.bas, haut: s.haut, fort: true },
     { libelle: t("valorisation.js.ff_actif"), point: r.ancc.valeur },
   ]);
 
-  // --- Réglages (EBE retenu, décotes et primes)
+  // --- Settings (EBITDA used, discounts and premiums)
   const facteurs = H.decotes_primes.facteurs;
   const decotes = facteurs.map((f) => {
     const existant = (reg.decotes || []).find((x) => x.cle === f.cle) || { cle: f.cle, pct: 0, justification: "" };
@@ -422,15 +425,15 @@ function dessinerResultat() {
     el("h4", { text: t("valorisation.js.decotes_primes") }), el("p", { class: "petit", text: H.decotes_primes.note }),
     el("div", { class: "decotes" }, ...decotes),
     el("button", { type: "button", class: "btn btn-noir", onclick: async (ev) => {
-      const bouton = ev.currentTarget; // vidé après « await »
+      const bouton = ev.currentTarget; // emptied after "await"
       bouton.disabled = true;
-      // La pondération avec les flux actualisés n'est plus proposée : un réglage ancien est retiré (multiples seuls)
+      // Weighting with the discounted cash flows is no longer offered: an old setting is removed (multiples only)
       delete reg.poids_multiples;
       try { reponses.reglages = reg; await api(`${base}/answers/reglages`, { method: "PUT", body: JSON.stringify({ data: reg }) }); await calculer(); }
       catch (e) { message(e.message, true); } finally { bouton.disabled = false; }
     } }, t("valorisation.js.recalculer")));
 
-  // --- Pont EBE
+  // --- EBITDA bridge
   const pontLignes = [];
   for (const p of r.pont_ebe) {
     pontLignes.push({ cellules: [t("valorisation.js.ebe_comptable", { annee: p.annee }), euros(p.ebe_comptable)] });
@@ -439,7 +442,7 @@ function dessinerResultat() {
   }
   pontLignes.push({ classe: "total fort", cellules: [t("valorisation.js.ebe_normatif", { base: r.ebe_normatif.mode === "dernier" ? t("valorisation.js.dernier_exercice") : t("valorisation.js.moyenne", { annees: r.ebe_normatif.annees.join(", ") }) }), euros(r.ebe_normatif.valeur)] });
 
-  // --- De la valeur d'entreprise à la valeur des titres, pour le bas et le haut de la fourchette
+  // --- From enterprise value to the value of the shares, for the low and high ends of the range
   const pt = r.pont_titres;
   const mult = (x) => `× ${x.toLocaleString(locale())}`;
   const deuxCols = (lib, f) => ({ cellules: [lib, f("bas"), f("haut")] });
@@ -453,15 +456,15 @@ function dessinerResultat() {
     { classe: "total fort", cellules: [t("valorisation.js.pont.titres"), euros(m.titres.bas), euros(m.titres.haut)] },
   ], { legende: t("valorisation.js.pont.legende") }) : el("p", { class: "petit", text: t("valorisation.js.pont.non_applicable") });
 
-  // --- Sensibilité au multiple (valeur des titres)
+  // --- Sensitivity to the multiple (value of the shares)
   const sens = r.sensibilites;
   const lignesSens = sens.multiple ? [{ cellules: [t("valorisation.js.sens.ligne"), court(sens.multiple.moins), court(sens.multiple.plus)] }] : [];
 
   remplacer(zone, 
     el("div", { class: "resultat-tete" }, tete, el("div", { class: "carte" }, el("h3", { text: t("valorisation.js.ff_titre") }), el("p", { class: "petit", text: t("valorisation.js.ff_legende") }), ff)),
-    ...(alertes ? [el("details", { class: "carte alertes-repli" }, el("summary", {}, t("valorisation.js.points_attention", { n: alertes.childElementCount })), alertes)] : []),
+    ...(alertes ? [el("details", { class: "carte alertes-repli", open: true }, el("summary", {}, t("valorisation.js.points_attention", { n: alertes.childElementCount })), alertes)] : []),
     el("div", { class: "resultat-deplis" },
-    el("details", { class: "carte calcul-detail" }, el("summary", {}, el("strong", { text: t("valorisation.js.comment") })),
+    el("details", { class: "carte calcul-detail", open: true }, el("summary", {}, el("strong", { text: t("valorisation.js.comment") })),
     el("div", { class: "resultat-detail" },
       el("section", { class: "carte" }, el("h3", { text: t("valorisation.js.titre_pont_ebe") }), tableau([t("valorisation.js.pont_ebe"), t("demarrer.js.exc.montant")], pontLignes)),
       el("section", { class: "carte" }, el("h3", { text: t("valorisation.js.titre_pont_titres") }), pontTitres),
@@ -472,7 +475,7 @@ function dessinerResultat() {
   );
 }
 
-// ================================================================== Chargement
+// ================================================================== Loading
 async function charger() {
   if (!/^[0-9a-f-]{36}$/.test(id)) { location.replace(lien("/espace/")); return; }
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);

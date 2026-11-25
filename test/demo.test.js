@@ -1,10 +1,10 @@
-// Scénario de démonstration (docs/DEMO.md) : liasse entièrement fictive « Atelier Exemple » (test/fixtures/liasse-fictive.pdf),
-// exercices 2024 et 2025, secteur industrie, prime de taille 3 % (hypothèse de démonstration), sans retraitement ni décote.
-// Valeurs attendues calculées indépendamment, par un script Python qui n'importe pas le code du site (formules de
-// docs/valorisation-calculs.md) :
-//   EBE 2024 = 2 200 000 − 880 000 − 320 000 − 40 000 − 640 000 = 320 000 ; EBE 2025 = 380 000 ; normatif 350 000
-//   dette nette = 300 000 + 20 000 − 250 000 − 50 000 = 20 000 ; BFR 180 000 et 200 000, soit 30,1402 j en moyenne,
-//   écart réel − normatif = +1 818,18 ; croissance historique 9,0909 % ; marge d'EBE 14,5833 % ; CMPC 11,2085 %
+// Demonstration scenario (docs/DEMO.md): entirely fictitious tax return "Atelier Exemple" (test/fixtures/liasse-fictive.pdf),
+// fiscal years 2024 and 2025, manufacturing industry, 3% size premium (demonstration assumption), no adjustment or discount.
+// Expected values calculated independently, by a Python script that does not import the site's code (formulas of
+// docs/valorisation-calculs.md):
+//   EBITDA 2024 = 2,200,000 − 880,000 − 320,000 − 40,000 − 640,000 = 320,000; EBITDA 2025 = 380,000; normalized 350,000
+//   net debt = 300,000 + 20,000 − 250,000 − 50,000 = 20,000; working capital 180,000 and 200,000, i.e. 30.1402 days on average,
+//   actual − normalized gap = +1,818.18; historical growth 9.0909%; EBITDA margin 14.5833%; WACC 11.2085%
 import { describe, it, expect } from "vitest";
 import { assemblerEntree } from "../src/valuation/entree.js";
 import { valorisationApprofondie } from "../src/valuation/approfondie.js";
@@ -28,8 +28,8 @@ const calcul = (reglages) => {
 };
 const proche = (a, b, tol = 0.05) => expect(Math.abs(a - b)).toBeLessThan(tol);
 
-describe("scénario de démonstration (liasse fictive Atelier Exemple)", () => {
-  it("sans prime de taille : multiples seuls (1 381 818 / 1 941 818 / 2 431 818), DCF à compléter et signalé", () => {
+describe("demonstration scenario (fictitious Atelier Exemple tax return)", () => {
+  it("without a size premium: multiples only (1,381,818 / 1,941,818 / 2,431,818), DCF to be completed and flagged", () => {
     const { r } = calcul({});
     expect(r.ebe_normatif.valeur).toBe(350_000);
     proche(r.multiples.titres.bas, 1_381_818.18);
@@ -38,7 +38,7 @@ describe("scénario de démonstration (liasse fictive Atelier Exemple)", () => {
     expect(r.dcf.statut).toBe("a_completer");
     expect(r.synthese.ponderation).toEqual({ multiples: 1, dcf: 0 });
   });
-  it("prime de taille 3 % : DCF calculé (2 530 797 / 2 819 933 / 3 180 021) mais synthèse sur les multiples seuls (défaut du 18/11/2026)", () => {
+  it("3% size premium: DCF calculated (2,530,797 / 2,819,933 / 3,180,021) but summary on the multiples only (default of 18/11/2026)", () => {
     const { r } = calcul({ prime_taille: 0.03 });
     expect(r.dcf.statut).toBe("ok");
     proche(r.dcf.cmpc.valeur, 0.112085, 1e-6);
@@ -51,7 +51,7 @@ describe("scénario de démonstration (liasse fictive Atelier Exemple)", () => {
     proche(r.synthese.haut, 2_431_818.18);
     expect(r.ancc.valeur).toBe(700_000);
   });
-  it("DCF activé en option à 40 % dans « Affiner » : synthèse 60/40 = 1 841 409,69 / 2 293 064,12 / 2 731 099,28", () => {
+  it('DCF enabled as an option at 40% in "Fine-tune": 60/40 summary = 1,841,409.69 / 2,293,064.12 / 2,731,099.28', () => {
     // 0,6 × 1 381 818,18 + 0,4 × 2 530 796,95 ; 0,6 × 1 941 818,18 + 0,4 × 2 819 933,02 ; 0,6 × 2 431 818,18 + 0,4 × 3 180 020,94
     const { r } = calcul({ prime_taille: 0.03, poids_multiples: 0.6 });
     expect(r.synthese.ponderation).toEqual({ multiples: 0.6, dcf: 0.4 });
@@ -59,7 +59,7 @@ describe("scénario de démonstration (liasse fictive Atelier Exemple)", () => {
     proche(r.synthese.central, 2_293_064.12);
     proche(r.synthese.haut, 2_731_099.28);
   });
-  it("datapack : les formules Excel redonnent la synthèse du moteur et de la référence (défaut et DCF à 40 %)", () => {
+  it("datapack: the Excel formulas give back the summary of the engine and of the reference (default and DCF at 40%)", () => {
     const datapack = (reglages) => {
       const { entree, H, r } = calcul(reglages);
       return construireDatapack({ entreprise: { nom: "Atelier Exemple", siren: "" }, entree, H, resultat: r, genereLe: new Date("2026-11-18") }).calculer();

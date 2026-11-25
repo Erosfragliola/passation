@@ -1,18 +1,18 @@
-# Livrables EDHEC : état au 18/11/2026
+# EDHEC deliverables: status as of 18/11/2026
 
-| Livrable | Fichier | État |
+| Deliverable | File | Status |
 |---|---|---|
-| Business plan (8 à 12 pages) | `business-plan.html` → `business-plan.pdf` (7 pages) | **Brouillon** préparé avec Claude Code : structure et faits du produit ; marché, entretiens, modèle de revenus, équipe et indicateurs « À compléter » par l'équipe, avec sources citées |
-| Présentation (8 minutes) | `presentation.html` → `presentation.pdf` (10 diapositives 16:9, timing indiqué) | **Brouillon** : mêmes réserves |
-| AI-USAGE.md | `../../AI-USAGE.md` | Rédigé ; passages « À valider par l'équipe » à compléter |
-| Scénario de démonstration | `../DEMO.md` | Prêt (valeurs vérifiées par `test/demo.test.js`) |
+| Business plan (8 to 12 pages) | `business-plan.html` → `business-plan.pdf` (7 pages) | **Draft** prepared with Claude Code: structure and facts about the product; market, interviews, revenue model, team and indicators "To be completed" by the team, with sources cited |
+| Presentation (8 minutes) | `presentation.html` → `presentation.pdf` (10 16:9 slides, timing shown) | **Draft**: same reservations |
+| AI-USAGE.md | `../../AI-USAGE.md` | Written; "To be confirmed by the team" passages to be completed |
+| Demonstration scenario | `../DEMO.md` | Ready (values checked by `test/demo.test.js`) |
 
-Régénérer les PDF après modification du HTML (Chrome installé) :
+Regenerate the PDFs after changing the HTML (Chrome installed):
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --no-pdf-header-footer \
   --print-to-pdf=business-plan.pdf business-plan.html
 ```
 
-Aucune donnée de marché, aucun tarif, aucun témoignage n'a été inventé. Les versions remises doivent être réécrites et
-assumées par l'équipe, et l'usage de l'IA pour les produire déclaré dans AI-USAGE.md.
+No market data, price or testimonial has been invented. The submitted versions must be rewritten and owned by the
+team, and the use of AI to produce them declared in AI-USAGE.md.
