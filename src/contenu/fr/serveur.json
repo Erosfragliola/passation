@@ -242,6 +242,10 @@
       "activite": "Décrire votre activité (questionnaire, « Votre activité »)",
       "operation": "Préciser la part du capital cédée (parcours guidé, étape « Dette nette et périmètre »)",
       "validation": "Valider vos chiffres (parcours guidé, étape « Votre valeur »)"
+    },
+    "justifications": {
+      "dirigeant": "Rémunération réelle du dirigeant, charges comprises : {reelle} ; rémunération d'un dirigeant salarié qui le remplacerait : {normative} (montants déclarés par le dirigeant).",
+      "loyer": "Loyer payé : {paye} ; loyer de marché pour des locaux comparables : {marche} (montants déclarés par le dirigeant)."
     }
   },
   "teaser": {

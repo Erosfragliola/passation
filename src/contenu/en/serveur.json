@@ -242,6 +242,10 @@
       "activite": "Describe your business (questionnaire, “Your business”)",
       "operation": "Specify the share of the capital being sold (guided steps, “Net debt and scope” step)",
       "validation": "Approve your figures (guided steps, “Your value” step)"
+    },
+    "justifications": {
+      "dirigeant": "Owner's actual pay, social charges included: {reelle}; pay of a salaried manager who would replace them: {normative} (amounts declared by the owner).",
+      "loyer": "Rent paid: {paye}; market rent for comparable premises: {marche} (amounts declared by the owner)."
     }
   },
   "teaser": {

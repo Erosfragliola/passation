@@ -508,11 +508,6 @@
     "realisations": {
       "titre": "Réalisations"
     },
-    "elements": {
-      "titre": "Éléments à compléter",
-      "message": "Ce qui manque encore à la partie « {partie} », pour la prochaine version",
-      "a_rediger": "Chapitre à rédiger : les informations manquent encore."
-    },
     "ameliorations": {
       "titre": "À améliorer",
       "resume": {
@@ -551,7 +546,8 @@
         "jugements": "Valider le jugement des photos",
         "photo_equipe": "Ajouter une photo de l'équipe",
         "photo_activite": "Ajouter une photo de l'atelier",
-        "marche": "Lancer l'étude de marché"
+        "marche": "Lancer l'étude de marché",
+        "exercices": "Ajouter les exercices précédents"
       },
       "questions": {
         "anciennete_equipe": "Ancienneté moyenne des salariés",

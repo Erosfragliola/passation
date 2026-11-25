@@ -508,11 +508,6 @@
     "realisations": {
       "titre": "Past work"
     },
-    "elements": {
-      "titre": "Items to complete",
-      "message": "What is still missing from “{partie}”, for the next version",
-      "a_rediger": "Chapter to draft: information is still missing."
-    },
     "ameliorations": {
       "titre": "To improve",
       "resume": {
@@ -551,7 +546,8 @@
         "jugements": "Review the photo suggestions",
         "photo_equipe": "Add a team photo",
         "photo_activite": "Add a workshop photo",
-        "marche": "Run the market study"
+        "marche": "Run the market study",
+        "exercices": "Add the previous fiscal years"
       },
       "questions": {
         "anciennete_equipe": "Average employee tenure",

@@ -68,6 +68,9 @@ export function ameliorations({ etat, reponses = {}, placement = {}, ignores = [
   // Actions directes
   const action = (id, section, importance, act) => l.push({ id, genre: "action", titre: t(`memo.js.ameliorations.titres.${id}`), section, importance, action: act });
   if (!(etat?.equipe?.personnes || []).length) action("equipe", "organisation", "indispensable", "equipe");
+  // Fewer than three fiscal years in the income statement: a buyer reasons over three years
+  const annees = etat?.chiffres?.compte_resultat?.annees;
+  if (Array.isArray(annees) && annees.length && annees.length < 3) action("exercices", "finances", "indispensable", "comptes");
   if ((etat?.photos || []).some((p) => p.analyse && !p.decision)) action("jugements", null, "conseille", "photos");
   if (placement.equipe == null && (etat?.equipe?.personnes || []).length) action("photo_equipe", "organisation", "conseille", "photos");
   if (!(placement.activite || []).length) action("photo_activite", "activite", "conseille", "photos");
