@@ -852,6 +852,7 @@ function appliquerPresentation() {
 
 // ------------------------------------------------------------------ Panneau d'amélioration (titres courts, réponse sur place)
 let amelOuverte = null; // amélioration dépliée
+let amelTout = false; // false: improvements of the page on screen; true: all of them
 let focusAmel = null; // rang du titre à refocaliser après une action
 const faitesSession = []; // titres validés pendant la visite (« Fait ✓ »)
 const pageDe = (cle) => (cle ? diapos().findIndex((d) => d.dataset.section === cle || (d.dataset.sections || "").split(" ").includes(cle)) : 0);
@@ -945,8 +946,15 @@ function corpsAmelioration(item, rang) {
 /** Panneau de droite : améliorations (titres courts), puis les actions de la page affichée. */
 function panneau(d) {
   const s = d.dataset.section ? section(d.dataset.section) : null;
-  const l = listeAmeliorations();
-  const indisp = l.filter((x) => x.importance === "indispensable").length;
+  const toutes = listeAmeliorations();
+  // Improvements of the chapter shown on this page (its own pages, grouped pages, chapter merged onto it)
+  const cles = new Set([d.dataset.section, ...(d.dataset.sections || "").split(" "), ...[...d.querySelectorAll("[data-fusion]")].map((x) => x.dataset.fusion)].filter(Boolean));
+  const dePage = toutes.filter((x) => x.section && cles.has(x.section));
+  const l = amelTout ? toutes : dePage;
+  const indisp = toutes.filter((x) => x.importance === "indispensable").length;
+  const filtre = el("div", { class: "amel-filtre", role: "group", "aria-label": tr("memo.js.ameliorations.filtre") },
+    ...[[false, tr("memo.js.ameliorations.filtre_page", { n: dePage.length })], [true, tr("memo.js.ameliorations.filtre_tout", { n: toutes.length })]].map(([v, texte]) =>
+      el("button", { type: "button", "aria-pressed": String(amelTout === v), onclick: () => { amelTout = v; amelOuverte = null; panneau(diapos()[pres.idx]); } }, texte)));
   const ul = el("ul", { class: "ameliorations" }, ...l.map((item, k) => {
     const ouvert = amelOuverte === item.id, k1 = pageDe(item.section);
     return el("li", { class: `amel${item.importance === "indispensable" ? " indispensable" : ""}` },
@@ -963,8 +971,10 @@ function panneau(d) {
     el("h2", { class: "panneau-titre", text: titrePage(d) }),
     s ? el("p", { class: "panneau-etat" }, el("span", { class: `pastille-etat ${!s.redigee ? "a-faire" : "ok"}`, text: etatChap }), tr("memo.js.panneau.chapitre", { court: s.court })) : null,
     el("section", { class: "panneau-bloc", "aria-labelledby": "titre-ameliorer" }, el("h3", { id: "titre-ameliorer", text: tr("memo.js.ameliorations.titre") }),
-      el("p", { class: "petit amel-resume" }, l.length ? [tr("memo.js.ameliorations.resume", { n: l.length }), indisp ? tr("memo.js.ameliorations.resume_indispensables", { n: indisp }) : null].filter(Boolean).join(" · ") : tr("memo.js.panneau.rien"), relu ? ` · ${relu}` : ""),
+      el("p", { class: "petit amel-resume" }, toutes.length ? [tr("memo.js.ameliorations.resume", { n: toutes.length }), indisp ? tr("memo.js.ameliorations.resume_indispensables", { n: indisp }) : null].filter(Boolean).join(" · ") : tr("memo.js.panneau.rien"), relu ? ` · ${relu}` : ""),
       etat.sections.some((x) => x.redigee) ? el("button", { type: "button", class: "btn btn-contour btn-mini amel-relire", disabled: !etat.analyse_photos, onclick: (ev) => relire(ev.currentTarget) }, tr("memo.js.relecture.bouton")) : null,
+      toutes.length ? filtre : null,
+      !l.length && toutes.length ? el("p", { class: "petit amel-vide", text: tr("memo.js.ameliorations.rien_page") }) : null,
       ul,
       l.some((x) => x.importance === "indispensable") ? el("p", { class: "amel-legende petit" }, el("span", { class: "amel-point indisp", "aria-hidden": "true" }), tr("memo.js.ameliorations.indispensable")) : null),
     s ? el("section", { class: "panneau-bloc" }, el("h3", { text: tr("memo.js.panneau.actions") }),

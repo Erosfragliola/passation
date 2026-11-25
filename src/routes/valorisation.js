@@ -11,7 +11,7 @@ import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
 import { LIASSE, CLAUDE_QUOTAS } from "../config.js";
 import { quotaClaude } from "../lib/ratelimit.js";
-import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants, anneesAReprendre } from "../../public/js/champs-financiers.js";
+import { CHAMPS, CLES_CHAMPS, EXERCICES_MAX, manquants, manquantsResultat, exercicesRetenus, anneesAReprendre } from "../../public/js/champs-financiers.js";
 import { ETAPES } from "../../public/js/questionnaire.js";
 import { normaliserEquipe, photosOrphelines } from "../../public/js/equipe.js";
 import { claudeDisponible, lireLiasse, erreurClaudeConnue } from "../lib/claude.js";
@@ -79,7 +79,8 @@ async function vueChiffres(env, row) {
   const lectures = await env.DB.prepare("SELECT COUNT(*) AS n FROM uploads WHERE dossier_id = ?").bind(row.id).first();
   return {
     champs: CHAMPS, exercices: lignes,
-    manquants: Object.fromEntries(Object.entries(lignes).map(([a, l]) => [a, manquants(l)])),
+    // Before the latest complete fiscal year, only the income statement is required (exercicesRetenus)
+    manquants: ((d) => Object.fromEntries(Object.entries(lignes).map(([a, l]) => [a, d != null && Number(a) < d ? manquantsResultat(l) : manquants(l)])))(exercicesRetenus(lignes).dernier),
     controles: controles(row, lignes),
     lecture_automatique: claudeDisponible(env),
     lectures_restantes: Math.max(0, LIASSE.lecturesMaxParDossier - (lectures?.n ?? 0)),
@@ -196,6 +197,9 @@ export async function cleDuCalcul(env, row) {
   const entreprise = JSON.parse(row.company_json || "{}");
   const { entree, H } = assemblerEntree(entreprise, await lireChiffres(env, row.id), await lireReponses(env, row.id), HYPOTHESES_FR);
   const { erreurs, ...e } = entree;
+  // A fiscal year with a complete balance sheet is written as before 25/11/2026 (no bilan_complet): the key of the
+  // files already approved stays the same; only an earlier fiscal year now used without its balance sheet changes it
+  e.exercices = e.exercices.map(({ bilan_complet, ...x }) => (bilan_complet === false ? { ...x, bilan_complet } : x));
   return empreinte(JSON.stringify({ e, H, m: MULTIPLES.version }));
 }
 

@@ -1,6 +1,6 @@
 // Assembles the valuation engine's input from the file: approved figures, questionnaire answers,
 // owner's settings (size premium, discounts, weighting, changed assumptions). Pure and tested.
-import { exerciceValide, manquants } from "../../public/js/champs-financiers.js";
+import { exerciceValide, exercicesRetenus } from "../../public/js/champs-financiers.js";
 import { secteurPour } from "./express.js";
 import { erreursReponses } from "./validation.js";
 
@@ -19,14 +19,10 @@ export function assemblerEntree(entreprise, lignes, reponses, H) {
   const reg = r.reglages || {};
   // Only complete fiscal years enter the calculation: a required item that is missing or not approved is never
   // counted as zero (an entered and approved zero is a real zero). Fiscal years left out are flagged.
-  const exercices = [], exercices_exclus = [];
-  for (const [annee, l] of Object.entries(lignes || {})) {
-    const ex = { annee: Number(annee), ...exerciceValide(l) };
-    if (!Number.isFinite(ex.chiffre_affaires)) continue; // nothing usable approved for this fiscal year
-    const manque = manquants(l);
-    if (manque.length) exercices_exclus.push({ annee: ex.annee, manquants: manque });
-    else exercices.push(ex);
-  }
+  // The latest fiscal year used is complete; an earlier one needs only its income statement (exercicesRetenus).
+  const choix = exercicesRetenus(lignes);
+  const exercices = choix.retenus.map(({ annee, bilan_complet }) => ({ annee, ...exerciceValide(lignes[annee]), bilan_complet }));
+  const exercices_exclus = choix.exclus;
   exercices.sort((a, b) => a.annee - b.annee);
   exercices_exclus.sort((a, b) => a.annee - b.annee);
 

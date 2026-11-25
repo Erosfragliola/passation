@@ -121,8 +121,10 @@ export function construireDatapack({ entreprise, entree, H, resultat, validation
     // sinon « Non déterminable » (jamais de charge manquante comptée à zéro).
     const det = ["achats_consommes", "charges_externes", "charges_personnel"].map((k) => L(k, i)).join(",");
     cp.ecrire(rEbe, colA(i), { f: `IF(AND(ISNUMBER(${L("chiffre_affaires", i)}),COUNT(${det})=3),${L("chiffre_affaires", i)}+${L("autres_produits", i)}-${L("achats_consommes", i)}-${L("charges_externes", i)}-${L("impots_taxes", i)}-${L("charges_personnel", i)},IF(ISNUMBER(${L("ebe", i)}),${L("ebe", i)},"${tr("serveur.datapack.non_determinable")}"))`, s: S.eurosGras });
-    cp.ecrire(rBfr, colA(i), { f: `${L("stocks", i)}+${L("creances_clients", i)}-${L("dettes_fournisseurs", i)}-${L("dettes_fiscales_sociales", i)}`, s: S.euros });
-    cp.ecrire(rJours, colA(i), { f: `IF(${L("chiffre_affaires", i)}>0,${cp.ref(rBfr, colA(i))}/${L("chiffre_affaires", i)}*365,"")`, s: S.nombre });
+    // Earlier fiscal year used for its income statement only: no working capital if an item is missing (never zero)
+    const postes = ["stocks", "creances_clients", "dettes_fournisseurs", "dettes_fiscales_sociales"].map((k) => L(k, i)).join(",");
+    cp.ecrire(rBfr, colA(i), { f: `IF(COUNT(${postes})=4,${L("stocks", i)}+${L("creances_clients", i)}-${L("dettes_fournisseurs", i)}-${L("dettes_fiscales_sociales", i)},"")`, s: S.euros });
+    cp.ecrire(rJours, colA(i), { f: `IF(AND(${L("chiffre_affaires", i)}>0,ISNUMBER(${cp.ref(rBfr, colA(i))})),${cp.ref(rBfr, colA(i))}/${L("chiffre_affaires", i)}*365,"")`, s: S.nombre });
   });
   const CPx = (rr, i) => `${X("comptes")}${cp.ref(rr, colA(i))}`;
 

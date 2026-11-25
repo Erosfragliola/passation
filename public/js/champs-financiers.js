@@ -58,6 +58,34 @@ export function manquants(lignes) {
   // The approved published EBITDA replaces the detail of the expenses
   return CHAMPS.filter((c) => c.obligatoire && !ok(c.cle) && !(DETAIL_CHARGES.has(c.cle) && ok("ebe"))).map((c) => c.cle);
 }
+/** Required income-statement fields still missing or not approved (enough for a fiscal year before the latest). */
+export function manquantsResultat(lignes) {
+  const resultat = new Set(CHAMPS.filter((c) => c.groupe === "resultat").map((c) => c.cle));
+  return manquants(lignes).filter((cle) => resultat.has(cle));
+}
+
+/**
+ * Fiscal years used by the calculation (single rule, shared by the engine input, the valuation page and the file page):
+ *   - the latest one used must be complete (income statement and balance sheet): net debt, working capital and net
+ *     assets are read there; a more recent incomplete fiscal year is left out;
+ *   - an earlier fiscal year needs only its income statement (revenue, expenses or published EBITDA): a buyer reasons
+ *     over three years of activity; its balance sheet, if incomplete, is never counted (bilan_complet: false).
+ * @param lignes { [annee]: { [cle]: { valeur, valide, source } } }
+ * @returns { dernier, retenus: [{ annee, bilan_complet }], exclus: [{ annee, manquants }] } in increasing order
+ */
+export function exercicesRetenus(lignes = {}) {
+  const ok = (l) => l?.chiffre_affaires?.valide && Number.isFinite(l.chiffre_affaires.valeur);
+  const annees = Object.keys(lignes || {}).map(Number).filter((a) => Number.isInteger(a) && ok(lignes[a])).sort((a, b) => b - a);
+  const dernier = annees.find((a) => manquants(lignes[a]).length === 0) ?? null;
+  const retenus = [], exclus = [];
+  for (const a of annees) {
+    const complet = manquants(lignes[a]).length === 0;
+    if (dernier != null && a === dernier) retenus.push({ annee: a, bilan_complet: true });
+    else if (dernier != null && a < dernier && !manquantsResultat(lignes[a]).length) retenus.push({ annee: a, bilan_complet: complet });
+    else exclus.push({ annee: a, manquants: dernier != null && a < dernier ? manquantsResultat(lignes[a]) : manquants(lignes[a]) });
+  }
+  return { dernier, retenus: retenus.reverse(), exclus: exclus.reverse() };
+}
 
 /**
  * Fiscal years requested from the owner (single rule, shared by the guided steps, the file page, the valuation
@@ -75,10 +103,12 @@ export function exercicesAttendus(lignes = {}) {
   const dernier = annees[0] ?? null;
   if (dernier == null) return { dernier: null, dernier_complet: false, recommandes: [], recommandes_manquants: [], anciens: [] };
   const complet = (a) => Boolean(lignes[a]) && manquants(lignes[a]).length === 0;
+  // An earlier fiscal year needs only its income statement (exercicesRetenus)
+  const resultatComplet = (a) => Boolean(lignes[a]) && manquantsResultat(lignes[a]).length === 0;
   const recommandes = [dernier - 1, dernier - 2];
   return {
     dernier, dernier_complet: complet(dernier), recommandes,
-    recommandes_manquants: recommandes.filter((a) => !complet(a)),
+    recommandes_manquants: recommandes.filter((a) => !resultatComplet(a)),
     anciens: annees.filter((a) => a < dernier - 2),
   };
 }

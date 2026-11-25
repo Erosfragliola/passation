@@ -5,6 +5,10 @@ import { describe, it, expect } from "vitest";
 import { assemblerEntree } from "../src/valuation/entree.js";
 import { valorisationApprofondie } from "../src/valuation/approfondie.js";
 import { construireDatapack } from "../src/documents/datapack.js";
+import { exercicesAttendus } from "../public/js/champs-financiers.js";
+import { cleDuCalcul } from "../src/routes/valorisation.js";
+import { empreinte } from "../src/lib/auth.js";
+import MULTIPLES from "../src/data/multiples.json";
 import HYP from "../src/data/hypotheses.json";
 
 const valide = (o) => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, { valeur: v, valide: true, source: "dirigeant" }]));
@@ -90,5 +94,79 @@ describe("incomplete fiscal years (FIN-01)", () => {
     expect(calc.lire("1.1 Comptes", 2, 2)).not.toBe(2024);
     proche(calc.valeur("2.2 Multiples", "B3"), 150_000);
     proche(calc.valeur("2.2 Multiples", "C8"), 800_000);
+  });
+});
+
+// 25/11/2026: an earlier fiscal year needs only its income statement (the owner had entered 2023 and 2024 without
+// their balance sheets: both were left out, and the memorandum showed 2025 alone).
+// 2024: EBITDA = 900,000 − 360,000 − 180,000 − 18,000 − 222,000 = 120,000 (detail of expenses, no balance sheet)
+// 2023: published EBITDA 100,000 approved (no balance sheet)
+// Normalized EBITDA (average) = (100,000 + 120,000 + 150,000) / 3 = 123,333.33
+// Working capital: 2025 only (the others have no balance sheet) = 50,000, i.e. 50,000 / 1,000,000 × 365 = 18.25 days
+// Shares = 123,333.33 × (4; 5.6; 7) − 40,000 = 453,333.33; 650,666.67; 823,333.33
+describe("earlier fiscal years used for their income statement", () => {
+  const resultat2024 = valide({ chiffre_affaires: 900_000, achats_consommes: 360_000, charges_externes: 180_000, impots_taxes: 18_000, charges_personnel: 222_000 });
+  const publie2023 = valide({ chiffre_affaires: 800_000, ebe: 100_000 });
+  const trois = { 2023: publie2023, 2024: resultat2024, 2025: complet2025 };
+
+  it("the three fiscal years are used; only 2025 has a complete balance sheet", () => {
+    const { entree } = calcul(trois);
+    expect(entree.exercices.map((x) => [x.annee, x.bilan_complet])).toEqual([[2023, false], [2024, false], [2025, true]]);
+    expect(entree.exercices_exclus).toEqual([]);
+  });
+  it("normalized EBITDA over three years; working capital and net debt from 2025 only (never a missing item as zero)", () => {
+    const { r } = calcul(trois);
+    expect(r.annees).toEqual([2023, 2024, 2025]);
+    proche(r.ebe_normatif.valeur, 123_333.33);
+    expect(r.bfr.normatif.par_exercice.map((x) => x.annee)).toEqual([2025]);
+    proche(r.bfr.normatif.jours, 18.25);
+    expect(r.dette_nette.total).toBe(40_000);
+    proche(r.multiples.titres.bas, 453_333.33);
+    proche(r.multiples.titres.central, 650_666.67);
+    proche(r.multiples.titres.haut, 823_333.33);
+  });
+  it("the latest fiscal year must stay complete: 2025 without balance sheet → 2025 left out, 2024 cannot become the latest", () => {
+    const sansBilan = valide({ chiffre_affaires: 1_000_000, achats_consommes: 400_000, charges_externes: 200_000, impots_taxes: 20_000, charges_personnel: 230_000 });
+    const { entree, r } = calcul({ 2024: resultat2024, 2025: sansBilan });
+    expect(entree.exercices).toEqual([]);
+    expect(entree.exercices_exclus.map((x) => x.annee)).toEqual([2024, 2025]);
+    expect(r.statut).toBe("chiffres_absents");
+  });
+  it("an earlier fiscal year with an expense missing is still left out, listing only income-statement lines", () => {
+    const l = structuredClone(resultat2024); delete l.charges_externes;
+    const { entree } = calcul({ 2024: l, 2025: complet2025 });
+    expect(entree.exercices_exclus).toEqual([{ annee: 2024, manquants: ["charges_externes"] }]);
+  });
+  it("expected fiscal years: 2023 and 2024 count as done with their income statement", () => {
+    expect(exercicesAttendus(trois).recommandes_manquants).toEqual([]);
+  });
+  it("datapack: three columns; no working capital for 2023 and 2024; same results as the engine", () => {
+    const { entree, H, r } = calcul(trois);
+    const wb = construireDatapack({ entreprise: { nom: "Exemple", siren: "000000000" }, entree, H, resultat: r, genereLe: new Date("2026-11-25") });
+    const calc = wb.calculer();
+    expect([1, 2, 3].map((c) => calc.lire("1.1 Comptes", 2, c))).toEqual([2023, 2024, 2025]);
+    proche(calc.valeur("2.2 Multiples", "B3"), 123_333.33);
+    proche(calc.valeur("2.2 Multiples", "C8"), 650_666.67);
+  });
+});
+
+describe("key of the approved figures stays the same for files already approved (25/11/2026)", () => {
+  // Fake D1: the two reads of cleDuCalcul (financial lines, answers)
+  const envDe = (lignes) => ({ DB: { prepare: (sql) => ({ bind: () => ({ all: async () => ({ results: sql.includes("FROM financials")
+    ? Object.entries(lignes).flatMap(([y, l]) => Object.entries(l).map(([field, c]) => ({ year: Number(y), field, value: c.valeur, source: c.source, validated: c.valide ? 1 : 0 })))
+    : [] }) }) }) } });
+  const row = { id: "d1", company_json: JSON.stringify({ section_naf: "C" }) };
+  it("complete fiscal years: same key as the rule before 25/11/2026 (no « to approve again » after the update)", async () => {
+    const lignes = { 2025: complet2025 };
+    // Key as calculated before: fiscal years without bilan_complet
+    const { entree, H } = assemblerEntree({ section_naf: "C" }, lignes, {}, HYP);
+    const { erreurs, ...e } = entree;
+    e.exercices = e.exercices.map(({ bilan_complet, ...x }) => x);
+    expect(await cleDuCalcul(envDe(lignes), row)).toBe(await empreinte(JSON.stringify({ e, H, m: MULTIPLES.version })));
+  });
+  it("an earlier fiscal year now used without its balance sheet changes the key (the value changes: to approve again)", async () => {
+    const avant = await cleDuCalcul(envDe({ 2025: complet2025 }), row);
+    const apres = await cleDuCalcul(envDe({ 2024: valide({ chiffre_affaires: 800_000, ebe: 100_000 }), 2025: complet2025 }), row);
+    expect(apres).not.toBe(avant);
   });
 });

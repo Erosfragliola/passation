@@ -856,6 +856,10 @@ nav.etapes.onglets a { padding: 8px 14px; }
 /* Panneau d'amélioration : titres repliés, réponse dépliée sur place */
 .amel-resume { margin: 0; }
 .amel-relire { justify-self: start; }
+.amel-filtre { display: inline-flex; gap: 4px; padding: 3px; border-radius: 999px; background: #F3EBDD; justify-self: start; max-width: 100%; }
+.amel-filtre button { border: 0; background: none; border-radius: 999px; padding: 6px 12px; font: 500 13.5px/1.2 var(--sans); color: var(--pierre-texte); cursor: pointer; white-space: nowrap; }
+.amel-filtre button[aria-pressed="true"] { background: #FFFDF8; color: var(--espresso); box-shadow: 0 1px 2px rgba(35, 30, 24, .12); }
+.amel-vide { margin: 0; color: var(--pierre-texte); }
 .ameliorations { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; width: 100%; min-width: 0; }
 .amel { border-radius: 14px; background: #F3EBDD; }
 .amel > h4 { margin: 0; font: inherit; }

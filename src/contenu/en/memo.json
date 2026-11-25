@@ -547,7 +547,8 @@
         "photo_equipe": "Add a team photo",
         "photo_activite": "Add a workshop photo",
         "marche": "Run the market study",
-        "exercices": "Add the previous fiscal years"
+        "exercices": "Add the previous fiscal years",
+        "exercices_incomplets": "Complete the accounts of {annees}"
       },
       "questions": {
         "anciennete_equipe": "Average employee tenure",
@@ -569,7 +570,11 @@
         "marche": "Run the study",
         "equipe": "Present the team",
         "comptes": "Complete your accounts"
-      }
+      },
+      "filtre": "Improvements to show",
+      "filtre_page": "This page ({n})",
+      "filtre_tout": "All ({n})",
+      "rien_page": "Nothing to improve on this page. The other improvements are under “All”."
     },
     "relecture": {
       "bouton": "Critical review",

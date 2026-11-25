@@ -547,7 +547,8 @@
         "photo_equipe": "Ajouter une photo de l'équipe",
         "photo_activite": "Ajouter une photo de l'atelier",
         "marche": "Lancer l'étude de marché",
-        "exercices": "Ajouter les exercices précédents"
+        "exercices": "Ajouter les exercices précédents",
+        "exercices_incomplets": "Compléter les comptes {annees}"
       },
       "questions": {
         "anciennete_equipe": "Ancienneté moyenne des salariés",
@@ -569,7 +570,11 @@
         "marche": "Lancer l'étude",
         "equipe": "Présenter l'équipe",
         "comptes": "Compléter vos comptes"
-      }
+      },
+      "filtre": "Améliorations à afficher",
+      "filtre_page": "Cette page ({n})",
+      "filtre_tout": "Toutes ({n})",
+      "rien_page": "Rien à améliorer sur cette page. Les autres améliorations sont dans « Toutes »."
     },
     "relecture": {
       "bouton": "Relecture critique",

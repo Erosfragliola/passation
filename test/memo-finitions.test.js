@@ -89,6 +89,12 @@ describe("panel: fewer than three fiscal years", () => {
   it("one fiscal year: « Add the previous fiscal years », essential, towards the figures", () => {
     expect(item([2025])).toMatchObject({ genre: "action", section: "finances", importance: "indispensable", action: "comptes" });
   });
+  it("fiscal years entered but left out: « Complete the accounts of 2023, 2024 » instead", () => {
+    const e = { ...etat([2025]), chiffres: { compte_resultat: { annees: [2025] }, exercices_exclus: [2023, 2024] } };
+    const l = ameliorations({ etat: e, reponses: {}, placement: { activite: ["x"], equipe: 0 } });
+    expect(l.find((x) => x.id === "exercices")).toBeUndefined();
+    expect(l.find((x) => x.id === "exercices_incomplets")).toMatchObject({ titre: "Compléter les comptes 2023, 2024", importance: "indispensable", action: "comptes" });
+  });
   it("three fiscal years, or none yet: no item", () => {
     expect(item([2023, 2024, 2025])).toBeUndefined();
     expect(item([])).toBeUndefined();

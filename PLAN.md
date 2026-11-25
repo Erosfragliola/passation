@@ -702,3 +702,11 @@ model to be defined later by the user (business plan in progress).
   - Owner's pay and rent adjustments carry their basis, written by the code from the owner's amounts, in the adjusted
     EBITDA table and in the data given to Claude (it wrote « justification : à compléter »).
   - Panel: « Ajouter les exercices précédents » (essential) when fewer than three fiscal years are presented.
+  - An earlier fiscal year now needs only its income statement (revenue, expenses or published EBITDA): the owner's
+    2023 and 2024, entered without their balance sheets, were left out and the memorandum showed 2025 alone. The
+    latest fiscal year used stays complete; working capital and its average skip a year whose balance sheet is
+    incomplete (never a missing item as zero, in the engine and in the datapack formulas). The key of the approved
+    figures is unchanged for files whose fiscal years are complete (no « to approve again » after the update).
+  - Panel: « Compléter les comptes 2023, 2024 » when entered fiscal years are still left out; « Cette page / Toutes »
+    filter (the improvements of the page on screen by default).
+  - Review: Claude is asked for corrections no longer than the passage they replace.

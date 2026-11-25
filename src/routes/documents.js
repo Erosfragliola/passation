@@ -198,7 +198,8 @@ async function lireMemo(env, row) {
     relecture: remarquesProposables(reponses.relecture, lues),
     marche: reponses.marche ? { ...reponses.marche, essais_restants: Math.max(0, MARCHE.etudesMaxParDossier - (reponses.marche.essais || 0)) } : { essais_restants: MARCHE.etudesMaxParDossier },
     // Chiffres calculés par le code : compte de résultat, EBE retraité, endettement, clients, périmètre, sources
-    chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources },
+    chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources,
+      exercices_exclus: (entree?.exercices_exclus || []).map((x) => x.annee) },
     memo: doc ? { id: doc.id, version: doc.version, cree_le: doc.created_at } : null,
     parties: PARTIES_MEMO,
     sections: lues,
