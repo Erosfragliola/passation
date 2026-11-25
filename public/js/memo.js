@@ -2,7 +2,7 @@
 const $ = (s) => document.querySelector(s);
 import { CARTE } from "/js/carte-france.js";
 import { kEuros, montant, pourcent, ratioTableau, multiple, moisAnnee, periode, periodeExercices, placementPhotos } from "/js/memo-format.js";
-import { surfaceCouverte, planFusion, numeroter, SEUIL_PAGE_VIDE } from "/js/memo-pages.js";
+import { surfaceCouverte, planFusion, numeroter } from "/js/memo-pages.js";
 import { ameliorations, reponsePour } from "/js/ameliorations.js";
 import { libelleRole, libelleApres, initiales, parcoursDeSecours, transitionEquipe } from "/js/equipe.js";
 import { listePhotos } from "/js/photos-fiches.js";
@@ -392,7 +392,7 @@ function ebeRetraite() {
     lignes.push({ cle: r.cle, libelle: r.libelle, type: "montant", valeurs: r.valeurs, renvoi, vide: "tiret" });
   }
   lignes.push({ cle: "ebe_retraite", libelle: tr("memo.js.ebe.retraite"), type: "total", valeurs: t.ebe_retraite }, { cle: "ca", libelle: tr("demarrer.js.chiffres.ca"), type: "montant", valeurs: t.annees.map((a) => serie("chiffre_affaires")[cr().annees.indexOf(a)] ?? null) }, { cle: "marge", libelle: tr("memo.js.ebe.marge_retraitee"), type: "ratio", valeurs: t.marge_retraitee });
-  const normatif = t.normatif && ok(t.normatif.valeur) ? tr("memo.js.ebe.normatif", { montant: montant(t.normatif.valeur), base: t.normatif.mode === "dernier" ? tr("dossier.formats.exercice", { annee: t.normatif.annees.at(-1) }) : tr("valorisation.js.moyenne", { annees: t.normatif.annees.join(", ") }) }) : null;
+  const normatif = t.normatif && ok(t.normatif.valeur) ? tr("memo.js.ebe.normatif", { montant: montant(t.normatif.valeur), base: t.normatif.mode === "dernier" || t.normatif.annees.length === 1 ? tr("dossier.formats.exercice", { annee: t.normatif.annees.at(-1) }) : tr("valorisation.js.moyenne", { annees: t.normatif.annees.join(", ") }) }) : null;
   return { table: tableau({ annees: t.annees, lignes }), justifs, normatif, vide: !t.retraitements.length, pont: pontEbe(t) };
 }
 /** Pont (cascade) de l'EBE comptable à l'EBE retraité, dernier exercice ; chaque retraitement est une marche. */
@@ -852,6 +852,7 @@ function appliquerPresentation() {
 
 // ------------------------------------------------------------------ Panneau d'amélioration (titres courts, réponse sur place)
 let amelOuverte = null; // amélioration dépliée
+let amelTout = false; // false: improvements of the page on screen; true: all of them
 let focusAmel = null; // rang du titre à refocaliser après une action
 const faitesSession = []; // titres validés pendant la visite (« Fait ✓ »)
 const pageDe = (cle) => (cle ? diapos().findIndex((d) => d.dataset.section === cle || (d.dataset.sections || "").split(" ").includes(cle)) : 0);
@@ -945,8 +946,15 @@ function corpsAmelioration(item, rang) {
 /** Panneau de droite : améliorations (titres courts), puis les actions de la page affichée. */
 function panneau(d) {
   const s = d.dataset.section ? section(d.dataset.section) : null;
-  const l = listeAmeliorations();
-  const indisp = l.filter((x) => x.importance === "indispensable").length;
+  const toutes = listeAmeliorations();
+  // Improvements of the chapter shown on this page (its own pages, grouped pages, chapter merged onto it)
+  const cles = new Set([d.dataset.section, ...(d.dataset.sections || "").split(" "), ...[...d.querySelectorAll("[data-fusion]")].map((x) => x.dataset.fusion)].filter(Boolean));
+  const dePage = toutes.filter((x) => x.section && cles.has(x.section));
+  const l = amelTout ? toutes : dePage;
+  const indisp = toutes.filter((x) => x.importance === "indispensable").length;
+  const filtre = el("div", { class: "amel-filtre", role: "group", "aria-label": tr("memo.js.ameliorations.filtre") },
+    ...[[false, tr("memo.js.ameliorations.filtre_page", { n: dePage.length })], [true, tr("memo.js.ameliorations.filtre_tout", { n: toutes.length })]].map(([v, texte]) =>
+      el("button", { type: "button", "aria-pressed": String(amelTout === v), onclick: () => { amelTout = v; amelOuverte = null; panneau(diapos()[pres.idx]); } }, texte)));
   const ul = el("ul", { class: "ameliorations" }, ...l.map((item, k) => {
     const ouvert = amelOuverte === item.id, k1 = pageDe(item.section);
     return el("li", { class: `amel${item.importance === "indispensable" ? " indispensable" : ""}` },
@@ -963,8 +971,10 @@ function panneau(d) {
     el("h2", { class: "panneau-titre", text: titrePage(d) }),
     s ? el("p", { class: "panneau-etat" }, el("span", { class: `pastille-etat ${!s.redigee ? "a-faire" : "ok"}`, text: etatChap }), tr("memo.js.panneau.chapitre", { court: s.court })) : null,
     el("section", { class: "panneau-bloc", "aria-labelledby": "titre-ameliorer" }, el("h3", { id: "titre-ameliorer", text: tr("memo.js.ameliorations.titre") }),
-      el("p", { class: "petit amel-resume" }, l.length ? [tr("memo.js.ameliorations.resume", { n: l.length }), indisp ? tr("memo.js.ameliorations.resume_indispensables", { n: indisp }) : null].filter(Boolean).join(" · ") : tr("memo.js.panneau.rien"), relu ? ` · ${relu}` : ""),
+      el("p", { class: "petit amel-resume" }, toutes.length ? [tr("memo.js.ameliorations.resume", { n: toutes.length }), indisp ? tr("memo.js.ameliorations.resume_indispensables", { n: indisp }) : null].filter(Boolean).join(" · ") : tr("memo.js.panneau.rien"), relu ? ` · ${relu}` : ""),
       etat.sections.some((x) => x.redigee) ? el("button", { type: "button", class: "btn btn-contour btn-mini amel-relire", disabled: !etat.analyse_photos, onclick: (ev) => relire(ev.currentTarget) }, tr("memo.js.relecture.bouton")) : null,
+      toutes.length ? filtre : null,
+      !l.length && toutes.length ? el("p", { class: "petit amel-vide", text: tr("memo.js.ameliorations.rien_page") }) : null,
       ul,
       l.some((x) => x.importance === "indispensable") ? el("p", { class: "amel-legende petit" }, el("span", { class: "amel-point indisp", "aria-hidden": "true" }), tr("memo.js.ameliorations.indispensable")) : null),
     s ? el("section", { class: "panneau-bloc" }, el("h3", { text: tr("memo.js.panneau.actions") }),
@@ -1035,32 +1045,14 @@ function couvertureDe(d) {
 function partiesDes(l) { let partie = 0; return l.map((d) => { if (d.classList.contains("im-ouverture")) partie = Number(d.dataset.partie); return partie; }); }
 
 /**
- * Chapitres sans donnée (non rédigés et sous le seuil sur toutes leurs pages) : retirés et regroupés, avec les demandes
- * « à compléter » des chapitres de la partie, sur une page « Éléments à compléter » en fin de partie. Puis chaque page
- * sous le seuil (16 % de surface couverte) est fusionnée avec sa voisine de la même partie, si tout tient.
+ * Chaque page sous le seuil (16 % de surface couverte) est fusionnée avec sa voisine de la même partie, si tout tient.
+ * Le document ne contient aucune page de demandes au dirigeant : ce qui reste à compléter est listé dans le panneau
+ * « À améliorer » (décision du 25/11/2026 : le PDF part chez les repreneurs). Un chapitre sans donnée reste à sa place,
+ * marqué « À compléter ».
  */
 function regrouperPages() {
-  let l = diapos(), parties = partiesDes(l);
-  const couv = new Map(l.filter(estFusionnable).map((d) => [d, couvertureDe(d)]));
-  for (const pt of etat.parties || []) {
-    const pages = l.filter((d, k) => parties[k] === pt.n && d.classList.contains("im-page") && d.querySelector(".im-num"));
-    if (!pages.length) continue;
-    const secs = etat.sections.filter((x) => x.partie === pt.n);
-    const vides = secs.filter((x) => !x.redigee && pages.some((d) => d.dataset.section === x.cle) && pages.filter((d) => d.dataset.section === x.cle).every((d) => (couv.get(d) ?? 1) < SEUIL_PAGE_VIDE));
-    const vus = new Set();
-    const items = [...vides.map((x) => [x.court, tr("memo.js.elements.a_rediger")]), ...secs.filter((x) => x.redigee).flatMap((x) => (x.a_completer || []).map((d) => [x.court, d]))]
-      .filter(([, d]) => { const k = String(d).trim().toLowerCase(); if (vus.has(k) && d !== tr("memo.js.elements.a_rediger")) return false; vus.add(k); return true; });
-    for (const x of vides) for (const d of pages.filter((d) => d.dataset.section === x.cle)) d.remove();
-    if (!items.length) continue;
-    const derniere = pages.filter((d) => d.isConnected).at(-1) || l.find((d) => d.classList.contains("im-ouverture") && d.dataset.partie === String(pt.n));
-    const pe = page({ titre: tr("memo.js.elements.titre"), message: tr("memo.js.elements.message", { partie: pt.titre }), classe: "im-elements",
-      contenu: [el("ul", { class: "im-elements-liste", "data-decoupable": "" }, ...items.map(([sec, txt]) => el("li", {}, el("small", { text: sec }), el("span", { text: txt }))))],
-      sources: [SOURCES.dirigeant] });
-    if (vides.length) { pe.dataset.sections = vides.map((x) => x.cle).join(" "); for (const x of vides) pe.querySelector(".im-zone").append(el("span", { id: `s-${x.cle}`, class: "im-ancre" })); }
-    derniere?.after(pe);
-  }
-  l = diapos(); parties = partiesDes(l);
-  const infos = l.map((d, k) => ({ partie: parties[k], fusionnable: estFusionnable(d), couverture: estFusionnable(d) ? (couv.get(d) ?? couvertureDe(d)) : 1 }));
+  const l = diapos(), parties = partiesDes(l);
+  const infos = l.map((d, k) => ({ partie: parties[k], fusionnable: estFusionnable(d), couverture: estFusionnable(d) ? couvertureDe(d) : 1 }));
   for (const [a, b] of planFusion(infos)) fusionner(l[a], l[b]);
 }
 

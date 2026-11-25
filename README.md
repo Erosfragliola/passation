@@ -131,7 +131,7 @@ folder, function and variable names) is in French, as written by the team (for e
 npm test
 ```
 
-**633 Vitest tests** (47 files), run again by GitHub Actions (Node 22, Ubuntu 24.04) on every push. D1 is simulated
+**654 Vitest tests** (48 files), run again by GitHub Actions (Node 22, Ubuntu 24.04) on every push. D1 is simulated
 with in-memory SQLite and the real migrations; R2, Claude and the public APIs are simulated.
 
 - **Valuation**: three methods, EV-to-equity bridge, edge cases (negative EBITDA, missing accounts, a single fiscal

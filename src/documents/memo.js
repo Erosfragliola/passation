@@ -27,8 +27,8 @@ export const PARTIES_MEMO = [
  */
 export const SECTIONS_MEMO = [
   { cle: "synthese", titre: T, court: T, partie: 1, point_fort: null,
-    consigne: "Rédige la synthèse (executive summary). Un paragraphe d'ouverture : qui est l'entreprise, son métier, depuis quand, où, sa taille (chiffre d'affaires, effectif), son marché. Puis 3 à 4 puces sur ce qui fait l'intérêt du dossier pour un repreneur, chacune appuyée sur un fait ou un chiffre fourni. Termine par une phrase sur l'opération (part cédée, motif, accompagnement). Les six points forts numérotés sont affichés à part : ne les recopie pas.",
-    donnees: ["entreprise", "activite", "atouts", "operation", "perimetre", "indicateurs", "clients", "marche_resume"] },
+    consigne: "Rédige la synthèse (executive summary). Un paragraphe d'ouverture : qui est l'entreprise, son métier, depuis quand, où, sa taille (chiffre d'affaires, effectif), son marché. Puis 3 à 4 puces sur ce qui fait l'intérêt du dossier pour un repreneur, chacune appuyée sur un fait ou un chiffre fourni. Termine par une phrase sur l'opération (part cédée, motif, accompagnement). Les six points forts numérotés sont affichés à part : ne les recopie pas. La synthèse résume les chapitres détaillés, qui signalent eux-mêmes ce qui manque : n'écris jamais « À compléter » dans la synthèse (omets ce qui n'est pas fourni) et laisse a_completer vide.",
+    donnees: ["entreprise", "activite", "atouts", "operation", "perimetre", "indicateurs", "clients", "marche_resume"], demandes: false },
   { cle: "histoire", titre: T, court: T, partie: 2, point_fort: null,
     consigne: "Retrace le développement de l'entreprise dans l'ordre chronologique : création, implantations, changements de forme ou de dirigeant, agrandissements, étapes marquantes. Une puce par étape, commençant par l'année en gras. Termine par ce que cette histoire dit de l'entreprise aujourd'hui (ancrage, continuité, réputation), sans extrapoler.",
     donnees: ["entreprise", "frise", "activite", "faits:histoire,implantation"] },
@@ -113,11 +113,20 @@ export function tableauEbeRetraite(entree, resultat) {
   const pont = resultat?.pont_ebe || [];
   const annees = pont.map((p) => p.annee);
   const ca = annees.map((a) => exercicesDe(entree).find((e) => e.annee === a)?.chiffre_affaires ?? null);
+  // Owner's pay and rent: the basis of the adjustment, written by the code from the owner's amounts (never by Claude)
+  const rt = entree?.retraitements || {};
+  const base = {
+    dirigeant: ok(rt.remuneration_dirigeant_reelle) && ok(rt.remuneration_normative)
+      ? tr("serveur.memo.justifications.dirigeant", { reelle: montant(rt.remuneration_dirigeant_reelle), normative: montant(rt.remuneration_normative) }) : null,
+    loyer: ok(rt.loyer_paye) && ok(rt.loyer_marche)
+      ? tr("serveur.memo.justifications.loyer", { paye: montant(rt.loyer_paye), marche: montant(rt.loyer_marche) }) : null,
+  };
   const natures = [];
   for (const p of pont) for (const l of p.lignes) {
     const n = natures.find((x) => x.cle === l.cle && x.libelle === l.libelle);
-    if (!n) natures.push({ cle: l.cle, libelle: l.libelle, justification: l.justification || null });
-    else if (!n.justification && l.justification) n.justification = l.justification;
+    const justification = l.justification || base[l.cle] || null;
+    if (!n) natures.push({ cle: l.cle, libelle: l.libelle, justification });
+    else if (!n.justification && justification) n.justification = justification;
   }
   const retraitements = natures.map((n) => ({ ...n, valeurs: pont.map((p) => {
     const l = p.lignes.filter((x) => x.cle === n.cle && x.libelle === n.libelle);
@@ -259,7 +268,7 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
     else if (cle === "equipe") { const l = equipePourClaude(reponses.equipe); if (l.length) d.equipe_dirigeante = l; }
     else if (cle === "indicateurs") d.indicateurs_calcules = ch.indicateurs;
     else if (cle === "compte_resultat") d.compte_de_resultat = { annees: ch.cr.annees, exercices_consecutifs: ch.cr.consecutifs, lignes: ch.cr.lignes.map((l) => ({ libelle: l.libelle, valeurs: l.valeurs.map((v) => (v == null ? null : l.type === "ratio" ? pourcent(v, { signe: l.cle === "croissance" }) : montant(v))) })) };
-    else if (cle === "ebe_retraite") d.passage_ebe_comptable_ebe_retraite = { annees: ch.ebeR.annees, ebe_comptable: ch.ebeR.ebe_comptable.map(montant), retraitements: ch.ebeR.retraitements.map((r) => ({ nature: r.libelle, montants: r.valeurs.map((v) => (v == null ? null : montant(v))) })), ebe_retraite: ch.ebeR.ebe_retraite.map(montant), justifications: (reponses.retraitements?.exceptionnels || []).map((e) => ({ annee: e.annee, libelle: e.libelle, justification: e.justification })) };
+    else if (cle === "ebe_retraite") d.passage_ebe_comptable_ebe_retraite = { annees: ch.ebeR.annees, ebe_comptable: ch.ebeR.ebe_comptable.map(montant), retraitements: ch.ebeR.retraitements.map((r) => ({ nature: r.libelle, montants: r.valeurs.map((v) => (v == null ? null : montant(v))) })), ebe_retraite: ch.ebeR.ebe_retraite.map(montant), justifications: ch.ebeR.retraitements.filter((r) => r.justification).map((r) => ({ nature: r.libelle, justification: r.justification })) };
     else if (cle === "endettement") d.endettement = ch.endet ? { exercice: ch.endet.annee, composantes: ch.endet.lignes.map((l) => ({ libelle: l.libelle, montant: montant(l.montant) })), total: ch.endet.total < 0 ? `trésorerie nette de ${montant(-ch.endet.total)}` : `dette nette de ${montant(ch.endet.total)}`, bfr_jours_de_ca: ch.endet.bfr.map((b) => ({ annee: b.annee, jours: b.jours == null ? null : Math.round(b.jours) })) } : null;
     else if (cle.startsWith("faits:")) { const cats = cle.slice(6).split(","); d.faits_du_site_valides = faitsValides.filter((f) => cats.includes(f.categorie)).map((f) => ({ fait: f.fait, source: f.source })); }
   }

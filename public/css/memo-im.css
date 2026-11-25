@@ -564,9 +564,6 @@
 .im-realisations .im-photo { margin: 0; }
 .im-realisations .im-photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; border-radius: 1cqw; }
 /* Éléments à compléter, en fin de partie */
-.im-elements-liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8cqw; align-content: start; }
-.im-elements-liste li { border: .12cqw dashed #CDBFA8; border-radius: 1cqw; padding: .8cqw 1cqw; display: grid; gap: .2cqw; font-size: calc(.95cqw * var(--k, 1)); }
-.im-elements-liste small { color: var(--im-accent); font-weight: 600; font-size: .78cqw; }
 /* Pages fusionnées : la seconde page devient une partie de la première */
 .im-fusion { display: flex; flex-direction: column; gap: .8cqw; min-height: 0; padding-top: .6cqw; border-top: 1px solid var(--im-trait); }
 .im-fusion-message { margin: 0; color: var(--im-accent); font-size: 1.15cqw; }

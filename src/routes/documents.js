@@ -174,6 +174,14 @@ async function lireMemo(env, row) {
   const entreprise = JSON.parse(row.company_json || "{}");
   const ch = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) });
   const site = reponses.site || null;
+  const lues = SECTIONS_MEMO.map(({ cle, titre, court, partie, point_fort, demandes }) => {
+    const x = parCle[cle];
+    let v = {};
+    if (x) { try { v = JSON.parse(x.content_md); } catch { v = { contenu: x.content_md }; } }
+    // The summary sums up the detailed chapters, which raise what is missing themselves: no request of its own
+    return { cle, titre, court, partie, point_fort, titre_affirme: v.titre || null, accroche: v.accroche || null, contenu: v.contenu || "",
+      a_completer: demandes === false ? [] : v.a_completer || [], parcours: v.parcours || null, redigee: Boolean(x), modifie: x?.edited_by_user === 1 };
+  });
   return {
     deverrouille: memoDeverrouille(reponses),
     // Figures approved, and still the same since? (« Modified since your approval: to approve again »)
@@ -187,19 +195,29 @@ async function lireMemo(env, row) {
     site: site ? { ...site, photos: undefined } : null, logo: Boolean(site?.logo),
     // Équipe dirigeante : réponses sans les chemins des photos (servies par leur route), parcours rédigés
     equipe: { personnes: (reponses.equipe?.personnes || []).map(({ photo, ...x }) => ({ ...x, a_photo: Boolean(photo) })) },
-    relecture: reponses.relecture || null,
+    relecture: remarquesProposables(reponses.relecture, lues),
     marche: reponses.marche ? { ...reponses.marche, essais_restants: Math.max(0, MARCHE.etudesMaxParDossier - (reponses.marche.essais || 0)) } : { essais_restants: MARCHE.etudesMaxParDossier },
     // Chiffres calculés par le code : compte de résultat, EBE retraité, endettement, clients, périmètre, sources
-    chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources },
+    chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources,
+      exercices_exclus: (entree?.exercices_exclus || []).map((x) => x.annee) },
     memo: doc ? { id: doc.id, version: doc.version, cree_le: doc.created_at } : null,
     parties: PARTIES_MEMO,
-    sections: SECTIONS_MEMO.map(({ cle, titre, court, partie, point_fort }) => {
-      const x = parCle[cle];
-      let v = {};
-      if (x) { try { v = JSON.parse(x.content_md); } catch { v = { contenu: x.content_md }; } }
-      return { cle, titre, court, partie, point_fort, titre_affirme: v.titre || null, accroche: v.accroche || null, contenu: v.contenu || "", a_completer: v.a_completer || [], parcours: v.parcours || null, redigee: Boolean(x), modifie: x?.edited_by_user === 1 };
-    }),
+    sections: lues,
   };
+}
+
+/**
+ * Review remarks as offered to the owner: a correction that would no longer apply (passage changed) or would make the
+ * chapter too long is not offered; the remark stays, without the "Yes, fix it" button.
+ */
+export function remarquesProposables(relecture, sections) {
+  if (!relecture?.remarques) return relecture || null;
+  const contenu = Object.fromEntries((sections || []).map((s) => [s.cle, s.contenu]));
+  return { ...relecture, remarques: relecture.remarques.map((r) => {
+    if (!r.correction || r.statut) return r;
+    const nouveau = appliquerCorrection(contenu[r.section], r.correction);
+    return nouveau != null && contenuRespecteConcision(nouveau, contenu[r.section]) ? r : { ...r, correction: null };
+  }) };
 }
 
 /** Structure du secteur (annuaire public, cache 24 h) : jamais bloquante, null si indisponible. */

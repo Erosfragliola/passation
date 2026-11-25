@@ -693,3 +693,20 @@ model to be defined later by the user (business plan in progress).
   5 attempts, stored hashed). Password, tickets, failure counters and PBKDF2 removed; migration `0004` deleted before
   it was ever applied in production. The masking of amounts without a session, the public card and the two-stage
   flow are kept.
+- **25/11/2026, branch `memo-finitions-chiffres`**, after the owner read the memorandum:
+  - No page « Éléments à compléter » in the document any more (it was printed in the PDF sent to buyers): what is
+    missing is listed in the « À améliorer » panel only; a chapter with no data stays in place, « À compléter ».
+  - The summary has no request of its own (it sums up the detailed chapters, which raise what is missing).
+  - A review correction that would make the chapter too long, or whose passage changed, is no longer offered
+    (« Oui, corriger » then refused); the remark stays.
+  - Owner's pay and rent adjustments carry their basis, written by the code from the owner's amounts, in the adjusted
+    EBITDA table and in the data given to Claude (it wrote « justification : à compléter »).
+  - Panel: « Ajouter les exercices précédents » (essential) when fewer than three fiscal years are presented.
+  - An earlier fiscal year now needs only its income statement (revenue, expenses or published EBITDA): the owner's
+    2023 and 2024, entered without their balance sheets, were left out and the memorandum showed 2025 alone. The
+    latest fiscal year used stays complete; working capital and its average skip a year whose balance sheet is
+    incomplete (never a missing item as zero, in the engine and in the datapack formulas). The key of the approved
+    figures is unchanged for files whose fiscal years are complete (no « to approve again » after the update).
+  - Panel: « Compléter les comptes 2023, 2024 » when entered fiscal years are still left out; « Cette page / Toutes »
+    filter (the improvements of the page on screen by default).
+  - Review: Claude is asked for corrections no longer than the passage they replace.

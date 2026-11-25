@@ -67,7 +67,7 @@ export const SCHEMA_RELECTURE = {
         titre: { type: "string", description: "L'amélioration en 6 mots au plus, à l'infinitif (« Sourcer la part de marché »)" },
         constat: { type: "string", description: "Ce qui ne va pas, en une phrase simple" },
         texte_actuel: { type: "string", description: "Le passage exact à remplacer, recopié tel quel depuis le chapitre ; chaîne vide si la remarque ne se corrige pas dans le texte" },
-        texte_propose: { type: "string", description: "Le passage corrigé, sans aucun chiffre nouveau ni modifié ; chaîne vide si rien à remplacer" },
+        texte_propose: { type: "string", description: "Le passage corrigé, sans aucun chiffre nouveau ni modifié, et pas plus long que le passage actuel (le chapitre a des longueurs maximales : une correction plus longue ne peut pas être appliquée) ; chaîne vide si rien à remplacer" },
         importance: { type: "string", enum: ["indispensable", "conseille"] },
       },
     } },

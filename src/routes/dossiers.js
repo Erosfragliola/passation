@@ -14,7 +14,7 @@ import { sirenValide, nettoyerSiren } from "../lib/siren.js";
 import { chargerMaquette, CLE_MAQUETTE } from "../maquette/donnees.js";
 import { estimationExpress } from "../valuation/express.js";
 import { CLES_CHECKLIST, avancement } from "../../public/js/dossier-regles.js";
-import { manquants, exercicesAttendus } from "../../public/js/champs-financiers.js";
+import { exercicesAttendus, exercicesRetenus } from "../../public/js/champs-financiers.js";
 import { avancementQuestions, etatValorisation, vuesDe } from "../../public/js/parcours.js";
 import { resumeValorisation } from "../../public/js/dossier-parcours.js";
 import { routeValorisation, lireChiffres, lireReponses, etatValidation } from "./valorisation.js";
@@ -66,7 +66,7 @@ async function detail(env, row) {
   const coches = new Set(results.map((r) => r.item_key));
   const entreprise = JSON.parse(row.company_json || "{}");
   const lignes = await lireChiffres(env, row.id);
-  const complets = Object.values(lignes).filter((l) => manquants(l).length === 0).length;
+  const complets = exercicesRetenus(lignes).retenus.length;
   const exercices = exercicesAttendus(lignes);
   const approfondie = await env.DB.prepare("SELECT result_json, created_at FROM valuations WHERE dossier_id = ? AND kind = 'approfondie' ORDER BY created_at DESC LIMIT 1").bind(row.id).first();
   // Range only (never a central value for the owner), and what explains it

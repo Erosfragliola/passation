@@ -47,7 +47,9 @@ export function bfr(ex) {
 }
 /** Normalized working capital: average of working capital in days of revenue, applied to the latest year's revenue. */
 export function bfrNormatif(exercices) {
-  const l = exercices.filter((e) => n(e.chiffre_affaires) > 0);
+  // A fiscal year whose balance sheet is incomplete (earlier year used for its income statement) is left out: a
+  // missing item is never counted as zero
+  const l = exercices.filter((e) => n(e.chiffre_affaires) > 0 && e.bilan_complet !== false);
   const jours = moyenne(l.map((e) => (bfr(e) / n(e.chiffre_affaires)) * 365));
   const dernier = l.at(-1);
   return { jours, valeur: jours == null ? null : (jours / 365) * n(dernier.chiffre_affaires), par_exercice: l.map((e) => ({ annee: e.annee, bfr: bfr(e), jours: (bfr(e) / n(e.chiffre_affaires)) * 365 })) };
