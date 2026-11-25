@@ -68,14 +68,6 @@
       "datapack": "Excel, 9 onglets",
       "teaser": "PDF d'une page, anonyme",
       "memo": "Présentation à relire et imprimer"
-    },
-    "mdp": {
-      "titre": "Changer mon mot de passe",
-      "actuel": "Mot de passe actuel",
-      "nouveau": "Nouveau mot de passe",
-      "confirmation": "Confirmez le nouveau mot de passe",
-      "bouton": "Changer le mot de passe",
-      "sessions": "Vos autres sessions (autres appareils) seront fermées."
     }
   }
 }

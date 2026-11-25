@@ -1,4 +1,4 @@
-// /connexion page: same form as the landing's window (sign-in, or code then password).
+// /connexion page: same form as the landing's window (email, then the 6-digit code).
 import { monterConnexion } from "/js/connexion-code.js";
 import { lien } from "/js/i18n.js";
 
@@ -9,5 +9,5 @@ fetch("/api/me").then(async (r) => { await r.text(); if (r.ok) location.replace(
 
 // Coming from a SIREN: account creation first (sign-in is one click away); otherwise sign-in.
 const parametre = new URLSearchParams(location.search).get("mode");
-const mode = ["creer", "connexion", "oubli"].includes(parametre) ? parametre : siren.length === 9 ? "creer" : "connexion";
+const mode = ["creer", "connexion"].includes(parametre) ? parametre : siren.length === 9 ? "creer" : "connexion";
 monterConnexion(document.getElementById("zone-connexion"), { siren: siren.length === 9 ? siren : "", mode });

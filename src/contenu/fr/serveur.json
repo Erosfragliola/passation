@@ -18,17 +18,7 @@
       "one": "Code incorrect. Encore {n} essai.",
       "other": "Code incorrect. Encore {n} essais."
     },
-    "envoi": "Si l'adresse est valide, un code à 6 chiffres vient de vous être envoyé. Il est valable 10 minutes.",
-    "identifiants_invalides": "Adresse e-mail ou mot de passe incorrect.",
-    "trop_echecs": "Trop d'essais faux. La connexion est suspendue {n} minutes. Vous pouvez aussi choisir « Mot de passe oublié ».",
-    "ticket_expire": "Le délai pour choisir votre mot de passe est dépassé. Demandez un nouveau code.",
-    "mot_de_passe_trop_court": "Le mot de passe compte {n} caractères au moins.",
-    "mot_de_passe_trop_long": "Ce mot de passe est trop long (256 caractères au plus).",
-    "mot_de_passe_trop_courant": "Ce mot de passe est trop courant. Choisissez-en un autre, par exemple une phrase de quelques mots.",
-    "sans_mot_de_passe": "Votre accès n'a pas encore de mot de passe : déconnectez-vous, puis choisissez « Mot de passe oublié ».",
-    "actuel_incorrect": "Mot de passe actuel incorrect.",
-    "mot_de_passe_identique": "Le nouveau mot de passe doit être différent de l'actuel.",
-    "mot_de_passe_change": "Mot de passe changé. Vos autres sessions sont fermées ; celle-ci reste ouverte."
+    "envoi": "Si l'adresse est valide, un code à 6 chiffres vient de vous être envoyé. Il est valable 10 minutes."
   },
   "documents": {
     "validez_abord_chiffres_moins": "Validez d'abord vos chiffres (au moins un exercice complet) pour générer le datapack.",
@@ -135,11 +125,11 @@
   "email": {
     "bonjour": "Bonjour,",
     "code": {
-      "sujet": "{code} : votre code Passation",
-      "intro": "Voici votre code pour vérifier votre adresse e-mail sur Passation :",
-      "validite": "Il est valable 10 minutes et ne sert qu'une fois. Tapez-le dans la fenêtre restée ouverte, puis choisissez votre mot de passe.",
-      "ignorer": "Si vous n'avez rien demandé, ignorez ce message : personne ne peut créer ni modifier votre accès sans ce code.",
-      "texte": "Votre code Passation : {code} (valable 10 minutes, usage unique). Il vérifie votre adresse avant le choix de votre mot de passe. Si vous n'avez rien demandé, ignorez ce message."
+      "sujet": "{code} : votre code de connexion Passation",
+      "intro": "Voici votre code pour ouvrir votre dossier Passation :",
+      "validite": "Il est valable 10 minutes et ne sert qu'une fois. Tapez-le dans la fenêtre de connexion restée ouverte.",
+      "ignorer": "Si vous n'avez rien demandé, ignorez ce message : personne ne peut se connecter sans ce code.",
+      "texte": "Votre code de connexion Passation : {code} (valable 10 minutes, usage unique). Si vous n'avez rien demandé, ignorez ce message."
     },
     "pourquoi": "Vous recevez ce message parce que vous avez ouvert un dossier sur Passation. Vous pouvez supprimer votre dossier à tout moment depuis votre espace.",
     "lien_texte": "{bouton} : {lien}",

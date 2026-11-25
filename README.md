@@ -18,7 +18,7 @@ version is visible online once `main` has been deployed).
 | Feature | Status | Depends on |
 |---|---|---|
 | Public profile of the company without an account (SIREN or company name); quick estimate (enterprise value range based on sourced EBITDA multiples) once the account is created | Available | Free public APIs |
-| Account with a password: email verified by a 6-digit code, then a password (forgotten password: same path, other sessions closed); owner's space; guided steps that can be resumed | Available | Brevo (locally: code shown in the terminal) |
+| Account required after the SIREN, created and opened with a 6-digit code sent by email; owner's space; guided steps that can be resumed | Available | Brevo (locally: code shown in the terminal) |
 | Bilingual interface, English (default, at `/`) and French (at `/fr/`), with an "EN \| FR" language switcher | Available | — |
 | Guided steps in two stages: 1. Your valuation (three fiscal years, adjustments, net debt and scope, « Your value » with the bridge from EBITDA to the value of the shares, approved by the owner), 2. Your memorandum (company, photos and logo, management team, drafting); the memorandum only after the approval | Available | — |
 | Entry of the accounts and consistency checks (balanced balance sheet, published revenue, unit, suspicious change, net income above EBITDA, negative equity, revenue up or down by more than 30 %) | Available | — |
@@ -44,10 +44,8 @@ reading and drafting answer "unavailable".
   value without a source stays "To be completed" (for example the size premium, hence the optional DCF).
 - **The owner approves.** Only complete, approved fiscal years go into the calculation; an incomplete fiscal year is
   left out and flagged, never filled with zeros. Out-of-range settings are rejected with a message.
-- **Security and GDPR**: no amount sent by the server without a session; password hashed with PBKDF2-SHA256 (100,000
-  iterations, 16-byte salt per account), compared in constant time, 12 characters at least, common passwords refused;
-  5 failed sign-ins → 15-minute block (per account and per IP), same message whether or not the address exists;
-  verification code hashed (salt + server secret), single use, 10 minutes, 5 attempts; cookie
+- **Security and GDPR**: no amount sent by the server without a session; sign-in code hashed (salt + server secret),
+  single use, 10 minutes, 5 attempts, same answer whether or not the address has an account; cookie
   `HttpOnly; Secure; SameSite=Lax`; origin check (CSRF); every private route checks that the file belongs to the user;
   rate limits based on a hash of the IP address; daily quotas for Claude processing; one-click deletion of the file and
   its documents (the account itself is not deleted: see `public/confidentialite.html`).
@@ -133,7 +131,7 @@ folder, function and variable names) is in French, as written by the team (for e
 npm test
 ```
 
-**649 Vitest tests** (47 files), run again by GitHub Actions (Node 22, Ubuntu 24.04) on every push. D1 is simulated
+**633 Vitest tests** (47 files), run again by GitHub Actions (Node 22, Ubuntu 24.04) on every push. D1 is simulated
 with in-memory SQLite and the real migrations; R2, Claude and the public APIs are simulated.
 
 - **Valuation**: three methods, EV-to-equity bridge, edge cases (negative EBITDA, missing accounts, a single fiscal
@@ -145,9 +143,9 @@ with in-memory SQLite and the real migrations; R2, Claude and the public APIs ar
 - **Sign-in and access rights**: codes, sessions, access to someone else's file refused, server secret required.
 - **Public sources**: normalization tested on recorded real responses (`test/fixtures/`), 429 and 500 outages.
 - **Quotas** for Claude processing, teaser anonymity, guided steps, home page content.
-- **Account and flow** (24/11/2026): no amount without a session, password hashing and blocking, forgotten and changed
-  password, two-stage flow, bridge from EBITDA to the value of the shares (values calculated by hand), approval and
-  « to approve again », upload queue of the photos (`test/mot-de-passe.test.js`, `test/valeur-pont.test.js`,
+- **Account and flow** (24-25/11/2026): no amount without a session, account created and opened by code, two-stage
+  flow, bridge from EBITDA to the value of the shares (values calculated by hand), approval and « to approve
+  again », upload queue of the photos (`test/acces-par-code.test.js`, `test/valeur-pont.test.js`,
   `test/parcours-v2.test.js`, `test/depot-photos.test.js`, `test/dossier-exemple.test.js`).
 - **Bilingual site**: same keys in both languages, no key used in the code without a French text, language of each
   request, `/fr/` addresses, plurals, reading of entered amounts (`test/i18n.test.js`, `npm run i18n:check`).

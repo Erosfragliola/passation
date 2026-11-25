@@ -18,7 +18,7 @@ bilingue est visible en ligne une fois `main` déployée).
 | Fonction | État | Dépend de |
 |---|---|---|
 | Fiche publique de l'entreprise sans compte (SIREN ou nom) ; estimation express (fourchette de valeur d'entreprise par multiples d'EBE sourcés) une fois l'accès créé | Disponible | API publiques gratuites |
-| Accès avec mot de passe : adresse vérifiée par un code à 6 chiffres, puis mot de passe (mot de passe oublié : même chemin, autres sessions fermées) ; espace dirigeant ; parcours guidé avec reprise | Disponible | Brevo (en local : code affiché dans le terminal) |
+| Compte obligatoire après le SIREN, créé et ouvert avec un code à 6 chiffres reçu par e-mail ; espace dirigeant ; parcours guidé avec reprise | Disponible | Brevo (en local : code affiché dans le terminal) |
 | Interface bilingue, anglais (par défaut, sous `/`) et français (sous `/fr/`), avec un sélecteur « EN \| FR » | Disponible | — |
 | Parcours guidé en deux temps : 1. Votre valorisation (trois exercices, retraitements, dette nette et périmètre, « Votre valeur » avec le pont de l'EBE à la valeur des titres, validée par le dirigeant), 2. Votre mémorandum (entreprise, photos et logo, équipe dirigeante, rédaction) ; le mémorandum seulement après la validation | Disponible | — |
 | Saisie des comptes et contrôles de cohérence (bilan équilibré, CA publié, unité, variation suspecte, résultat net supérieur à l'EBE, capitaux propres négatifs, chiffre d'affaires en variation de plus de 30 %) | Disponible | — |
@@ -44,10 +44,8 @@ la lecture de liasse et les rédactions répondent « indisponible ».
   `src/data/`. Une valeur sans source reste « À compléter » (exemple : la prime de taille, d'où le DCF optionnel).
 - **Le dirigeant valide.** Seuls les exercices complets et validés entrent dans le calcul ; un exercice incomplet est
   écarté et signalé, jamais complété par des zéros. Les réglages hors bornes sont refusés avec un message.
-- **Sécurité et RGPD** : aucun montant envoyé par le serveur sans session ; mot de passe haché en PBKDF2-SHA256
-  (100 000 itérations, sel de 16 octets propre au compte), comparé en temps constant, 12 caractères au moins, mots de
-  passe courants refusés ; 5 échecs de connexion → blocage de 15 minutes (par compte et par IP), même message que
-  l'adresse existe ou non ; code de vérification haché (sel + secret serveur), usage unique, 10 minutes, 5 essais ; cookie
+- **Sécurité et RGPD** : aucun montant envoyé par le serveur sans session ; code de connexion haché (sel + secret
+  serveur), usage unique, 10 minutes, 5 essais, même réponse que l'adresse ait un compte ou non ; cookie
   `HttpOnly; Secure; SameSite=Lax` ; contrôle d'origine (CSRF) ; chaque route privée vérifie la propriété du dossier ;
   limites de débit par empreinte d'IP ; quotas quotidiens des traitements par Claude ; suppression du dossier et de
   ses fichiers en un clic (le compte, lui, n'est pas supprimé : voir `public/confidentialite.html`).
@@ -131,7 +129,7 @@ lui-même (noms de fichiers, de dossiers, de fonctions et de variables) est en f
 npm test
 ```
 
-**649 tests Vitest** (47 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
+**633 tests Vitest** (47 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
 simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les API publiques sont simulés.
 
 - **Valorisation** : trois méthodes, passage VE → titres, cas limites (EBE négatif, comptes absents, un seul
@@ -143,9 +141,9 @@ simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les A
 - **Connexion et droits d'accès** : codes, sessions, accès refusé au dossier d'un autre, secret serveur exigé.
 - **Sources publiques** : normalisation sur réponses réelles enregistrées (`test/fixtures/`), pannes 429 et 500.
 - **Quotas** des traitements par Claude, anonymat du teaser, parcours guidé, contenus de la page d'accueil.
-- **Accès et parcours** (24/11/2026) : aucun montant sans session, hachage et blocage du mot de passe, mot de passe
-  oublié et changé, parcours en deux temps, pont de l'EBE à la valeur des titres (valeurs calculées à la main),
-  validation et « à revalider », file de dépôt des photos (`test/mot-de-passe.test.js`, `test/valeur-pont.test.js`,
+- **Accès et parcours** (24-25/11/2026) : aucun montant sans session, compte créé et ouvert par code, parcours en
+  deux temps, pont de l'EBE à la valeur des titres (valeurs calculées à la main), validation et « à revalider »,
+  file de dépôt des photos (`test/acces-par-code.test.js`, `test/valeur-pont.test.js`,
   `test/parcours-v2.test.js`, `test/depot-photos.test.js`, `test/dossier-exemple.test.js`).
 - **Site bilingue** : mêmes clés dans les deux langues, aucune clé citée dans le code sans texte français, langue
   des requêtes, adresses `/fr/`, pluriels, lecture des montants saisis (`test/i18n.test.js`, `npm run i18n:check`).

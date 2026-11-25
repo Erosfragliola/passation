@@ -340,7 +340,7 @@
       "sources": "Sources: {exercice} public accounts (INPI), Sirene registry (INSEE), BODACC notices; industry multiples from {mois}.",
       "sources_saisie": "Sources: the revenue and EBITDA you entered; industry multiples from {mois}.",
       "dossier_bouton": "Open my file",
-      "dossier_note": "Your file: free, protected by a password",
+      "dossier_note": "Your file: free, opened with a code sent by email",
       "tampon": "Confidential",
       "profil": {
         "secteur": "Industry",
