@@ -21,6 +21,7 @@ import { zoneDepotPhotos, zoneLogo } from "/js/depot-photos.js";
 import { ROLES, FORMATIONS, TYPES_EXPERIENCE, APRES, PERSONNES_MAX, EXPERIENCES_MAX, BORNES, normaliserEquipe, nouvelId, initiales, libelleRole, libelleApres, personneComplete } from "/js/equipe.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 import { aideRepliee } from "/js/aide-repliee.js";
+import { CARTES, cartesRepondues, carteAOuvrir, retraitementsComplets } from "/js/retraitements-cartes.js";
 import { ELEMENTS_DETTE, etatInitial, valeursAEnregistrer, peutValider } from "/js/dette-elements.js";
 import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
 import { contradictions, nomLisible, faitsEssentiels, faitsParTheme, limiterChoix, lireDate, lignesDates, phraseActivite, TYPES_EVENEMENT } from "/js/faits-site.js";
@@ -452,6 +453,7 @@ function retraitements() {
     blocLoyer.hidden = choix.murs !== MURS.dirigeant;
     blocExc.hidden = choix.exceptionnel_signale !== "Oui";
     remplacer(total, a ? [t("demarrer.js.retraitements.total_avant", { annee }), " ", el("strong", { text: kEuros(a.ebe_comptable) }), " → ", t("demarrer.js.retraitements.total_apres"), " ", el("strong", { text: kEuros(a.ebe_retraite) })] : t("demarrer.js.retraitements.total_inconnu"));
+    majCartes?.();
   };
   const champs = Object.fromEntries(["remuneration_dirigeant_reelle", "remuneration_normative", "loyer_paye", "loyer_marche"].map((k) => [k, montantValorisation(C[k], () => maj())]));
   for (const k of ["dirigeant", "loyer", "exceptionnel"]) effets[k] = el("p", { class: "retraitement-effet", "aria-live": "polite" });
@@ -472,7 +474,6 @@ function retraitements() {
   if (!liste.length) liste.push({ annee, libelle: "", sens: "charge", montant: null, justification: "" });
   dessinerExc();
   const blocExc = el("div", {}, lignesExc);
-  const bloc = (titreBloc, aide, ...contenu) => el("section", { class: "carte retraitement" }, el("h2", { text: titreBloc }), aide ? el("p", { class: "petit", text: aide }) : null, ...contenu);
   const valider = el("button", { type: "button", class: "btn btn-vert" }, t("demarrer.js.retraitements.valider"), fleche());
   valider.addEventListener("click", async () => {
     for (const k of Object.keys(champs)) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
@@ -489,17 +490,59 @@ function retraitements() {
       message(""); aller(etapeCourante() === "retraitements" ? "dette" : etapeCourante());
     } catch (e) { message(e.message, true); valider.disabled = false; }
   });
+  // One card at a time (audit of 25/11/2026): the first not answered is open; an answered card closes into one line
+  // with its effect and « Modifier »; a click on a title opens it again. Never answered in advance.
+  const repondues = () => cartesRepondues(lire(), choix, MURS.dirigeant);
+  let ouverte = carteAOuvrir(repondues());
+  const EFFET = { remuneration: "dirigeant", loyer: "loyer", exceptionnels: "exceptionnel" };
+  const resume = (k) => {
+    const r = lire();
+    if (k === "remuneration") { const d = r.remuneration_dirigeant_reelle - r.remuneration_normative; return d ? t("demarrer.js.retraitements.resume.remuneration", { effet: signe(d) }) : t("demarrer.js.retraitements.resume.remuneration_neutre"); }
+    if (k === "loyer") return choix.murs === MURS.dirigeant && r.loyer_paye !== r.loyer_marche ? t("demarrer.js.retraitements.resume.loyer", { effet: signe(r.loyer_paye - r.loyer_marche) }) : t("demarrer.js.retraitements.resume.loyer_neutre");
+    const somme = r.exceptionnels.reduce((x, e) => x + e.montant, 0);
+    return choix.exceptionnel_signale === "Non" || !somme ? t("demarrer.js.retraitements.resume.exceptionnels_aucun") : t("demarrer.js.retraitements.resume.exceptionnels", { effet: signe(somme) });
+  };
+  const suivant = (k) => { ouverte = carteAOuvrir(repondues(), { apres: k }); dessinerCartes(); (ouverte ? $(`#rt-titre-${ouverte}`) : valider)?.focus(); };
+  const corps = {
+    remuneration: () => [el("div", { class: "saisie-deux" }, champs.remuneration_dirigeant_reelle.noeud, champs.remuneration_normative.noeud), effets.dirigeant],
+    // A choice that needs no amount closes the card at once (walls not yours, no exceptional item)
+    loyer: () => [choixValorisation(C.murs, choix, () => { maj(); if (choix.murs !== MURS.dirigeant) suivant("loyer"); }), blocLoyer, effets.loyer],
+    exceptionnels: () => [choixValorisation(C.exceptionnel_signale, choix, () => { maj(); if (choix.exceptionnel_signale === "Non") suivant("exceptionnels"); }), blocExc, effets.exceptionnel],
+  };
+  const aides = { remuneration: t("demarrer.js.retraitements.dirigeant_aide") };
+  const cartes = el("div", { class: "rt-cartes" });
+  const boutonsSuivant = {};
+  function dessinerCartes() {
+    const rep = repondues();
+    remplacer(cartes, ...CARTES.map((k) => {
+      const ouvert = ouverte === k;
+      const aide = ouvert ? aideRepliee(aides[k], t(`demarrer.js.retraitements.cartes.${k}`)) : null;
+      boutonsSuivant[k] = el("button", { type: "button", class: "btn btn-noir btn-mini", disabled: !rep[k], onclick: () => suivant(k) }, t("demarrer.js.retraitements.suivant"));
+      return el("section", { class: `carte retraitement rt-carte${ouvert ? " ouverte" : ""}${rep[k] ? " repondue" : ""}` },
+        el("div", { class: "rt-tete" },
+          el("h2", {}, el("button", { type: "button", class: "rt-titre", id: `rt-titre-${k}`, "aria-expanded": String(ouvert), "aria-controls": `rt-corps-${k}`, onclick: () => { ouverte = ouvert ? null : carteAOuvrir(rep, { demandee: k }); dessinerCartes(); $(`#rt-titre-${k}`)?.focus(); } },
+            el("span", { class: "rt-num", "aria-hidden": "true", text: rep[k] && !ouvert ? "✓" : String(CARTES.indexOf(k) + 1) }), t(`demarrer.js.retraitements.cartes.${k}`))),
+          aide?.bouton),
+        !ouvert && rep[k] ? el("p", { class: "rt-resume" }, el("span", { text: resume(k) }), " ", el("button", { type: "button", class: "lien-simple", onclick: () => { ouverte = k; dessinerCartes(); $(`#rt-titre-${k}`)?.focus(); } }, t("demarrer.js.retraitements.modifier"))) : null,
+        el("div", { class: "rt-corps", id: `rt-corps-${k}`, hidden: !ouvert }, ...(ouvert ? [aide?.zone, ...corps[k](), el("div", { class: "rt-suivant" }, boutonsSuivant[k])] : [])));
+    }));
+    valider.disabled = !retraitementsComplets(rep);
+  }
+  function majCartes() {
+    const rep = repondues();
+    for (const k of CARTES) if (boutonsSuivant[k]) boutonsSuivant[k].disabled = !rep[k];
+    valider.disabled = !retraitementsComplets(rep);
+  }
+  const creditBail = aideRepliee(t("demarrer.js.retraitements.credit_bail_aide"), t("demarrer.js.retraitements.credit_bail_titre"));
   remplir(...titre(t("demarrer.js.retraitements.titre"), t("demarrer.js.retraitements.aide")),
     el("div", { class: "carte retraitements-tete" }, total),
-    bloc(t("demarrer.js.retraitements.dirigeant_titre"), t("demarrer.js.retraitements.dirigeant_aide"), el("div", { class: "saisie-deux" }, champs.remuneration_dirigeant_reelle.noeud, champs.remuneration_normative.noeud), effets.dirigeant),
-    bloc(t("demarrer.js.retraitements.loyer_titre"), null, choixValorisation(C.murs, choix, maj), blocLoyer, effets.loyer),
-    bloc(t("demarrer.js.retraitements.exc_titre"), null, choixValorisation(C.exceptionnel_signale, choix, maj), blocExc, effets.exceptionnel),
-    bloc(t("demarrer.js.retraitements.credit_bail_titre"), t("demarrer.js.retraitements.credit_bail_aide")),
+    cartes,
+    el("div", { class: "rt-credit-bail" }, el("p", { class: "lib-ligne" }, el("span", { text: t("demarrer.js.retraitements.credit_bail_titre") }), creditBail.bouton), creditBail.zone),
     el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller(exercicesFaits() ? "chiffres" : "exercices") }, t("demarrer.js.retour")), valider));
+  dessinerCartes();
   maj();
 }
 
-// ================================================================== 3. Dette nette et périmètre
 function dette() {
   const C = Object.fromEntries(VALORISATION.dette.map((c) => [c.cle, c]));
   const annee = exercicesAttendus(S.chiffres?.exercices).dernier;

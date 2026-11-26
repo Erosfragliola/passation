@@ -345,10 +345,7 @@
       "effet_annee": "Effet sur l'EBE {annee} : {montant}",
       "effet_attente": "Effet sur l'EBE : indiquez les deux montants.",
       "sans_effet": "Aucun effet sur l'EBE.",
-      "dirigeant_titre": "Votre rémunération",
       "dirigeant_aide": "Le retraitement qui pèse le plus : l'écart entre ce que vous coûtez et ce que coûterait un directeur salarié est ajouté à l'EBE (ou retiré).",
-      "loyer_titre": "Le loyer de vos locaux",
-      "exc_titre": "Les charges et produits exceptionnels",
       "sens": "Charge ou produit",
       "charge": "Charge exceptionnelle (rajoutée)",
       "produit": "Produit exceptionnel (retiré)",
@@ -356,7 +353,22 @@
       "credit_bail_aide": "Il ne modifie pas l'EBE : ses loyers y restent. Son capital restant dû est compté à l'étape suivante, avec vos dettes. Cette convention peut sous-estimer la valeur d'une entreprise qui finance ses équipements en crédit-bail : parlez-en avec votre conseil.",
       "valider": "Valider ces retraitements",
       "il_manque": "Il manque : {liste}.",
-      "exc_vide": "Indiquez au moins un montant exceptionnel, ou répondez « Non »."
+      "exc_vide": "Indiquez au moins un montant exceptionnel, ou répondez « Non ».",
+      "cartes": {
+        "remuneration": "Votre rémunération",
+        "loyer": "Le loyer de vos locaux",
+        "exceptionnels": "Les éléments exceptionnels"
+      },
+      "suivant": "Suivant",
+      "modifier": "Modifier",
+      "resume": {
+        "remuneration": "Rémunération : {effet} sur l'EBE",
+        "remuneration_neutre": "Rémunération : sans effet sur l'EBE",
+        "loyer": "Loyer : {effet} sur l'EBE",
+        "loyer_neutre": "Loyer : sans effet sur l'EBE",
+        "exceptionnels": "Éléments exceptionnels : {effet} sur l'EBE",
+        "exceptionnels_aucun": "Éléments exceptionnels : aucun"
+      }
     },
     "dette": {
       "titre": "Dette nette et périmètre de la cession",

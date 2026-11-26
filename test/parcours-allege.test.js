@@ -15,6 +15,9 @@ import { CLE_MAQUETTE } from "../src/maquette/donnees.js";
 import { SIREN_EXEMPLE, ENTREPRISE_EXEMPLE, EXERCICES_EXEMPLE, remplirDossierExemple } from "../scripts/dossier-exemple.mjs";
 import { controlerExercice } from "../src/valuation/controles.js";
 import { positionQuestion, QUESTIONS } from "../public/js/parcours.js";
+import { CARTES, cartesRepondues, carteAOuvrir, retraitementsComplets } from "../public/js/retraitements-cartes.js";
+import { MURS } from "../public/js/parcours.js";
+import { REPONSES_EXEMPLE } from "../scripts/dossier-exemple.mjs";
 import { ELEMENTS_DETTE, etatInitial, valeursAEnregistrer, peutValider } from "../public/js/dette-elements.js";
 
 const BASE = "http://127.0.0.1:8787";
@@ -113,5 +116,34 @@ describe("5.1 net debt: tick before entering an amount", () => {
     expect(peutValider(deux, { credit_bail_restant: 45000, dividendes_a_verser: 0 })).toBe(true);
     expect(peutValider({ coches: new Set(), aucun: false })).toBe(false);
     expect(ELEMENTS_DETTE).toHaveLength(4);
+  });
+});
+
+describe("5.2 adjustments: one card at a time", () => {
+  const vide = { remuneration_dirigeant_reelle: null, remuneration_normative: null, loyer_paye: null, loyer_marche: null, exceptionnels: [] };
+  it("opening order: pay first, then rent, then exceptional items; a click on a title reopens a card", () => {
+    let rep = cartesRepondues(vide, {}, MURS.dirigeant);
+    expect(carteAOuvrir(rep)).toBe("remuneration");
+    rep = cartesRepondues({ ...vide, remuneration_dirigeant_reelle: 165000, remuneration_normative: 85000 }, {}, MURS.dirigeant);
+    expect(carteAOuvrir(rep, { apres: "remuneration" })).toBe("loyer");
+    rep = cartesRepondues({ ...vide, remuneration_dirigeant_reelle: 165000, remuneration_normative: 85000 }, { murs: MURS.tiers }, MURS.dirigeant);
+    expect(carteAOuvrir(rep, { apres: "loyer" })).toBe("exceptionnels");
+    expect(carteAOuvrir(rep, { demandee: "remuneration" })).toBe("remuneration");
+    expect(CARTES).toEqual(["remuneration", "loyer", "exceptionnels"]);
+  });
+  it("« Validate these adjustments » inactive while a card is not answered (never answered in advance)", () => {
+    const deux = cartesRepondues({ ...vide, remuneration_dirigeant_reelle: 85000, remuneration_normative: 85000 }, { murs: MURS.tiers }, MURS.dirigeant);
+    expect(retraitementsComplets(deux)).toBe(false);
+    // The walls belong to the owner: the rent card needs both rents
+    expect(cartesRepondues({ ...vide, loyer_paye: 30000 }, { murs: MURS.dirigeant }, MURS.dirigeant).loyer).toBe(false);
+    // « Yes » with no exceptional item entered is not an answer
+    expect(cartesRepondues(vide, { exceptionnel_signale: "Oui" }, MURS.dirigeant).exceptionnels).toBe(false);
+    expect(retraitementsComplets(cartesRepondues({ ...vide, remuneration_dirigeant_reelle: 85000, remuneration_normative: 85000 }, { murs: MURS.tiers, exceptionnel_signale: "Non" }, MURS.dirigeant))).toBe(true);
+  });
+  it("a file already filled (the sample file) opens with the three cards closed, with their summary", () => {
+    const d = REPONSES_EXEMPLE.dirigeant, r = REPONSES_EXEMPLE.retraitements;
+    const rep = cartesRepondues({ remuneration_dirigeant_reelle: d.remuneration_dirigeant_reelle, remuneration_normative: d.remuneration_normative, exceptionnels: r.exceptionnels }, { murs: r.murs, exceptionnel_signale: r.exceptionnel_signale }, MURS.dirigeant);
+    expect(rep).toEqual({ remuneration: true, loyer: true, exceptionnels: true });
+    expect(carteAOuvrir(rep)).toBeNull();
   });
 });

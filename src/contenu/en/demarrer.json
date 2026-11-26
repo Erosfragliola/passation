@@ -345,10 +345,7 @@
       "effet_annee": "Effect on {annee} EBITDA: {montant}",
       "effet_attente": "Effect on EBITDA: enter both amounts.",
       "sans_effet": "No effect on EBITDA.",
-      "dirigeant_titre": "Your pay",
       "dirigeant_aide": "The adjustment that weighs most: the gap between what you cost and what a salaried manager would cost is added to EBITDA (or removed).",
-      "loyer_titre": "The rent of your premises",
-      "exc_titre": "One-off expenses and income",
       "sens": "Expense or income",
       "charge": "One-off expense (added back)",
       "produit": "One-off income (removed)",
@@ -356,7 +353,22 @@
       "credit_bail_aide": "It does not change EBITDA: its payments stay in it. The remaining principal is counted at the next step, with your debts. This convention may undervalue a company that finances its equipment through leasing: discuss it with your advisor.",
       "valider": "Approve these adjustments",
       "il_manque": "Missing: {liste}.",
-      "exc_vide": "Enter at least one one-off amount, or answer “No”."
+      "exc_vide": "Enter at least one one-off amount, or answer “No”.",
+      "cartes": {
+        "remuneration": "Your pay",
+        "loyer": "The rent of your premises",
+        "exceptionnels": "Exceptional items"
+      },
+      "suivant": "Next",
+      "modifier": "Edit",
+      "resume": {
+        "remuneration": "Pay: {effet} on EBITDA",
+        "remuneration_neutre": "Pay: no effect on EBITDA",
+        "loyer": "Rent: {effet} on EBITDA",
+        "loyer_neutre": "Rent: no effect on EBITDA",
+        "exceptionnels": "Exceptional items: {effet} on EBITDA",
+        "exceptionnels_aucun": "Exceptional items: none"
+      }
     },
     "dette": {
       "titre": "Net debt and scope of the sale",

@@ -1037,7 +1037,8 @@ nav.etapes.onglets a { padding: 8px 14px; }
 
 /* ====================================================== Lighter owner's path (audit of 25/11/2026) */
 /* Help folded behind a « ? »: same round button as the EBITDA help; the help unfolds below the field */
-.lib-ligne { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.lib-ligne { display: flex; align-items: flex-start; gap: 8px; flex-wrap: nowrap; }
+.lib-ligne > :first-child { flex: 0 1 auto; min-width: 0; }
 .lib-ligne > .guide-lib, .lib-ligne > label { margin: 0; }
 .aide-bouton { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--trait-fort); background: #FFFDF8; color: var(--espresso); font: 600 13px/1 var(--sans); cursor: pointer; flex: none; padding: 0; }
 .aide-bouton[aria-expanded="true"] { background: var(--vert); color: #F6F1E6; border-color: var(--vert); }
@@ -1048,3 +1049,20 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .accueil-durees li { display: flex; gap: 8px; align-items: baseline; }
 .exercices-sans { margin: 8px 0 0; text-align: right; }
 @media (max-width: 640px) { .exercices-sans { text-align: left; } }
+/* Adjustments: one card at a time; the EBITDA line stays visible (sticky under the header on a phone) */
+.rt-cartes { display: grid; gap: 10px; }
+.rt-carte { padding: 0; }
+.rt-tete { display: flex; align-items: center; gap: 8px; padding: 14px 18px; }
+.rt-tete h2 { margin: 0; flex: 1; font-size: 18px; }
+.rt-titre { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: inherit; text-align: left; cursor: pointer; }
+.rt-num { width: 26px; height: 26px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 13px; border: 1px solid var(--trait-fort); flex: none; }
+.rt-carte.repondue:not(.ouverte) .rt-num { background: var(--vert); color: #F6F1E6; border-color: var(--vert); }
+.rt-resume { margin: -6px 18px 14px 54px; font-size: 14.5px; color: var(--pierre-texte); }
+.rt-corps { padding: 0 18px 18px; display: grid; gap: 12px; }
+.rt-suivant { display: flex; justify-content: flex-end; }
+.rt-credit-bail { margin: 12px 4px 0; display: grid; gap: 6px; font-size: 14.5px; color: var(--pierre-texte); }
+.rt-credit-bail p { margin: 0; }
+@media (max-width: 640px) {
+  .retraitements-tete { position: sticky; top: 72px; z-index: 5; box-shadow: 0 6px 16px rgba(35, 30, 24, .08); }
+  .rt-resume { margin-left: 18px; }
+}
