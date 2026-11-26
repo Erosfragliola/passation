@@ -10,7 +10,7 @@
 //      la page du dossier)
 import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe as texteAideEbe } from "/js/champs-financiers.js";
 import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
-import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe, VALORISATION, champsVisibles, manquesValorisation, etatValorisation, MURS } from "/js/parcours.js";
+import { QUESTIONS, positionQuestion, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe, VALORISATION, champsVisibles, manquesValorisation, etatValorisation, MURS } from "/js/parcours.js";
 import { TEMPS, ETAPE_DE_L_ECRAN, etiquetteExpress, etiquetteTitres, etatParcours, ecranFinal, alertesDirigeant, explicationEcart, resumeValorisation } from "/js/dossier-parcours.js";
 import { apercuRetraitements, ebeExercice, kEuros, fois, pontValeur, situationAncc, texteAncc } from "/js/valeur-pont.js";
 import { moisSource } from "/js/landing/estimation.js";
@@ -863,7 +863,8 @@ function compteur() {
   if (!S.aPoser) S.aPoser = questionsAPoser(S.reponses, S.vues);
   const cle = cleEcran();
   if (cle && !S.aPoser.includes(cle)) S.aPoser = [...S.aPoser, cle].sort((a, b) => ordre(a) - ordre(b)); // revenue d'elle-même (« Retour »)
-  const n = S.aPoser.indexOf(cle) + 1, total = S.aPoser.length;
+  // Fixed position among every screen of « Your company » (the list above only serves « Back »)
+  const { n, total } = positionQuestion(cle) || { n: S.aPoser.indexOf(cle) + 1, total: S.aPoser.length };
   return el("div", { class: "q-tete" }, el("p", { class: "q-compteur", text: t("demarrer.js.question_n", { n, total }) }),
     el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round((n / total) * 100)}%` })));
 }

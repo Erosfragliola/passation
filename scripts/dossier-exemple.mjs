@@ -11,8 +11,10 @@ export const ENTREPRISE_EXEMPLE = { siren: SIREN_EXEMPLE, nom: "MENUISERIE EXEMP
 
 /** Fictitious tax return of docs/DEMO.md (euros). */
 export const EXERCICES_EXEMPLE = {
-  2024: { chiffre_affaires: 2200000, autres_produits: 0, achats_consommes: 880000, charges_externes: 320000, impots_taxes: 40000, charges_personnel: 640000, dotations_amortissements: 66000, stocks: 180000, creances_clients: 370000, placements: 50000, tresorerie: 210000, capitaux_propres: 590000, provisions_risques: 20000, emprunts: 340000, dettes_fournisseurs: 230000, dettes_fiscales_sociales: 140000 },
-  2025: { chiffre_affaires: 2400000, autres_produits: 0, achats_consommes: 960000, charges_externes: 340000, impots_taxes: 40000, charges_personnel: 680000, dotations_amortissements: 72000, stocks: 200000, creances_clients: 400000, placements: 50000, tresorerie: 250000, capitaux_propres: 700000, provisions_risques: 20000, emprunts: 300000, dettes_fournisseurs: 250000, dettes_fiscales_sociales: 150000 },
+  // Net fixed assets that balance each balance sheet (liabilities 1,320,000 and 1,420,000; assets without them 810,000
+  // and 900,000): 510,000 and 520,000. Not used by the valuation (docs/DEMO.md results unchanged)
+  2024: { immobilisations_nettes: 510000, chiffre_affaires: 2200000, autres_produits: 0, achats_consommes: 880000, charges_externes: 320000, impots_taxes: 40000, charges_personnel: 640000, dotations_amortissements: 66000, stocks: 180000, creances_clients: 370000, placements: 50000, tresorerie: 210000, capitaux_propres: 590000, provisions_risques: 20000, emprunts: 340000, dettes_fournisseurs: 230000, dettes_fiscales_sociales: 140000 },
+  2025: { immobilisations_nettes: 520000, chiffre_affaires: 2400000, autres_produits: 0, achats_consommes: 960000, charges_externes: 340000, impots_taxes: 40000, charges_personnel: 680000, dotations_amortissements: 72000, stocks: 200000, creances_clients: 400000, placements: 50000, tresorerie: 250000, capitaux_propres: 700000, provisions_risques: 20000, emprunts: 300000, dettes_fournisseurs: 250000, dettes_fiscales_sociales: 150000 },
 };
 
 /** Answers of the two stages (same keys as the guided steps). Screens validated by the owner: "vues". */

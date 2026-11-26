@@ -203,12 +203,24 @@ export async function cleDuCalcul(env, row) {
   return empreinte(JSON.stringify({ e, H, m: MULTIPLES.version }));
 }
 
-/** Approval of the figures: null if never given; otherwise { le, a_jour } (a_jour: inputs unchanged since). */
+/**
+ * Approval of the figures: null if never given; otherwise { le, a_jour }. Up to date (audit of 25/11/2026) while the
+ * range the owner approved (low and high, to the thousand euros) is still the current range: an answer the range does
+ * not use (growth, without a size premium the DCF is not calculated) no longer asks for a new approval. The key of the
+ * inputs is only a shortcut (same inputs, same range); an approval recorded without its range falls back on it.
+ */
 export async function etatValidation(env, row, reponses) {
   const v = reponses?.validation;
   if (!Number.isFinite(v?.le)) return null;
-  return { le: v.le, a_jour: !v.cle || v.cle === await cleDuCalcul(env, row) };
+  const cle = await cleDuCalcul(env, row);
+  if (!v.cle || v.cle === cle) return { le: v.le, a_jour: true };
+  if (!Number.isFinite(v.bas) || !Number.isFinite(v.haut)) return { le: v.le, a_jour: false };
+  const { resultat } = await calculer(env, row);
+  return { le: v.le, a_jour: resultat?.statut === "ok" && memeFourchette(v, resultat.synthese) };
 }
+/** Same range to the thousand euros (low and high). */
+export const memeFourchette = (a, b) => [a?.bas, a?.haut, b?.bas, b?.haut].every(Number.isFinite)
+  && Math.round(a.bas / 1000) === Math.round(b.bas / 1000) && Math.round(a.haut / 1000) === Math.round(b.haut / 1000);
 
 /**
  * Calculation of « Your value », saved only if its inputs changed since the last one saved (no new row at every visit).

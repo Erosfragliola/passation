@@ -37,10 +37,11 @@ export function controlerExercice(lignes, { caPublic = null, precedent = null } 
     ajoute("ca_public", "alerte", ["chiffre_affaires"], tr("serveur.controles.ca_public", { saisi: fmt(ca), publie: fmt(caPublic) }));
   }
 
-  // Balance sheet: assets ≈ liabilities (3% tolerance: accruals not detailed here)
+  // Balance sheet: assets ≈ liabilities (3% tolerance: accruals not detailed here). Only when the net fixed assets are
+  // entered: they are optional, and without them the assets are always short (false alert, audit of 25/11/2026)
   const a = ACTIF.map((k) => v(lignes, k)), p = PASSIF.map((k) => v(lignes, k));
   const nA = a.filter((x) => x !== null).length, nP = p.filter((x) => x !== null).length;
-  if (nA >= 4 && nP >= 4) {
+  if (v(lignes, "immobilisations_nettes") !== null && nA >= 4 && nP >= 4) {
     const tA = a.reduce((s, x) => s + (x ?? 0), 0), tP = p.reduce((s, x) => s + (x ?? 0), 0);
     if (ecart(tA, tP) > 0.03) ajoute("bilan", "attention", [...ACTIF, ...PASSIF].filter((k) => v(lignes, k) !== null), tr("serveur.controles.bilan", { actif: fmt(tA), passif: fmt(tP) }));
   }
