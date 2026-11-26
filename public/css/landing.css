@@ -247,19 +247,6 @@
 @media (max-width: 559px) { .landing .faq .reponse { padding-right: 0; } }
 
 /* ---------- Appel final : carte verte (plus d'ocre) ---------- */
-.carte-relance { position: relative; background: var(--vert-carte); text-align: center; padding: clamp(40px, 6vw, 96px) clamp(20px, 4vw, 48px); }
-.landing .relance h2 { margin: 0 auto; max-width: 820px; font-size: clamp(36px, 4.6vw, 64px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; color: #F7F1EA; }
-.landing .relance h2 em { color: var(--ocre-nuit); }
-.landing .relance-texte { margin: 20px auto 0; max-width: 600px; font-size: 20px; line-height: 1.55; color: #E3ECE5; }
-.landing .relance-champ { max-width: 620px; margin: 30px auto 0; text-align: left; }
-.relance-champ .recherche-champ { padding: 6px; gap: 6px; background: var(--carte-claire); box-shadow: none; }
-.relance-champ .recherche-champ:focus-within { box-shadow: 0 0 0 3px var(--ocre-nuit); }
-.carte-relance .recherche-message, .landing .carte-relance .relance-telephone { color: #E3ECE5; }
-.carte-relance :focus-visible { outline-color: var(--ocre-nuit); }
-.relance-champ input { min-height: 52px; font-size: 18px; }
-.relance-champ .btn { min-height: 52px; }
-.landing .relance-telephone { margin: 18px 0 0; font-size: 16px; }
-.relance-telephone a { color: inherit; font-weight: 600; text-underline-offset: 3px; }
 
 /* ---------- Pied de page : grand logo ---------- */
 .landing .pied { margin-top: var(--espace-section); padding: 0; border: 0; background: var(--encre); color: #F7F1EA; overflow: hidden; }
@@ -357,7 +344,6 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
   .nav-champ { top: calc(var(--haut-entete) + 2px); left: var(--marge-entete); right: var(--marge-entete); width: auto; transform: none; }
   html.champ-en-haut .nav-zone { padding-bottom: 56px; }
 }
-
 
 /* ---------- Vidéo du hero : bouton pause, métier ---------- */
 .hero-pause {

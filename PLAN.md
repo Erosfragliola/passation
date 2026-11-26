@@ -710,3 +710,19 @@ model to be defined later by the user (business plan in progress).
   - Panel: « Compléter les comptes 2023, 2024 » when entered fiscal years are still left out; « Cette page / Toutes »
     filter (the improvements of the page on screen by default).
   - Review: Claude is asked for corrections no longer than the passage they replace.
+- **26/11/2026, branch `parcours-allege`** (PR, not merged, not deployed), owner's path made lighter after the audit of
+  25/11:
+  - Fixes: the approval stays up to date while the approved range (low and high, to the thousand euros) is unchanged;
+    the balance check runs only when net fixed assets are entered (example file: 510 k€ in 2024, 520 k€ in 2025);
+    the question counter counts over all the screens of « Votre entreprise ».
+  - Text: one sentence of 15 words at most under each title, field help behind an accessible « ? », no sentence at
+    the bottom of the screens, no slider on euro amounts, the « Réponses préparées… » line removed.
+  - Net debt: the items are ticked first (or « Aucun »), then one field per ticked item; unticking erases the amount.
+  - Adjustments: one card at a time (pay, rent, exceptional items) under a sticky EBITDA line; leasing as one line
+    with a « ? »; « Valider » waits for the three cards.
+  - File page: compact step bar, value card on one line, one « Prochaine étape » card (approve again → resume →
+    memorandum points → documents, two secondary links at most); documents to gather folded until the memorandum
+    is ready.
+  - Home page: 300 words at most in French; sections that repeated an argument removed (confidentiality, final call,
+    sources band, hero bubbles, duplicate documents list).
+  - Pure functions tested: `public/js/dette-elements.js`, `retraitements-cartes.js`, `prochaineEtape`. Tests: 671.

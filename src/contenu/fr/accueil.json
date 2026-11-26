@@ -25,7 +25,6 @@
     "principale": "Navigation principale",
     "comment": "Comment ça marche",
     "livrables": "Exemple de dossier",
-    "confidentialite": "Confidentialité",
     "guides": "Guides",
     "questions": "Questions",
     "espace": "Mon dossier",
@@ -45,7 +44,7 @@
   "hero": {
     "surtitre": "Préparer la cession de votre PME",
     "titre": "Vous avez bâti. Préparez votre *transmission*.",
-    "sous_titre": "Une première valeur de votre entreprise en quelques secondes. Puis le dossier complet, prêt pour vos conseils et vos repreneurs.",
+    "sous_titre": "Une première valeur en quelques secondes, puis le dossier complet pour vos repreneurs.",
     "note_comptes": "",
     "preuves": {
       "dirigeants": "*{nb_dirigeants}* dirigeants accompagnés",
@@ -62,22 +61,12 @@
         "chiffre": "30 s",
         "texte": "pour une première fourchette de valeur"
       },
-      "methodes": {
-        "chiffre": "3 sources",
-        "texte": "de multiples croisées, pour une fourchette que vous pouvez défendre"
-      },
       "code": {
         "titre": "Votre nom de code",
         "code": "Projet Chêne",
         "valeur": "1,8 – 2,4 M€",
         "fictif": "exemple fictif"
-      },
-      "docs": [
-        "Valorisation",
-        "Teaser",
-        "Mémorandum",
-        "Datapack"
-      ]
+      }
     }
   },
   "comment": {
@@ -86,18 +75,12 @@
       {
         "chiffre": "30 secondes",
         "titre": "Une première fourchette de valeur",
-        "texte": "Tapez le nom ou le SIREN de votre société : sa fiche publique s’affiche aussitôt. Créez votre accès gratuit pour voir la fourchette, calculée à partir des registres publics. Personne n’est averti.",
-        "obtenez": "Vous obtenez une fourchette de valeur et le nom de code de votre dossier.",
-        "pastilles": [
-          "Gratuit",
-          "Accès protégé"
-        ]
+        "texte": "Tapez le nom ou le SIREN : la fiche publique s'affiche, puis votre fourchette."
       },
       {
         "chiffre": "Multiples du secteur",
         "titre": "Une fourchette sourcée",
-        "texte": "Vous complétez quelques chiffres clés. Passation applique les multiples d’EBE (excédent brut d’exploitation) de votre secteur, sources datées, et contrôle le résultat par l’actif net.",
-        "obtenez": "Vous obtenez une fourchette, avec le détail du calcul et ses sources.",
+        "texte": "Vous complétez quelques chiffres ; Passation applique les multiples du secteur.",
         "pastilles": [
           "{duree_etape2}",
           "{prix_etape2}"
@@ -106,8 +89,7 @@
       {
         "chiffre": "9 chapitres",
         "titre": "Teaser, mémo et datapack",
-        "texte": "Le teaser, anonyme, pour intéresser des repreneurs. Le mémo pour raconter toute votre entreprise. Le datapack, le fichier Excel des chiffres. Vous relisez, vous partagez.",
-        "obtenez": "Vous obtenez le teaser, le mémorandum et le datapack Excel, modifiables.",
+        "texte": "Vous relisez, vous corrigez, vous partagez.",
         "pastilles": [
           "À votre rythme",
           "{prix_dossier}"
@@ -148,36 +130,9 @@
       ]
     }
   },
-  "pourquoi": {
-    "sources": "Données issues des registres publics officiels"
-  },
+  "pourquoi": {},
   "confidentialite": {
-    "titre": "Personne ne saura. Sauf ceux que vous choisirez.",
-    "texte": "Préparer une cession demande de la discrétion. Comme dans les grandes cessions, votre dossier reçoit un nom de code.",
-    "garanties": [
-      {
-        "titre": "Accès réservé",
-        "texte": "Connexion par code à usage unique, envoyé par e-mail. Vous seul voyez votre dossier."
-      },
-      {
-        "titre": "Teaser anonyme, sous nom de code",
-        "texte": "Ni nom, ni ville, ni chiffre identifiant. Vous choisissez quand vous dévoiler."
-      },
-      {
-        "titre": "Aucune revente",
-        "texte": "Vos données servent uniquement aux traitements que vous demandez."
-      },
-      {
-        "titre": "Suppression en un clic",
-        "texte": "Dossier, chiffres et fichiers : vous effacez tout quand vous le décidez."
-      }
-    ],
-    "politique": "Lire notre politique",
-    "fictif": "Exemple fictif",
-    "fiche": "Mémorandum d’information",
-    "avant": "Menuiserie Durand & Fils",
-    "apres": "Projet Chêne",
-    "exemple_alt": "Exemple fictif : le nom de l’entreprise devient Projet Chêne"
+    "apres": "Projet Chêne"
   },
   "equipe": {
     "surtitre": "Qui est derrière Passation",
@@ -283,18 +238,6 @@
       }
     ]
   },
-  "relance": {
-    "titre": "Et si on regardait *votre entreprise* ?",
-    "texte": "L’estimation est gratuite : en 30 secondes, une première idée de sa valeur, visible de vous seul une fois votre accès créé.",
-    "telephone": "Vous préférez parler à quelqu’un ? Appelez-nous au",
-    "livrables_titre": "Ce que contient votre dossier",
-    "livrables": [
-      "Une page anonyme, sous nom de code, pour intéresser des repreneurs.",
-      "La présentation complète de votre entreprise, en neuf chapitres.",
-      "Le fichier Excel de vos chiffres et du calcul de la valeur, en formules."
-    ],
-    "garanties_titre": "Nos garanties"
-  },
   "pied": {
     "identite": "",
     "avertissement": "Estimations indicatives, non contractuelles. Ne constitue pas un conseil juridique, fiscal ou financier.",
@@ -365,20 +308,12 @@
       "Nom de code attribué"
     ]
   },
-  "sources": {
-    "libelle": "Données issues de",
-    "liste": [
-      "INSEE",
-      "INPI",
-      "BODACC"
-    ]
-  },
   "dossier": {
     "titre": "Le dossier d’une grande cession, pour votre PME.",
-    "texte": "Ce que les banques d’affaires préparent pour les grandes entreprises, Passation le prépare pour la vôtre.",
+    "texte": "Ce que préparent les banques d'affaires, pour votre entreprise.",
     "documents": {
       "titre": "Trois documents, rédigés d’un coup",
-      "texte": "Au format des banques d’affaires, à partir de vos chiffres. Vous relisez, vous corrigez, vous transmettez.",
+      "texte": "À partir de vos chiffres. Vous relisez, vous transmettez.",
       "pilules": [
         "Teaser anonyme",
         "Mémorandum",
@@ -389,17 +324,15 @@
     "methodes": {
       "chiffre": "3",
       "titre": "sources de multiples croisées",
-      "texte": "Les multiples d’EBE (excédent brut d’exploitation) de votre secteur, croisés entre trois références datées, puis contrôlés par l’actif net. Chaque hypothèse est sourcée : une fourchette que vous pouvez défendre."
-    },
-    "liste": {
-      "etapes": [
-        "Valorisation",
-        "Teaser anonyme",
-        "Mémorandum",
-        "Datapack Excel"
-      ],
-      "legende": "Rédigé par l’IA, vérifié par vous",
-      "alt": "Exemple de dossier en cours : valorisation, teaser et mémorandum prêts, datapack en cours"
+      "texte": "Les multiples d'EBE de votre secteur, trois références datées, contrôlés par l'actif net."
     }
+  },
+  "sources": {
+    "libelle": "Données issues de",
+    "liste": [
+      "INSEE",
+      "INPI",
+      "BODACC"
+    ]
   }
 }

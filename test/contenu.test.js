@@ -147,9 +147,9 @@ describe("content file and home page", () => {
     expect(PAGE).toMatch(/<li data-si="prix_dossier" data-t="comment\.etapes\.2\.pastilles\.1">/);
     expect(PAGE).not.toMatch(/id="tarifs"|nav\.tarifs/);
   });
-  it("the parts in order (bento of 18/11/2026: file, steps, confidentiality); a single video tag", () => {
+  it("the parts in order (audit of 25/11/2026: each argument once; confidentiality and final call removed); a single video tag", () => {
     const ids = [...PAGE.matchAll(/<section id="([^"]+)"/g)].map((m) => m[1]);
-    expect(ids).toEqual(["accueil", "resultat", "livrables", "comment", "confidentialite", "equipe", "preuves", "guides", "questions", "relance"]);
+    expect(ids).toEqual(["accueil", "resultat", "livrables", "comment", "equipe", "preuves", "guides", "questions"]);
     expect(PAGE).toMatch(/<header class="nav-zone"[\s\S]*<main[\s\S]*<\/main>\s*<footer class="pied">/);
     expect(PAGE).not.toMatch(/id="essai"|id="parti-pris"|id="tarifs"|id="histoire"|histoire-page\.js|etabli-1200|parti-pris-video/);
     expect([...PAGE.matchAll(/<video class="([^"]+)"/g)].every((m) => m[1] === "hero-video")).toBe(true);
@@ -169,12 +169,15 @@ describe("content file and home page", () => {
     expect(legendeTemoignage({ prenom: "Anne", metier: "", ville: "Nantes" })).toBe("Anne, Nantes");
     expect(completer({ cles: { temoignages: [{ prenom: "A" }, { ville: "B" }] }, preuves: { x: 1 } }).preuves).toEqual({ x: 1, legendes: ["A", "B"] });
   });
-  it("bento: three steps, three blocks, hero notch with an example marked fictitious, real sources", () => {
+  it("bento: three steps, two blocks, hero notch with an example marked fictitious, real sources", () => {
     expect(PAGE).not.toMatch(/role="tablist"|role="tabpanel"|onglets\.js|data-dossier-final|hero-tuiles/);
     expect([...PAGE.matchAll(/<li class="parcours-etape" id="comment-(\d)" data-scene>/g)].map((m) => m[1])).toEqual(["1", "2", "3"]);
-    expect(PAGE.match(/<article class="bento-bloc /g)).toHaveLength(3);
+    // Two blocks (audit of 25/11/2026): the three documents and the three sources; the list repeating the documents is removed
+    expect(PAGE.match(/<article class="bento-bloc /g)).toHaveLength(2);
     expect(PAGE.match(/href="#livrables"/g).length).toBeGreaterThanOrEqual(2);           // menu, mobile menu
-    expect(PAGE.match(/class="hero-bulle /g)).toHaveLength(4);                           // four bubbles placed in the shape
+    // Two bubbles placed in the shape (audit of 25/11/2026): « 30 s » and the code-name example; « 3 sources » and the
+    // four document labels are said once, further down
+    expect(PAGE.match(/class="hero-bulle /g)).toHaveLength(2);
     expect(PAGE).toMatch(/<div class="hero-scene" id="hero-scene">[\s\S]*class="conteneur hero-contenu"/);           // the text is inside the shape
     expect(PAGE).not.toMatch(/pied-trousseau|resultat-suites|btn-autre/);
     expect(contenu.hero.bulles.code.fictif).toBe("exemple fictif");                      // never presented as real
@@ -185,12 +188,10 @@ describe("content file and home page", () => {
     const SCENES = readFileSync(new URL("../public/js/landing/scenes.js", import.meta.url), "utf8");
     expect(SCENES).toMatch(/prefers-reduced-motion: reduce/);                            // final state directly
     expect(SCENES).toMatch(/unobserve/);                                                 // only once
-    expect(PAGE.match(/data-scene/g)).toHaveLength(4);                                   // three steps and the stamp
+    expect(PAGE.match(/data-scene/g)).toHaveLength(3);                                   // the three steps
     expect(PAGE.match(/data-t="comment\.illustrations\.fictif"/g)).toHaveLength(2);     // steps 1 and 2 (example figures)
     expect(contenu.comment.illustrations.fictif).toBe("exemple fictif");
-    expect(contenu.confidentialite.fictif).toBe("Exemple fictif");
-    expect(PAGE).toMatch(/class="confid-tampon"><span data-t="confidentialite\.apres">/);
-    expect(contenu.comment.etapes.every((e) => e.obtenez && e.chiffre)).toBe(true);
+    expect(contenu.comment.etapes.every((e) => e.chiffre && e.texte && !e.obtenez)).toBe(true);
   });
   it("batch 1: result card with a single action, footer with the large name", () => {
     expect(PAGE).not.toMatch(/dossier-cta|resultat-dossier/);
