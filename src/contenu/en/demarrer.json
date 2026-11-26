@@ -143,7 +143,6 @@
         "one": "Approve {n} answer ",
         "other": "Approve {n} answers "
       },
-      "preparees": "{n} answers prepared",
       "titre": "We’ve prepared your answers",
       "aide": "Check them at a glance and untick anything inaccurate.",
       "une_par_une": "Answer one question at a time"
@@ -211,9 +210,9 @@
       },
       "relire_memo": "Review the memorandum",
       "memo_aide": {
-        "zero": "It’s the document the buyer will read in full: review it chapter by chapter. Add a photo to illustrate it.",
-        "one": "With your photo. It’s the document the buyer will read in full: review it chapter by chapter.",
-        "other": "With your {photos} photos. It’s the document the buyer will read in full: review it chapter by chapter."
+        "zero": "The document the buyer will read in full. Add a photo.",
+        "one": "With your photo; the buyer will read it in full.",
+        "other": "With your {photos} photos; the buyer will read it in full."
       },
       "revoir_reponses": "Review your answers"
     },
@@ -375,10 +374,8 @@
       "aide": "What separates the company's value from the value of your shares.",
       "bilan_titre": "What your {annee} balance sheet says",
       "bilan_vide": "Your balance sheet shows neither cash nor borrowings.",
-      "bilan_aide": "Taken from your figures.",
       "corriger": "Correct your figures",
       "perimetre_titre": "The scope",
-      "perimetre_aide": "Who is the buyer buying the shares from, and what does the sale include?",
       "murs": "Your premises: {murs}.",
       "modifier": "Change",
       "valider": "Approve and see my value",

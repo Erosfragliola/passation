@@ -916,7 +916,6 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .eq-ajouter { border: 1px dashed var(--trait-fort); border-radius: 18px; padding: 14px; background: none; font: 500 15px var(--sans); cursor: pointer; color: var(--vert); }
 .eq-ajouter:disabled { color: var(--pierre-texte); cursor: not-allowed; }
 .eq-retirer { justify-self: start; }
-.eq-rgpd { margin-top: 12px; }
 @media (max-width: 640px) {
   .eq-deux, .eq-exp { grid-template-columns: minmax(0, 1fr); }
   .eq-photo-zone { grid-template-columns: 72px minmax(0, 1fr); }
@@ -1078,3 +1077,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
 #prochaine.alerte #prochaine-texte { color: #8E5530; font-weight: 600; }
 .prochaine-liens { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14.5px; }
 .prochaine-liens a, .prochaine-liens .lien-simple { color: var(--vert); }
+/* Section titles and the team subtitle with their « ? » (help folded, audit of 25/11/2026) */
+.lib-ligne > h2 { margin: 0; }
+.lib-ligne:has(> h2) { align-items: center; margin-bottom: 10px; }
+.lib-ligne > .chapo-petit { margin: 0; }

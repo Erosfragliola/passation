@@ -586,9 +586,9 @@ function dette() {
   remplir(...titre(t("demarrer.js.dette.titre"), t("demarrer.js.dette.aide")),
     el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.bilan_titre", { annee }) }),
       bilan.length ? el("dl", { class: "guide-resume dette-bilan" }, ...bilan.map(([k, s]) => el("div", {}, el("dt", { text: libelleEcran(CHAMPS.find((c) => c.cle === k)) }), el("dd", { text: kEuros(s * ex[k]) })))) : el("p", { class: "petit", text: t("demarrer.js.dette.bilan_vide") }),
-      el("p", { class: "petit" }, t("demarrer.js.dette.bilan_aide"), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.dette.corriger")))),
+      el("p", { class: "petit" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.dette.corriger")))),
     el("section", { class: "carte retraitement" }, el("h2", { id: "dette-elements-titre", text: t("demarrer.js.dette.elements_question") }), groupe, zoneChamps),
-    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.perimetre_titre") }), el("p", { class: "petit", text: t("demarrer.js.dette.perimetre_aide") }),
+    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.perimetre_titre") }),
       choixValorisation(C.detention, choix),
       el("p", { class: "petit dette-murs" }, t("demarrer.js.dette.murs", { murs: S.reponses.retraitements?.murs ? libelleOption("murs", S.reponses.retraitements.murs) : "–" }), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.dette.modifier"))),
       mursAVous ? choixValorisation(C.murs_cession, choix) : null,
@@ -656,12 +656,11 @@ async function valeur() {
       ecart ? el("p", { class: "petit", text: ecart }) : null,
       validee ? el("p", { class: "petit valeur-validee", text: t("demarrer.js.valeur.validee_le", { date: new Date(validee.le * 1000).toLocaleDateString(locale()) }) }) : null,
       aRevalider ? el("p", { class: "valeur-revalider", role: "status", text: t("dossier.taches.valeur.a_revalider") }) : null),
-    p ? el("section", { class: "carte valeur-pont" }, el("h2", { text: t("demarrer.js.valeur.pont_titre") }),
+    p ? el("section", { class: "carte valeur-pont" }, ...libelleAvecAide("h2", {}, t("demarrer.js.valeur.pont_titre"), t("demarrer.js.valeur.source_multiples", { mois: mois || "–" })),
       el("div", { class: "tableau-defile", tabindex: "0" }, el("table", { class: "tableau-resultat" },
         el("caption", { class: "visuellement-cache", text: t("demarrer.js.valeur.pont_titre") }),
         el("thead", {}, el("tr", {}, el("th", { scope: "col", text: t("demarrer.js.valeur.pont.etape") }), el("th", { scope: "col", class: "num", text: t("demarrer.js.valeur.pont.bas") }), el("th", { scope: "col", class: "num", text: t("demarrer.js.valeur.pont.haut") }))),
-        el("tbody", {}, ...lignes))),
-      el("p", { class: "petit", text: t("demarrer.js.valeur.source_multiples", { mois: mois || "–" }) })) : null,
+        el("tbody", {}, ...lignes)))) : null,
     points.length ? el("section", { class: "carte valeur-points" }, el("h2", { text: t("demarrer.js.valeur.points_titre", { n: points.length }) }), el("ul", { class: "alertes" }, ...points.map((a) => el("li", { text: a })))) : null,
     ancc ? el("section", { class: "carte valeur-ancc" }, el("h2", { text: t("demarrer.js.valeur.ancc_titre") }), el("p", { text: ancc })) : null,
     modifier,
@@ -1016,7 +1015,6 @@ function recapitulatif() {
     } catch (e) { message(e.message, true); bouton.disabled = false; }
   });
   remplir(
-    el("p", { class: "q-compteur", text: t("demarrer.js.recap.preparees", { n: liste.length }) }),
     ...titre(t("demarrer.js.recap.titre"), t("demarrer.js.recap.aide")),
     el("ul", { class: "recap-liste" }, ...liste.map((q) => {
       const cb = el("input", { type: "checkbox", id: `recap-${q.id}`, checked: true });
@@ -1180,8 +1178,7 @@ async function photos() {
     ...titre(t("demarrer.js.photos.titre"), t("demarrer.js.photos.aide_jugement")),
     el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.logo_titre") }),
       zoneLogo({ memo, baseMemo, logos: s.logos || [], idBase: "parcours-logo", surChange: (m) => { S.memo = m; } })),
-    el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.ajouter_titre") }),
-      el("p", { class: "petit", text: s.url ? t("demarrer.js.photos.aide_site") : t("demarrer.js.photos.aide_sans_site") }),
+    el("section", { class: "carte photos-bloc" }, ...libelleAvecAide("h2", { class: "photos-sous-titre" }, t("demarrer.js.photos.ajouter_titre"), s.url ? t("demarrer.js.photos.aide_site") : t("demarrer.js.photos.aide_sans_site")),
       depot,
       grille ? el("div", { class: "guide-champ" }, el("p", { class: "guide-lib", id: "photos-site-titre", text: t("demarrer.js.photos.cliquez_ajouter") }), el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max }) }), grille) : null,
       ecartees.length ? el("p", { class: "petit", text: t("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => t(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null),
@@ -1287,9 +1284,10 @@ function equipe() {
     aller(etapeCourante());
   });
   remplir(
-    ...titre(t("demarrer.js.equipe.titre"), t("demarrer.js.equipe.aide")),
+    titre(t("demarrer.js.equipe.titre"))[0],
+    // Where the names go (privacy) behind a « ? » next to the subtitle, not at the bottom of the screen
+    ...libelleAvecAide("p", { class: "chapo-petit" }, t("demarrer.js.equipe.aide"), t("demarrer.js.equipe.rgpd")),
     el("div", { class: "eq-personnes" }, ...L.map(carte), ajouterP),
-    el("p", { class: "petit eq-rgpd", text: t("demarrer.js.equipe.rgpd") }),
     el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { sauverEquipe(true); equipeEtat = null; aller("photos"); } }, t("demarrer.js.retour")), continuer));
 }
 
@@ -1454,9 +1452,9 @@ async function pret() {
   const b = e.nouvelleEtape;
   remplir(...titre(f.titre, f.aide),
     b ? el("div", { class: "bandeau-etape", role: "status", "data-genre": b.genre }, el("p", { text: b.texte }), el("a", { class: "btn btn-noir btn-mini", href: b.href }, b.bouton, " →")) : null,
-    v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), el("a", { href: v.lien.href, text: v.lien.texte })) : null,
+    v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), v.lien ? el("a", { href: v.lien.href, text: v.lien.texte }) : null) : null,
     restent.length ? el("div", { class: "fin-reste" }, el("h2", { text: f.resteTitre }),
-      el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }), x.detail ? el("span", { class: "petit", text: ` · ${x.detail}` }) : null)))) : null,
+      el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }))))) : null,
     el("section", { class: "fin-memo", "aria-labelledby": "fin-memo-titre" }, couverture,
       el("div", { class: "fin-memo-texte" }, etatDoc(m),
         el("h2", { id: "fin-memo-titre", text: t("memo.memorandum_information") }),

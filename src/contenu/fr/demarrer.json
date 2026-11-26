@@ -143,7 +143,6 @@
         "one": "Valider {n} réponse ",
         "other": "Valider {n} réponses "
       },
-      "preparees": "{n} réponses préparées",
       "titre": "Nous avons préparé vos réponses",
       "aide": "Vérifiez-les d'un coup d'œil et décochez ce qui est inexact.",
       "une_par_une": "Répondre question par question"
@@ -211,9 +210,9 @@
       },
       "relire_memo": "Relire le mémorandum",
       "memo_aide": {
-        "zero": "C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre. Ajoutez une photo pour l'illustrer.",
-        "one": "Avec votre photo. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre.",
-        "other": "Avec vos {photos} photos. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre."
+        "zero": "Le document que le repreneur lira en entier. Ajoutez une photo.",
+        "one": "Avec votre photo ; le repreneur le lira en entier.",
+        "other": "Avec vos {photos} photos ; le repreneur le lira en entier."
       },
       "revoir_reponses": "Revoir vos réponses"
     },
@@ -375,10 +374,8 @@
       "aide": "Ce qui sépare la valeur de l'entreprise de celle de vos titres.",
       "bilan_titre": "Ce que dit votre bilan {annee}",
       "bilan_vide": "Votre bilan n'indique ni trésorerie ni emprunt.",
-      "bilan_aide": "Repris de vos chiffres.",
       "corriger": "Corriger vos chiffres",
       "perimetre_titre": "Le périmètre",
-      "perimetre_aide": "À qui le repreneur achète-t-il les parts, et que comprend la cession ?",
       "murs": "Vos locaux : {murs}.",
       "modifier": "Modifier",
       "valider": "Valider et voir ma valeur",
