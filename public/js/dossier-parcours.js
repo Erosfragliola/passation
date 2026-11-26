@@ -301,7 +301,7 @@ export function etatParcours(d, memo = null, teaser = null) {
     valeur = { etiquette: etiquetteTitres(), bas: v.bas, haut: v.haut,
       base: fait.valeur ? t("dossier.valeur.base_titres") : t("dossier.valeur.base_titres_a_valider"),
       ecart: explicationEcart(est, v),
-      lien: fait.valeur ? { texte: t("dossier.valeur.voir_detail"), href: `${liens.valorisation}#valorisation` } : { texte: t("dossier.valeur.verifier"), href: etape("valeur") } };
+      lien: fait.valeur ? { texte: t("dossier.valeur.voir_detail"), href: `${liens.valorisation}#valorisation` } : null };
   } else if (est?.statut === "ok") {
     valeur = { etiquette: `${etiquetteExpress()}${est.exercice ? ` · ${t("dossier.valeur.comptes", { annee: est.exercice })}` : ""}`, bas: est.bas, haut: est.haut,
       base: t("dossier.valeur.base_express"),
@@ -312,11 +312,29 @@ export function etatParcours(d, memo = null, teaser = null) {
       ecart: null, lien: { texte: t("dossier.valeur.saisir"), href: liens.demarrer } };
   }
 
+  const prochaine = prochaineEtape({ aRevalider, pret, etapes, actuelle, lienEtape, nbACompleter: m?.nbACompleter || 0, liens, taches, finale: etape("pret") });
   return {
-    etapes, temps, actuelle, fait, pret, redige, valorisationFaite, nouvelleEtape, avancement: pct, action, taches: affichees, secondaires, documents, valeur,
+    etapes, temps, actuelle, fait, pret, redige, valorisationFaite, nouvelleEtape, avancement: pct, action, prochaine, taches: affichees, secondaires, documents, valeur,
     questions: { faits: q.faits || 0, total: q.total || 0, restantes, noms: (q.restantes || []).map(nomQuestion) },
     pieces: { fournies, total: NB_PIECES, ouvert: pret && manquantes > 0 && affichees.length > 0 && affichees.every((x) => x.cle === "pieces") },
   };
+}
+
+/**
+ * « Next step » card of the file page (audit of 25/11/2026): one button, for the first true situation in this order:
+ *   1. figures to approve again → « Your figures changed since your approval », « Check and approve » (alert style);
+ *   2. a step of the path is left → « Resume: {step} »;
+ *   3. points of the memorandum are left to complete → « Complete the memorandum ({n} points) »;
+ *   4. otherwise → « Review and download your documents ».
+ * Below the button, two secondary links at most (the optional tasks: a photo, the documents to gather…).
+ */
+export function prochaineEtape({ aRevalider = false, pret = false, etapes = [], actuelle = null, lienEtape = {}, nbACompleter = 0, liens = {}, taches = [], finale = "" }) {
+  const secondaires = (exclure) => taches.filter((x) => x.facultatif && x.cle !== exclure).slice(0, 2).map((x) => ({ texte: x.titre, href: x.href, pieces: Boolean(x.pieces) }));
+  if (aRevalider) return { cas: "revalider", alerte: true, texte: t("dossier.prochaine.revalider"), bouton: t("dossier.prochaine.revalider_bouton"), href: lienEtape.valeur, liens: secondaires() };
+  const reste = !pret && etapes.find((e) => e.cle === actuelle && e.etat !== "fait");
+  if (reste) return { cas: "reprendre", texte: null, bouton: t("dossier.prochaine.reprendre", { etape: reste.libelle }), href: lienEtape[actuelle] || liens.demarrer, liens: secondaires() };
+  if (nbACompleter > 0) return { cas: "memo", texte: null, bouton: t("dossier.prochaine.memo", { n: nbACompleter }), href: liens.memo, liens: secondaires("a-completer") };
+  return { cas: "documents", texte: null, bouton: t("dossier.prochaine.documents"), href: finale, liens: secondaires() };
 }
 
 /** Écran final du parcours guidé : « prêt » seulement si tout l'indispensable est fait ; sinon ce qui reste, nommé

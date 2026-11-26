@@ -3,7 +3,7 @@
   "questions": {
     "activite": {
       "titre": "What does your company do?",
-      "aide": "Tick your trades and your customers. We turn them into the opening sentence of the memorandum; you review it just below.",
+      "aide": "Tick your trades and customers; we turn them into the opening sentence.",
       "pourquoi": "It’s the first thing a buyer reads: your trades, your products or services, your customers.",
       "chapitre": "2.2 Business and know-how; 3.3 Customers",
       "champs": {
@@ -37,7 +37,7 @@
     },
     "histoire": {
       "titre": "Your company’s key dates",
-      "aide": "The registries already give us some dates. Add the milestones that matter: acquisition, expansion, new trade, key hire.",
+      "aide": "Add the milestones that matter: acquisition, expansion, new trade.",
       "pourquoi": "The memorandum’s timeline: it shows the company’s continuity.",
       "chapitre": "2.1 History and identity"
     },
@@ -133,11 +133,11 @@
     "retraitements": {
       "champs": {
         "remuneration_dirigeant_reelle": {
-          "libelle": "What you cost the company per year",
+          "libelle": "Your annual cost, payroll taxes included",
           "aide": "Salary and payroll taxes, or management fees and contributions."
         },
         "remuneration_normative": {
-          "libelle": "What a manager replacing you would cost",
+          "libelle": "Cost of a salaried manager who would replace you",
           "aide": "Salary and payroll taxes of a salaried manager doing your job. The same amount as yours: no adjustment."
         },
         "murs": {

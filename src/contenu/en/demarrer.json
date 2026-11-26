@@ -15,11 +15,11 @@
     "comptes": {
       "lecture": "Reading your tax return… (about 30 seconds)",
       "saisir_titre": "Enter the key figures from your accounts",
-      "saisir_aide": "About ten amounts, copied from your tax return or annual accounts. That’s what turns the first value into one you can defend.",
+      "saisir_aide": "About ten amounts, copied from your tax return.",
       "lecture_indisponible": "Automatic tax-return reading is not available right now.",
       "saisir_mes_chiffres": "Enter my figures",
       "deposer_titre": "Upload your latest tax return",
-      "deposer_aide": "That’s what turns the first value into one you can defend. We read the figures; you just confirm them.",
+      "deposer_aide": "We read your figures; you check them line by line.",
       "liasse_pdf": "Tax return (liasse fiscale) as a PDF",
       "formulaires": "Forms 2033 or 2050 to 2059, 10 MB max. It usually covers two fiscal years.",
       "choisir_pdf": "Choose the PDF",
@@ -37,11 +37,11 @@
       "reprendre_ebe": "Use EBITDA from the public accounts",
       "detailler": "I’d rather break down my expenses",
       "titre": "Your key figures",
-      "ecran1": "Screen 1 of 2: what the company earns. Copy from your annual accounts; enter 0 if an item doesn’t exist.",
+      "ecran1": "Screen 1 of 2: what the company earns (0 if an item doesn’t exist).",
       "clos_en": "Fiscal year ending in",
       "gagne": "What the company earns",
       "suivant_bilan": "Next: what it owns and owes ",
-      "ecran2": "Screen 2 of 2: what the company owns and owes, at the {annee} year-end. Enter 0 if an item doesn’t exist.",
+      "ecran2": "Screen 2 of 2: what the company owns and owes, {annee} year-end.",
       "possede": "What it owns and owes",
       "retour_gagne": "← What the company earns",
       "enregistre": "Fiscal year {annee} saved.",
@@ -59,7 +59,7 @@
       "confirmer_autres": "Confirm the other lines",
       "justes": "These figures are correct",
       "titre": "Are your figures correct?",
-      "aide": "Compare with your tax return. Our automatic checks flag what needs your attention; the rest is confirmed in one click.",
+      "aide": "Compare with your tax return: our checks flag what needs attention.",
       "autre_exercice": "Enter another fiscal year",
       "autre_liasse": "Upload another tax return",
       "mode_detaille": "Detailed mode (all lines)",
@@ -101,7 +101,7 @@
     "site": {
       "est_ce": "Is this your company’s website?",
       "a_t_elle": "Does your company have a website?",
-      "aide": "We pick up your business description and logo from it for the memorandum while you answer the next questions. You will approve each item.",
+      "aide": "We pick up your business and logo there during the next questions.",
       "adresse": "Website address",
       "aucun": "We don’t have a website",
       "indiquez": "Enter the website address, or choose “We don’t have a website”.",
@@ -115,7 +115,6 @@
       "votre_logo": "Your logo",
       "choix_logo": "Logo choice",
       "aucun_logo": "None",
-      "usage": "We pick up your business, your logo and your photos during the next two questions. You’ll confirm each item.",
       "retirer": "Remove",
       "remettre": "Restore",
       "tranche": "{min} to {max} employees",
@@ -137,17 +136,15 @@
       },
       "lu": "Your website · {site} · {n} pages read",
       "plus_tard": "Later",
-      "valider_faits": "Confirm these facts",
-      "usage_faits": "These facts feed the memorandum’s history, business, team and customers, presented as statements by the company."
+      "valider_faits": "Confirm these facts"
     },
     "recap": {
       "valider": {
         "one": "Approve {n} answer ",
         "other": "Approve {n} answers "
       },
-      "preparees": "{n} answers prepared",
       "titre": "We’ve prepared your answers",
-      "aide": "Check them at a glance. Untick anything inaccurate: you’ll correct it right after, with the few remaining questions.",
+      "aide": "Check them at a glance and untick anything inaccurate.",
       "une_par_une": "Answer one question at a time"
     },
     "question": {
@@ -161,8 +158,6 @@
       "ajouter": "Add",
       "choix_max": "{n} of {max} at most.",
       "choix_max_atteint": "{n} of {max}: untick one to change your choice.",
-      "preparee_court": "Answers prepared by Passation, {source}: check them before continuing.",
-      "nourrit": "Your answer feeds",
       "propose": "suggested"
     },
     "redaction": {
@@ -181,7 +176,7 @@
       "marche": "Web market research (two minutes at most)",
       "memo_section": "Memorandum: {section}",
       "titre": "We’re drafting your file",
-      "aide": "One to two minutes. If you leave this page, drafting resumes when you come back, without redoing what’s finished.",
+      "aide": "One to two minutes; if you leave the page, it will resume.",
       "chrono": "{s} s · {n} of {total}",
       "manque_titre": "An answer is missing to draft the memorandum",
       "manque_aide": "The valuation, datapack and teaser are ready. Answer below: drafting of the memorandum will resume right away.",
@@ -215,9 +210,9 @@
       },
       "relire_memo": "Review the memorandum",
       "memo_aide": {
-        "zero": "It’s the document the buyer will read in full: review it chapter by chapter. Add a photo to illustrate it.",
-        "one": "With your photo. It’s the document the buyer will read in full: review it chapter by chapter.",
-        "other": "With your {photos} photos. It’s the document the buyer will read in full: review it chapter by chapter."
+        "zero": "The document the buyer will read in full. Add a photo.",
+        "one": "With your photo; the buyer will read it in full.",
+        "other": "With your {photos} photos; the buyer will read it in full."
       },
       "revoir_reponses": "Review your answers"
     },
@@ -272,8 +267,7 @@
       "droits": "These photos belong to the company, or I have the right to use them.",
       "deposer": "Upload my own photos",
       "formats": "(PNG, JPEG or WebP, 3 MB at most)",
-      "ou_va": "The logo goes on the cover and in the footer; each photo goes where its category fits, never twice.",
-      "aide_jugement": "Claude looks at each photo you add: what it shows, its quality and where to place it. Nothing is applied without you.",
+      "aide_jugement": "Claude reviews each photo; nothing is applied without you.",
       "vos_photos": "Your photos ({n} of {max} max)",
       "aucune_choisie": "No photos yet.",
       "cliquez_ajouter": "Photos found on your website: click to add",
@@ -286,22 +280,17 @@
     "accueil": {
       "surtitre": "Detailed valuation · about twenty minutes",
       "titre": "Let’s start the detailed valuation of your company",
-      "chapo": "First, what your company is worth and why; then the documents a buyer asks for: the Excel datapack, the anonymous teaser and the memorandum.",
-      "chiffres_titre": "1. Your valuation",
-      "chiffres": "Your accounts for the last three fiscal years (tax return as a PDF or a few amounts), your adjustments and your debt: you see the value of your shares, line by line.",
-      "chiffres_publics": "Your accounts for the last three fiscal years (tax return as a PDF or a few amounts), your adjustments and your debt. We already have the published accounts for {annees}.",
-      "reponses_titre": "2. Your memorandum",
-      "reponses": "Once your figures are approved: {n} questions about your company, mostly tick boxes, then your photos and your team.",
-      "redaction_titre": "Writing your documents",
-      "redaction": "Passation calculates and writes in a few minutes. You review everything before sending.",
       "commencer": "Start",
-      "reprise": "You can stop at any time: everything is saved.",
-      "deja": "Already done:",
-      "deja_estimation": "quick estimate of {fourchette}."
+      "ligne_chiffres": "Your figures",
+      "duree_chiffres": "(10 minutes)",
+      "ligne_entreprise": "Your company",
+      "duree_entreprise": "(10 minutes)",
+      "ligne_redaction": "Drafting",
+      "duree_redaction": "(a few minutes)"
     },
     "equipe": {
       "titre": "Your management team",
-      "aide": "One to four people, including you. The memorandum, shared only after a confidentiality agreement, will present them on one page. The teaser never names anyone or describes their background.",
+      "aide": "One to four people, including you; never named in the teaser.",
       "nom": "First and last name",
       "role": "Role",
       "role_autre": "Specify the role",
@@ -334,22 +323,20 @@
       "ajouter": "+ Add a person ({n} of {max})",
       "max": "{max} people at most",
       "retirer_personne": "Remove {nom} from the team",
-      "rgpd": "Names, backgrounds and photos are used only in the memorandum. They are deleted with your file.",
-      "ou_va": "These answers feed the “Management team” page of the memorandum: Claude writes each background from your answers only."
+      "rgpd": "Names, backgrounds and photos are used only in the memorandum. They are deleted with your file."
     },
     "exercices": {
       "titre": "Your two previous fiscal years",
-      "aide": "A buyer reasons over three years: the EBITDA used is the average of the fiscal years you confirm. {dernier} is confirmed; add the two before it.",
+      "aide": "Add {annees}: a buyer looks at three years.",
       "saisir": "Enter {annee}",
       "liasse": "A tax return often covers two fiscal years:",
       "deposer": "upload another tax return",
-      "perte_titre": "If you skip",
-      "perte": "The EBITDA used will rest on {annees} only. An exceptional year, good or bad, will then weigh entirely on the range, and a buyer will find it less solid.",
-      "passer": "Skip this step"
+      "passer": "Skip this step",
+      "sans_eux": "Without them, the value rests on {annee} alone."
     },
     "retraitements": {
       "titre": "Adjust your accounts",
-      "aide": "A buyer reasons on normal earnings: your pay at market rate, a market rent, without events that won’t happen again. Each answer changes the value: nothing is filled in for you.",
+      "aide": "Bring your accounts back to a normal year. Every answer changes the value.",
       "total_avant": "Reported EBITDA {annee}:",
       "total_apres": "adjusted EBITDA:",
       "total_inconnu": "The EBITDA of your latest fiscal year is not known yet: complete your figures to see the effect of the adjustments.",
@@ -357,40 +344,54 @@
       "effet_annee": "Effect on {annee} EBITDA: {montant}",
       "effet_attente": "Effect on EBITDA: enter both amounts.",
       "sans_effet": "No effect on EBITDA.",
-      "dirigeant_titre": "Your pay",
       "dirigeant_aide": "The adjustment that weighs most: the gap between what you cost and what a salaried manager would cost is added to EBITDA (or removed).",
-      "loyer_titre": "The rent of your premises",
-      "exc_titre": "One-off expenses and income",
       "sens": "Expense or income",
       "charge": "One-off expense (added back)",
       "produit": "One-off income (removed)",
-      "credit_bail_titre": "Lease financing",
+      "credit_bail_titre": "Lease financing: counted with your debts, at the next step.",
       "credit_bail_aide": "It does not change EBITDA: its payments stay in it. The remaining principal is counted at the next step, with your debts. This convention may undervalue a company that finances its equipment through leasing: discuss it with your advisor.",
       "valider": "Approve these adjustments",
       "il_manque": "Missing: {liste}.",
       "exc_vide": "Enter at least one one-off amount, or answer “No”.",
-      "usage": "These adjustments feed the valuation bridge, the datapack (“Adjustments” tab) and the financial chapter of the memorandum."
+      "cartes": {
+        "remuneration": "Your pay",
+        "loyer": "The rent of your premises",
+        "exceptionnels": "Exceptional items"
+      },
+      "suivant": "Next",
+      "modifier": "Edit",
+      "resume": {
+        "remuneration": "Pay: {effet} on EBITDA",
+        "remuneration_neutre": "Pay: no effect on EBITDA",
+        "loyer": "Rent: {effet} on EBITDA",
+        "loyer_neutre": "Rent: no effect on EBITDA",
+        "exceptionnels": "Exceptional items: {effet} on EBITDA",
+        "exceptionnels_aucun": "Exceptional items: none"
+      }
     },
     "dette": {
       "titre": "Net debt and scope of the sale",
-      "aide": "The value of the company becomes the value of your shares once cash is added and debts are removed. The buyer also wants to know what they are buying.",
+      "aide": "What separates the company's value from the value of your shares.",
       "bilan_titre": "What your {annee} balance sheet says",
       "bilan_vide": "Your balance sheet shows neither cash nor borrowings.",
-      "bilan_aide": "Taken from your figures.",
       "corriger": "Correct your figures",
-      "autres_titre": "What the balance sheet does not detail",
-      "autres_aide": "Leave empty what does not apply to you.",
       "perimetre_titre": "The scope",
-      "perimetre_aide": "Who is the buyer buying the shares from, and what does the sale include?",
       "murs": "Your premises: {murs}.",
       "modifier": "Change",
       "valider": "Approve and see my value",
-      "usage": "These answers feed the bridge to the value of the shares, the legal structure chart and the “Transaction” chapter of the memorandum."
+      "elements_question": "Do you have any of these?",
+      "choix": {
+        "comptes_courants_remboursables": "Shareholder current accounts to repay",
+        "credit_bail_restant": "Lease financing",
+        "dividendes_a_verser": "Dividends declared, not yet paid",
+        "actifs_hors_exploitation": "Non-operating assets",
+        "aucun": "None"
+      }
     },
     "valeur": {
       "titre": "Your value",
       "calcul": "Calculating…",
-      "aide": "The full calculation, as a banker reads it. Check each line: these are the figures the memorandum and the datapack will use.",
+      "aide": "Check the calculation line by line, then approve it.",
       "impossible": "The value cannot be calculated yet.",
       "pont_titre": "From EBITDA to the value of your shares",
       "pont": {
@@ -421,7 +422,7 @@
       "valider": "I approve these figures",
       "continuer": "Continue to the memorandum",
       "validee_le": "Figures approved on {date}. You can still change them.",
-      "usage": "Once you approve, the memorandum starts: your company, your photos, your team, then the drafting."
+      "express": "Quick estimate: {fourchette}."
     }
   }
 }

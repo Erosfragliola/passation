@@ -21,7 +21,6 @@
 <main id="contenu" class="espace espace-bento dossier-parcours" aria-busy="true">
   <div class="conteneur dossier-leger">
     <ol class="fil-leger" id="fil" data-t-attr="aria-label=votre_parcours"></ol>
-    <div class="bandeau-etape" id="bandeau-etape" role="status" hidden><p id="bandeau-texte"></p><a class="btn btn-noir btn-mini" id="bandeau-lien" href="#"></a></div>
 
     <div class="dossier-tete">
       <section class="tuile tuile-vert tuile-dossier" aria-labelledby="dossier-nom">
@@ -30,21 +29,16 @@
         <div class="dossier-valeur">
           <p class="valeur-etiquette" id="valeur-etiquette" data-t-html="valorisation"></p>
           <p class="valeur-montant" id="valeur-montant">–</p>
-          <p class="valeur-base"><span id="valeur-base"></span> <a class="valeur-lien" id="valeur-lien" href="/espace/valorisation/"></a></p>
-          <p class="valeur-ecart" id="valeur-ecart" hidden></p>
+          <p class="valeur-base"><span id="valeur-base"></span> <a class="valeur-lien" id="valeur-lien" href="/espace/valorisation/" hidden></a></p>
         </div>
       </section>
 
       <div class="dossier-action">
-        <section class="tuile action-principale" aria-labelledby="action-titre">
-          <span class="etat" id="action-etat" hidden></span>
-          <h2 id="action-titre"></h2>
-          <p class="petit" id="action-detail"></p>
+        <section class="tuile action-principale" id="prochaine" aria-labelledby="prochaine-titre">
+          <h2 id="prochaine-titre" data-t-html="prochaine_etape"></h2>
+          <p id="prochaine-texte" hidden></p>
           <a class="btn btn-principal" id="cta" href="/espace/demarrer/" data-t-html="continuer"></a>
-        </section>
-        <section class="tuile taches-secondaires" id="secondaires" aria-labelledby="titre-secondaires" hidden>
-          <h2 id="titre-secondaires"></h2>
-          <ul class="taches-liste" id="afaire"></ul>
+          <ul class="prochaine-liens" id="prochaine-liens" hidden></ul>
         </section>
       </div>
     </div>

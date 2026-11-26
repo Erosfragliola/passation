@@ -5,10 +5,8 @@
 // own animations and are not affected.
 const CIBLES = [
   "#comment .surtitre", "#comment h2", "#comment .parcours-etape",
-  "#confidentialite .confid-bloc",
   "#livrables h2", "#livrables .chapo", "#livrables .bento-bloc",
   "#questions .surtitre", "#questions h2", "#questions .faq > *",
-  "#relance .carte-relance",
 ];
 const PAS = 70;       // ms between two elements of the same group
 const RETARD_MAX = 5; // beyond that, the rest of the group arrives together

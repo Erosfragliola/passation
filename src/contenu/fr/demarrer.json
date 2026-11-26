@@ -15,11 +15,11 @@
     "comptes": {
       "lecture": "Lecture de votre liasse… (30 secondes environ)",
       "saisir_titre": "Saisissez l'essentiel de vos comptes",
-      "saisir_aide": "Une dizaine de montants, à recopier de votre liasse fiscale ou de vos comptes annuels. C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre.",
+      "saisir_aide": "Une dizaine de montants, à recopier de votre liasse fiscale.",
       "lecture_indisponible": "La lecture automatique des liasses n'est pas disponible pour le moment.",
       "saisir_mes_chiffres": "Saisir mes chiffres",
       "deposer_titre": "Déposez votre dernière liasse fiscale",
-      "deposer_aide": "C'est ce qui transforme la première valeur en une valeur que vous pourrez défendre. Nous lisons les chiffres ; vous n'aurez qu'à les confirmer.",
+      "deposer_aide": "Nous lisons vos chiffres ; vous les vérifiez ligne par ligne.",
       "liasse_pdf": "Liasse fiscale en PDF",
       "formulaires": "Formulaires 2033 ou 2050 à 2059, 10 Mo au plus. Elle contient en général deux exercices.",
       "choisir_pdf": "Choisir le PDF",
@@ -37,11 +37,11 @@
       "reprendre_ebe": "Reprendre l'EBE des comptes publics",
       "detailler": "Je préfère détailler mes charges",
       "titre": "L'essentiel de vos comptes",
-      "ecran1": "Écran 1 sur 2 : ce que l'entreprise gagne. À recopier de vos comptes annuels ; indiquez 0 si un poste n'existe pas.",
+      "ecran1": "Écran 1 sur 2 : ce que l'entreprise gagne (0 si un poste n'existe pas).",
       "clos_en": "Exercice clos en",
       "gagne": "Ce que l'entreprise gagne",
       "suivant_bilan": "Suivant : ce qu'elle possède et doit ",
-      "ecran2": "Écran 2 sur 2 : ce que l'entreprise possède et doit, à la clôture {annee}. Indiquez 0 si un poste n'existe pas.",
+      "ecran2": "Écran 2 sur 2 : ce que l'entreprise possède et doit, clôture {annee}.",
       "possede": "Ce qu'elle possède et doit",
       "retour_gagne": "← Ce que l'entreprise gagne",
       "enregistre": "Exercice {annee} enregistré.",
@@ -59,7 +59,7 @@
       "confirmer_autres": "Confirmer les autres lignes",
       "justes": "Ces chiffres sont justes",
       "titre": "Vos chiffres sont-ils justes ?",
-      "aide": "Comparez avec votre liasse. Nos contrôles automatiques signalent ce qui mérite votre attention ; le reste se confirme d'un clic.",
+      "aide": "Comparez avec votre liasse : nos contrôles signalent ce qui mérite attention.",
       "autre_exercice": "Saisir un autre exercice",
       "autre_liasse": "Déposer une autre liasse",
       "mode_detaille": "Mode détaillé (toutes les lignes)",
@@ -101,7 +101,7 @@
     "site": {
       "est_ce": "Est-ce bien le site de votre entreprise ?",
       "a_t_elle": "Votre entreprise a-t-elle un site internet ?",
-      "aide": "Nous y relevons votre activité et votre logo pour le mémorandum, pendant que vous répondez aux questions suivantes. Vous validerez chaque élément.",
+      "aide": "Nous y relevons votre activité et votre logo pendant les questions suivantes.",
       "adresse": "Adresse du site",
       "aucun": "Nous n'avons pas de site",
       "indiquez": "Indiquez l'adresse du site, ou choisissez « Nous n'avons pas de site ».",
@@ -115,7 +115,6 @@
       "votre_logo": "Votre logo",
       "choix_logo": "Choix du logo",
       "aucun_logo": "Aucun",
-      "usage": "Nous y relevons votre activité, votre logo et vos photos pendant les deux questions suivantes. Vous validerez chaque élément.",
       "retirer": "Retirer",
       "remettre": "Remettre",
       "tranche": "{min} à {max} salariés",
@@ -137,17 +136,15 @@
       },
       "lu": "Votre site · {site} · {n} pages lues",
       "plus_tard": "Plus tard",
-      "valider_faits": "Valider ces faits",
-      "usage_faits": "Ces faits nourrissent l'histoire, l'activité, l'équipe et les clients du mémorandum, présentés comme des affirmations de l'entreprise."
+      "valider_faits": "Valider ces faits"
     },
     "recap": {
       "valider": {
         "one": "Valider {n} réponse ",
         "other": "Valider {n} réponses "
       },
-      "preparees": "{n} réponses préparées",
       "titre": "Nous avons préparé vos réponses",
-      "aide": "Vérifiez-les d'un coup d'œil. Décochez ce qui est inexact : vous le corrigerez juste après, avec les quelques questions qui restent.",
+      "aide": "Vérifiez-les d'un coup d'œil et décochez ce qui est inexact.",
       "une_par_une": "Répondre question par question"
     },
     "question": {
@@ -161,8 +158,6 @@
       "ajouter": "Ajouter",
       "choix_max": "{n} sur {max} au plus.",
       "choix_max_atteint": "{n} sur {max} : décochez un choix pour en changer.",
-      "preparee_court": "Réponses préparées par Passation, {source} : vérifiez-les avant de continuer.",
-      "nourrit": "Votre réponse nourrit",
       "propose": "proposé"
     },
     "redaction": {
@@ -181,7 +176,7 @@
       "marche": "Étude de marché sur le web (deux minutes au plus)",
       "memo_section": "Mémorandum : {section}",
       "titre": "Nous rédigeons votre dossier",
-      "aide": "Une à deux minutes. Si vous quittez cette page, la rédaction reprendra à votre retour, sans refaire ce qui est fini.",
+      "aide": "Une à deux minutes ; si vous quittez la page, elle reprendra.",
       "chrono": "{s} s · {n} sur {total}",
       "manque_titre": "Une réponse manque pour rédiger le mémorandum",
       "manque_aide": "La valorisation, le datapack et le teaser sont prêts. Répondez ci-dessous : la rédaction du mémorandum reprendra aussitôt.",
@@ -215,9 +210,9 @@
       },
       "relire_memo": "Relire le mémorandum",
       "memo_aide": {
-        "zero": "C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre. Ajoutez une photo pour l'illustrer.",
-        "one": "Avec votre photo. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre.",
-        "other": "Avec vos {photos} photos. C'est le document que le repreneur lira en entier : relisez-le chapitre par chapitre."
+        "zero": "Le document que le repreneur lira en entier. Ajoutez une photo.",
+        "one": "Avec votre photo ; le repreneur le lira en entier.",
+        "other": "Avec vos {photos} photos ; le repreneur le lira en entier."
       },
       "revoir_reponses": "Revoir vos réponses"
     },
@@ -272,8 +267,7 @@
       "droits": "Ces photos appartiennent à l'entreprise, ou j'ai le droit de les utiliser.",
       "deposer": "Déposer mes propres photos",
       "formats": "(PNG, JPEG ou WebP, 3 Mo au plus)",
-      "ou_va": "Le logo va sur la couverture et le pied de page ; chaque photo va là où sa catégorie le permet, jamais deux fois.",
-      "aide_jugement": "Claude regarde chaque photo ajoutée : ce qu'elle montre, sa qualité et où la placer. Rien n'est appliqué sans vous.",
+      "aide_jugement": "Claude juge chaque photo ; rien n'est appliqué sans vous.",
       "vos_photos": "Vos photos ({n} sur {max} au plus)",
       "aucune_choisie": "Aucune photo pour l'instant.",
       "cliquez_ajouter": "Photos trouvées sur votre site : cliquez pour ajouter",
@@ -286,22 +280,17 @@
     "accueil": {
       "surtitre": "Analyse approfondie · une vingtaine de minutes",
       "titre": "On démarre l'analyse approfondie de votre entreprise",
-      "chapo": "D'abord, ce que vaut votre entreprise et pourquoi ; ensuite, les documents qu'un repreneur demande : le datapack Excel, le teaser anonyme et le mémorandum.",
-      "chiffres_titre": "1. Votre valorisation",
-      "chiffres": "Vos comptes des trois derniers exercices (liasse en PDF ou quelques montants), vos retraitements et votre dette : vous voyez la valeur de vos titres, ligne par ligne.",
-      "chiffres_publics": "Vos comptes des trois derniers exercices (liasse en PDF ou quelques montants), vos retraitements et votre dette. Nous avons déjà les comptes publiés de {annees}.",
-      "reponses_titre": "2. Votre mémorandum",
-      "reponses": "Une fois vos chiffres validés : {n} questions sur votre entreprise, surtout des choix à cocher, puis vos photos et votre équipe.",
-      "redaction_titre": "La rédaction de vos documents",
-      "redaction": "Passation calcule et rédige en quelques minutes. Vous relisez avant tout envoi.",
       "commencer": "Commencer",
-      "reprise": "Vous pouvez vous arrêter à tout moment : tout est enregistré.",
-      "deja": "Déjà fait :",
-      "deja_estimation": "estimation express de {fourchette}."
+      "ligne_chiffres": "Vos chiffres",
+      "duree_chiffres": "(10 min)",
+      "ligne_entreprise": "Votre entreprise",
+      "duree_entreprise": "(10 min)",
+      "ligne_redaction": "Rédaction",
+      "duree_redaction": "(quelques minutes)"
     },
     "equipe": {
       "titre": "Votre équipe dirigeante",
-      "aide": "Une à quatre personnes, vous compris. Le mémorandum, remis après un accord de confidentialité, en fera une page de présentation. Le teaser ne citera jamais de nom ni de parcours.",
+      "aide": "Une à quatre personnes, vous compris ; jamais citées dans le teaser.",
       "nom": "Prénom et nom",
       "role": "Rôle",
       "role_autre": "Précisez le rôle",
@@ -334,22 +323,20 @@
       "ajouter": "+ Ajouter une personne ({n} sur {max})",
       "max": "{max} personnes au plus",
       "retirer_personne": "Retirer {nom} de l'équipe",
-      "rgpd": "Les noms, parcours et photos ne servent qu'au mémorandum. Ils sont supprimés avec votre dossier.",
-      "ou_va": "Ces réponses nourrissent la page « L'équipe dirigeante » du mémorandum : Claude rédige chaque parcours à partir de vos seules réponses."
+      "rgpd": "Les noms, parcours et photos ne servent qu'au mémorandum. Ils sont supprimés avec votre dossier."
     },
     "exercices": {
       "titre": "Vos deux exercices précédents",
-      "aide": "Un repreneur raisonne sur trois ans : l'EBE retenu est la moyenne des exercices que vous confirmez. {dernier} est confirmé ; ajoutez les deux précédents.",
+      "aide": "Ajoutez {annees} : un repreneur raisonne sur trois ans.",
       "saisir": "Saisir {annee}",
       "liasse": "Une liasse couvre souvent deux exercices :",
       "deposer": "déposer une autre liasse",
-      "perte_titre": "Si vous passez",
-      "perte": "L'EBE retenu reposera sur {annees} seulement. Une année exceptionnelle, bonne ou mauvaise, pèsera alors entièrement sur la fourchette, et un repreneur la jugera moins solide.",
-      "passer": "Passer cette étape"
+      "passer": "Passer cette étape",
+      "sans_eux": "Sans eux, la valeur repose sur {annee} seul."
     },
     "retraitements": {
       "titre": "Corriger vos comptes",
-      "aide": "Un repreneur raisonne sur un résultat normal : votre rémunération au prix du marché, un loyer de marché, sans les événements qui ne se reproduiront pas. Chaque réponse change la valeur : rien n'est rempli d'avance.",
+      "aide": "Ramenez vos comptes à une année normale. Chaque réponse change la valeur.",
       "total_avant": "EBE comptable {annee} :",
       "total_apres": "EBE retraité :",
       "total_inconnu": "L'EBE de votre dernier exercice n'est pas encore connu : complétez vos chiffres pour voir l'effet des retraitements.",
@@ -357,40 +344,54 @@
       "effet_annee": "Effet sur l'EBE {annee} : {montant}",
       "effet_attente": "Effet sur l'EBE : indiquez les deux montants.",
       "sans_effet": "Aucun effet sur l'EBE.",
-      "dirigeant_titre": "Votre rémunération",
       "dirigeant_aide": "Le retraitement qui pèse le plus : l'écart entre ce que vous coûtez et ce que coûterait un directeur salarié est ajouté à l'EBE (ou retiré).",
-      "loyer_titre": "Le loyer de vos locaux",
-      "exc_titre": "Les charges et produits exceptionnels",
       "sens": "Charge ou produit",
       "charge": "Charge exceptionnelle (rajoutée)",
       "produit": "Produit exceptionnel (retiré)",
-      "credit_bail_titre": "Le crédit-bail",
+      "credit_bail_titre": "Crédit-bail : compté avec vos dettes, à l'étape suivante.",
       "credit_bail_aide": "Il ne modifie pas l'EBE : ses loyers y restent. Son capital restant dû est compté à l'étape suivante, avec vos dettes. Cette convention peut sous-estimer la valeur d'une entreprise qui finance ses équipements en crédit-bail : parlez-en avec votre conseil.",
       "valider": "Valider ces retraitements",
       "il_manque": "Il manque : {liste}.",
       "exc_vide": "Indiquez au moins un montant exceptionnel, ou répondez « Non ».",
-      "usage": "Ces corrections alimentent le pont de valorisation, le datapack (onglet « Retraitements ») et le chapitre financier du mémorandum."
+      "cartes": {
+        "remuneration": "Votre rémunération",
+        "loyer": "Le loyer de vos locaux",
+        "exceptionnels": "Les éléments exceptionnels"
+      },
+      "suivant": "Suivant",
+      "modifier": "Modifier",
+      "resume": {
+        "remuneration": "Rémunération : {effet} sur l'EBE",
+        "remuneration_neutre": "Rémunération : sans effet sur l'EBE",
+        "loyer": "Loyer : {effet} sur l'EBE",
+        "loyer_neutre": "Loyer : sans effet sur l'EBE",
+        "exceptionnels": "Éléments exceptionnels : {effet} sur l'EBE",
+        "exceptionnels_aucun": "Éléments exceptionnels : aucun"
+      }
     },
     "dette": {
       "titre": "Dette nette et périmètre de la cession",
-      "aide": "La valeur de l'entreprise devient la valeur de vos titres une fois la trésorerie ajoutée et les dettes retirées. Le repreneur veut aussi savoir ce qu'il achète.",
+      "aide": "Ce qui sépare la valeur de l'entreprise de celle de vos titres.",
       "bilan_titre": "Ce que dit votre bilan {annee}",
       "bilan_vide": "Votre bilan n'indique ni trésorerie ni emprunt.",
-      "bilan_aide": "Repris de vos chiffres.",
       "corriger": "Corriger vos chiffres",
-      "autres_titre": "Ce que le bilan ne détaille pas",
-      "autres_aide": "Laissez vide ce qui ne vous concerne pas.",
       "perimetre_titre": "Le périmètre",
-      "perimetre_aide": "À qui le repreneur achète-t-il les parts, et que comprend la cession ?",
       "murs": "Vos locaux : {murs}.",
       "modifier": "Modifier",
       "valider": "Valider et voir ma valeur",
-      "usage": "Ces réponses alimentent le passage à la valeur des titres, l'organigramme juridique et le chapitre « Opération » du mémorandum."
+      "elements_question": "Avez-vous l'un de ces éléments ?",
+      "choix": {
+        "comptes_courants_remboursables": "Comptes courants d'associés à rembourser",
+        "credit_bail_restant": "Crédit-bail",
+        "dividendes_a_verser": "Dividendes votés non versés",
+        "actifs_hors_exploitation": "Actifs hors exploitation",
+        "aucun": "Aucun"
+      }
     },
     "valeur": {
       "titre": "Votre valeur",
       "calcul": "Calcul en cours…",
-      "aide": "Le calcul complet, tel qu'un banquier le lit. Vérifiez chaque ligne : ce sont ces chiffres que le mémorandum et le datapack utiliseront.",
+      "aide": "Vérifiez le calcul ligne par ligne, puis validez-le.",
       "impossible": "La valeur ne peut pas encore être calculée.",
       "pont_titre": "De l'EBE à la valeur de vos titres",
       "pont": {
@@ -421,7 +422,7 @@
       "valider": "Je valide ces chiffres",
       "continuer": "Continuer vers le mémorandum",
       "validee_le": "Chiffres validés le {date}. Vous pouvez encore les modifier.",
-      "usage": "Après votre validation, le mémorandum commence : votre entreprise, vos photos, votre équipe, puis la rédaction."
+      "express": "Estimation express : {fourchette}."
     }
   }
 }

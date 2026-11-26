@@ -31,5 +31,9 @@
     "menu_ouvrir": "Open menu",
     "menu_fermer": "Close menu",
     "dossier_supprime": "Your file and its documents have been deleted."
+  },
+  "aide": {
+    "sur": "Help: {sujet}",
+    "afficher": "Show help"
   }
 }

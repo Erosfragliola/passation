@@ -55,7 +55,6 @@
       <ul class="nav-liens">
         <li><a href="#comment" data-t="nav.comment"></a></li>
         <li><a href="#livrables" data-t="nav.livrables"></a></li>
-        <li><a href="#confidentialite" data-t="nav.confidentialite"></a></li>
         <li data-si="guides:3"><a href="#guides" data-t="nav.guides"></a></li>
         <li><a href="#questions" data-t="nav.questions"></a></li>
       </ul>
@@ -83,7 +82,6 @@
   <div class="nav-mobile" id="nav-mobile" hidden>
     <a href="#comment" data-t="nav.comment"></a>
     <a href="#livrables" data-t="nav.livrables"></a>
-    <a href="#confidentialite" data-t="nav.confidentialite"></a>
     <a href="#guides" data-si="guides:3" data-t="nav.guides"></a>
     <a href="#questions" data-t="nav.questions"></a>
     <a href="/connexion" data-connexion data-t="nav.espace"></a>
@@ -148,14 +146,9 @@
       </div>
       <div class="hero-bulle bulle-hg sombre"><strong class="affiche" data-t="hero.bulles.delai.chiffre"></strong><span data-t="hero.bulles.delai.texte"></span></div>
       <div class="hero-bulle bulle-d1" data-cote="d"><span class="bulle-titre"><span data-t="hero.bulles.code.titre"></span><em data-t="hero.bulles.code.fictif"></em></span><span class="bulle-code" data-t="hero.bulles.code.code"></span><strong class="affiche bulle-valeur" data-t="hero.bulles.code.valeur"></strong></div>
-      <div class="hero-bulle bulle-g"><strong class="affiche" data-t="hero.bulles.methodes.chiffre"></strong><span data-t="hero.bulles.methodes.texte"></span></div>
-      <div class="hero-bulle bulle-bd" data-cote="bd"><ul class="bulle-docs"><li data-t="hero.bulles.docs.0"></li><li data-t="hero.bulles.docs.1"></li><li data-t="hero.bulles.docs.2"></li><li data-t="hero.bulles.docs.3"></li></ul></div>
     </div>
   </section>
 
-  <div class="sources-bande" data-t-attr="aria-label=pourquoi.sources">
-    <span data-t="sources.libelle"></span><b data-t="sources.liste.0"></b><b data-t="sources.liste.1"></b><b data-t="sources.liste.2"></b>
-  </div>
 
   <!-- Résultat de l'estimation (public/js/landing/resultat.js) : l'analyse en quatre étapes (inchangée), puis une fiche
        de synthèse (lot 1) : nom de code, fourchette et barre bas / central / haut, sources datées, une seule action.
@@ -243,17 +236,6 @@
           <h3><span class="visuellement-cache" data-t="dossier.methodes.chiffre"></span> <span data-t="dossier.methodes.titre"></span></h3>
           <p data-t="dossier.methodes.texte"></p>
         </article>
-        <article class="bento-bloc bento-liste">
-          <div>
-            <ul class="liste-dossier" data-t-attr="aria-label=dossier.liste.alt">
-              <li class="fait" data-t="dossier.liste.etapes.0"></li>
-              <li class="fait" data-t="dossier.liste.etapes.1"></li>
-              <li class="fait" data-t="dossier.liste.etapes.2"></li>
-              <li data-t="dossier.liste.etapes.3"></li>
-            </ul>
-            <p class="liste-legende" data-t="dossier.liste.legende"></p>
-          </div>
-        </article>
       </div>
     </div>
   </section>
@@ -286,8 +268,6 @@
           <h3><button class="parcours-ouvrir" type="button" aria-expanded="true" aria-controls="comment-1-detail"><span data-t="comment.etapes.0.titre"></span><span class="parcours-signe" aria-hidden="true"></span></button></h3>
           <div class="parcours-detail" id="comment-1-detail"><div class="parcours-detail-int">
           <p class="etape-description" data-t="comment.etapes.0.texte"></p>
-          <p class="parcours-obtenez" data-t="comment.etapes.0.obtenez"></p>
-          <ul class="parcours-mentions"><li data-t="comment.etapes.0.pastilles.0"></li><li data-t="comment.etapes.0.pastilles.1"></li></ul>
           </div></div>
         </li>
         <li class="parcours-etape" id="comment-2" data-scene>
@@ -312,7 +292,6 @@
           <h3><button class="parcours-ouvrir" type="button" aria-expanded="true" aria-controls="comment-2-detail"><span data-t="comment.etapes.1.titre"></span><span class="parcours-signe" aria-hidden="true"></span></button></h3>
           <div class="parcours-detail" id="comment-2-detail"><div class="parcours-detail-int">
           <p class="etape-description" data-t="comment.etapes.1.texte"></p>
-          <p class="parcours-obtenez" data-t="comment.etapes.1.obtenez"></p>
           <ul class="parcours-mentions">
             <li data-si="duree_etape2" data-t="comment.etapes.1.pastilles.0"></li>
             <li data-si="prix_etape2" data-t="comment.etapes.1.pastilles.1"></li>
@@ -346,7 +325,6 @@
           <h3><button class="parcours-ouvrir" type="button" aria-expanded="true" aria-controls="comment-3-detail"><span data-t="comment.etapes.2.titre"></span><span class="parcours-signe" aria-hidden="true"></span></button></h3>
           <div class="parcours-detail" id="comment-3-detail"><div class="parcours-detail-int">
           <p class="etape-description" data-t="comment.etapes.2.texte"></p>
-          <p class="parcours-obtenez" data-t="comment.etapes.2.obtenez"></p>
           <ul class="parcours-mentions">
             <li data-t="comment.etapes.2.pastilles.0"></li>
             <li data-si="prix_dossier" data-t="comment.etapes.2.pastilles.1"></li>
@@ -357,35 +335,7 @@
     </div>
   </section>
 
-  <!-- 4. Confidentialité : un seul bloc vert, le nom de l'entreprise (fictive) devient un nom de code -->
-  <section id="confidentialite" class="bloc confid" aria-labelledby="titre-confid">
-    <div class="conteneur">
-      <div class="confid-bloc">
-        <div>
-          <h2 id="titre-confid" class="affiche" data-t="confidentialite.titre"></h2>
-          <p class="chapo" data-t="confidentialite.texte"></p>
-          <a class="btn btn-creme" href="/confidentialite" data-t="confidentialite.politique"></a>
-        </div>
-        <!-- Tampon (lot 1) : sur une fiche, le nom fictif est barré puis le tampon « Projet Chêne » s'abat (scenes.js,
-             une fois à l'entrée dans l'écran ; état final sans animation). Exemple fictif signalé. -->
-        <div class="confid-masque" role="img" data-t-attr="aria-label=confidentialite.exemple_alt" data-scene>
-          <div class="confid-fiche" aria-hidden="true">
-            <p class="confid-fiche-titre" data-t="confidentialite.fiche"></p>
-            <p class="confid-avant"><span data-t="confidentialite.avant"></span></p>
-            <span class="confid-ligne"></span><span class="confid-ligne courte"></span><span class="confid-ligne"></span>
-            <span class="confid-tampon"><span data-t="confidentialite.apres"></span></span>
-          </div>
-          <p class="confid-fictif" data-t="confidentialite.fictif"></p>
-        </div>
-        <ul class="confid-garanties">
-          <li><strong data-t="confidentialite.garanties.0.titre"></strong><span data-t="confidentialite.garanties.0.texte"></span></li>
-          <li><strong data-t="confidentialite.garanties.1.titre"></strong><span data-t="confidentialite.garanties.1.texte"></span></li>
-          <li><strong data-t="confidentialite.garanties.2.titre"></strong><span data-t="confidentialite.garanties.2.texte"></span></li>
-          <li><strong data-t="confidentialite.garanties.3.titre"></strong><span data-t="confidentialite.garanties.3.texte"></span></li>
-        </ul>
-      </div>
-    </div>
-  </section>
+
 
   <!-- 6. Derrière Passation : retirée tant que le nom et le texte du fondateur manquent -->
   <section id="equipe" class="bloc equipe" aria-labelledby="titre-equipe" data-si="fondateur_nom fondateur_texte">
@@ -477,43 +427,7 @@
     </div>
   </section>
 
-  <!-- 11. Fin de page (lot 1) : l'appel final avec le champ, les quatre garanties en une ligne et les trois documents ;
-       puis le pied de page (documents, liens, contact s'il est renseigné, sources, mentions) et le grand nom.
-       Deux mises en page proposées au propriétaire : .fin-a (carte claire + pied structuré, par défaut) et .fin-b
-       (un seul bloc vert) ; la variante non retenue sera retirée. Contenu vrai uniquement. -->
-  <section id="relance" class="bloc-carte relance" aria-labelledby="titre-relance">
-    <div class="carte-large carte-relance">
-      <div class="relance-principal">
-        <h2 id="titre-relance" class="affiche" data-t="relance.titre"></h2>
-        <p class="relance-texte" data-t="relance.texte"></p>
-        <form class="recherche relance-champ" action="/connexion" method="get" data-champ-siren="relance" data-zone-champ>
-          <div class="recherche-champ">
-            <label for="q-relance" data-t="champ.libelle"></label>
-            <input id="q-relance" name="q" type="search" autocomplete="off" data-t-attr="placeholder=champ.libelle"
-                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestions-relance">
-            <button class="btn btn-vert" type="submit"><span data-t="champ.bouton"></span> <span class="fleche" aria-hidden="true">→</span></button>
-          </div>
-          <ul class="suggestions" id="suggestions-relance" role="listbox" data-t-attr="aria-label=champ.suggestions" hidden></ul>
-          <p class="recherche-message" id="message-relance" role="status" data-message hidden></p>
-        </form>
-        <p class="relance-telephone" data-si="telephone"><span data-t="relance.telephone"></span> <a data-t="cles.telephone" data-t-attr="href=pied.telephone_lien"></a>.</p>
-      </div>
-      <div class="relance-livrables">
-        <p class="relance-livrables-titre" data-t="relance.livrables_titre"></p>
-        <ol>
-          <li><strong data-t="dossier.documents.pilules.0"></strong><span data-t="relance.livrables.0"></span></li>
-          <li><strong data-t="dossier.documents.pilules.1"></strong><span data-t="relance.livrables.1"></span></li>
-          <li><strong data-t="dossier.documents.pilules.2"></strong><span data-t="relance.livrables.2"></span></li>
-        </ol>
-      </div>
-      <ul class="relance-garanties" data-t-attr="aria-label=relance.garanties_titre">
-        <li data-t="confidentialite.garanties.0.titre"></li>
-        <li data-t="confidentialite.garanties.1.titre"></li>
-        <li data-t="confidentialite.garanties.2.titre"></li>
-        <li data-t="confidentialite.garanties.3.titre"></li>
-      </ul>
-    </div>
-  </section>
+
 </main>
 
 <footer class="pied">
@@ -532,7 +446,6 @@
         <ul>
           <li><a href="#comment" data-t="nav.comment"></a></li>
           <li><a href="#livrables" data-t="nav.livrables"></a></li>
-          <li><a href="#confidentialite" data-t="nav.confidentialite"></a></li>
           <li data-si="guides:3"><a href="#guides" data-t="nav.guides"></a></li>
           <li><a href="#questions" data-t="nav.questions"></a></li>
           <li><a href="/connexion" data-connexion data-t="nav.espace"></a></li>

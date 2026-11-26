@@ -228,15 +228,14 @@
     "apres_validation": "Rédigé après la validation de vos chiffres"
   },
   "valeur": {
-    "base_titres": "Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, après dettes et trésorerie.",
+    "base_titres": "Multiples d'EBE de votre secteur, après dettes et trésorerie.",
     "voir_detail": "Voir le détail",
     "comptes": "comptes {annee}",
-    "base_express": "Estimée sur les derniers comptes publics et les multiples du secteur, avant dettes et trésorerie ; vos chiffres la préciseront.",
+    "base_express": "Estimée sur les comptes publics, avant dettes et trésorerie.",
     "voir_calcul": "Voir le calcul",
-    "base_aucune": "Les comptes publics ne suffisent pas pour une première estimation : vos chiffres permettront de la calculer.",
+    "base_aucune": "Vos chiffres permettront une première estimation.",
     "saisir": "Saisir vos chiffres",
-    "base_titres_a_valider": "Calculée à partir de vos chiffres, après dettes et trésorerie ; vérifiez-la ligne par ligne, puis validez-la.",
-    "verifier": "Vérifier et valider"
+    "base_titres_a_valider": "Calculée sur vos chiffres, après dettes et trésorerie, à valider."
   },
   "final": {
     "pret_titre": "Votre dossier est prêt",
@@ -274,5 +273,15 @@
     "nouvelle_etape": "Nouvelle étape : vérifiez et validez vos chiffres. Vos réponses sont conservées.",
     "revalider": "Vos chiffres ont été modifiés depuis votre validation du {date} : vérifiez la nouvelle valeur, puis validez-la de nouveau.",
     "bouton_revalider": "Vérifier et valider"
+  },
+  "prochaine": {
+    "revalider": "Vos chiffres ont changé depuis votre validation.",
+    "revalider_bouton": "Vérifier et valider",
+    "reprendre": "Reprendre : {etape}",
+    "memo": {
+      "one": "Compléter le mémorandum (1 point)",
+      "other": "Compléter le mémorandum ({n} points)"
+    },
+    "documents": "Relire et télécharger vos documents"
   }
 }

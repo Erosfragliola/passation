@@ -3,7 +3,7 @@
   "questions": {
     "activite": {
       "titre": "Que fait votre entreprise ?",
-      "aide": "Cochez vos métiers et vos clients. Nous en tirons la phrase d'ouverture du mémorandum ; vous la relisez juste en dessous.",
+      "aide": "Cochez vos métiers et vos clients ; nous en tirons la phrase d'ouverture.",
       "pourquoi": "C'est la première chose qu'un repreneur lit : vos métiers, vos produits ou services, vos clients.",
       "chapitre": "2.2 Activité et savoir-faire ; 3.3 Clients",
       "champs": {
@@ -37,7 +37,7 @@
     },
     "histoire": {
       "titre": "Les dates clés de votre entreprise",
-      "aide": "Les registres nous donnent déjà certaines dates. Ajoutez les étapes qui comptent : reprise, agrandissement, nouveau métier, recrutement clé.",
+      "aide": "Ajoutez les étapes qui comptent : reprise, agrandissement, nouveau métier.",
       "pourquoi": "La frise historique du mémorandum : elle montre la continuité de l'entreprise.",
       "chapitre": "2.1 Histoire et identité"
     },
@@ -133,11 +133,11 @@
     "retraitements": {
       "champs": {
         "remuneration_dirigeant_reelle": {
-          "libelle": "Ce que vous coûtez à l'entreprise par an",
+          "libelle": "Votre coût annuel, charges comprises",
           "aide": "Salaire et charges sociales, ou rémunération de gérance et cotisations."
         },
         "remuneration_normative": {
-          "libelle": "Ce que coûterait un directeur pour vous remplacer",
+          "libelle": "Coût d'un directeur salarié qui vous remplacerait",
           "aide": "Salaire et charges d'un directeur salarié qui ferait votre travail. Le même montant que le vôtre : aucun retraitement."
         },
         "murs": {

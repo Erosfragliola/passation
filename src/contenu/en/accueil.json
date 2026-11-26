@@ -25,7 +25,6 @@
     "principale": "Main navigation",
     "comment": "How it works",
     "livrables": "Sample file",
-    "confidentialite": "Confidentiality",
     "guides": "Guides",
     "questions": "FAQ",
     "espace": "My file",
@@ -45,7 +44,7 @@
   "hero": {
     "surtitre": "Preparing to sell your business",
     "titre": "You built it. Now plan your *handover*.",
-    "sous_titre": "A first valuation of your company in seconds. Then a complete file, ready for your advisors and potential buyers.",
+    "sous_titre": "A first valuation in seconds, then a complete file for your buyers.",
     "note_comptes": "",
     "preuves": {
       "dirigeants": "*{nb_dirigeants}* business owners supported",
@@ -62,22 +61,12 @@
         "chiffre": "30 s",
         "texte": "for a first value range"
       },
-      "methodes": {
-        "chiffre": "3 sources",
-        "texte": "of cross-checked multiples, for a range you can defend"
-      },
       "code": {
         "titre": "Your code name",
         "code": "Projet Chêne",
         "valeur": "€1.8–2.4M",
         "fictif": "fictitious example"
-      },
-      "docs": [
-        "Valuation",
-        "Teaser",
-        "Memorandum",
-        "Datapack"
-      ]
+      }
     }
   },
   "comment": {
@@ -86,18 +75,12 @@
       {
         "chiffre": "30 seconds",
         "titre": "A first value range",
-        "texte": "Type your company's name or SIREN: its public profile appears right away. Create your free account to see the range, based on public registries. No one is notified.",
-        "obtenez": "You get a value range and the code name of your file.",
-        "pastilles": [
-          "Free",
-          "Protected account"
-        ]
+        "texte": "Type the name or SIREN: the public profile appears, then your range."
       },
       {
         "chiffre": "Industry multiples",
         "titre": "A sourced range",
-        "texte": "You fill in a few key figures. Passation applies your industry's EBITDA (EBE) multiples, with dated sources, and checks the result against net assets.",
-        "obtenez": "You get a range, with the full calculation and its sources.",
+        "texte": "You fill in a few figures; Passation applies your industry's multiples.",
         "pastilles": [
           "{duree_etape2}",
           "{prix_etape2}"
@@ -106,8 +89,7 @@
       {
         "chiffre": "9 chapters",
         "titre": "Teaser, memo and datapack",
-        "texte": "The teaser, anonymous, to draw in buyers. The memo to tell your company's full story. The datapack, the Excel file with the numbers. You review, you share.",
-        "obtenez": "You get the teaser, the memorandum and the Excel datapack, all editable.",
+        "texte": "You review, you correct, you share.",
         "pastilles": [
           "At your own pace",
           "{prix_dossier}"
@@ -148,36 +130,9 @@
       ]
     }
   },
-  "pourquoi": {
-    "sources": "Data from official public registries"
-  },
+  "pourquoi": {},
   "confidentialite": {
-    "titre": "No one will know. Except the people you choose.",
-    "texte": "Preparing a sale takes discretion. Just like in large deals, your file gets a code name.",
-    "garanties": [
-      {
-        "titre": "Restricted access",
-        "texte": "Sign in with a one-time code sent by email. Only you can see your file."
-      },
-      {
-        "titre": "Anonymous teaser, under a code name",
-        "texte": "No name, no city, no identifying figure. You choose when to reveal yourself."
-      },
-      {
-        "titre": "Your data is never sold",
-        "texte": "Your data is used only for the tasks you request."
-      },
-      {
-        "titre": "One-click deletion",
-        "texte": "File, figures and documents: you erase everything whenever you decide."
-      }
-    ],
-    "politique": "Read our privacy policy",
-    "fictif": "Fictitious example",
-    "fiche": "Information memorandum",
-    "avant": "Menuiserie Durand & Fils",
-    "apres": "Projet Chêne",
-    "exemple_alt": "Fictitious example: the company name becomes Projet Chêne"
+    "apres": "Projet Chêne"
   },
   "equipe": {
     "surtitre": "Who is behind Passation",
@@ -283,18 +238,6 @@
       }
     ]
   },
-  "relance": {
-    "titre": "Shall we take a look at *your company*?",
-    "texte": "The estimate is free: in 30 seconds, a first idea of its value, visible only to you once your account is created.",
-    "telephone": "Prefer to talk to someone? Call us at",
-    "livrables_titre": "What your file contains",
-    "livrables": [
-      "An anonymous page, under a code name, to draw in buyers.",
-      "The complete presentation of your company, in nine chapters.",
-      "The Excel file with your figures and the valuation, built with formulas."
-    ],
-    "garanties_titre": "Our commitments"
-  },
   "pied": {
     "identite": "",
     "avertissement": "Estimates are indicative and non-binding. This is not legal, tax or financial advice.",
@@ -365,20 +308,12 @@
       "Code name assigned"
     ]
   },
-  "sources": {
-    "libelle": "Data from",
-    "liste": [
-      "INSEE",
-      "INPI",
-      "BODACC"
-    ]
-  },
   "dossier": {
     "titre": "The file of a major deal, for your business.",
-    "texte": "What investment banks prepare for large companies, Passation prepares for yours.",
+    "texte": "What investment banks prepare, for your company.",
     "documents": {
       "titre": "Three documents, drafted in one go",
-      "texte": "In investment-bank format, from your figures. You review, you correct, you send.",
+      "texte": "From your figures. You review, you send.",
       "pilules": [
         "Anonymous teaser",
         "Memorandum",
@@ -389,17 +324,15 @@
     "methodes": {
       "chiffre": "3",
       "titre": "cross-checked sources of multiples",
-      "texte": "Your industry's EBITDA (EBE) multiples, cross-checked across three dated benchmarks, then tested against net assets. Every assumption is sourced: a range you can defend."
-    },
-    "liste": {
-      "etapes": [
-        "Valuation",
-        "Anonymous teaser",
-        "Memorandum",
-        "Excel datapack"
-      ],
-      "legende": "Drafted by AI, checked by you",
-      "alt": "Sample file in progress: valuation, teaser and memorandum ready, datapack in progress"
+      "texte": "Your industry's EBITDA (EBE) multiples, three dated benchmarks, tested against net assets."
     }
+  },
+  "sources": {
+    "libelle": "Data from",
+    "liste": [
+      "INSEE",
+      "INPI",
+      "BODACC"
+    ]
   }
 }

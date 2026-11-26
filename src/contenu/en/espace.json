@@ -59,15 +59,12 @@
     "je_l_ai_de": "I have it: {piece}",
     "je_l_ai_coche": "I have it ✓",
     "je_l_ai": "I have it",
-    "dossier_complet": "File complete",
-    "pour_ameliorer": "To improve it (optional)",
-    "ensuite": "Next",
-    "facultatif": "optional",
     "natures": {
       "valorisation": "Web page, industry multiples",
       "datapack": "Excel, 9 tabs",
       "teaser": "One-page PDF, anonymous",
       "memo": "Presentation to review and print"
     }
-  }
+  },
+  "prochaine_etape": "Next step"
 }

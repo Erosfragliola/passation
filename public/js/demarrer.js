@@ -10,8 +10,8 @@
 //      la page du dossier)
 import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe as texteAideEbe } from "/js/champs-financiers.js";
 import { REGIONS, libelleOption, detailOption } from "/js/questionnaire.js";
-import { QUESTIONS, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe, VALORISATION, champsVisibles, manquesValorisation, etatValorisation, MURS } from "/js/parcours.js";
-import { TEMPS, ETAPE_DE_L_ECRAN, etiquetteExpress, etiquetteTitres, etatParcours, ecranFinal, alertesDirigeant, explicationEcart, resumeValorisation } from "/js/dossier-parcours.js";
+import { QUESTIONS, positionQuestion, questionRepondue, requisManquants, questionsIncompletes, siteDepuisEmail, questionsAPoser, vuesDe, VALORISATION, champsVisibles, manquesValorisation, etatValorisation, MURS } from "/js/parcours.js";
+import { TEMPS, ETAPE_DE_L_ECRAN, etiquetteExpress, etiquetteTitres, etatParcours, ecranFinal, alertesDirigeant, resumeValorisation } from "/js/dossier-parcours.js";
 import { apercuRetraitements, ebeExercice, kEuros, fois, pontValeur, situationAncc, texteAncc } from "/js/valeur-pont.js";
 import { moisSource } from "/js/landing/estimation.js";
 import { fourchette } from "/js/landing/estimation.js";
@@ -20,6 +20,9 @@ import { listePhotos } from "/js/photos-fiches.js";
 import { zoneDepotPhotos, zoneLogo } from "/js/depot-photos.js";
 import { ROLES, FORMATIONS, TYPES_EXPERIENCE, APRES, PERSONNES_MAX, EXPERIENCES_MAX, BORNES, normaliserEquipe, nouvelId, initiales, libelleRole, libelleApres, personneComplete } from "/js/equipe.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
+import { aideRepliee } from "/js/aide-repliee.js";
+import { CARTES, cartesRepondues, carteAOuvrir, retraitementsComplets } from "/js/retraitements-cartes.js";
+import { ELEMENTS_DETTE, etatInitial, valeursAEnregistrer, peutValider } from "/js/dette-elements.js";
 import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
 import { contradictions, nomLisible, faitsEssentiels, faitsParTheme, limiterChoix, lireDate, lignesDates, phraseActivite, TYPES_EVENEMENT } from "/js/faits-site.js";
 
@@ -367,16 +370,16 @@ function exercices() {
   if (!x.dernier_complet || !manque.length) { aller(etapeCourante()); return; }
   const complets = [x.dernier, ...x.recommandes].filter((a) => !manque.includes(a)).sort((a, b) => a - b);
   const lecture = S.chiffres?.lecture_automatique !== false;
-  remplir(...titre(t("demarrer.js.exercices.titre"), t("demarrer.js.exercices.aide", { dernier: x.dernier })),
+  remplir(...titre(t("demarrer.js.exercices.titre"), t("demarrer.js.exercices.aide", { annees: manque.join(", ") })),
     el("ul", { class: "exercices-manquants" }, ...manque.map((a) => el("li", { class: "carte" },
       el("strong", { text: t("demarrer.js.chiffres.exercice", { annee: a }) }),
       el("button", { type: "button", class: "btn btn-noir btn-mini", onclick: () => { S.saisie = { annee: a, valeurs: {}, ecran: 1 }; aller("saisie"); } }, t("demarrer.js.exercices.saisir", { annee: a }))))),
     lecture ? el("p", { class: "petit" }, t("demarrer.js.exercices.liasse"), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("comptes") }, t("demarrer.js.exercices.deposer"))) : null,
-    el("div", { class: "carte exercices-perte" }, el("p", { class: "etiquette", text: t("demarrer.js.exercices.perte_titre") }),
-      el("p", { text: t("demarrer.js.exercices.perte", { annees: complets.join(", ") }) })),
     el("div", { class: "q-nav" },
       el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.retour")),
-      el("button", { type: "button", class: "btn btn-contour", onclick: async (ev) => { ev.currentTarget.disabled = true; await marquerVue("exercices_passes"); aller(etapeCourante()); } }, t("demarrer.js.exercices.passer"), fleche())));
+      el("button", { type: "button", class: "btn btn-contour", "aria-describedby": "exercices-sans", onclick: async (ev) => { ev.currentTarget.disabled = true; await marquerVue("exercices_passes"); aller(etapeCourante()); } }, t("demarrer.js.exercices.passer"), fleche())),
+    // What skipping means, under the « Skip » button
+    el("p", { class: "petit exercices-sans", id: "exercices-sans", text: t("demarrer.js.exercices.sans_eux", { annee: complets.join(", ") }) }));
 }
 
 // ================================================================== Valorisation : champs communs
@@ -384,12 +387,17 @@ function exercices() {
 const valeursExercice = (annee) => Object.fromEntries(Object.entries(S.chiffres?.exercices?.[annee] || {}).filter(([, c]) => c?.valeur != null).map(([k, c]) => [k, c.valeur]));
 const reponse = (c) => S.reponses[c.etape]?.[c.cle];
 /** Amount field of a valuation screen: label, help, formatted field + slider; never a proposed value. */
+/** Label of a field with its help folded behind a « ? » (the help unfolds below the field, CSS order). */
+function libelleAvecAide(balise, attrs, libelle, aide) {
+  const a = aideRepliee(aide, libelle);
+  return [el("div", { class: "lib-ligne" }, el(balise, attrs, libelle), a?.bouton), a?.zone];
+}
 function montantValorisation(c, surChange) {
   const id = `v-${c.etape}-${c.cle}`;
   const comp = champMontant({ id, libelle: c.libelle, etiquette: `${id}-lib`, unite: "€", min: 0, max: Math.max(c.max, Number(reponse(c)) || 0), valeur: Number.isFinite(reponse(c)) ? reponse(c) : null });
   comp.addEventListener("input", () => surChange?.());
   comp.dataset.cle = c.cle;
-  return { comp, noeud: el("div", { class: "guide-champ" }, el("label", { class: "guide-lib", id: `${id}-lib`, for: id }, c.libelle), c.aide ? el("p", { class: "guide-aide", text: c.aide }) : null, comp) };
+  return { comp, noeud: el("div", { class: "guide-champ" }, ...libelleAvecAide("label", { class: "guide-lib", id: `${id}-lib`, for: id }, c.libelle, c.aide), comp) };
 }
 /** Single choice (chips), never preselected unless the owner already answered. */
 function choixValorisation(c, valeurs, surChange) {
@@ -399,7 +407,7 @@ function choixValorisation(c, valeurs, surChange) {
     for (const b of groupe.children) { const oui = b === ev.currentTarget; b.classList.toggle("choisie", oui); b.setAttribute("aria-checked", String(oui)); }
     surChange?.();
   } }, libelleOption(c.cle, o))));
-  return el("div", { class: "guide-champ" }, el("p", { class: "guide-lib", id: `v-${c.cle}-lib`, text: c.libelle }), c.aide ? el("p", { class: "guide-aide", text: c.aide }) : null, groupe);
+  return el("div", { class: "guide-champ" }, ...libelleAvecAide("p", { class: "guide-lib", id: `v-${c.cle}-lib` }, c.libelle, c.aide), groupe);
 }
 const signe = (v) => (v > 0 ? `+${kEuros(v)}` : kEuros(v));
 /** Saves several answers (one request per step) and the screen as validated. */
@@ -445,6 +453,7 @@ function retraitements() {
     blocLoyer.hidden = choix.murs !== MURS.dirigeant;
     blocExc.hidden = choix.exceptionnel_signale !== "Oui";
     remplacer(total, a ? [t("demarrer.js.retraitements.total_avant", { annee }), " ", el("strong", { text: kEuros(a.ebe_comptable) }), " → ", t("demarrer.js.retraitements.total_apres"), " ", el("strong", { text: kEuros(a.ebe_retraite) })] : t("demarrer.js.retraitements.total_inconnu"));
+    majCartes?.();
   };
   const champs = Object.fromEntries(["remuneration_dirigeant_reelle", "remuneration_normative", "loyer_paye", "loyer_marche"].map((k) => [k, montantValorisation(C[k], () => maj())]));
   for (const k of ["dirigeant", "loyer", "exceptionnel"]) effets[k] = el("p", { class: "retraitement-effet", "aria-live": "polite" });
@@ -465,7 +474,6 @@ function retraitements() {
   if (!liste.length) liste.push({ annee, libelle: "", sens: "charge", montant: null, justification: "" });
   dessinerExc();
   const blocExc = el("div", {}, lignesExc);
-  const bloc = (titreBloc, aide, ...contenu) => el("section", { class: "carte retraitement" }, el("h2", { text: titreBloc }), aide ? el("p", { class: "petit", text: aide }) : null, ...contenu);
   const valider = el("button", { type: "button", class: "btn btn-vert" }, t("demarrer.js.retraitements.valider"), fleche());
   valider.addEventListener("click", async () => {
     for (const k of Object.keys(champs)) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
@@ -482,31 +490,89 @@ function retraitements() {
       message(""); aller(etapeCourante() === "retraitements" ? "dette" : etapeCourante());
     } catch (e) { message(e.message, true); valider.disabled = false; }
   });
+  // One card at a time (audit of 25/11/2026): the first not answered is open; an answered card closes into one line
+  // with its effect and « Modifier »; a click on a title opens it again. Never answered in advance.
+  const repondues = () => cartesRepondues(lire(), choix, MURS.dirigeant);
+  let ouverte = carteAOuvrir(repondues());
+  const EFFET = { remuneration: "dirigeant", loyer: "loyer", exceptionnels: "exceptionnel" };
+  const resume = (k) => {
+    const r = lire();
+    if (k === "remuneration") { const d = r.remuneration_dirigeant_reelle - r.remuneration_normative; return d ? t("demarrer.js.retraitements.resume.remuneration", { effet: signe(d) }) : t("demarrer.js.retraitements.resume.remuneration_neutre"); }
+    if (k === "loyer") return choix.murs === MURS.dirigeant && r.loyer_paye !== r.loyer_marche ? t("demarrer.js.retraitements.resume.loyer", { effet: signe(r.loyer_paye - r.loyer_marche) }) : t("demarrer.js.retraitements.resume.loyer_neutre");
+    const somme = r.exceptionnels.reduce((x, e) => x + e.montant, 0);
+    return choix.exceptionnel_signale === "Non" || !somme ? t("demarrer.js.retraitements.resume.exceptionnels_aucun") : t("demarrer.js.retraitements.resume.exceptionnels", { effet: signe(somme) });
+  };
+  const suivant = (k) => { ouverte = carteAOuvrir(repondues(), { apres: k }); dessinerCartes(); (ouverte ? $(`#rt-titre-${ouverte}`) : valider)?.focus(); };
+  const corps = {
+    remuneration: () => [el("div", { class: "saisie-deux" }, champs.remuneration_dirigeant_reelle.noeud, champs.remuneration_normative.noeud), effets.dirigeant],
+    // A choice that needs no amount closes the card at once (walls not yours, no exceptional item)
+    loyer: () => [choixValorisation(C.murs, choix, () => { maj(); if (choix.murs !== MURS.dirigeant) suivant("loyer"); }), blocLoyer, effets.loyer],
+    exceptionnels: () => [choixValorisation(C.exceptionnel_signale, choix, () => { maj(); if (choix.exceptionnel_signale === "Non") suivant("exceptionnels"); }), blocExc, effets.exceptionnel],
+  };
+  const aides = { remuneration: t("demarrer.js.retraitements.dirigeant_aide") };
+  const cartes = el("div", { class: "rt-cartes" });
+  const boutonsSuivant = {};
+  function dessinerCartes() {
+    const rep = repondues();
+    remplacer(cartes, ...CARTES.map((k) => {
+      const ouvert = ouverte === k;
+      const aide = ouvert ? aideRepliee(aides[k], t(`demarrer.js.retraitements.cartes.${k}`)) : null;
+      boutonsSuivant[k] = el("button", { type: "button", class: "btn btn-noir btn-mini", disabled: !rep[k], onclick: () => suivant(k) }, t("demarrer.js.retraitements.suivant"));
+      return el("section", { class: `carte retraitement rt-carte${ouvert ? " ouverte" : ""}${rep[k] ? " repondue" : ""}` },
+        el("div", { class: "rt-tete" },
+          el("h2", {}, el("button", { type: "button", class: "rt-titre", id: `rt-titre-${k}`, "aria-expanded": String(ouvert), "aria-controls": `rt-corps-${k}`, onclick: () => { ouverte = ouvert ? null : carteAOuvrir(rep, { demandee: k }); dessinerCartes(); $(`#rt-titre-${k}`)?.focus(); } },
+            el("span", { class: "rt-num", "aria-hidden": "true", text: rep[k] && !ouvert ? "✓" : String(CARTES.indexOf(k) + 1) }), t(`demarrer.js.retraitements.cartes.${k}`))),
+          aide?.bouton),
+        !ouvert && rep[k] ? el("p", { class: "rt-resume" }, el("span", { text: resume(k) }), " ", el("button", { type: "button", class: "lien-simple", onclick: () => { ouverte = k; dessinerCartes(); $(`#rt-titre-${k}`)?.focus(); } }, t("demarrer.js.retraitements.modifier"))) : null,
+        el("div", { class: "rt-corps", id: `rt-corps-${k}`, hidden: !ouvert }, ...(ouvert ? [aide?.zone, ...corps[k](), el("div", { class: "rt-suivant" }, boutonsSuivant[k])] : [])));
+    }));
+    valider.disabled = !retraitementsComplets(rep);
+  }
+  function majCartes() {
+    const rep = repondues();
+    for (const k of CARTES) if (boutonsSuivant[k]) boutonsSuivant[k].disabled = !rep[k];
+    valider.disabled = !retraitementsComplets(rep);
+  }
+  const creditBail = aideRepliee(t("demarrer.js.retraitements.credit_bail_aide"), t("demarrer.js.retraitements.credit_bail_titre"));
   remplir(...titre(t("demarrer.js.retraitements.titre"), t("demarrer.js.retraitements.aide")),
     el("div", { class: "carte retraitements-tete" }, total),
-    bloc(t("demarrer.js.retraitements.dirigeant_titre"), t("demarrer.js.retraitements.dirigeant_aide"), el("div", { class: "saisie-deux" }, champs.remuneration_dirigeant_reelle.noeud, champs.remuneration_normative.noeud), effets.dirigeant),
-    bloc(t("demarrer.js.retraitements.loyer_titre"), null, choixValorisation(C.murs, choix, maj), blocLoyer, effets.loyer),
-    bloc(t("demarrer.js.retraitements.exc_titre"), null, choixValorisation(C.exceptionnel_signale, choix, maj), blocExc, effets.exceptionnel),
-    bloc(t("demarrer.js.retraitements.credit_bail_titre"), t("demarrer.js.retraitements.credit_bail_aide")),
-    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller(exercicesFaits() ? "chiffres" : "exercices") }, t("demarrer.js.retour")), valider),
-    el("p", { class: "q-usage", text: t("demarrer.js.retraitements.usage") }));
+    cartes,
+    el("div", { class: "rt-credit-bail" }, el("p", { class: "lib-ligne" }, el("span", { text: t("demarrer.js.retraitements.credit_bail_titre") }), creditBail.bouton), creditBail.zone),
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller(exercicesFaits() ? "chiffres" : "exercices") }, t("demarrer.js.retour")), valider));
+  dessinerCartes();
   maj();
 }
 
-// ================================================================== 3. Dette nette et périmètre
 function dette() {
   const C = Object.fromEntries(VALORISATION.dette.map((c) => [c.cle, c]));
   const annee = exercicesAttendus(S.chiffres?.exercices).dernier;
   const ex = valeursExercice(annee);
   const choix = { detention: S.reponses.operation?.detention ?? null, murs_cession: S.reponses.retraitements?.murs_cession ?? null, part_cedee: S.reponses.operation?.part_cedee ?? null };
   const mursAVous = S.reponses.retraitements?.murs === MURS.dirigeant;
-  const champs = Object.fromEntries(["comptes_courants_remboursables", "credit_bail_restant", "dividendes_a_verser", "actifs_hors_exploitation"].map((k) => [k, montantValorisation(C[k])]));
+  // « Do you have any of these? »: tick first, then one amount field per ticked item (audit of 25/11/2026)
+  const elements = etatInitial(S.reponses.bilan, S.vues.includes("dette"));
+  const champs = Object.fromEntries(ELEMENTS_DETTE.map((k) => [k, montantValorisation(C[k], () => majValider())]));
+  const montants = () => Object.fromEntries(ELEMENTS_DETTE.map((k) => [k, champs[k].comp.lire().valeur]));
+  const zoneChamps = el("div", { class: "dette-montants" });
+  const puce = (libelle, coche, surClic) => el("button", { type: "button", role: "checkbox", class: `puce${coche ? " choisie" : ""}`, "aria-checked": String(coche), onclick: surClic }, libelle);
+  const groupe = el("div", { class: "puces-choix", role: "group", "aria-labelledby": "dette-elements-titre" });
+  const dessinerElements = () => {
+    remplacer(groupe, ...ELEMENTS_DETTE.map((k) => puce(t(`demarrer.js.dette.choix.${k}`), elements.coches.has(k), () => {
+      if (elements.coches.has(k)) elements.coches.delete(k); else elements.coches.add(k);
+      elements.aucun = false; dessinerElements(); groupe.querySelectorAll("button")[ELEMENTS_DETTE.indexOf(k)]?.focus();
+    })), puce(t("demarrer.js.dette.choix.aucun"), elements.aucun, () => { elements.aucun = !elements.aucun; if (elements.aucun) elements.coches.clear(); dessinerElements(); groupe.lastElementChild?.focus(); }));
+    remplacer(zoneChamps, ...ELEMENTS_DETTE.filter((k) => elements.coches.has(k)).map((k) => champs[k].noeud));
+    majValider();
+  };
   // What the balance sheet already says (latest fiscal year), read only: corrected on "Your figures"
   const bilan = [["tresorerie", 1], ["placements", 1], ["emprunts", -1], ["provisions_risques", -1]].filter(([k]) => ex[k] != null);
   const valider = el("button", { type: "button", class: "btn btn-vert" }, t("demarrer.js.dette.valider"), fleche());
+  function majValider() { valider.disabled = !peutValider(elements, montants()); }
   valider.addEventListener("click", async () => {
-    for (const k of Object.keys(champs)) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
-    const v = (k) => champs[k].comp.lire().valeur;
+    for (const k of [...elements.coches]) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
+    // An unticked item is erased (null), never saved as 0 without an entry
+    const aEnregistrer = valeursAEnregistrer(elements, montants());
+    const v = (k) => aEnregistrer[k];
     const futur = { ...S.reponses, operation: { ...(S.reponses.operation || {}), detention: choix.detention, part_cedee: choix.part_cedee }, retraitements: { ...(S.reponses.retraitements || {}), murs_cession: choix.murs_cession } };
     const manque = manquesValorisation("dette", futur);
     if (manque.length) { message(t("demarrer.js.retraitements.il_manque", { liste: manque.map((c) => c.libelle).join(", ") }), true); return; }
@@ -520,16 +586,15 @@ function dette() {
   remplir(...titre(t("demarrer.js.dette.titre"), t("demarrer.js.dette.aide")),
     el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.bilan_titre", { annee }) }),
       bilan.length ? el("dl", { class: "guide-resume dette-bilan" }, ...bilan.map(([k, s]) => el("div", {}, el("dt", { text: libelleEcran(CHAMPS.find((c) => c.cle === k)) }), el("dd", { text: kEuros(s * ex[k]) })))) : el("p", { class: "petit", text: t("demarrer.js.dette.bilan_vide") }),
-      el("p", { class: "petit" }, t("demarrer.js.dette.bilan_aide"), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.dette.corriger")))),
-    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.autres_titre") }), el("p", { class: "petit", text: t("demarrer.js.dette.autres_aide") }),
-      el("div", { class: "saisie-deux" }, ...Object.values(champs).map((x) => x.noeud))),
-    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.perimetre_titre") }), el("p", { class: "petit", text: t("demarrer.js.dette.perimetre_aide") }),
+      el("p", { class: "petit" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.dette.corriger")))),
+    el("section", { class: "carte retraitement" }, el("h2", { id: "dette-elements-titre", text: t("demarrer.js.dette.elements_question") }), groupe, zoneChamps),
+    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.perimetre_titre") }),
       choixValorisation(C.detention, choix),
       el("p", { class: "petit dette-murs" }, t("demarrer.js.dette.murs", { murs: S.reponses.retraitements?.murs ? libelleOption("murs", S.reponses.retraitements.murs) : "–" }), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.dette.modifier"))),
       mursAVous ? choixValorisation(C.murs_cession, choix) : null,
       choixValorisation(C.part_cedee, choix)),
-    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.retour")), valider),
-    el("p", { class: "q-usage", text: t("demarrer.js.dette.usage") }));
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.retour")), valider));
+  dessinerElements();
 }
 
 // ================================================================== 4. Votre valeur
@@ -583,24 +648,24 @@ async function valeur() {
   const ancc = texteAncc(situationAncc(v.bas, v.haut, r.ancc.valeur), v);
   // Points of attention, visible; the adjusted-net-assets alert is replaced by the sentence below the bridge
   const points = alertesDirigeant(r.synthese.alertes).filter((a) => !/actif net corrigé de l'entreprise|company’s adjusted net assets/i.test(a));
-  const ecart = explicationEcart(S.dossier?.estimation, v);
+  // From the quick estimate: one line (the detail of the bridge is in the table below)
+  const est = S.dossier?.estimation;
+  const ecart = est?.statut === "ok" && Number.isFinite(est.bas) && Number.isFinite(est.haut) ? t("demarrer.js.valeur.express", { fourchette: fourchette(est.bas, est.haut) }) : null;
   remplir(...titre(t("demarrer.js.valeur.titre"), t("demarrer.js.valeur.aide")),
     el("div", { class: "carte valeur-tete" }, el("p", { class: "etiquette", text: etiquetteTitres() }), el("p", { class: "valeur-fourchette chiffre", text: fourchette(v.bas, v.haut) }),
       ecart ? el("p", { class: "petit", text: ecart }) : null,
       validee ? el("p", { class: "petit valeur-validee", text: t("demarrer.js.valeur.validee_le", { date: new Date(validee.le * 1000).toLocaleDateString(locale()) }) }) : null,
       aRevalider ? el("p", { class: "valeur-revalider", role: "status", text: t("dossier.taches.valeur.a_revalider") }) : null),
-    p ? el("section", { class: "carte valeur-pont" }, el("h2", { text: t("demarrer.js.valeur.pont_titre") }),
+    p ? el("section", { class: "carte valeur-pont" }, ...libelleAvecAide("h2", {}, t("demarrer.js.valeur.pont_titre"), t("demarrer.js.valeur.source_multiples", { mois: mois || "–" })),
       el("div", { class: "tableau-defile", tabindex: "0" }, el("table", { class: "tableau-resultat" },
         el("caption", { class: "visuellement-cache", text: t("demarrer.js.valeur.pont_titre") }),
         el("thead", {}, el("tr", {}, el("th", { scope: "col", text: t("demarrer.js.valeur.pont.etape") }), el("th", { scope: "col", class: "num", text: t("demarrer.js.valeur.pont.bas") }), el("th", { scope: "col", class: "num", text: t("demarrer.js.valeur.pont.haut") }))),
-        el("tbody", {}, ...lignes))),
-      el("p", { class: "petit", text: t("demarrer.js.valeur.source_multiples", { mois: mois || "–" }) })) : null,
+        el("tbody", {}, ...lignes)))) : null,
     points.length ? el("section", { class: "carte valeur-points" }, el("h2", { text: t("demarrer.js.valeur.points_titre", { n: points.length }) }), el("ul", { class: "alertes" }, ...points.map((a) => el("li", { text: a })))) : null,
     ancc ? el("section", { class: "carte valeur-ancc" }, el("h2", { text: t("demarrer.js.valeur.ancc_titre") }), el("p", { text: ancc })) : null,
     modifier,
     el("p", { class: "petit" }, el("a", { href: lien(`/espace/valorisation/?dossier=${id}#valorisation`), text: t("demarrer.js.valeur.detail") })),
-    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("dette") }, t("demarrer.js.retour")), bouton),
-    el("p", { class: "q-usage", text: t("demarrer.js.valeur.usage") }));
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("dette") }, t("demarrer.js.retour")), bouton));
 }
 
 // ================================================================== 3. Questions (une par écran)
@@ -613,10 +678,9 @@ const proposition = (q, c) => (S.reponses[c.etape]?.[c.cle] == null ? S.proposit
 const valeurDe = (chemin) => { const [e, k] = chemin.split("."); return S.reponses[e]?.[k]; };
 const idChamp = (c) => `q-${c.etape}-${c.cle}`;
 /** Libellé (et aide) d'un champ ; `pour` relie le libellé au champ, sinon c'est un texte (légende d'un groupe). */
-const entete = (c, pour = null) => [
-  c.libelle ? el(pour ? "label" : "p", { class: "guide-lib", for: pour, id: `${idChamp(c)}-lib` }, c.libelle) : null,
-  c.aide ? el("p", { class: "guide-aide", text: c.aide }) : null,
-];
+const entete = (c, pour = null) => (c.libelle
+  ? libelleAvecAide(pour ? "label" : "p", { class: "guide-lib", for: pour, id: `${idChamp(c)}-lib` }, c.libelle, c.aide)
+  : [aideRepliee(c.aide)?.zone].map((z) => (z ? Object.assign(z, { hidden: false, className: "guide-aide" }) : null)));
 
 /** Puces à cocher (métiers, certifications) : propositions sourcées + réponses déjà données + ajouts du dirigeant. */
 function champEtiquettes(c, q) {
@@ -863,7 +927,8 @@ function compteur() {
   if (!S.aPoser) S.aPoser = questionsAPoser(S.reponses, S.vues);
   const cle = cleEcran();
   if (cle && !S.aPoser.includes(cle)) S.aPoser = [...S.aPoser, cle].sort((a, b) => ordre(a) - ordre(b)); // revenue d'elle-même (« Retour »)
-  const n = S.aPoser.indexOf(cle) + 1, total = S.aPoser.length;
+  // Fixed position among every screen of « Your company » (the list above only serves « Back »)
+  const { n, total } = positionQuestion(cle) || { n: S.aPoser.indexOf(cle) + 1, total: S.aPoser.length };
   return el("div", { class: "q-tete" }, el("p", { class: "q-compteur", text: t("demarrer.js.question_n", { n, total }) }),
     el("span", { class: "q-jauge", "aria-hidden": "true" }, el("span", { style: `width:${Math.round((n / total) * 100)}%` })));
 }
@@ -893,8 +958,6 @@ function suivante(q) {
   const j = QUESTIONS.findIndex((x, k) => k > i && !questionRepondue(x, S.reponses, S.vues));
   if (j >= 0) { S.q = j; questions(); } else aller(etapeCourante());
 }
-/** « Où va votre réponse » : une ligne discrète. */
-const ouVa = (q) => (q.chapitre ? el("p", { class: "q-usage" }, t("demarrer.js.question.nourrit"), " ", el("strong", { text: q.chapitre }), ".") : null);
 /** Première question : le site internet. Sa lecture se poursuit pendant les questions suivantes. */
 function questionSite() {
   const proposition = S.reponses.site?.url || siteDepuisEmail(S.email) || "";
@@ -918,8 +981,7 @@ function questionSite() {
         lancerLectureSite(url);
         S.reponses.site = { ...(S.reponses.site || {}), url, aucun: undefined };
         suivanteQ();
-      } }, proposition ? t("demarrer.js.site.oui_lire") : t("demarrer.js.site.lire"), fleche())),
-    el("p", { class: "q-usage", text: t("demarrer.js.site.usage") }));
+      } }, proposition ? t("demarrer.js.site.oui_lire") : t("demarrer.js.site.lire"), fleche())));
 }
 // ---- Récapitulatif : toutes les réponses préparées sur un écran, validées d'un clic (le reste se pose ensuite)
 const cleRecap = `passation-recap-${id}`;
@@ -953,7 +1015,6 @@ function recapitulatif() {
     } catch (e) { message(e.message, true); bouton.disabled = false; }
   });
   remplir(
-    el("p", { class: "q-compteur", text: t("demarrer.js.recap.preparees", { n: liste.length }) }),
     ...titre(t("demarrer.js.recap.titre"), t("demarrer.js.recap.aide")),
     el("ul", { class: "recap-liste" }, ...liste.map((q) => {
       const cb = el("input", { type: "checkbox", id: `recap-${q.id}`, checked: true });
@@ -979,7 +1040,6 @@ function questions() {
   remplir(
     compteur(),
     ...titre(q.titre, q.aide),
-    aValider ? el("p", { class: "proposition-bandeau" }, t("demarrer.js.question.preparee_court", { source: prop.source })) : null,
     ...q.champs.map((c) => champ(c, q)),
     q.suite ? el("div", { class: "guide-suite", "data-suite": "1", hidden: !q.suite.si(S.reponses) }, ...q.suite.champs.map((c) => champ(c, q))) : null,
     el("div", { class: "q-nav" },
@@ -995,8 +1055,7 @@ function questions() {
             if (manque.length) { message(t("demarrer.js.question.il_manque", { liste: manque.length > 1 ? t("dossier.annees.liste", { debut: manque.slice(0, -1).join(", "), fin: manque.at(-1) }) : manque[0] }), true); bouton.disabled = false; $("#ecran").querySelector("textarea, .puces-choix .puce")?.focus(); return; }
             message(""); suivante(q);
           } catch (e) { message(e.message, true); bouton.disabled = false; }
-        } }, t("demarrer.js.continuer"), fleche())),
-    ouVa(q));
+        } }, t("demarrer.js.continuer"), fleche())));
   // Montant proposé d'après un autre montant de l'écran : il suit la saisie tant qu'il n'est pas confirmé
   for (const c of [...q.champs, ...(q.suite?.champs || [])].filter((x) => x.propose)) {
     const [e, k] = c.propose.split(".");
@@ -1070,8 +1129,7 @@ async function site() {
           rafraichirPropositions();
           aller(etapeCourante());
         } catch (e) { message(e.message, true); bouton.disabled = false; }
-      } }, faits.length ? t("demarrer.js.site.valider_faits") : t("demarrer.js.continuer"), fleche())),
-    el("p", { class: "q-usage", text: t("demarrer.js.site.usage_faits") }));
+      } }, faits.length ? t("demarrer.js.site.valider_faits") : t("demarrer.js.continuer"), fleche())));
 }
 
 /** « Photos et logo » (part D, 24/11/2026), with or without a website: 1. the logo, chosen among those of the website
@@ -1120,16 +1178,14 @@ async function photos() {
     ...titre(t("demarrer.js.photos.titre"), t("demarrer.js.photos.aide_jugement")),
     el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.logo_titre") }),
       zoneLogo({ memo, baseMemo, logos: s.logos || [], idBase: "parcours-logo", surChange: (m) => { S.memo = m; } })),
-    el("section", { class: "carte photos-bloc" }, el("h2", { class: "photos-sous-titre", text: t("demarrer.js.photos.ajouter_titre") }),
-      el("p", { class: "petit", text: s.url ? t("demarrer.js.photos.aide_site") : t("demarrer.js.photos.aide_sans_site") }),
+    el("section", { class: "carte photos-bloc" }, ...libelleAvecAide("h2", { class: "photos-sous-titre" }, t("demarrer.js.photos.ajouter_titre"), s.url ? t("demarrer.js.photos.aide_site") : t("demarrer.js.photos.aide_sans_site")),
       depot,
       grille ? el("div", { class: "guide-champ" }, el("p", { class: "guide-lib", id: "photos-site-titre", text: t("demarrer.js.photos.cliquez_ajouter") }), el("p", { class: "guide-aide", text: t("demarrer.js.photos.usage", { max }) }), grille) : null,
       ecartees.length ? el("p", { class: "petit", text: t("memo.js.photos.ecartees", { n: ecartees.length, raisons: [...new Set(ecartees.map((x) => t(`memo.js.photos.raisons.${x.raison}`)))].join(", ") }) }) : null),
     zoneListe,
     el("div", { class: "q-nav" },
       el("button", { type: "button", class: "lien-simple", onclick: () => { S.q = QUESTIONS.length - 1; aller("questions"); } }, t("demarrer.js.retour")),
-      bouton),
-    el("p", { class: "q-usage", text: t("demarrer.js.photos.ou_va") }));
+      bouton));
   majListe();
 }
 
@@ -1228,30 +1284,24 @@ function equipe() {
     aller(etapeCourante());
   });
   remplir(
-    ...titre(t("demarrer.js.equipe.titre"), t("demarrer.js.equipe.aide")),
+    titre(t("demarrer.js.equipe.titre"))[0],
+    // Where the names go (privacy) behind a « ? » next to the subtitle, not at the bottom of the screen
+    ...libelleAvecAide("p", { class: "chapo-petit" }, t("demarrer.js.equipe.aide"), t("demarrer.js.equipe.rgpd")),
     el("div", { class: "eq-personnes" }, ...L.map(carte), ajouterP),
-    el("p", { class: "petit eq-rgpd", text: t("demarrer.js.equipe.rgpd") }),
-    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { sauverEquipe(true); equipeEtat = null; aller("photos"); } }, t("demarrer.js.retour")), continuer),
-    el("p", { class: "q-usage", text: t("demarrer.js.equipe.ou_va") }));
+    el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => { sauverEquipe(true); equipeEtat = null; aller("photos"); } }, t("demarrer.js.retour")), continuer));
 }
 
 // ================================================================== 0. Accueil de l'analyse approfondie
 /** Écran d'accueil, une seule fois, avant tout : ce qui va se passer, en combien de temps, un seul bouton. */
 function accueil() {
-  const e = S.dossier?.entreprise || {}, est = S.dossier?.estimation;
-  const publics = Object.entries(S.chiffres?.exercices || {}).filter(([, l]) => Object.values(l).some((x) => x.source === "inpi" && x.valeur != null)).map(([a]) => a).sort();
+  // Three lines with their duration (audit of 25/11/2026), then one button
   remplir(
     el("p", { class: "q-compteur accueil-sur", text: t("demarrer.js.accueil.surtitre") }),
     el("h1", { class: "guide-titre accueil-titre", tabindex: "-1", text: t("demarrer.js.accueil.titre") }),
-    el("p", { class: "chapo-petit", text: t("demarrer.js.accueil.chapo") }),
-    el("ol", { class: "accueil-etapes" },
-      el("li", {}, el("strong", { text: t("demarrer.js.accueil.chiffres_titre") }), el("span", { text: publics.length ? t("demarrer.js.accueil.chiffres_publics", { annees: publics.join(", ") }) : t("demarrer.js.accueil.chiffres") })),
-      el("li", {}, el("strong", { text: t("demarrer.js.accueil.reponses_titre") }), el("span", { text: t("demarrer.js.accueil.reponses", { n: QUESTIONS.length + 1 }) })),
-      el("li", {}, el("strong", { text: t("demarrer.js.accueil.redaction_titre") }), el("span", { text: t("demarrer.js.accueil.redaction") }))),
+    el("ol", { class: "accueil-etapes accueil-durees" },
+      ...["chiffres", "entreprise", "redaction"].map((k) => el("li", {}, el("strong", { text: t(`demarrer.js.accueil.ligne_${k}`) }), " ", el("span", { class: "petit", text: t(`demarrer.js.accueil.duree_${k}`) })))),
     el("div", { class: "accueil-depart" },
-      el("button", { type: "button", class: "btn btn-vert", onclick: async (ev) => { ev.currentTarget.disabled = true; await marquerVue("accueil"); aller(etapeCourante()); } }, t("demarrer.js.accueil.commencer"), fleche()),
-      el("span", { class: "petit", text: t("demarrer.js.accueil.reprise") })),
-    est?.statut === "ok" ? el("p", { class: "petit accueil-deja" }, el("strong", { text: t("demarrer.js.accueil.deja") }), " ", t("demarrer.js.accueil.deja_estimation", { fourchette: fourchette(est.bas, est.haut), nom: e.nom || "" })) : null);
+      el("button", { type: "button", class: "btn btn-vert", onclick: async (ev) => { ev.currentTarget.disabled = true; await marquerVue("accueil"); aller(etapeCourante()); } }, t("demarrer.js.accueil.commencer"), fleche())));
 }
 
 // ================================================================== 5. Rédaction (tout d'un coup)
@@ -1402,9 +1452,9 @@ async function pret() {
   const b = e.nouvelleEtape;
   remplir(...titre(f.titre, f.aide),
     b ? el("div", { class: "bandeau-etape", role: "status", "data-genre": b.genre }, el("p", { text: b.texte }), el("a", { class: "btn btn-noir btn-mini", href: b.href }, b.bouton, " →")) : null,
-    v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), el("a", { href: v.lien.href, text: v.lien.texte })) : null,
+    v.bas != null && v.haut != null ? el("p", { class: "fin-valeur" }, el("span", { text: v.etiquette }), el("strong", { class: "chiffre", text: fourchette(v.bas, v.haut) }), v.lien ? el("a", { href: v.lien.href, text: v.lien.texte }) : null) : null,
     restent.length ? el("div", { class: "fin-reste" }, el("h2", { text: f.resteTitre }),
-      el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }), x.detail ? el("span", { class: "petit", text: ` · ${x.detail}` }) : null)))) : null,
+      el("ul", {}, ...restent.map((x) => el("li", {}, el("a", { href: lienTache(x), text: x.titre }))))) : null,
     el("section", { class: "fin-memo", "aria-labelledby": "fin-memo-titre" }, couverture,
       el("div", { class: "fin-memo-texte" }, etatDoc(m),
         el("h2", { id: "fin-memo-titre", text: t("memo.memorandum_information") }),

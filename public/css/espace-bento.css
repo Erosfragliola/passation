@@ -916,7 +916,6 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .eq-ajouter { border: 1px dashed var(--trait-fort); border-radius: 18px; padding: 14px; background: none; font: 500 15px var(--sans); cursor: pointer; color: var(--vert); }
 .eq-ajouter:disabled { color: var(--pierre-texte); cursor: not-allowed; }
 .eq-retirer { justify-self: start; }
-.eq-rgpd { margin-top: 12px; }
 @media (max-width: 640px) {
   .eq-deux, .eq-exp { grid-template-columns: minmax(0, 1fr); }
   .eq-photo-zone { grid-template-columns: 72px minmax(0, 1fr); }
@@ -1034,3 +1033,51 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .guide-ligne.validee { grid-template-columns: 1fr 160px auto auto; }
 .guide-ligne.validee .pastille-ok { justify-self: start; }
 @media (max-width: 600px) { .guide-ligne.validee { grid-template-columns: 1fr; } }
+
+/* ====================================================== Lighter owner's path (audit of 25/11/2026) */
+/* Help folded behind a « ? »: same round button as the EBITDA help; the help unfolds below the field */
+.lib-ligne { display: flex; align-items: flex-start; gap: 8px; flex-wrap: nowrap; }
+.lib-ligne > :first-child { flex: 0 1 auto; min-width: 0; }
+.lib-ligne > .guide-lib, .lib-ligne > label { margin: 0; }
+.aide-bouton { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--trait-fort); background: #FFFDF8; color: var(--espresso); font: 600 13px/1 var(--sans); cursor: pointer; flex: none; padding: 0; }
+.aide-bouton[aria-expanded="true"] { background: var(--vert); color: #F6F1E6; border-color: var(--vert); }
+.aide-repliee { margin: 0; font-size: 14px; color: var(--pierre-texte); background: #F3EBDD; border-radius: 10px; padding: 8px 12px; }
+.guide-champ > .aide-repliee, .q > .aide-repliee, fieldset > .aide-repliee { order: 99; }
+.chiffre-ligne > .aide-repliee { grid-column: 1 / -1; }
+.montant.sans-curseur { display: block; }
+.accueil-durees li { display: flex; gap: 8px; align-items: baseline; }
+.exercices-sans { margin: 8px 0 0; text-align: right; }
+@media (max-width: 640px) { .exercices-sans { text-align: left; } }
+/* Adjustments: one card at a time; the EBITDA line stays visible (sticky under the header on a phone) */
+.rt-cartes { display: grid; gap: 10px; }
+.rt-carte { padding: 0; }
+.rt-tete { display: flex; align-items: center; gap: 8px; padding: 14px 18px; }
+.rt-tete h2 { margin: 0; flex: 1; font-size: 18px; }
+.rt-titre { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: inherit; text-align: left; cursor: pointer; }
+.rt-num { width: 26px; height: 26px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 13px; border: 1px solid var(--trait-fort); flex: none; }
+.rt-carte.repondue:not(.ouverte) .rt-num { background: var(--vert); color: #F6F1E6; border-color: var(--vert); }
+.rt-resume { margin: -6px 18px 14px 54px; font-size: 14.5px; color: var(--pierre-texte); }
+.rt-corps { padding: 0 18px 18px; display: grid; gap: 12px; }
+.rt-suivant { display: flex; justify-content: flex-end; }
+.rt-credit-bail { margin: 12px 4px 0; display: grid; gap: 6px; font-size: 14.5px; color: var(--pierre-texte); }
+.rt-credit-bail p { margin: 0; }
+@media (max-width: 640px) {
+  .retraitements-tete { position: sticky; top: 72px; z-index: 5; box-shadow: 0 6px 16px rgba(35, 30, 24, .08); }
+  .rt-resume { margin-left: 18px; }
+}
+/* File page (audit of 25/11/2026): compact step bar (each stage on one line on a computer, the two stages on two
+   lines on a phone) and a single « Next step » card */
+@media (min-width: 761px) {
+  .fil-leger > li.fil-temps { flex-direction: row; align-items: center; gap: 12px; }
+}
+#prochaine { display: grid; gap: 12px; align-content: start; }
+#prochaine h2 { margin: 0; }
+#prochaine p { margin: 0; }
+#prochaine.alerte { background: var(--b-cuivre-pale, #F5E7D6); border-color: transparent; }
+#prochaine.alerte #prochaine-texte { color: #8E5530; font-weight: 600; }
+.prochaine-liens { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14.5px; }
+.prochaine-liens a, .prochaine-liens .lien-simple { color: var(--vert); }
+/* Section titles and the team subtitle with their « ? » (help folded, audit of 25/11/2026) */
+.lib-ligne > h2 { margin: 0; }
+.lib-ligne:has(> h2) { align-items: center; margin-bottom: 10px; }
+.lib-ligne > .chapo-petit { margin: 0; }

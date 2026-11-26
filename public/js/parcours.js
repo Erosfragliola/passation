@@ -138,6 +138,15 @@ export const questionsIncompletes = (r) => QUESTIONS.filter((q) => requisManquan
 /** Le site a-t-il une réponse (adresse donnée, ou « pas de site ») ? */
 const siteRepondu = (r = {}) => Boolean(r.site?.url || r.site?.aucun);
 export const NB_QUESTIONS = QUESTIONS.length + 1;
+/**
+ * Position of a question screen among every screen of « Your company » (the website first, then the questions in
+ * order), whatever is already answered: « Question 3 of 8 » stays the same after a pause (audit of 25/11/2026; the
+ * counter used to count only the questions left, « 1 of 6 » then « 1 of 5 »). null for an unknown screen.
+ */
+export function positionQuestion(cle) {
+  const i = cle === "site" ? 0 : QUESTIONS.findIndex((q) => q.id === cle) + 1;
+  return i >= 0 && (cle === "site" || i > 0) ? { n: i + 1, total: NB_QUESTIONS } : null;
+}
 /** Écrans vus (« Passer » compte comme une réponse), enregistrés dans l'étape « parcours » des réponses. */
 export const vuesDe = (r = {}) => (Array.isArray(r.parcours?.vues) ? r.parcours.vues.filter((x) => typeof x === "string") : []);
 /** Questions répondues sur le total, et leur pourcentage (pour l'avancement global). */
