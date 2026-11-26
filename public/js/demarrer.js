@@ -21,6 +21,7 @@ import { zoneDepotPhotos, zoneLogo } from "/js/depot-photos.js";
 import { ROLES, FORMATIONS, TYPES_EXPERIENCE, APRES, PERSONNES_MAX, EXPERIENCES_MAX, BORNES, normaliserEquipe, nouvelId, initiales, libelleRole, libelleApres, personneComplete } from "/js/equipe.js";
 import { lien, t, langue, locale, lireNombreSaisi } from "/js/i18n.js";
 import { aideRepliee } from "/js/aide-repliee.js";
+import { ELEMENTS_DETTE, etatInitial, valeursAEnregistrer, peutValider } from "/js/dette-elements.js";
 import { champMontant, formaterSaisie, lireMontant, texteMontant } from "/js/montants.js";
 import { contradictions, nomLisible, faitsEssentiels, faitsParTheme, limiterChoix, lireDate, lignesDates, phraseActivite, TYPES_EVENEMENT } from "/js/faits-site.js";
 
@@ -505,13 +506,30 @@ function dette() {
   const ex = valeursExercice(annee);
   const choix = { detention: S.reponses.operation?.detention ?? null, murs_cession: S.reponses.retraitements?.murs_cession ?? null, part_cedee: S.reponses.operation?.part_cedee ?? null };
   const mursAVous = S.reponses.retraitements?.murs === MURS.dirigeant;
-  const champs = Object.fromEntries(["comptes_courants_remboursables", "credit_bail_restant", "dividendes_a_verser", "actifs_hors_exploitation"].map((k) => [k, montantValorisation(C[k])]));
+  // « Do you have any of these? »: tick first, then one amount field per ticked item (audit of 25/11/2026)
+  const elements = etatInitial(S.reponses.bilan, S.vues.includes("dette"));
+  const champs = Object.fromEntries(ELEMENTS_DETTE.map((k) => [k, montantValorisation(C[k], () => majValider())]));
+  const montants = () => Object.fromEntries(ELEMENTS_DETTE.map((k) => [k, champs[k].comp.lire().valeur]));
+  const zoneChamps = el("div", { class: "dette-montants" });
+  const puce = (libelle, coche, surClic) => el("button", { type: "button", role: "checkbox", class: `puce${coche ? " choisie" : ""}`, "aria-checked": String(coche), onclick: surClic }, libelle);
+  const groupe = el("div", { class: "puces-choix", role: "group", "aria-labelledby": "dette-elements-titre" });
+  const dessinerElements = () => {
+    remplacer(groupe, ...ELEMENTS_DETTE.map((k) => puce(t(`demarrer.js.dette.choix.${k}`), elements.coches.has(k), () => {
+      if (elements.coches.has(k)) elements.coches.delete(k); else elements.coches.add(k);
+      elements.aucun = false; dessinerElements(); groupe.querySelectorAll("button")[ELEMENTS_DETTE.indexOf(k)]?.focus();
+    })), puce(t("demarrer.js.dette.choix.aucun"), elements.aucun, () => { elements.aucun = !elements.aucun; if (elements.aucun) elements.coches.clear(); dessinerElements(); groupe.lastElementChild?.focus(); }));
+    remplacer(zoneChamps, ...ELEMENTS_DETTE.filter((k) => elements.coches.has(k)).map((k) => champs[k].noeud));
+    majValider();
+  };
   // What the balance sheet already says (latest fiscal year), read only: corrected on "Your figures"
   const bilan = [["tresorerie", 1], ["placements", 1], ["emprunts", -1], ["provisions_risques", -1]].filter(([k]) => ex[k] != null);
   const valider = el("button", { type: "button", class: "btn btn-vert" }, t("demarrer.js.dette.valider"), fleche());
+  function majValider() { valider.disabled = !peutValider(elements, montants()); }
   valider.addEventListener("click", async () => {
-    for (const k of Object.keys(champs)) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
-    const v = (k) => champs[k].comp.lire().valeur;
+    for (const k of [...elements.coches]) if (champs[k].comp.lire().illisible) { champs[k].comp.champ.focus(); message(t("demarrer.js.erreurs.montant_illisible"), true); return; }
+    // An unticked item is erased (null), never saved as 0 without an entry
+    const aEnregistrer = valeursAEnregistrer(elements, montants());
+    const v = (k) => aEnregistrer[k];
     const futur = { ...S.reponses, operation: { ...(S.reponses.operation || {}), detention: choix.detention, part_cedee: choix.part_cedee }, retraitements: { ...(S.reponses.retraitements || {}), murs_cession: choix.murs_cession } };
     const manque = manquesValorisation("dette", futur);
     if (manque.length) { message(t("demarrer.js.retraitements.il_manque", { liste: manque.map((c) => c.libelle).join(", ") }), true); return; }
@@ -526,14 +544,14 @@ function dette() {
     el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.bilan_titre", { annee }) }),
       bilan.length ? el("dl", { class: "guide-resume dette-bilan" }, ...bilan.map(([k, s]) => el("div", {}, el("dt", { text: libelleEcran(CHAMPS.find((c) => c.cle === k)) }), el("dd", { text: kEuros(s * ex[k]) })))) : el("p", { class: "petit", text: t("demarrer.js.dette.bilan_vide") }),
       el("p", { class: "petit" }, t("demarrer.js.dette.bilan_aide"), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("chiffres") }, t("demarrer.js.dette.corriger")))),
-    el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.autres_titre") }), el("p", { class: "petit", text: t("demarrer.js.dette.autres_aide") }),
-      el("div", { class: "saisie-deux" }, ...Object.values(champs).map((x) => x.noeud))),
+    el("section", { class: "carte retraitement" }, el("h2", { id: "dette-elements-titre", text: t("demarrer.js.dette.elements_question") }), groupe, zoneChamps),
     el("section", { class: "carte retraitement" }, el("h2", { text: t("demarrer.js.dette.perimetre_titre") }), el("p", { class: "petit", text: t("demarrer.js.dette.perimetre_aide") }),
       choixValorisation(C.detention, choix),
       el("p", { class: "petit dette-murs" }, t("demarrer.js.dette.murs", { murs: S.reponses.retraitements?.murs ? libelleOption("murs", S.reponses.retraitements.murs) : "–" }), " ", el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.dette.modifier"))),
       mursAVous ? choixValorisation(C.murs_cession, choix) : null,
       choixValorisation(C.part_cedee, choix)),
     el("div", { class: "q-nav" }, el("button", { type: "button", class: "lien-simple", onclick: () => aller("retraitements") }, t("demarrer.js.retour")), valider));
+  dessinerElements();
 }
 
 // ================================================================== 4. Votre valeur

@@ -15,6 +15,7 @@ import { CLE_MAQUETTE } from "../src/maquette/donnees.js";
 import { SIREN_EXEMPLE, ENTREPRISE_EXEMPLE, EXERCICES_EXEMPLE, remplirDossierExemple } from "../scripts/dossier-exemple.mjs";
 import { controlerExercice } from "../src/valuation/controles.js";
 import { positionQuestion, QUESTIONS } from "../public/js/parcours.js";
+import { ELEMENTS_DETTE, etatInitial, valeursAEnregistrer, peutValider } from "../public/js/dette-elements.js";
 
 const BASE = "http://127.0.0.1:8787";
 let env;
@@ -88,5 +89,29 @@ describe("3.3 question counter over every screen of « Your company »", () => {
     expect(positionQuestion(QUESTIONS[1].id)).toEqual({ n: 3, total });
     expect(positionQuestion(QUESTIONS.at(-1).id)).toEqual({ n: total, total });
     expect(positionQuestion("inconnue")).toBeNull();
+  });
+});
+
+describe("5.1 net debt: tick before entering an amount", () => {
+  it("an amount already saved ticks its box; « None » ticked when the screen was validated without any item", () => {
+    expect([...etatInitial({ credit_bail_restant: 45000, dividendes_a_verser: null }).coches]).toEqual(["credit_bail_restant"]);
+    expect(etatInitial({}, true)).toEqual({ coches: new Set(), aucun: true });
+    expect(etatInitial({}, false).aucun).toBe(false);
+  });
+  it("unticking erases the amount: null is saved, never 0 without an entry", () => {
+    const e = etatInitial({ credit_bail_restant: 45000, comptes_courants_remboursables: 20000 });
+    e.coches.delete("credit_bail_restant");
+    expect(valeursAEnregistrer(e, { credit_bail_restant: 45000, comptes_courants_remboursables: 20000 }))
+      .toEqual({ comptes_courants_remboursables: 20000, credit_bail_restant: null, dividendes_a_verser: null, actifs_hors_exploitation: null });
+  });
+  it("« None » accepted and erases every amount; otherwise every ticked item needs its amount", () => {
+    const aucun = { coches: new Set(), aucun: true };
+    expect(peutValider(aucun)).toBe(true);
+    expect(Object.values(valeursAEnregistrer(aucun, { credit_bail_restant: 45000 }))).toEqual([null, null, null, null]);
+    const deux = { coches: new Set(["credit_bail_restant", "dividendes_a_verser"]), aucun: false };
+    expect(peutValider(deux, { credit_bail_restant: 45000 })).toBe(false);
+    expect(peutValider(deux, { credit_bail_restant: 45000, dividendes_a_verser: 0 })).toBe(true);
+    expect(peutValider({ coches: new Set(), aucun: false })).toBe(false);
+    expect(ELEMENTS_DETTE).toHaveLength(4);
   });
 });

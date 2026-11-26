@@ -365,13 +365,19 @@
       "bilan_vide": "Your balance sheet shows neither cash nor borrowings.",
       "bilan_aide": "Taken from your figures.",
       "corriger": "Correct your figures",
-      "autres_titre": "What the balance sheet does not detail",
-      "autres_aide": "Leave empty what does not apply to you.",
       "perimetre_titre": "The scope",
       "perimetre_aide": "Who is the buyer buying the shares from, and what does the sale include?",
       "murs": "Your premises: {murs}.",
       "modifier": "Change",
-      "valider": "Approve and see my value"
+      "valider": "Approve and see my value",
+      "elements_question": "Do you have any of these?",
+      "choix": {
+        "comptes_courants_remboursables": "Shareholder current accounts to repay",
+        "credit_bail_restant": "Lease financing",
+        "dividendes_a_verser": "Dividends declared, not yet paid",
+        "actifs_hors_exploitation": "Non-operating assets",
+        "aucun": "None"
+      }
     },
     "valeur": {
       "titre": "Your value",

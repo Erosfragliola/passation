@@ -365,13 +365,19 @@
       "bilan_vide": "Votre bilan n'indique ni trésorerie ni emprunt.",
       "bilan_aide": "Repris de vos chiffres.",
       "corriger": "Corriger vos chiffres",
-      "autres_titre": "Ce que le bilan ne détaille pas",
-      "autres_aide": "Laissez vide ce qui ne vous concerne pas.",
       "perimetre_titre": "Le périmètre",
       "perimetre_aide": "À qui le repreneur achète-t-il les parts, et que comprend la cession ?",
       "murs": "Vos locaux : {murs}.",
       "modifier": "Modifier",
-      "valider": "Valider et voir ma valeur"
+      "valider": "Valider et voir ma valeur",
+      "elements_question": "Avez-vous l'un de ces éléments ?",
+      "choix": {
+        "comptes_courants_remboursables": "Comptes courants d'associés à rembourser",
+        "credit_bail_restant": "Crédit-bail",
+        "dividendes_a_verser": "Dividendes votés non versés",
+        "actifs_hors_exploitation": "Actifs hors exploitation",
+        "aucun": "Aucun"
+      }
     },
     "valeur": {
       "titre": "Votre valeur",
