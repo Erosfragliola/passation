@@ -206,7 +206,8 @@ npm run deploy
 ## Documentation and deliverables
 
 - [AI-USAGE.md](AI-USAGE.md): use of AI, human checks, errors detected.
-- [docs/livrables/](docs/livrables/): drafts of the business plan and the presentation.
+- [docs/livrables/](docs/livrables/): drafts of the business plan and the presentation, and the 36-month financial
+  model (`business-plan-model.xlsx`, three scenarios).
 - [docs/DEMO.md](docs/DEMO.md): demonstration scenario.
 - [docs/decisions-methode.md](docs/decisions-methode.md): valuation conventions to be decided.
 - [docs/valorisation-calculs.md](docs/valorisation-calculs.md): reference calculations.

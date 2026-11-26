@@ -204,7 +204,8 @@ npm run deploy
 ## Documentation et livrables
 
 - [AI-USAGE.md](AI-USAGE.md) : usage de l'IA, contrôles humains, erreurs détectées.
-- [docs/livrables/](docs/livrables/) : brouillons du business plan et de la présentation.
+- [docs/livrables/](docs/livrables/) : brouillons du business plan et de la présentation, et modèle financier sur
+  36 mois (`business-plan-model.xlsx`, trois scénarios).
 - [docs/DEMO.md](docs/DEMO.md) : scénario de démonstration.
 - [docs/decisions-methode.md](docs/decisions-methode.md) : conventions de valorisation à arbitrer.
 - [docs/valorisation-calculs.md](docs/valorisation-calculs.md) : calculs de référence.

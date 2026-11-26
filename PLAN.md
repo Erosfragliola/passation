@@ -710,3 +710,10 @@ model to be defined later by the user (business plan in progress).
   - Panel: « Compléter les comptes 2023, 2024 » when entered fiscal years are still left out; « Cette page / Toutes »
     filter (the improvements of the page on screen by default).
   - Review: Claude is asked for corrections no longer than the passage they replace.
+- **26/11/2026, branch `business-plan`** (PR not merged, deliverables only): business model of the EDHEC deliverables
+  taken from the 36-month financial model provided by Eros (`docs/livrables/business-plan-model.xlsx`, unchanged).
+  Business plan: section 4.4 (two revenues: Full Report at €850 excl. VAT, or finder's mandate with a 2% commission,
+  at least €10,000, paid at signing; conversion funnel; 3-year table, scenarios, unit economics, key assumptions),
+  summary, model-specific risks (with the Hoguet law cited from Légifrance), roadmap (payment and mandate not
+  developed; online version free during the test phase), appendix with the assumptions of the three scenarios;
+  11 pages. Presentation: « Data and business model » slide, 8 minutes unchanged. Site, code and tests unchanged.
