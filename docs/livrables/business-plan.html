@@ -28,6 +28,16 @@
   .a-completer { background: #fdeaea; border-left: 3px solid #b00; padding: 1.5mm 3mm; margin: 2mm 0; font-size: 9.5pt; }
   .saut { break-before: page; }
   .petit { font-size: 9pt; color: var(--gris); }
+  td.n, th.n { text-align: right; white-space: nowrap; }
+  table.annexe { font-size: 8.5pt; break-inside: auto; }
+  table.annexe tr { break-inside: avoid; }
+  h3.petit-titre { font-size: 12pt; margin: 3mm 0 1.5mm; }
+  table.annexe td, table.annexe th { padding: 1.1mm 1.6mm; }
+  .tunnel { display: flex; align-items: stretch; gap: 0; margin: 3mm 0 4mm; break-inside: avoid; }
+  .tunnel .etape { flex: 1; border: 1.5px solid var(--vert); background: #f3efe6; padding: 2mm 2.5mm; font-size: 9pt; line-height: 1.3; }
+  .tunnel .etape strong { display: block; font-size: 10.5pt; color: var(--vert); }
+  .tunnel .fleche { flex: 0 0 auto; align-self: center; padding: 0 1.5mm; font-size: 8.5pt; color: var(--gris); text-align: center; line-height: 1.2; }
+  .source { font-size: 8.5pt; color: var(--gris); margin: -2mm 0 4mm; }
 </style>
 </head>
 <body>
@@ -53,6 +63,10 @@ an anonymized teaser and an information memorandum.</p>
 <p>The approach: <strong>code calculates, AI drafts, the owner approves</strong>. Valuations are deterministic, tested
 code, based on sourced and dated assumptions. Claude reads documents (tax return, website) and drafts text, but every
 amount read and every fact found must be approved by the owner.</p>
+<p><strong>Business model</strong>: the estimate is free; the owner then buys the Full Report (€850 excl. VAT) or
+signs a finder's mandate (Report free, 2% commission on the sale, at least €10,000). In the Base scenario of the
+financial model, revenue reaches <strong>€722,950 in year 3 (2029)</strong>, of which <strong>49.8% from
+commissions</strong> (section 4.4).</p>
 <div class="a-completer">To be completed: the team's 12-month goal (pilot, targets, indicators) and any request (funding, partners).</div>
 
 <h2>2. Problem (criterion A1)</h2>
@@ -112,10 +126,81 @@ estimate without an account.</p>
   <tr><td>Claude API (Anthropic)</td><td>Pay-as-you-go</td><td>Quotas: 60 processing tasks per day per user, 10 files per account (src/config.js)</td></tr>
   <tr><td>Emails (Brevo)</td><td>Free plan, limited daily volume</td><td>PLAN.md § 8</td></tr>
 </table>
-<div class="a-completer">To be decided by the team: revenue model (free for the estimate, paid for the complete file?
-subscription for referrers? commission?), price, and calculation of the cost of a file (actual number of calls to
-Claude per flow, current API price, with the date). The prices shown on the site are currently hidden ("To be filled
-in").</div>
+<p><strong>Revenue model.</strong> The quick estimate stays free; the owner then chooses between two mutually exclusive
+options. Either they buy the <strong>Full Report</strong> (valuation, datapack, teaser and memorandum) for €850 excl.
+VAT, paid upfront; or they sign a <strong>finder's mandate</strong>: the Report is provided free, and Passation earns a
+commission of 2% of the sale price, with a minimum of €10,000, paid when the sale is signed.</p>
+<p>All figures in this section come from the 36-month financial model <code>business-plan-model.xlsx</code>
+(Summary tab, Base scenario unless stated otherwise). The model is the only source of these numbers; the online
+version is free during the test phase (section 9).</p>
+
+<h3>Conversion funnel (Base scenario)</h3>
+<div class="tunnel">
+  <div class="etape"><strong>Visitors</strong>1,000 in month 1, +6% per month, capped at 20,000 per month<br>2027: 16,870</div>
+  <div class="fleche">25%<br>→</div>
+  <div class="etape"><strong>Free estimates</strong>SIREN entered on the home page<br>2027: 4,217</div>
+  <div class="fleche">2.5% / 0.4%<br>→</div>
+  <div class="etape"><strong>Reports sold / mandates</strong>Two exclusive paths<br>2027: 105 Reports, 17 mandates</div>
+  <div class="fleche">30% after<br>9 months →</div>
+  <div class="etape"><strong>Completed sales</strong>Commission at signing<br>2027: 1 · 2029: 12</div>
+</div>
+<p class="source">Rates: Assumptions tab, Base column. Volumes: Summary tab. Reports, mandates and sales are rounded to
+whole units in the model (Drivers tab).</p>
+
+<h3>Three-year projection (Base scenario, € excl. VAT)</h3>
+<table>
+  <tr><th></th><th class="n">2027</th><th class="n">2028</th><th class="n">2029</th></tr>
+  <tr><td>Full Reports sold</td><td class="n">105</td><td class="n">213</td><td class="n">427</td></tr>
+  <tr><td>Mandates signed</td><td class="n">17</td><td class="n">34</td><td class="n">68</td></tr>
+  <tr><td>Completed sales (closings)</td><td class="n">1</td><td class="n">6</td><td class="n">12</td></tr>
+  <tr><td>Revenue: Full Report sales</td><td class="n">€89,250</td><td class="n">€181,050</td><td class="n">€362,950</td></tr>
+  <tr><td>Revenue: mandate commissions</td><td class="n">€30,000</td><td class="n">€180,000</td><td class="n">€360,000</td></tr>
+  <tr><th>Total revenue</th><th class="n">€119,250</th><th class="n">€361,050</th><th class="n">€722,950</th></tr>
+  <tr><td>Gross margin</td><td class="n">€117,613</td><td class="n">€357,729</td><td class="n">€716,293</td></tr>
+  <tr><td>EBITDA</td><td class="n">€107,233</td><td class="n">€334,809</td><td class="n">€683,173</td></tr>
+  <tr><td>Net income</td><td class="n">€84,675</td><td class="n">€255,357</td><td class="n">€516,630</td></tr>
+  <tr><td>Year-end cash</td><td class="n">€118,929</td><td class="n">€403,181</td><td class="n">€1,010,980</td></tr>
+</table>
+<p class="source">Summary tab, rows 9 to 38. The balance sheet check row (Balance Sheet tab) is zero in all three years.</p>
+
+<h3>Scenarios (year 3, 2029)</h3>
+<table>
+  <tr><th>Scenario</th><th class="n">Total revenue</th><th class="n">Net income</th><th class="n">Completed sales</th></tr>
+  <tr><td>Conservative</td><td class="n">€48,450</td><td class="n">€12,276</td><td class="n">0</td></tr>
+  <tr><td>Base</td><td class="n">€722,950</td><td class="n">€516,630</td><td class="n">12</td></tr>
+  <tr><td>Ambitious</td><td class="n">€3,005,900</td><td class="n">€2,218,229</td><td class="n">52</td></tr>
+</table>
+<p class="source">Values read in the model after switching the active scenario (Assumptions tab, cell B8); the file in
+the repository is saved with the Base scenario. In the Conservative scenario no sale closes in 2029, so revenue comes
+from Reports only.</p>
+
+<h3>Unit economics (Base scenario, year-1 prices)</h3>
+<table>
+  <tr><th>Item</th><th class="n">Value</th></tr>
+  <tr><td>Expected value of a free estimate via the Report (2.5% × €850)</td><td class="n">€21.25</td></tr>
+  <tr><td>Expected value of a free estimate via the mandate (0.4% × €30,000 × 30%)</td><td class="n">€36.00</td></tr>
+  <tr><th>Expected value of a free estimate</th><th class="n">€57.25</th></tr>
+  <tr><td>Marketing cost per free estimate (year 1)</td><td class="n">€1.42</td></tr>
+  <tr><td>Marketing cost per Report sold (year 1)</td><td class="n">€57.14</td></tr>
+</table>
+<p class="source">Summary tab, rows 44 to 51. As the model puts it: if the value of a free estimate exceeds its
+marketing cost, acquisition is profitable.</p>
+
+<h3>Key assumptions</h3>
+<ul>
+  <li><strong>Founders unpaid, no employee</strong>: salaried headcount is 0 in 2027, 2028 and 2029 (Assumptions,
+  rows 48 and 49; comment: "Founders unpaid in year 1"; Read Me: "Founders are unpaid as long as salaried headcount
+  is zero"). This explains an EBITDA margin of 90% to 94% and must be stated as such.</li>
+  <li><strong>Volumes as expected values</strong>: "Volumes are expected values […], to smooth the model" (Read Me);
+  Reports, mandates and sales are rounded to whole units on the cumulative total (Drivers).</li>
+  <li><strong>Time to sell under mandate</strong>: a mandate signed in month m closes in month m + 9 (Base; 12 in
+  Conservative, 8 in Ambitious) with a probability equal to the closing rate, 30% in Base; "Average length of an SME
+  sale process" (Assumptions, row 18). Mandates that fall through generate no revenue.</li>
+  <li><strong>Average deal value</strong>: €1.5M in Base (comment: "see website example: €1.8–2.4M"; that example on
+  the home page is fictitious). Commission per sale: max(€10,000, 2% × €1.5M) = €30,000.</li>
+  <li>Starting figures are "working assumptions to be replaced with your own data (traffic, conversion, tested
+  prices)" (Read Me). The full table of assumptions is in section 10.</li>
+</ul>
 
 <h2 class="saut">5. Organizational transformation (A3, LO5)</h2>
 <h3>5.1 For the seller and their advisors</h3>
@@ -159,6 +244,9 @@ work, the errors you detected yourselves (see AI-USAGE.md).</div>
   <tr><td>API cost</td><td>Quotas per user, cap on the number of files</td><td>Spending cap to be set at Anthropic</td></tr>
   <tr><td>Dependence on public APIs</td><td>24-hour cache, retries, outage reported</td><td>Possible unavailability during a demonstration</td></tr>
   <tr><td>Liability (financial advice)</td><td>"Indicative, non-binding" disclaimer on every document</td><td>Legal framework to be validated by a professional</td></tr>
+  <tr><td>Dependence on completed sales (business model)</td><td>49.8% of year-3 revenue in Base comes from commissions, paid only when a sale is signed; the model applies a closing rate (30% in Base) and a 9-month lag, and Reports bring revenue from month 1</td><td>In the Conservative scenario no sale closes in 2029; a longer lag or a lower closing rate pushes commissions out of the 3-year horizon</td></tr>
+  <tr><td>Conversion to the paid Report</td><td>Rate tested in three scenarios: 1.5%, 2.5% and 3.5% of free estimates</td><td>No measured rate yet: the online version is free during the test phase; year-3 revenue ranges from €48,450 to €3,005,900 across scenarios</td></tr>
+  <tr><td>Legal framework of the finder's mandate</td><td>Law no. 70-9 of 2 January 1970 ("Hoguet law"), art. 1 (in force since 27/03/2014), covers anyone who habitually takes part, even as a sideline, in the sale of a business (<em>fonds de commerce</em>, 2°) or of non-tradable shares of a company owning a building or a business (5°). Légifrance, accessed 26/11/2026</td><td>To be completed: whether Passation's mandate falls within this law and which status it requires, to be confirmed by a lawyer before any mandate is signed</td></tr>
 </table>
 <h3>6.3 Contribution to SDG 9</h3>
 <p>Target 9.3 of the United Nations Sustainable Development Goals aims to increase the access of small-scale industrial
@@ -196,13 +284,75 @@ accessed).</div>
   <tr><th>Horizon</th><th>Item</th></tr>
   <tr><td>Before submission</td><td>Decide the discount and lease financing conventions; complete the legal pages; review the sources</td></tr>
   <tr><td>Afterwards</td><td>Account deletion, Word export of the memorandum, security headers, resource library and chat (not developed)</td></tr>
+  <tr><td>Business model</td><td>The online version is free during the test phase. Payment of the Full Report and the finder's mandate (contract, collection of the commission) are planned and not developed today; the legal framework of the mandate must be checked first (section 6.2)</td></tr>
 </table>
 <div class="a-completer">To be completed: milestones, resources, pilot indicators.</div>
 
 <h2>10. Appendices</h2>
 <ul>
   <li>README.md (installation, architecture), docs/DEMO.md (scenario), docs/decisions-methode.md, AI-USAGE.md.</li>
+  <li>Financial model: <code>docs/livrables/business-plan-model.xlsx</code> (36 months, three scenarios, active scenario
+  chosen in the Assumptions tab, cell B8; saved with the Base scenario).</li>
+  <li>Légifrance, law no. 70-9 of 2 January 1970, article 1 (version in force since 27 March 2014), accessed 26/11/2026:
+  https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000028806892</li>
   <li class="a-completer">To be completed: cited sources (numbered list, with dates accessed).</li>
 </ul>
+<h3>10.1 Assumptions of the financial model</h3>
+<p class="petit">Copied from the Assumptions tab of business-plan-model.xlsx; the comments are those of the model.</p>
+<h3 class="petit-titre">A. Levers by scenario (Assumptions tab, section 2)</h3>
+<table class="annexe"><thead><tr><th>Assumption</th><th>Conservative</th><th>Base</th><th>Ambitious</th><th>Comment in the model</th></tr></thead><tbody>
+<tr><td>Unique website visitors, month 1</td><td class="n">500</td><td class="n">1,000</td><td class="n">1,500</td><td>Assumption to calibrate with your traffic data</td></tr>
+<tr><td>Monthly traffic growth</td><td class="n">4%</td><td class="n">6%</td><td class="n">7%</td><td>Compound growth, capped by the next row</td></tr>
+<tr><td>Visitor cap per month</td><td class="n">10,000</td><td class="n">20,000</td><td class="n">30,000</td><td>Prevents unrealistic exponential growth</td></tr>
+<tr><td>Visitor → free express valuation rate</td><td class="n">20%</td><td class="n">25%</td><td class="n">28%</td><td>Share of visitors who start a valuation (SIREN)</td></tr>
+<tr><td>Valuation → Full Report purchase rate</td><td class="n">1.5%</td><td class="n">2.5%</td><td class="n">3.5%</td><td>Revenue 1: the owner buys the Full Report</td></tr>
+<tr><td>Valuation → mandate rate (free Report)</td><td class="n">0.17%</td><td class="n">0.4%</td><td class="n">0.675%</td><td>Revenue 2: as % of valuations. Mandate = free Full Report, no retainer. Mutually exclusive with Revenue 1</td></tr>
+<tr><td>Mandate closing rate</td><td class="n">20%</td><td class="n">30%</td><td class="n">35%</td><td>Share of mandates that result in a sale</td></tr>
+<tr><td>Mandate → closing lag (months)</td><td class="n">12</td><td class="n">9</td><td class="n">8</td><td>Average length of an SME sale process</td></tr>
+<tr><td>Average deal value (€)</td><td class="n">1,000,000</td><td class="n">1,500,000</td><td class="n">1,800,000</td><td>Average sale price (see website example: €1.8–2.4M)</td></tr>
+</tbody></table>
+<h3 class="petit-titre">B. Assumptions common to the three scenarios</h3>
+<table class="annexe"><thead><tr><th>Assumption</th><th>Value</th><th>Comment in the model</th></tr></thead><tbody>
+<tr><td>Company name</td><td class="n">Passation</td><td></td></tr>
+<tr><td>Legal form</td><td class="n">SAS</td><td>Taken from the initial BP</td></tr>
+<tr><td>Model start date</td><td class="n">01/01/2027</td><td>First month of the projection (36 months)</td></tr>
+<tr><td>Full Report price (€ excl. VAT)</td><td class="n">850</td><td>Assumption to calibrate</td></tr>
+<tr><td>Annual price increase</td><td class="n">0%</td><td>Applied on January 1 of each year</td></tr>
+<tr><td>Commission as % of deal value</td><td class="n">2%</td><td>Paid at closing, by the seller or passed on by the advisory firm / bank</td></tr>
+<tr><td>Minimum commission per deal (€)</td><td class="n">10,000</td><td>Floor set in the mandate</td></tr>
+<tr><td>Collection lag after closing (months)</td><td class="n">1</td><td></td></tr>
+<tr><td>For reference: advisor success fee (% of value)</td><td class="n">4%</td><td>Small-cap ballpark, to be checked with your partners</td></tr>
+<tr><td>For reference: your commission as % of advisor fee</td><td class="n">50%</td><td>Useful for negotiating a fee-share with advisory firms</td></tr>
+<tr><td>Commission per deal (€), calculated: max(minimum, 2% × average deal value), Base</td><td class="n">30,000</td><td></td></tr>
+<tr><td>AI + data cost per express valuation (€)</td><td class="n">0</td><td>Registry API calls + LLM</td></tr>
+<tr><td>AI + data cost per Full Report (€, sold or free)</td><td class="n">0.25</td><td>Drafting of teaser + 9-chapter IM</td></tr>
+<tr><td>Online payment fees (% of price incl. VAT)</td><td class="n">1.5%</td><td>Stripe-type, European cards</td></tr>
+<tr><td>Fixed payment fee per transaction (€)</td><td class="n">0</td><td></td></tr>
+<tr><td>Employer social charges rate</td><td class="n">45%</td><td>Taken from the initial BP</td></tr>
+<tr><td>VAT rate</td><td class="n">20%</td><td>Taken from the initial BP; net VAT paid over the following month</td></tr>
+<tr><td>Reduced corporate tax rate (SME)</td><td class="n">15%</td><td>Taken from the initial BP</td></tr>
+<tr><td>Reduced-rate threshold (€)</td><td class="n">42,500</td><td>Taken from the initial BP</td></tr>
+<tr><td>Standard corporate tax rate</td><td class="n">25%</td><td>Taken from the initial BP</td></tr>
+<tr><td>Payment month for prior-year corporate tax (1-12)</td><td class="n">5</td><td>Simplification: balance paid in one installment, no prepayments</td></tr>
+<tr><td>Share capital contributed in month 1 (€)</td><td class="n">10,000</td><td>Taken from the initial BP</td></tr>
+<tr><td>Equity fundraising (€)</td><td class="n">0</td><td></td></tr>
+<tr><td>Fundraising month (no. 1 to 36)</td><td class="n">1</td><td></td></tr>
+<tr><td>Platform development (€ excl. VAT)</td><td class="n">0</td><td>Assumption; set to 0 if already paid</td></tr>
+<tr><td>Investment month (no. 1 to 36)</td><td class="n">1</td><td></td></tr>
+<tr><td>Depreciation period (years)</td><td class="n">3</td><td></td></tr>
+</tbody></table>
+<h3 class="petit-titre">C. Monthly fixed costs (€ excl. VAT) and team, common to the three scenarios</h3>
+<table class="annexe"><thead><tr><th>Item</th><th>2027</th><th>2028</th><th>2029</th><th>Comment in the model</th></tr></thead><tbody>
+<tr><td>Hosting &amp; infrastructure</td><td class="n">5</td><td class="n">10</td><td class="n">10</td><td>Year 1 taken from the initial BP</td></tr>
+<tr><td>Data &amp; APIs (registries, annual accounts)</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td></td></tr>
+<tr><td>SaaS tools &amp; software</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td></td></tr>
+<tr><td>Accounting &amp; legal</td><td class="n">40</td><td class="n">250</td><td class="n">300</td><td>Year 1 taken from the initial BP; standard mandate to be drafted</td></tr>
+<tr><td>Professional liability insurance</td><td class="n">20</td><td class="n">100</td><td class="n">150</td><td>Year 1 taken from the initial BP; advisory professional liability cover needed</td></tr>
+<tr><td>Marketing &amp; acquisition</td><td class="n">500</td><td class="n">1,000</td><td class="n">1,500</td><td>SEO, Google Ads, LinkedIn, chartered accountant networks</td></tr>
+<tr><td>Travel &amp; partner network</td><td class="n">200</td><td class="n">400</td><td class="n">600</td><td>Meetings with M&amp;A firms, banks, chambers of commerce</td></tr>
+<tr><td>Other costs</td><td class="n">100</td><td class="n">150</td><td class="n">200</td><td></td></tr>
+<tr><td>Salaried headcount (FTE)</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td>Founders unpaid in year 1</td></tr>
+<tr><td>Average gross monthly salary per FTE (€)</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td></td></tr>
+</tbody></table>
 </body>
 </html>

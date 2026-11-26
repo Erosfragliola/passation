@@ -38,6 +38,10 @@ and must be reviewed and completed by each member of the group before submission
   [docs/valorisation-calculs.md](docs/valorisation-calculs.md), [docs/DEMO.md](docs/DEMO.md)). **Limitation**: these
   scripts were also written with AI, from the same formulas. They check the arithmetic, not the method.
 - **Documentation**: README, PLAN.md, docs/, written with Claude Code.
+- **Business plan (business model)**: the 36-month financial model (`docs/livrables/business-plan-model.xlsx`) and
+  its assumptions are the team's. On 26/11/2026, Claude Code only laid out its figures in the business plan and the
+  presentation (copied from the Summary and Assumptions tabs, scenarios read in Excel without saving the file, then
+  checked against the workbook) and listed points to check, without changing any assumption or recalculating a value.
 - **Inside the product**, AI only **reads and drafts**:
   - amounts read from a tax return are proposals, never approved automatically (`src/routes/valorisation.js`);
   - the teaser goes through a coded anonymity check (`src/documents/anonymat.js`) and an identifying version is
