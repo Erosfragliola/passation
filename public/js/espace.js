@@ -67,11 +67,6 @@ function afficher({ checklist = true } = {}) {
     el("span", { class: "fil-temps-titre", text: `${i + 1}. ${tp.titre}` }),
     el("ol", { class: "fil-etapes" }, ...tp.etapes.map(etape)))));
 
-  // Banner (24/11/2026): new step for a file drafted before the two stages, or figures modified since their approval
-  const b = etat.nouvelleEtape;
-  $("#bandeau-etape").hidden = !b;
-  if (b) { $("#bandeau-texte").textContent = b.texte; $("#bandeau-lien").textContent = `${b.bouton} →`; $("#bandeau-lien").href = b.href; $("#bandeau-etape").dataset.genre = b.genre; }
-
   // En-tête vert : nom de code, nom, fourchette, une seule ligne d'explication (le détail derrière « Voir le détail »)
   $("#nom-code").textContent = dossier.nom_de_code || "";
   $("#dossier-nom").textContent = e.nom || t("espace.js.votre_entreprise");
@@ -79,30 +74,23 @@ function afficher({ checklist = true } = {}) {
   $("#valeur-etiquette").textContent = v.etiquette;
   $("#valeur-montant").textContent = v.bas != null && v.haut != null ? fourchette(v.bas, v.haut) : t("espace.js.a_affiner");
   $("#valeur-base").textContent = v.base;
-  // From the quick estimate (enterprise value) to the value of the shares: explained here too (defect 6 of 24/11/2026)
-  $("#valeur-ecart").textContent = v.ecart || ""; $("#valeur-ecart").hidden = !v.ecart;
-  $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href;
+  // One line of explanation; the bridge from the quick estimate stays on « Your value » (audit of 25/11/2026)
+  $("#valeur-lien").hidden = !v.lien;
+  if (v.lien) { $("#valeur-lien").textContent = `${v.lien.texte} →`; $("#valeur-lien").href = v.lien.href; }
 
-  // Action principale : jamais facultative (première tâche indispensable, sinon « Relire et envoyer »)
-  const a = etat.action;
-  $("#action-titre").textContent = a.texte;
-  $("#action-detail").textContent = a.detail || ""; $("#action-detail").hidden = !a.detail;
-  $("#action-etat").hidden = !etat.pret; $("#action-etat").textContent = etat.pret ? t("espace.js.dossier_complet") : "";
-  $("#action-etat").className = "etat etat-pret";
-  for (const [lienAction, texte] of [[$("#cta"), `${a.bouton} →`], [$("#cta-tel"), a.texte]]) {
+  // « Next step » (audit of 25/11/2026): one button, the first true situation (prochaineEtape), and two secondary
+  // links at most; replaces the banner, the main action and the « To improve it » card
+  const pr = etat.prochaine;
+  $("#prochaine").classList.toggle("alerte", Boolean(pr.alerte));
+  $("#prochaine-texte").textContent = pr.texte || ""; $("#prochaine-texte").hidden = !pr.texte;
+  for (const [lienAction, texte] of [[$("#cta"), `${pr.bouton} →`], [$("#cta-tel"), pr.bouton]]) {
     if (!lienAction) continue;
-    lienAction.textContent = texte; lienAction.href = a.href;
-    lienAction.onclick = a.pieces ? (ev) => { ev.preventDefault(); ouvrirPieces(true); } : null;
+    lienAction.textContent = texte; lienAction.href = pr.href;
   }
-
-  // Deux tâches au plus sous l'action : titre seul, marquées « facultatif » le cas échéant
-  const sec = etat.secondaires;
-  $("#secondaires").hidden = !sec.length;
-  $("#titre-secondaires").textContent = sec.every((x) => x.facultatif) ? t("espace.js.pour_ameliorer") : t("espace.js.ensuite");
-  remplacer($("#afaire"), ...sec.map((x) => el("li", {},
-    el("span", { class: "tache-titre" }, x.titre, x.facultatif && !sec.every((y) => y.facultatif) ? el("span", { class: "tache-facultatif", text: ` · ${t("espace.js.facultatif")}` }) : null),
-    x.pieces ? el("button", { type: "button", class: "lien-simple", onclick: () => ouvrirPieces(true) }, x.action)
-      : el("a", { href: x.href, "aria-label": t("espace.js.action_de", { action: x.action, objet: x.titre }) }, x.action))));
+  $("#prochaine-liens").hidden = !pr.liens.length;
+  remplacer($("#prochaine-liens"), ...pr.liens.map((x) => el("li", {}, x.pieces
+    ? el("button", { type: "button", class: "lien-simple", onclick: () => ouvrirPieces(true) }, x.texte)
+    : el("a", { href: x.href }, x.texte))));
 
   // Documents : une rangée légère, la nature de chaque document et son état
   remplacer($("#docs"), ...etat.documents.map((x) => {
@@ -120,7 +108,8 @@ function afficher({ checklist = true } = {}) {
   const { fournies, total } = etat.pieces;
   $("#checklist-compte").textContent = t("dossier.taches.pieces.detail", { n: fournies, total });
   $("#jauge-pieces").style.width = `${Math.round((100 * fournies) / total)}%`;
-  if (piecesOuvert == null) piecesOuvert = etat.pieces.ouvert || location.hash === "#checklist";
+  // Folded (a title and its counter) until the memorandum is ready, open afterwards (audit of 25/11/2026)
+  if (piecesOuvert == null) piecesOuvert = Boolean(etat.fait.redaction) || location.hash === "#checklist";
   ouvrirPieces(piecesOuvert, false);
   if (checklist) chargerPieces();
 }

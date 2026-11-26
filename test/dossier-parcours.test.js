@@ -141,13 +141,15 @@ describe("premier temps : retraitements, dette, valeur à valider", () => {
     expect(e.taches[0]).toMatchObject({ cle: "valeur", titre: "Vérifier et valider votre valeur", href: `/espace/demarrer/?dossier=${ID}&etape=valeur` });
     expect(sp(e.taches[0].detail)).toBe("Calculée : 420 – 560 k€ ; à vérifier ligne par ligne");
     expect(e.documents[0]).toMatchObject({ etat: "a-relire", detail: "Calculée, à vérifier et valider" });
-    expect(e.valeur.base).toMatch(/validez-la/);
-    expect(e.valeur.lien.href).toBe(`/espace/demarrer/?dossier=${ID}&etape=valeur`);
+    expect(e.valeur.base).toMatch(/à valider/);
+    // Audit of 25/11/2026: no « Vérifier et valider » link in the value card; the « Next step » card leads there
+    expect(e.valeur.lien).toBeNull();
+    expect(e.prochaine).toMatchObject({ cas: "reprendre", href: `/espace/demarrer/?dossier=${ID}&etape=valeur` });
     expect(e.taches.some((t) => t.cle === "questions")).toBe(false); // le mémorandum attend la validation
     // 1 + 3 étapes faites (chiffres, retraitements, dette) sur 9 = 44,4 → 44 %
     expect(e.avancement).toBe(44);
   });
-  it("le passage de l'estimation express à la valeur des titres est expliqué sur la page du dossier", () => {
+  it("le passage de l'estimation express à la valeur des titres est calculé (montré sur « Votre valeur » seulement)", () => {
     const e = etatParcours(valorise());
     // 310 – 520 k€ → 420 – 560 k€ ; EBE identique (80 k€) ; trésorerie nette 110 k€
     expect(sp(e.valeur.ecart)).toBe("Votre fourchette passe de 310 – 520 k€ à 420 – 560 k€ : comptes 2024 confirmés et trésorerie nette de 110 k€ ajoutée.");
@@ -243,7 +245,7 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     expect(e.documents[3].actions.map((a) => a.href)).toEqual([`/espace/documents/memo/?dossier=${ID}`, `/espace/documents/memo/?dossier=${ID}&imprimer=1`]);
   });
   it("valeur des titres, fondée sur les multiples seuls, sans DCF ni pondération", () => {
-    expect(e.valeur).toMatchObject({ etiquette: "Valeur de vos titres", bas: 420_000, haut: 560_000, base: "Fondée sur les multiples d'EBE (excédent brut d'exploitation) de votre secteur, après dettes et trésorerie." });
+    expect(e.valeur).toMatchObject({ etiquette: "Valeur de vos titres", bas: 420_000, haut: 560_000, base: "Multiples d'EBE de votre secteur, après dettes et trésorerie." });
     expect(e.valeur.base).not.toMatch(/DCF|pondér|méthodes/);
     expect(e.valeur).not.toHaveProperty("central");
   });

@@ -228,15 +228,14 @@
     "apres_validation": "Drafted once your figures are approved"
   },
   "valeur": {
-    "base_titres": "Based on your industry’s EBITDA (EBE) multiples, after debt and cash.",
+    "base_titres": "Your industry's EBITDA multiples, after debt and cash.",
     "voir_detail": "See the details",
     "comptes": "{annee} accounts",
-    "base_express": "Estimated from the latest public accounts and industry multiples, before debt and cash; your figures will refine it.",
+    "base_express": "Estimated from public accounts, before debt and cash.",
     "voir_calcul": "See the calculation",
-    "base_aucune": "The public accounts are not enough for a first estimate: your figures will make it possible.",
+    "base_aucune": "Your figures will allow a first estimate.",
     "saisir": "Enter your figures",
-    "base_titres_a_valider": "Calculated from your figures, after debt and cash; check it line by line, then approve it.",
-    "verifier": "Check and approve"
+    "base_titres_a_valider": "Calculated from your figures, after debt and cash, to approve."
   },
   "final": {
     "pret_titre": "Your file is ready",
@@ -274,5 +273,15 @@
     "nouvelle_etape": "New step: check and approve your figures. Your answers are kept.",
     "revalider": "Your figures have changed since you approved them on {date}: check the new value, then approve it again.",
     "bouton_revalider": "Check and approve"
+  },
+  "prochaine": {
+    "revalider": "Your figures changed since your approval.",
+    "revalider_bouton": "Check and approve",
+    "reprendre": "Resume: {etape}",
+    "memo": {
+      "one": "Complete the memorandum (1 point)",
+      "other": "Complete the memorandum ({n} points)"
+    },
+    "documents": "Review and download your documents"
   }
 }

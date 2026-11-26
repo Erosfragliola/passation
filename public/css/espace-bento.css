@@ -1066,3 +1066,15 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .retraitements-tete { position: sticky; top: 72px; z-index: 5; box-shadow: 0 6px 16px rgba(35, 30, 24, .08); }
   .rt-resume { margin-left: 18px; }
 }
+/* File page (audit of 25/11/2026): compact step bar (each stage on one line on a computer, the two stages on two
+   lines on a phone) and a single « Next step » card */
+@media (min-width: 761px) {
+  .fil-leger > li.fil-temps { flex-direction: row; align-items: center; gap: 12px; }
+}
+#prochaine { display: grid; gap: 12px; align-content: start; }
+#prochaine h2 { margin: 0; }
+#prochaine p { margin: 0; }
+#prochaine.alerte { background: var(--b-cuivre-pale, #F5E7D6); border-color: transparent; }
+#prochaine.alerte #prochaine-texte { color: #8E5530; font-weight: 600; }
+.prochaine-liens { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14.5px; }
+.prochaine-liens a, .prochaine-liens .lien-simple { color: var(--vert); }

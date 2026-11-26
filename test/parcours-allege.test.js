@@ -17,6 +17,7 @@ import { controlerExercice } from "../src/valuation/controles.js";
 import { positionQuestion, QUESTIONS } from "../public/js/parcours.js";
 import { CARTES, cartesRepondues, carteAOuvrir, retraitementsComplets } from "../public/js/retraitements-cartes.js";
 import { MURS } from "../public/js/parcours.js";
+import { prochaineEtape } from "../public/js/dossier-parcours.js";
 import { REPONSES_EXEMPLE } from "../scripts/dossier-exemple.mjs";
 import { ELEMENTS_DETTE, etatInitial, valeursAEnregistrer, peutValider } from "../public/js/dette-elements.js";
 
@@ -145,5 +146,35 @@ describe("5.2 adjustments: one card at a time", () => {
     const rep = cartesRepondues({ remuneration_dirigeant_reelle: d.remuneration_dirigeant_reelle, remuneration_normative: d.remuneration_normative, exceptionnels: r.exceptionnels }, { murs: r.murs, exceptionnel_signale: r.exceptionnel_signale }, MURS.dirigeant);
     expect(rep).toEqual({ remuneration: true, loyer: true, exceptionnels: true });
     expect(carteAOuvrir(rep)).toBeNull();
+  });
+});
+
+describe("5.3 file page: the next step is the first true situation", () => {
+  const lienEtape = { valeur: "/espace/demarrer/?dossier=X&etape=valeur", photos: "/espace/demarrer/?dossier=X&etape=photos" };
+  const liens = { memo: "/espace/documents/memo/?dossier=X", demarrer: "/espace/demarrer/?dossier=X" };
+  const etapes = [{ cle: "chiffres", libelle: "Vos chiffres", etat: "fait" }, { cle: "photos", libelle: "Logo et photos", etat: "actuelle" }];
+  const facultatives = [
+    { cle: "photo", facultatif: true, titre: "Ajouter une photo de l'atelier", href: lienEtape.photos },
+    { cle: "a-completer", facultatif: true, titre: "Compléter 3 points", href: liens.memo },
+    { cle: "pieces", facultatif: true, titre: "Réunir les pièces", href: "#checklist", pieces: true },
+  ];
+  const base = { etapes, lienEtape, liens, taches: facultatives, finale: "/espace/demarrer/?dossier=X&etape=pret" };
+  it("1. figures to approve again: alert, « Vérifier et valider », even when a step is left", () => {
+    const p = prochaineEtape({ ...base, aRevalider: true, actuelle: "photos", nbACompleter: 3 });
+    expect(p).toMatchObject({ cas: "revalider", alerte: true, bouton: "Vérifier et valider", href: lienEtape.valeur, texte: "Vos chiffres ont changé depuis votre validation." });
+  });
+  it("2. a step is left: « Reprendre : {step} »", () => {
+    expect(prochaineEtape({ ...base, actuelle: "photos", nbACompleter: 3 })).toMatchObject({ cas: "reprendre", bouton: "Reprendre : Logo et photos", href: lienEtape.photos });
+  });
+  it("3. memorandum points left: « Compléter le mémorandum ({n} points) »", () => {
+    const fait = etapes.map((e) => ({ ...e, etat: "fait" }));
+    const p = prochaineEtape({ ...base, etapes: fait, pret: true, actuelle: "redaction", nbACompleter: 3 });
+    expect(p).toMatchObject({ cas: "memo", bouton: "Compléter le mémorandum (3 points)", href: liens.memo });
+    expect(p.liens.map((x) => x.texte)).toEqual(["Ajouter une photo de l'atelier", "Réunir les pièces"]); // never the same point twice
+  });
+  it("4. otherwise: « Relire et télécharger vos documents »; two secondary links at most", () => {
+    const p = prochaineEtape({ ...base, etapes: etapes.map((e) => ({ ...e, etat: "fait" })), pret: true, actuelle: "redaction", nbACompleter: 0 });
+    expect(p).toMatchObject({ cas: "documents", bouton: "Relire et télécharger vos documents", href: base.finale });
+    expect(p.liens).toHaveLength(2);
   });
 });
