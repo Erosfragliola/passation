@@ -3,6 +3,7 @@
 // required), Going further (optional questions, missing from the guided steps), Your valuation
 // (server calculation, settings). Range only, never a central value; industry multiples only,
 // the adjusted net assets serve as a check. No value calculation here: everything comes from the API (tested code).
+import { aideRepliee } from "/js/aide-repliee.js";
 import { CHAMPS, exercicesAttendus, libelleEcran, aideEcran, aideEbe as texteAideEbe } from "/js/champs-financiers.js";
 import { REGIONS, libelleOption } from "/js/questionnaire.js";
 import { POUR_ALLER_PLUS_LOIN as ETAPES } from "/js/parcours.js";
@@ -89,10 +90,12 @@ function ligneChiffre(c, a) {
   input.addEventListener("change", () => enregistrerCase(c.cle, a, input));
   const etat = v?.valide ? el("span", { class: "valide-marque", title: t("valorisation.js.ligne_validee") }, "✓", el("span", { class: "visuellement-cache", text: t("valorisation.js.validee") }))
     : el("button", { type: "button", class: "btn btn-mini", disabled: v?.valeur == null, onclick: () => validerLigne(c.cle, a) }, t("valorisation.js.valider"));
+  // Help of an empty optional line folded behind a « ? » (audit of 25/11/2026)
+  const aide = !(v?.valeur != null && SOURCE[v.source]) && !c.obligatoire && v?.valeur == null ? aideRepliee(aideEcran(c), libelleEcran(c)) : null;
   return el("div", { class: `chiffre-ligne${v?.valide ? " validee" : ""}`, "data-cle": c.cle },
-    el("label", { for: `m-${c.cle}` }, libelleEcran(c),
-      v?.valeur != null && SOURCE[v.source] ? el("small", { text: SOURCE[v.source] }) : !c.obligatoire && v?.valeur == null ? el("small", { text: aideEcran(c) }) : null),
-    el("span", { class: "champ-montant" }, input, el("span", { "aria-hidden": "true", text: "€" })), etat);
+    el("span", { class: "lib-ligne" }, el("label", { for: `m-${c.cle}` }, libelleEcran(c),
+      v?.valeur != null && SOURCE[v.source] ? el("small", { text: SOURCE[v.source] }) : null), aide?.bouton),
+    el("span", { class: "champ-montant" }, input, el("span", { "aria-hidden": "true", text: "€" })), etat, aide?.zone);
 }
 function dessinerChiffres() {
   const annees = Object.keys(chiffres.exercices).map(Number).sort((a, b) => a - b);
@@ -202,7 +205,9 @@ function dessinerSousEtapes() {
 function champQuestion(e, q) {
   const v = reponses[e.cle]?.[q.cle];
   const idq = `q-${e.cle}-${q.cle}`;
-  const aide = q.aide ? el("span", { class: "petit aide-q", id: `${idq}-aide`, text: q.aide }) : null;
+  // Help folded behind a « ? », unfolded below the field (audit of 25/11/2026)
+  const a = aideRepliee(q.aide, q.libelle);
+  const aide = a?.bouton ?? null;
   const sauver = (val) => { (reponses[e.cle] ??= {})[q.cle] = val; programmerSauvegarde(e.cle); };
   if (q.type === "oui_non" || q.type === "choix") {
     const fs = el("fieldset", { class: "q" }, el("legend", { text: q.libelle }), aide);
@@ -212,6 +217,7 @@ function champQuestion(e, q) {
       r.addEventListener("change", () => sauver(val));
       fs.append(el("label", { class: "choix", for: `${idq}-${i}` }, r, ` ${lib}`));
     }
+    if (a) fs.append(a.zone);
     return fs;
   }
   if (q.type === "regions") {
@@ -222,6 +228,7 @@ function champQuestion(e, q) {
       cb.addEventListener("change", () => { if (cb.checked) choisies.add(r); else choisies.delete(r); sauver([...choisies]); });
       fs.append(el("label", { class: "choix", for: `${idq}-${i}` }, cb, ` ${r}`));
     });
+    if (a) fs.append(a.zone);
     return fs;
   }
   if (q.type === "exceptionnels") {
@@ -241,13 +248,14 @@ function champQuestion(e, q) {
       });
     };
     dessiner();
+    if (a) conteneur.append(a.zone);
     conteneur.append(el("button", { type: "button", class: "btn btn-contour btn-mini", disabled: !annees.length, onclick: () => { liste.push({ annee: Number(annees.at(-1)), libelle: "", montant: null, justification: "" }); sauver(liste); dessiner(); } }, t("demarrer.js.exc.ajouter")));
     return conteneur;
   }
   const affiche = v == null ? "" : q.type === "pct" ? (fr() ? String(Math.round(v * 1000) / 10).replace(".", ",") : String(Math.round(v * 1000) / 10)) : q.type === "euros" ? fmt.format(v) : v;
   const input = q.type === "texte"
-    ? el("textarea", { id: idq, rows: "3", "aria-describedby": aide ? `${idq}-aide` : null }, affiche)
-    : el("input", { id: idq, type: "text", inputmode: "decimal", value: affiche, "aria-describedby": aide ? `${idq}-aide` : null });
+    ? el("textarea", { id: idq, rows: "3", "aria-describedby": a ? a.zone.id : null }, affiche)
+    : el("input", { id: idq, type: "text", inputmode: "decimal", value: affiche, "aria-describedby": a ? a.zone.id : null });
   input.addEventListener("input", () => {
     if (q.type === "texte") return sauver(input.value);
     const n = lireNombre(input.value);
@@ -256,7 +264,7 @@ function champQuestion(e, q) {
     sauver(n == null ? null : q.type === "pct" ? n / 100 : n);
   });
   const unite = { euros: "€", pct: "%" }[q.type];
-  return el("div", { class: "q" }, el("label", { for: idq, text: q.libelle }), aide, el("div", { class: "champ-unite" }, input, unite ? el("span", { class: "unite", text: unite }) : null));
+  return el("div", { class: "q" }, el("div", { class: "lib-ligne" }, el("label", { for: idq, text: q.libelle }), aide), el("div", { class: "champ-unite" }, input, unite ? el("span", { class: "unite", text: unite }) : null), a?.zone);
 }
 function dessinerQuestionnaire() {
   const e = ETAPES[etapeQ];

@@ -86,7 +86,9 @@ export function champMontant(o) {
   const zoneCurseur = document.createElement("div");
   zoneCurseur.className = "curseur-montant";
   zoneCurseur.append(curseur, bornes);
-  racine.append(boite, zoneCurseur);
+  // No slider on an amount in euros (audit of 25/11/2026): the field alone; sliders stay for percentages
+  if (unite === "€") racine.classList.add("sans-curseur");
+  racine.append(boite, ...(unite === "€" ? [] : [zoneCurseur]));
 
   const peindre = () => {
     const v = Number(curseur.value), p = ((v - b.min) / (b.max - b.min)) * 100;

@@ -31,5 +31,9 @@
     "menu_ouvrir": "Ouvrir le menu",
     "menu_fermer": "Fermer le menu",
     "dossier_supprime": "Votre dossier et ses fichiers ont été supprimés."
+  },
+  "aide": {
+    "sur": "Aide : {sujet}",
+    "afficher": "Afficher l'aide"
   }
 }

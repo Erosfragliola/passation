@@ -1034,3 +1034,17 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .guide-ligne.validee { grid-template-columns: 1fr 160px auto auto; }
 .guide-ligne.validee .pastille-ok { justify-self: start; }
 @media (max-width: 600px) { .guide-ligne.validee { grid-template-columns: 1fr; } }
+
+/* ====================================================== Lighter owner's path (audit of 25/11/2026) */
+/* Help folded behind a « ? »: same round button as the EBITDA help; the help unfolds below the field */
+.lib-ligne { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.lib-ligne > .guide-lib, .lib-ligne > label { margin: 0; }
+.aide-bouton { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--trait-fort); background: #FFFDF8; color: var(--espresso); font: 600 13px/1 var(--sans); cursor: pointer; flex: none; padding: 0; }
+.aide-bouton[aria-expanded="true"] { background: var(--vert); color: #F6F1E6; border-color: var(--vert); }
+.aide-repliee { margin: 0; font-size: 14px; color: var(--pierre-texte); background: #F3EBDD; border-radius: 10px; padding: 8px 12px; }
+.guide-champ > .aide-repliee, .q > .aide-repliee, fieldset > .aide-repliee { order: 99; }
+.chiffre-ligne > .aide-repliee { grid-column: 1 / -1; }
+.montant.sans-curseur { display: block; }
+.accueil-durees li { display: flex; gap: 8px; align-items: baseline; }
+.exercices-sans { margin: 8px 0 0; text-align: right; }
+@media (max-width: 640px) { .exercices-sans { text-align: left; } }
