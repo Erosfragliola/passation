@@ -204,14 +204,15 @@ Each proof that the key numbers are right, with the command to run it:
 
 Roles described by visible contributions (merged pull requests, reviews). Every member has commits and pull requests
 under their own GitHub account (`git shortlog -sne main`; `gh pr list --state merged`). All 42 merged pull requests
-were reviewed and approved by another member before merging (49 reviews in total).
+were reviewed and approved by another member before merging (47 approving reviews on these 42 pull requests, as of
+27/11/2026).
 
-| Member | GitHub | Contributions (merged PRs) | Reviews |
+| Member | GitHub | Contributions (merged PRs) | Reviews (merged PRs) |
 |---|---|---|---|
-| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Repository owner and deployment; home page (#2, #4, #9, #11); single font on the site (#34); flow consistency fixes (#36); memorandum finishing after testing the site (#38, #41); 36-month financial model file (commit 8fd50bb, in #42) | 24 |
+| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Repository owner and deployment; home page (#2, #4, #9, #11); single font on the site (#34); flow consistency fixes (#36); memorandum finishing after testing the site (#38, #41); 36-month financial model file (commit 8fd50bb, in #42) | 23 |
 | Maxime Parrinello | [@maximeparrinello-creator](https://github.com/maximeparrinello-creator) | Guided flow with one value and one list of steps (#15); dead code clean-up (#17, #26); bilingual site, English by default (#27); business model section and 3-year projections of the business plan (#42) | 1 |
 | Victoire Jacob | [@Victoirejacob](https://github.com/Victoirejacob) | Audit fixes and EDHEC preparation (#1); anonymous teaser (#12); owner's space design (#13, #20); repairs of main after merges (#16, #24); datapack layout (#25); security headers and legal pages (#28); guided analysis flow (#29, #30); bilingual site follow-up (#31) | 20 |
-| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Memorandum (#5, #35, #37); home page illustrated steps (#7); file page and its 5-step flow (#8, #10); code names and audit fixes (#14); repairs of main (#19, #23); upload of supporting documents (#21); single font in the deliverables (#33); lighter owner's path (#43) | 4 |
+| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Memorandum (#5, #35, #37); home page illustrated steps (#7); file page and its 5-step flow (#8, #10); code names and audit fixes (#14); repairs of main (#19, #23); upload of supporting documents (#21); single font in the deliverables (#33); lighter owner's path (#43) | 3 |
 | Mohamed Reda Aboualam | [@raboualam22](https://github.com/raboualam22) | Flow v2: secure account, valuation first, guided photos, English translation (#39); sign-in by code only (#40) | 0 |
 
 ## Deliverables (where to find them)

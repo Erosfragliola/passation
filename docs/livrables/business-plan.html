@@ -296,7 +296,7 @@ only; every amount and fact is approved, and the numbers are checked by tests (s
 <h3>5.2 Within the project team: working with a coding assistant</h3>
 <p>Contributions visible in the repository (merged pull requests, reviews; details per pull request in the « Team »
 section of the README). <strong>Eros Fragliola</strong>: repository owner and deployment, home page, memorandum
-finishing after testing the site (PR #41), financial model file (PR #42), 24 reviews. <strong>Maxime
+finishing after testing the site (PR #41), financial model file (PR #42), 23 reviews. <strong>Maxime
 Parrinello</strong>: guided flow, bilingual site (PR #27), business model section of this plan (PR #42).
 <strong>Victoire Jacob</strong>: audit fixes, teaser, datapack layout, security headers and legal pages (PR #28), 20
 reviews. <strong>Ethan Barris</strong>: memorandum, file page, lighter owner's path (PR #43). <strong>Mohamed Reda
@@ -304,7 +304,7 @@ Aboualam</strong>: flow v2 with a secure account and English translation (PR #39
 <p>Way of working with Claude Code: written rules for the assistant (CLAUDE.md: no invented data, code calculates and
 AI drafts, secrets never in the repository); a dated plan and log (PLAN.md); each member works in their own session
 and opens pull requests under their own account; every pull request is reviewed and approved by another member before
-merging (49 reviews on the 42 merged pull requests); tests run on every push.</p>
+merging (47 reviews on the 42 pull requests merged as of 27/11/2026); tests run on every push.</p>
 
 <h2>6. Systemic view, risks and SDG 9 (A4, LO6)</h2>
 <h3>6.1 Stakeholders</h3>
@@ -312,7 +312,7 @@ merging (49 reviews on the 42 merged pull requests); tests run on every push.</p
   <tr><th>Stakeholder</th><th>Stake</th><th>What Passation does</th></tr>
   <tr><td>Selling owner</td><td>Value, confidentiality, time</td><td>Account verified by a code sent by email, no amount without a session, ready documents, one-click deletion of the file</td></tr>
   <tr><td>Buyers</td><td>Reliable, comparable information</td><td>Approved figures, sourced assumptions, checkable datapack</td></tr>
-  <tr><td>Employees, customers, local area</td><td>Continuity of the company</td><td>A better-prepared sale; for scale, 770,000 employees were concerned by the sale of an SME or mid-sized company in France in 2016 [1]</td></tr>
+  <tr><td>Employees, customers, local area</td><td>Continuity of the company</td><td>A better-prepared sale; for scale, 770,000 employees were concerned by the sale of an SME or mid-sized company in France in 2016 (BPCE L'Observatoire 2019, as reported by [1])</td></tr>
   <tr><td>Accountants, advisors</td><td>Liability, role</td><td>Preparation tool, not a substitute for advice (disclaimers on every document)</td></tr>
   <tr><td>Technical suppliers</td><td>Availability, cost</td><td>Cache, retries, quotas, calculation works without AI</td></tr>
 </table>
@@ -320,7 +320,7 @@ merging (49 reviews on the 42 merged pull requests); tests run on every push.</p
 <table>
   <thead><tr><th>Risk</th><th>Control in place</th><th>Remaining limitation</th></tr></thead>
   <tr><td>Wrong value (method or entry error)</td><td>Tested code, reference cases, reconciliation with the published accounts, checks on the accounts, incomplete fiscal years left out, bounded settings</td><td>Conventions to be decided (discounts, lease financing): docs/decisions-methode.md</td></tr>
-  <tr><td>AI hallucination</td><td>AI does not calculate; amounts and facts to be approved; market sources checked; missing data flagged, never filled in/td><td>Human review is still necessary</td></tr>
+  <tr><td>AI hallucination</td><td>AI does not calculate; amounts and facts to be approved; market sources checked; missing data flagged, never filled in</td><td>Human review is still necessary</td></tr>
   <tr><td>Data leak, anonymity</td><td>Hashed codes, tested access rights, anonymity check, file deletion</td><td>Account deletion not available; legal pages in draft</td></tr>
   <tr><td>API cost</td><td>Quotas per user, cap on the number of files</td><td>Spending cap to be set at Anthropic</td></tr>
   <tr><td>Dependence on public APIs</td><td>24-hour cache, retries, outage reported</td><td>Possible unavailability during a demonstration</td></tr>
@@ -367,7 +367,7 @@ the format expected by buyers and banks, which can help a sale, and its financin
   <li><strong>Step-by-step recalculation</strong> (docs/verification-calcul.md): the three values of the demonstration
   (€1,381,818 / €1,941,818 / €2,431,818) recalculated from the tax return to the value of the shares, with a €0
   difference; reference cases calculated separately in Python. Limitation: they follow the conventions of the engine.</li>
-  <li><strong>Human checks proven in the repository</strong>: 49 reviews by another member on the 42 merged pull
+  <li><strong>Human checks proven in the repository</strong>: 47 reviews by another member on the 42 merged pull
   requests; corrections requested by Eros Fragliola after reading the memorandum generated by the site (PR #41: earlier
   fiscal years left out, « Oui, corriger » that did not apply); the balance-sheet check row of the financial model is
   zero in all three years (PR #42).</li>

@@ -206,14 +206,15 @@ Chaque preuve que les chiffres clés sont justes, avec la commande pour la lance
 
 Rôles décrits par les contributions visibles (pull requests fusionnées, revues). Chaque membre a des commits et des
 pull requests sous son propre compte GitHub (`git shortlog -sne main` ; `gh pr list --state merged`). Les 42 pull
-requests fusionnées ont toutes été relues et approuvées par un autre membre avant la fusion (49 revues au total).
+requests fusionnées ont toutes été relues et approuvées par un autre membre avant la fusion (47 revues d'approbation sur ces 42 pull
+requests, au 27/11/2026).
 
-| Membre | GitHub | Contributions (PR fusionnées) | Revues |
+| Membre | GitHub | Contributions (PR fusionnées) | Revues (PR fusionnées) |
 |---|---|---|---|
-| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Propriétaire du dépôt et mise en ligne ; page d'accueil (#2, #4, #9, #11) ; une seule police sur le site (#34) ; corrections de cohérence du parcours (#36) ; finitions du mémorandum après avoir testé le site (#38, #41) ; fichier du modèle financier sur 36 mois (commit 8fd50bb, dans #42) | 24 |
+| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Propriétaire du dépôt et mise en ligne ; page d'accueil (#2, #4, #9, #11) ; une seule police sur le site (#34) ; corrections de cohérence du parcours (#36) ; finitions du mémorandum après avoir testé le site (#38, #41) ; fichier du modèle financier sur 36 mois (commit 8fd50bb, dans #42) | 23 |
 | Maxime Parrinello | [@maximeparrinello-creator](https://github.com/maximeparrinello-creator) | Parcours avec une seule valeur et une seule liste d'étapes (#15) ; nettoyage du code mort (#17, #26) ; site bilingue, anglais par défaut (#27) ; partie modèle économique et prévisions à 3 ans du business plan (#42) | 1 |
 | Victoire Jacob | [@Victoirejacob](https://github.com/Victoirejacob) | Correctifs d'audit et préparation du rendu EDHEC (#1) ; teaser anonyme (#12) ; direction artistique de l'espace (#13, #20) ; réparations de main après des fusions (#16, #24) ; mise en page du datapack (#25) ; en-têtes de sécurité et pages légales (#28) ; parcours d'analyse guidé (#29, #30) ; suite du site bilingue (#31) | 20 |
-| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Mémorandum (#5, #35, #37) ; étapes illustrées de l'accueil (#7) ; page du dossier et parcours en 5 étapes (#8, #10) ; noms de code et correctifs d'audit (#14) ; réparations de main (#19, #23) ; dépôt des pièces (#21) ; une seule police dans les livrables (#33) ; parcours allégé (#43) | 4 |
+| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Mémorandum (#5, #35, #37) ; étapes illustrées de l'accueil (#7) ; page du dossier et parcours en 5 étapes (#8, #10) ; noms de code et correctifs d'audit (#14) ; réparations de main (#19, #23) ; dépôt des pièces (#21) ; une seule police dans les livrables (#33) ; parcours allégé (#43) | 3 |
 | Mohamed Reda Aboualam | [@raboualam22](https://github.com/raboualam22) | Parcours v2 : compte sécurisé, valorisation d'abord, photos guidées, traduction anglaise (#39) ; connexion par code seul (#40) | 0 |
 
 ## Livrables (où les trouver)
