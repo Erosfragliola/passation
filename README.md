@@ -223,7 +223,7 @@ were reviewed and approved by another member before merging (47 approving review
 | Code | this repository (`src/`, `public/`, `migrations/`) |
 | Business plan | [docs/livrables/business-plan.pdf](docs/livrables/business-plan.pdf) (source: `business-plan.html`) |
 | Financial model | [docs/livrables/business-plan-model.xlsx](docs/livrables/business-plan-model.xlsx) |
-| Presentation | `docs/livrables/presentation.pptx` and `presentation.pdf` (added in a separate PR) |
+| Presentation (8 minutes, 19 slides, speaker notes in the .pptx) | [docs/livrables/presentation.pptx](docs/livrables/presentation.pptx) and [presentation.pdf](docs/livrables/presentation.pdf) |
 | Use of AI | [AI-USAGE.md](AI-USAGE.md) |
 | Tests and number checks | [Tests](#tests) and [Number checks](#number-checks) above; `npm test` |
 | Environment variables without secrets | [.env.example](.env.example) (same names as `.dev.vars.example`) |
