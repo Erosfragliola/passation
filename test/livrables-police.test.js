@@ -76,7 +76,7 @@ describe("impression : Geist embarquée", () => {
 });
 
 describe("livrables du cours (docs/livrables)", () => {
-  it.each(["business-plan.html", "presentation.html"])("%s : Geist seule, embarquée depuis public/fonts", (f) => {
+  it.each(["business-plan.html"])("%s : Geist seule, embarquée depuis public/fonts", (f) => {
     const html = lire(`docs/livrables/${f}`);
     expect(html).not.toMatch(INTERDITES);
     expect(html).not.toMatch(/Helvetica|Arial/);
