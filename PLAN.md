@@ -746,3 +746,17 @@ model to be defined later by the user (business plan in progress).
     competitors with public prices, SDG target 9.3, transformation, controls, « Sources » appendix; section 4.4
     unchanged. `AI-USAGE.md`: facts proven in the repository only.
   - Left for a separate PR: the presentation (`docs/livrables/presentation.pptx` and `.pdf`). Tests: 695.
+- **28/11/2026, branch `nettoyage-final`** (cleanup before the submission, no change in behavior):
+  - Dead code removed, each item with zero references (`git grep`): `PALIERS_MARGE` (`src/documents/teaser.js`),
+    `MESSAGE_CLE_REFUSEE` (`src/lib/claude.js`), `public/img/photos/etape-artisane-2400.webp` (not in any `srcset`),
+    `scripts/polices-landing.mjs` (empty font list since 23/11/2026), devDependency `axe-core` (no import).
+  - 69 translation keys no longer read, removed in both languages (screens replaced by the lighter flow of PR #43).
+    Keys built in pieces (`ligne_${…}`, `conflit_${…}`) were matched against every dynamic pattern of the code first.
+  - CSS rules of 41 classes no longer used, removed from the five style sheets (selectors shared with live classes
+    kept).
+  - Checked: `npm test` 695/695, `npm run i18n:check`; the whole flow run in a browser on `main` and on this branch,
+    in English and French (42 screens each): no raw key on screen, same console messages as `main`, and 79 of 84
+    screenshots identical to the pixel (the other 5 differ by the test email address and by anti-aliasing, at most
+    0.03% of pixels).
+  - Indexes added: `scripts/README.md`, `docs/README.md`. Kept on purpose: `docs/captures/` and `docs/maquettes/`,
+    shown in the descriptions of 16 pull requests.

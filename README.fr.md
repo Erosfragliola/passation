@@ -260,8 +260,8 @@ Cloudflare Worker (src/)
 | `public/` | Pages, styles, scripts du navigateur, polices, images |
 | `migrations/` | Schéma de la base D1 |
 | `test/` | Tests automatisés et jeux de données enregistrés |
-| `scripts/` | Génération des images, polices, multiples, jeux de test ; calcul de référence Python |
-| `docs/` | Démonstration, décisions de méthode, calculs de référence, livrables, maquettes en attente de choix, captures des audits passés (interface française) |
+| `scripts/` | Calcul de référence Python, Claude simulé, dossier de démonstration, génération des multiples, des images et des jeux de test ([scripts/README.md](scripts/README.md)) |
+| `docs/` | Démonstration, décisions de méthode, calculs de référence, livrables, captures et maquettes montrées dans les pull requests ([docs/README.md](docs/README.md)) |
 
 ## Limites connues
 

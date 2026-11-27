@@ -258,8 +258,8 @@ Cloudflare Worker (src/)
 | `public/` | Pages, styles, browser scripts, fonts, images |
 | `migrations/` | D1 database schema |
 | `test/` | Automated tests and recorded datasets |
-| `scripts/` | Generation of images, fonts, multiples and test datasets; Python reference calculation |
-| `docs/` | Demonstration, method decisions, reference calculations, deliverables, mockups awaiting a decision, screenshots of past audits (French interface) |
+| `scripts/` | Python reference calculation, simulated Claude, demonstration file, generation of multiples, images and test datasets ([scripts/README.md](scripts/README.md)) |
+| `docs/` | Demonstration, method decisions, reference calculations, deliverables, screenshots and mockups shown in the pull requests ([docs/README.md](docs/README.md)) |
 
 ## Known limitations
 
