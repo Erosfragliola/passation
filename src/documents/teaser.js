@@ -55,7 +55,6 @@ export const enSections = (r) => SECTIONS_TEASER.map(([cle]) => [cle, cle === "a
 // Chart data, calculated by the code and anonymous: bands (no amount), revenue trend as an index
 // base 100 rounded to 5 points, relative years (N-2, N-1, N), recurring share rounded to 10%.
 export const PALIERS_CA = ["< 1 M€", "1-2 M€", "2-5 M€", "5-10 M€", "10-20 M€", "20-50 M€", "> 50 M€"];
-export const PALIERS_MARGE = ["négative", "< 5 %", "5-10 %", "10-15 %", "15-20 %", "> 20 %"];
 const BORNES_CA = [1e6, 2e6, 5e6, 10e6, 20e6, 50e6];
 const BORNES_MARGE = [0, 0.05, 0.1, 0.15, 0.2];
 const palier = (v, bornes) => bornes.filter((b) => v >= b).length;
