@@ -135,12 +135,7 @@
       "titre_premiere": "Ajouter une photo de l'atelier ou des produits",
       "detail_premiere": "Recommandation du mémorandum : elle rend la page « Savoir-faire » vivante",
       "titre_seconde": "Ajouter une photo de l'équipe ou du site",
-      "detail_seconde": "Recommandation du mémorandum, page « Équipe »",
-      "titre_choisir": {
-        "one": "Choisir votre photo : 1 trouvée sur votre site",
-        "other": "Choisir vos photos : {n} trouvées sur votre site"
-      },
-      "detail_choisir": "Elles illustrent la couverture, l'activité et l'équipe du mémorandum."
+      "detail_seconde": "Recommandation du mémorandum, page « Équipe »"
     },
     "a_completer": {
       "titre": {
@@ -205,11 +200,8 @@
     "datapack": "Datapack Excel",
     "teaser": "Teaser anonyme",
     "memo": "Mémorandum",
-    "mise_a_jour_f": "Mise à jour le {date}",
     "mis_a_jour": "Mis à jour le {date}",
     "version": "version {n}",
-    "prete": "Prête",
-    "calculee_redaction": "Calculée à l'étape Rédaction, avec vos réponses.",
     "debloque_chiffres_reponses": "Calculée à l'étape « Votre valeur », après vos retraitements et votre dette.",
     "prepare_chiffres": "Préparé à partir de vos chiffres confirmés",
     "debloque_exercice": "Se débloque dès qu'un exercice est confirmé.",
@@ -241,7 +233,6 @@
     "pret_titre": "Votre dossier est prêt",
     "pret_aide": "Relisez chaque document avant de le diffuser. Vous pouvez tout modifier.",
     "plus_loin": "Pour aller plus loin (facultatif)",
-    "redige_titre": "Votre dossier est rédigé",
     "non_redige_titre": "Votre dossier n'est pas encore rédigé",
     "non_pret_aide": "Il n'est pas encore prêt à être envoyé : {pct} % du parcours. Voici ce qui reste.",
     "reste": "Ce qui reste à faire",

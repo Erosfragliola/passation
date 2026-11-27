@@ -135,12 +135,7 @@
       "titre_premiere": "Add a photo of the workshop or the products",
       "detail_premiere": "Memorandum recommendation: it brings the “Know-how” page to life",
       "titre_seconde": "Add a photo of the team or the site",
-      "detail_seconde": "Memorandum recommendation, “Team” page",
-      "titre_choisir": {
-        "one": "Choose your photo: 1 found on your website",
-        "other": "Choose your photos: {n} found on your website"
-      },
-      "detail_choisir": "They illustrate the memorandum’s cover, business and team pages."
+      "detail_seconde": "Memorandum recommendation, “Team” page"
     },
     "a_completer": {
       "titre": {
@@ -205,11 +200,8 @@
     "datapack": "Excel datapack",
     "teaser": "Anonymous teaser",
     "memo": "Memorandum",
-    "mise_a_jour_f": "Updated on {date}",
     "mis_a_jour": "Updated on {date}",
     "version": "version {n}",
-    "prete": "Ready",
-    "calculee_redaction": "Calculated at the Drafting step, with your answers.",
     "debloque_chiffres_reponses": "Calculated at the “Your value” step, after your adjustments and your debt.",
     "prepare_chiffres": "Prepared from your confirmed figures",
     "debloque_exercice": "Unlocks as soon as a fiscal year is confirmed.",
@@ -241,7 +233,6 @@
     "pret_titre": "Your file is ready",
     "pret_aide": "Review each document before sharing it. You can edit everything.",
     "plus_loin": "Going further (optional)",
-    "redige_titre": "Your file is drafted",
     "non_redige_titre": "Your file isn’t drafted yet",
     "non_pret_aide": "It isn’t ready to send yet: {pct}% complete. Here’s what’s left.",
     "reste": "What’s left to do",
