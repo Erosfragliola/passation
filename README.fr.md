@@ -268,7 +268,7 @@ Cloudflare Worker (src/)
 - Conventions à arbitrer : décotes appliquées à la valeur d'entreprise, crédit-bail compté dans la dette nette sans
   retraitement de l'EBE ([docs/decisions-methode.md](docs/decisions-methode.md)).
 - Le datapack est vérifié par un évaluateur de formules interne, pas par Excel.
-- Pages légales en brouillon (éditeur, contact, hébergement « À compléter ») ; suppression du compte non disponible.
+- Pages légales en brouillon (éditeur, contact et hébergement pas encore renseignés) ; suppression du compte non disponible.
 
 ## Mise en ligne (propriétaire du compte Cloudflare)
 

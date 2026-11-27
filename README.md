@@ -266,7 +266,7 @@ Cloudflare Worker (src/)
 - Conventions to be decided: discounts applied to enterprise value, lease financing counted in net debt without an
   EBITDA adjustment ([docs/decisions-methode.md](docs/decisions-methode.md)).
 - The datapack is checked by an internal formula evaluator, not by Excel.
-- Legal pages are drafts (publisher, contact, hosting "To be completed"); account deletion is not available.
+- Legal pages are drafts (publisher, contact and hosting details not filled in yet); account deletion is not available.
 
 ## Deployment (owner of the Cloudflare account)
 
