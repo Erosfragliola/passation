@@ -10,8 +10,13 @@ anonymisé, mémorandum d'information).
 
 Projet du cours « Programming and AI for Corporate Finance » (EDHEC Business School, 2026).
 
-**En ligne :** https://passation.eros-fragliola-freedom.workers.dev (anglais sous `/`, français sous `/fr/` ; la version
-bilingue est visible en ligne une fois `main` déployée).
+**En ligne :** https://passation.eros-fragliola-freedom.workers.dev (anglais sous `/`, français sous `/fr/`).
+
+## Pour qui
+
+Le dirigeant d'une PME française (identifiée par son SIREN) qui prépare la cession de son entreprise et veut, avant de
+rencontrer un conseil ou un repreneur, une première valorisation sourcée et les documents habituels d'une cession. Son
+expert-comptable ou son conseil en cession peut relire les chiffres et les documents avec lui.
 
 ## Ce que fait l'application
 
@@ -50,23 +55,55 @@ la lecture de liasse et les rédactions répondent « indisponible ».
   limites de débit par empreinte d'IP ; quotas quotidiens des traitements par Claude ; suppression du dossier et de
   ses fichiers en un clic (le compte, lui, n'est pas supprimé : voir `public/confidentialite.html`).
 
-## Sources de données
+## Données et API gratuites
 
-| Donnée | Source | Accès |
-|---|---|---|
-| Identité, NAF, effectif, siège | API Recherche d'entreprises (`recherche-entreprises.api.gouv.fr`) | Gratuit, sans clé |
-| CA, EBE, résultat publiés | Jeu `ratios_inpi_bce` (`data.economie.gouv.fr`) | Gratuit, sans clé |
-| Événements (création, transferts, reprises de fonds) | BODACC (`bodacc-datadila.opendatasoft.com`) | Gratuit, sans clé |
-| Multiples d'EBE par secteur | Croisement Argos Index Q2 2026, Dealsuite/Fusac (via Capital Stack), barème Captain 2026, Damodaran Europe 01/2026 : `src/data/multiples-sources.json`, calcul `npm run multiples` | Publications gratuites |
-| Taux sans risque, coût de la dette, prime de risque, bêtas, IS, croissance à l'infini | BCE, Banque de France, Damodaran, service-public.fr : `src/data/hypotheses.json` | Gratuit |
-| Intitulés anglais des secteurs (version anglaise du site) | Eurostat, intitulés des divisions de la NACE Rév. 2 (mêmes divisions que la NAF rév. 2) : `src/data/naf-divisions-en.json` | Publication gratuite |
+Toutes les données sur l'entreprise viennent de sources publiques gratuites, sans clé. Les appels respectent les
+conditions d'usage (`src/lib/requete.js`, `src/config.js`) : un User-Agent qui identifie l'application
+(`Passation/0.1 (outil de preparation de cession de PME)`), des réponses mises en cache 24 h dans D1
+(`DURATIONS.apiCache`, `src/lib/cache.js`), et jusqu'à 4 tentatives espacées de façon exponentielle en cas de réponse
+429 (trop de requêtes) ou d'erreur 5xx, en suivant l'en-tête `Retry-After` quand il est court. Une panne d'API est
+signalée comme telle (jamais comme une absence de comptes) et n'est pas mise en cache.
 
-Réponses mises en cache 24 h (D1). Une panne d'API est signalée comme telle (jamais comme une absence de comptes) et
-n'est pas mise en cache.
+| Source | URL | Ce qu'on en tire | Accès |
+|---|---|---|---|
+| API Recherche d'entreprises (État) | https://recherche-entreprises.api.gouv.fr | Identité, code NAF, tranche d'effectif, siège ; nombre d'entreprises par secteur et région (chapitre Marché) | Gratuit, sans clé |
+| Jeu `ratios_inpi_bce` (data.economie.gouv.fr) | https://data.economie.gouv.fr/explore/dataset/ratios_inpi_bce/ | CA, EBE, résultat d'exploitation et résultat net publiés, par exercice | Gratuit, sans clé |
+| BODACC (Bulletin officiel des annonces civiles et commerciales) | https://bodacc-datadila.opendatasoft.com | Événements : création, transferts, reprises de fonds | Gratuit, sans clé |
+| Multiples d'EBE par secteur | `src/data/multiples-sources.json` (URL et date de chaque source) | Croisement Argos Index Q2 2026, Dealsuite/Fusac (via Capital Stack), barème Captain 2026, Damodaran Europe 01/2026, calcul `npm run multiples` | Publications gratuites |
+| Hypothèses de valorisation | `src/data/hypotheses.json` (URL et date de chaque valeur) | Taux sans risque, coût de la dette, prime de risque, bêtas, IS, croissance à l'infini (BCE, Banque de France, Damodaran, service-public.fr) | Publications gratuites |
+| Intitulés anglais des secteurs | `src/data/naf-divisions-en.json` | Eurostat, intitulés des divisions de la NACE Rév. 2 (mêmes divisions que la NAF rév. 2) | Publication gratuite |
 
-**Services externes payants ou à compte** : API Claude d'Anthropic (payante à l'usage, modèles `claude-sonnet-5-5` et
-`claude-haiku-5-5`, `src/config.js`) ; Brevo (offre gratuite limitée) ; Cloudflare Workers, D1 et R2 (offre gratuite).
-L'usage d'une API payante est à faire valider au regard de la consigne « sources gratuites » du cours.
+**API Claude (Anthropic), seul service payant, à l'usage** (modèles `claude-sonnet-5-5` et `claude-haiku-5-5`,
+`src/config.js`). Elle sert seulement à **lire** (liasses, site de l'entreprise, photos) et à **rédiger** (teaser,
+mémorandum, étude de marché). Elle ne calcule aucune valeur : la valorisation et le datapack Excel fonctionnent sans
+elle. Avec le Claude simulé (voir « Vérification locale sans l'API Claude » plus bas), tout le parcours tourne sans
+clé. Autres services : Brevo pour les e-mails de connexion (offre gratuite limitée) et Cloudflare Workers, D1 et R2
+(offre gratuite).
+
+## Hypothèses
+
+| Hypothèse | Où elle est écrite |
+|---|---|
+| Montants en euros (EUR), tels que publiés dans les comptes français | [docs/valorisation-calculs.md](docs/valorisation-calculs.md) (cas de test), [PLAN.md § 1](PLAN.md#1-what-the-public-apis-really-return-tested-on-10112026-siren-434436622) |
+| Entreprises françaises uniquement, identifiées par leur SIREN (numéro à 9 chiffres du registre français) | [PLAN.md § 4](PLAN.md#4-pages-and-api-routes) (`/api/company/:siren`) et [§ 11](PLAN.md#11-flow-after-the-siren-and-deliverables-decisions-of-10112026) |
+| Un exercice est un exercice comptable clos (date de clôture des comptes déposés) | [PLAN.md § 1](PLAN.md#1-what-the-public-apis-really-return-tested-on-10112026-siren-434436622) et [§ 5.1](PLAN.md#51-quick-valuation) |
+| Au plus 3 exercices ; le dernier retenu est complet, les précédents sont retenus pour leur compte de résultat | [PLAN.md § 5.2](PLAN.md#52-detailed-valuation) (moyenne des 3 derniers exercices retraités) et § 10, entrée du 25/11/2026 |
+| Multiples sectoriels datés et sourcés ; un secteur sans multiple sourcé n'affiche aucun chiffre | [PLAN.md § 5.1 et § 5.4](PLAN.md#54-industry-multiples-to-be-completed-by-you), `src/data/multiples.json` |
+| Conventions de valorisation (décotes sur la valeur d'entreprise, crédit-bail dans la dette nette) | [docs/decisions-methode.md](docs/decisions-methode.md) |
+
+**Ce que le MVP ne fait pas :** pas de paiement en ligne ; pas de mise en relation avec des repreneurs ; pas de conseil
+juridique ou fiscal (le site l'indique : « Ne constitue pas un conseil juridique, fiscal ou financier ») ; pas
+d'entreprises étrangères (seuls les registres français sont interrogés).
+
+## Données synthétiques
+
+- Tous les chiffres de démonstration et de test sont **fictifs (synthétiques)** : [docs/DEMO.md](docs/DEMO.md), la
+  liasse `test/fixtures/liasse-fictive.pdf` / `.html` (« Atelier Exemple »), le dossier d'exemple « Menuiserie
+  Exemple » / nom de code « Projet Chêne » (`scripts/dossier-exemple.mjs`, SIREN 000000018, qui n'existe pas).
+- Exception : `test/fixtures/*.json` sont de **vraies réponses des API publiques gratuites**, enregistrées le
+  10/11/2026 pour tester la normalisation (`test/sources.test.js`, `test/rapprochement-sources.test.js`). Elles ne
+  contiennent que des données publiées.
+- En usage, l'application lit les vraies données publiques de l'entreprise saisie par le dirigeant.
 
 ## Installation locale
 
@@ -78,7 +115,7 @@ git clone https://github.com/Erosfragliola/passation.git && cd passation
 npm ci
 npm test                       # suite Vitest, sans réseau ni clé
 npm run i18n:check             # fichiers de traduction : mêmes clés dans les deux langues, aucune valeur vide
-cp .dev.vars.example .dev.vars # puis remplir les valeurs vous-même (fichier jamais commité)
+cp .dev.vars.example .dev.vars # puis remplir les valeurs vous-même (fichier jamais commité ; .env.example liste les mêmes noms)
 npm run db:migrate:local       # crée la base D1 locale (.wrangler/)
 npm run dev                    # http://127.0.0.1:8787 (anglais) et http://127.0.0.1:8787/fr/ (français)
 ```
@@ -129,7 +166,7 @@ lui-même (noms de fichiers, de dossiers, de fonctions et de variables) est en f
 npm test
 ```
 
-**671 tests Vitest** (49 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
+**695 tests Vitest** (50 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
 simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les API publiques sont simulés.
 
 - **Valorisation** : trois méthodes, passage VE → titres, cas limites (EBE négatif, comptes absents, un seul
@@ -139,7 +176,8 @@ simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les A
 - **Datapack** : un évaluateur de formules recalcule le classeur et le compare au moteur (il ne remplace pas une
   ouverture dans Excel).
 - **Connexion et droits d'accès** : codes, sessions, accès refusé au dossier d'un autre, secret serveur exigé.
-- **Sources publiques** : normalisation sur réponses réelles enregistrées (`test/fixtures/`), pannes 429 et 500.
+- **Sources publiques** : normalisation sur réponses réelles enregistrées (`test/fixtures/`), pannes 429 et 500 ;
+  rapprochement des chiffres retenus avec les comptes publiés (`test/rapprochement-sources.test.js`).
 - **Quotas** des traitements par Claude, anonymat du teaser, parcours guidé, contenus de la page d'accueil.
 - **Accès et parcours** (24-25/11/2026) : aucun montant sans session, compte créé et ouvert par code, parcours en
   deux temps, pont de l'EBE à la valeur des titres (valeurs calculées à la main), validation et « à revalider »,
@@ -150,6 +188,48 @@ simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les A
 
 Une part importante des tests porte sur la page d'accueil et son illustration (environ 140). Le nombre de tests ne
 prouve pas à lui seul la justesse d'une méthode financière : voir [docs/decisions-methode.md](docs/decisions-methode.md).
+
+## Contrôle des chiffres
+
+Chaque preuve que les chiffres clés sont justes, avec la commande pour la lancer :
+
+| Contrôle | Ce qu'il prouve | Commande |
+|---|---|---|
+| [scripts/reference-valorisation.py](scripts/reference-valorisation.py) | Référence Python indépendante du cas de test sur 3 ans (n'importe pas le code du site) ; valeurs attendues dans [docs/valorisation-calculs.md](docs/valorisation-calculs.md) | `python3 scripts/reference-valorisation.py` |
+| [docs/DEMO.md](docs/DEMO.md) et [test/demo.test.js](test/demo.test.js) | Le moteur redonne les valeurs attendues de la démonstration (multiples, DCF, synthèse) et les formules du datapack redonnent le moteur | `npx vitest run test/demo.test.js` |
+| [docs/verification-calcul.md](docs/verification-calcul.md) | Recalcul pas à pas de la ligne « EBITDA multiples » de DEMO.md, de la liasse à la valeur des titres : écart de 0 € | lire le document, puis `npx vitest run test/demo.test.js` |
+| [test/rapprochement-sources.test.js](test/rapprochement-sources.test.js) | Rapprochement avec les comptes publiés : sur six vraies réponses enregistrées, le CA, l'EBE et le résultat net retenus par l'application sont exactement ceux publiés (même année, en euros) | `npx vitest run test/rapprochement-sources.test.js` |
+| Évaluateur de formules du datapack ([src/documents/formules.js](src/documents/formules.js), testé dans [test/datapack.test.js](test/datapack.test.js)) | Le classeur Excel recalculé cellule par cellule redonne les résultats du moteur | `npx vitest run test/datapack.test.js` |
+| [src/valuation/controles.js](src/valuation/controles.js) (testé dans [test/controles.test.js](test/controles.test.js)) | Contrôles de cohérence de la saisie : bilan équilibré, CA publié, unités, variations suspectes | `npx vitest run test/controles.test.js` |
+
+## Équipe
+
+Rôles décrits par les contributions visibles (pull requests fusionnées, revues). Chaque membre a des commits et des
+pull requests sous son propre compte GitHub (`git shortlog -sne main` ; `gh pr list --state merged`). Les 42 pull
+requests fusionnées ont toutes été relues et approuvées par un autre membre avant la fusion (47 revues d'approbation sur ces 42 pull
+requests, au 27/11/2026).
+
+| Membre | GitHub | Contributions (PR fusionnées) | Revues (PR fusionnées) |
+|---|---|---|---|
+| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Propriétaire du dépôt et mise en ligne ; page d'accueil (#2, #4, #9, #11) ; une seule police sur le site (#34) ; corrections de cohérence du parcours (#36) ; finitions du mémorandum après avoir testé le site (#38, #41) ; fichier du modèle financier sur 36 mois (commit 8fd50bb, dans #42) | 23 |
+| Maxime Parrinello | [@maximeparrinello-creator](https://github.com/maximeparrinello-creator) | Parcours avec une seule valeur et une seule liste d'étapes (#15) ; nettoyage du code mort (#17, #26) ; site bilingue, anglais par défaut (#27) ; partie modèle économique et prévisions à 3 ans du business plan (#42) | 1 |
+| Victoire Jacob | [@Victoirejacob](https://github.com/Victoirejacob) | Correctifs d'audit et préparation du rendu EDHEC (#1) ; teaser anonyme (#12) ; direction artistique de l'espace (#13, #20) ; réparations de main après des fusions (#16, #24) ; mise en page du datapack (#25) ; en-têtes de sécurité et pages légales (#28) ; parcours d'analyse guidé (#29, #30) ; suite du site bilingue (#31) | 20 |
+| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Mémorandum (#5, #35, #37) ; étapes illustrées de l'accueil (#7) ; page du dossier et parcours en 5 étapes (#8, #10) ; noms de code et correctifs d'audit (#14) ; réparations de main (#19, #23) ; dépôt des pièces (#21) ; une seule police dans les livrables (#33) ; parcours allégé (#43) | 3 |
+| Mohamed Reda Aboualam | [@raboualam22](https://github.com/raboualam22) | Parcours v2 : compte sécurisé, valorisation d'abord, photos guidées, traduction anglaise (#39) ; connexion par code seul (#40) | 0 |
+
+## Livrables (où les trouver)
+
+| Exigence EDHEC | Où |
+|---|---|
+| Site en ligne | https://passation.eros-fragliola-freedom.workers.dev |
+| Code | ce dépôt (`src/`, `public/`, `migrations/`) |
+| Business plan | [docs/livrables/business-plan.pdf](docs/livrables/business-plan.pdf) (source : `business-plan.html`) |
+| Modèle financier | [docs/livrables/business-plan-model.xlsx](docs/livrables/business-plan-model.xlsx) |
+| Présentation | `docs/livrables/presentation.pptx` et `presentation.pdf` (ajoutés dans une PR séparée) |
+| Usage de l'IA | [AI-USAGE.md](AI-USAGE.md) |
+| Tests et contrôle des chiffres | [Tests](#tests) et [Contrôle des chiffres](#contrôle-des-chiffres) ci-dessus ; `npm test` |
+| Variables d'environnement sans secret | [.env.example](.env.example) (mêmes noms que `.dev.vars.example`) |
+| Scénario de démonstration | [docs/DEMO.md](docs/DEMO.md) |
 
 ## Architecture
 
@@ -189,8 +269,7 @@ Cloudflare Worker (src/)
 - Conventions à arbitrer : décotes appliquées à la valeur d'entreprise, crédit-bail compté dans la dette nette sans
   retraitement de l'EBE ([docs/decisions-methode.md](docs/decisions-methode.md)).
 - Le datapack est vérifié par un évaluateur de formules interne, pas par Excel.
-- Pages légales en brouillon (éditeur, contact, hébergement « À compléter ») ; suppression du compte non disponible.
-- Pas d'en-têtes CSP ni `frame-ancestors` sur les pages.
+- Pages légales en brouillon (éditeur, contact et hébergement pas encore renseignés) ; suppression du compte non disponible.
 
 ## Mise en ligne (propriétaire du compte Cloudflare)
 
@@ -204,8 +283,9 @@ npm run deploy
 ## Documentation et livrables
 
 - [AI-USAGE.md](AI-USAGE.md) : usage de l'IA, contrôles humains, erreurs détectées.
-- [docs/livrables/](docs/livrables/) : brouillons du business plan et de la présentation, et modèle financier sur
-  36 mois (`business-plan-model.xlsx`, trois scénarios).
+- [docs/livrables/](docs/livrables/) : business plan, modèle financier sur 36 mois (`business-plan-model.xlsx`, trois
+  scénarios) et état des livrables.
+- [docs/verification-calcul.md](docs/verification-calcul.md) : recalcul pas à pas de la valorisation de démonstration.
 - [docs/DEMO.md](docs/DEMO.md) : scénario de démonstration.
 - [docs/decisions-methode.md](docs/decisions-methode.md) : conventions de valorisation à arbitrer.
 - [docs/valorisation-calculs.md](docs/valorisation-calculs.md) : calculs de référence.

@@ -733,3 +733,16 @@ model to be defined later by the user (business plan in progress).
   - Home page: 300 words at most in French; sections that repeated an argument removed (confidentiality, final call,
     sources band, hero bubbles, duplicate documents list).
   - Pure functions tested: `public/js/dette-elements.js`, `retraitements-cartes.js`, `prochaineEtape`. Tests: 671.
+- **27/11/2026, branch `remise-finale`** (PR reviewed by the team, not merged by its author, nothing deployed), final
+  submission documents; no change to `src/`, `public/`, `migrations/`, `wrangler.toml` or `package.json`:
+  - README (both languages): « Who it is for », « Free data and APIs » (terms of use checked in `src/lib/requete.js`),
+    « Assumptions », « Synthetic data », « Number checks », « Team » (from merged PRs and reviews), « Deliverables
+    (where to find them) »; CSP limitation removed (the headers exist); installation checked on a fresh clone.
+  - `test/rapprochement-sources.test.js`: retained revenue, EBITDA and net income reconciled with the published
+    accounts on the six recorded real responses. `docs/verification-calcul.md`: step-by-step recalculation of the
+    demonstration valuation (€0 difference).
+  - `.env.example`; outdated presentation draft (HTML and PDF) removed; `docs/livrables/README.md` status table.
+  - Business plan final (11 pages of body): sourced market (Bpifrance Le Lab study via Bpifrance Création),
+    competitors with public prices, SDG target 9.3, transformation, controls, « Sources » appendix; section 4.4
+    unchanged. `AI-USAGE.md`: facts proven in the repository only.
+  - Left for a separate PR: the presentation (`docs/livrables/presentation.pptx` and `.pdf`). Tests: 695.

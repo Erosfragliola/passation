@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Passation · Business plan (draft)</title>
+<title>Passation · Business plan</title>
 <style>
   @page { size: A4; margin: 18mm 18mm 20mm; }
   /* Police unique (23/11/2026) : Geist, fichier variable du site (graisses 100 à 900), embarqué dans le PDF. Titres en
@@ -19,7 +19,8 @@
   h2 { font-size: var(--titre-3); color: var(--vert); border-bottom: 1.5px solid var(--vert); padding-bottom: 1.5mm; margin: 9mm 0 3mm; break-after: avoid; }
   h3 { font-size: var(--titre-4); line-height: 1.05; margin: 5mm 0 2mm; break-after: avoid; }
   p, li { orphans: 3; widows: 3; }
-  table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.5pt; break-inside: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9.5pt; break-inside: auto; }
+  tr { break-inside: avoid; }
   th, td { border: 1px solid #b9ad97; padding: 1.6mm 2mm; text-align: left; vertical-align: top; }
   th { background: var(--sable); }
   .couverture { height: 245mm; display: flex; flex-direction: column; justify-content: center; break-after: page; }
@@ -38,6 +39,12 @@
   .tunnel .etape strong { display: block; font-size: 10.5pt; color: var(--vert); }
   .tunnel .fleche { flex: 0 0 auto; align-self: center; padding: 0 1.5mm; font-size: 8.5pt; color: var(--gris); text-align: center; line-height: 1.2; }
   .source { font-size: 8.5pt; color: var(--gris); margin: -2mm 0 4mm; }
+  figure { margin: 3mm 0 4mm; break-inside: avoid; }
+  figure img { display: block; max-width: 100%; max-height: 60mm; width: auto; margin: 0 auto; border: 1px solid #b9ad97; }
+  figure.duo { display: flex; gap: 4mm; align-items: flex-start; }
+  figure.duo > div { flex: 1; }
+  figcaption { font-size: 8.5pt; color: var(--gris); margin-top: 1.5mm; }
+  ol.sources li { margin-bottom: 1mm; font-size: 9pt; overflow-wrap: anywhere; }
 </style>
 </head>
 <body>
@@ -45,21 +52,21 @@
 <section class="couverture">
   <h1>Passation</h1>
   <p class="sous">Preparing the sale of your SME, from the first estimate to the file handed to buyers</p>
-  <p><strong>Business plan, working draft of 18/11/2026</strong></p>
-  <p>Course "Programming and AI for Corporate Finance", EDHEC Business School. Due on December 1, 2026.</p>
-  <p>Team: <span class="a-completer">To be completed: names, roles</span></p>
-  <div class="bandeau"><strong>Draft prepared with Claude Code, to be rewritten by the team.</strong> The facts about the product can
-  be checked in the repository. No market data, price or testimonial has been invented: each "To be completed" passage
-  requires a cited and dated source, or a decision by the team. The use of AI for this document must be recorded in
-  AI-USAGE.md.</div>
+  <p><strong>Business plan, 1 December 2026</strong></p>
+  <p>Course "Programming and AI for Corporate Finance", EDHEC Business School.</p>
+  <p>Team: Eros Fragliola, Maxime Parrinello, Victoire Jacob, Ethan Barris, Mohamed Reda Aboualam (contributions in
+  section 5.2).</p>
+  <p class="petit">This document was written with the help of Claude Code; the use of AI, the human checks and the
+  errors found are recorded in AI-USAGE.md, at the root of the repository. Every figure has its source in the
+  « Sources » appendix (section 10.2); estimates by the team are labelled as such.</p>
   <p class="petit">Live product: https://passation.eros-fragliola-freedom.workers.dev · Code: https://github.com/Erosfragliola/passation</p>
 </section>
 
 <h2>1. Summary</h2>
 <p>Passation is a web application that helps the owner of a French SME prepare the sale of their company. From the
-SIREN number alone (the French company ID), it gives a first value range drawn from public data. It then guides the
-owner to the documents a buyer expects: a valuation using several methods, an Excel datapack with checkable formulas,
-an anonymized teaser and an information memorandum.</p>
+SIREN number (the French company ID) and a verified account, it gives a first value range drawn from public data. It
+then guides the owner to the documents a buyer expects: a valuation using several methods, an Excel datapack with
+checkable formulas, an anonymized teaser and an information memorandum.</p>
 <p>The approach: <strong>code calculates, AI drafts, the owner approves</strong>. Valuations are deterministic, tested
 code, based on sourced and dated assumptions. Claude reads documents (tax return, website) and drafts text, but every
 amount read and every fact found must be approved by the owner.</p>
@@ -67,7 +74,10 @@ amount read and every fact found must be approved by the owner.</p>
 signs a finder's mandate (Report free, 2% commission on the sale, at least €10,000). In the Base scenario of the
 financial model, revenue reaches <strong>€722,950 in year 3 (2029)</strong>, of which <strong>49.8% from
 commissions</strong> (section 4.4).</p>
-<div class="a-completer">To be completed: the team's 12-month goal (pilot, targets, indicators) and any request (funding, partners).</div>
+<p><strong>12-month goal</strong>: the goal of the financial model for 2027 (Base scenario, first year of the model):
+105 Full Reports, 17 mandates, 1 completed sale, <strong>€119,250 of revenue</strong>. <strong>What we ask</strong>: no
+fundraising (the model has none: equity fundraising €0, share capital €10,000); partner chartered accountants for the
+pilot (section 9).</p>
 
 <h2>2. Problem (criterion A1)</h2>
 <h3>2.1 What an owner who wants to sell goes through</h3>
@@ -78,46 +88,81 @@ commissions</strong> (section 4.4).</p>
   documents) take time and financial skills that they do not always have.</li>
   <li>The basic figures are already public (registries, filed accounts), but scattered and hard to use as they are.</li>
 </ul>
-<div class="a-completer">To be completed with cited sources: number of SME owners of an age to hand over their
-business, number of sales per year, share of handovers that fail or do not go through, usual cost and length of a sale
-mandate. Look for dated public studies (official statistics, business transfer observatories, studies by banks or
-support networks); give no figure without a reference.</div>
+<p>The size of the problem in France, according to the study by Bpifrance Le Lab with CCI France, CMA France and the
+C.R.A (« Transmission et reprise d'entreprise : perspectives de marché et facteurs clés de succès », November 2025),
+as reported by Bpifrance Création [1][3]:</p>
+<ul>
+  <li><strong>370,000</strong> French companies with 1 to 4,999 employees could be transferred by 2030 [1][3];</li>
+  <li><strong>40%</strong> of the owners of very small, small and mid-sized companies (TPE, PME and ETI) intend to
+  transfer their company within five years (survey of nearly 5,000 owners) [1][3];</li>
+  <li>only <strong>26,000</strong> transfers were completed in 2024, against an annual potential of
+  <strong>74,000</strong> [1]; at the current pace, only 130,000 companies would be transferred in five years [3];</li>
+  <li><strong>70%</strong> of the owners who plan a transfer more than a year ahead have not started preparing it,
+  while a minimum of 12 to 18 months is generally needed [1].</li>
+</ul>
 <h3>2.2 Evidence of the problem</h3>
-<div class="a-completer">To be completed: interviews actually conducted (number, profiles, date, findings), with the
-consent of the people involved. No testimonial may be invented or rephrased beyond what was said.</div>
+<p>The team did not conduct structured interviews before the submission. They are the first step of the pilot
+(section 9): about 15 interviews (owners aged 55 or more who are considering a sale, chartered accountants, M&amp;A
+advisors), on how they value the company today, what the preparation costs them in time and fees, and what they would
+accept to delegate to a tool. Until then, the evidence of the problem rests on the Bpifrance study above: the gap
+between 74,000 possible and 26,000 completed transfers a year, and the lack of preparation of most owners [1].</p>
 
 <h2>3. Solution and evidence that it works (A1, B1)</h2>
 <table>
   <tr><th>Step</th><th>What Passation does</th><th>Safeguard</th></tr>
-  <tr><td>Quick estimate</td><td>SIREN or name → identity (business directory), published accounts (INPI/BCE ratios), events (BODACC) → value range based on the industry's EBITDA multiples</td><td>No figure shown without a sourced multiple and a positive EBITDA; API outage reported as such</td></tr>
+  <tr><td>Quick estimate</td><td>SIREN or name → public card (business directory, INPI/BCE ratios, BODACC); once the account is verified by a code sent by email → value range based on the industry's EBITDA multiples</td><td>No amount sent by the server without a session; no figure without a sourced multiple and a positive EBITDA; API outage reported as such</td></tr>
   <tr><td>Accounts</td><td>Reading of a PDF tax return by Claude, or entry of about ten amounts; automatic checks (balanced balance sheet, published revenue, unit, change)</td><td>Amounts proposed, never approved automatically; incomplete fiscal year left out</td></tr>
   <tr><td>Valuation</td><td>EBITDA multiples, 5-year DCF (WACC, Gordon-Shapiro), ANCC (adjusted book net assets) as a floor, adjustments (owner, rent, one-off items), discounts, EV → equity bridge, sensitivities</td><td>Deterministic code; sourced, editable assumptions; out-of-range settings rejected</td></tr>
   <tr><td>Datapack</td><td>9-tab Excel workbook with live formulas</td><td>Formulas recalculated in tests and compared with the engine</td></tr>
   <tr><td>Teaser</td><td>Anonymous presentation drafted by Claude from facts anonymized by the code</td><td>Anonymity check: name, city, SIREN, exact amounts, brands rejected</td></tr>
-  <tr><td>Memorandum</td><td>9 chapters drafted only from approved answers, approved website facts, sourced market research</td><td>"To be completed" when information is missing; a market fact is kept only if its source was actually consulted</td></tr>
+  <tr><td>Memorandum</td><td>9 chapters drafted only from approved answers, approved website facts, sourced market research</td><td>A chapter with missing information is flagged as such; a market fact is kept only if its source was actually consulted</td></tr>
 </table>
-<p><strong>Checkable evidence</strong>: live application; 356 automated tests run again on every push (GitHub
-Actions); two valuation cases whose expected values were calculated separately, in Python (docs/valorisation-calculs.md,
-docs/DEMO.md); reproducible demonstration scenario with an entirely fictitious tax return.</p>
+<figure class="duo">
+  <div><img src="../captures/business-plan/product-your-value.png" alt="Your value screen">
+  <figcaption>« Your value »: the bridge from EBITDA to the value of the shares, line by line, approved by the owner.
+  Fictitious demonstration file.</figcaption></div>
+  <div><img src="../captures/business-plan/product-file-documents.png" alt="File page with the four documents">
+  <figcaption>The file page: value, next step and the four documents (valuation, Excel datapack, anonymous teaser,
+  memorandum). Fictitious demonstration file.</figcaption></div>
+</figure>
+<p><strong>Checkable evidence</strong>: live application; 695 automated tests run again on every push (GitHub
+Actions); valuation cases whose expected values were calculated separately (Python reference, step-by-step
+recalculation); reconciliation with the published accounts (section 8); reproducible demonstration scenario with an
+entirely fictitious tax return.</p>
 
-<h2 class="saut">4. Users, market and business model (A2)</h2>
-<h3>4.1 Users</h3>
+<h2>4. Users, market and business model (A2)</h2>
+<h3>4.1 Users and priority segment</h3>
 <ul>
   <li><strong>Main user</strong>: owner-manager of a French SME considering a sale in the coming years.</li>
-  <li><strong>Possible referrers</strong>: accountant (the datapack lets them check every formula), M&amp;A advisor,
+  <li><strong>Referrers</strong>: chartered accountant (the datapack lets them check every formula), M&amp;A advisor,
   support networks.</li>
   <li><strong>Readers of the documents</strong>: buyers (managers, funds, industrial groups), banks.</li>
 </ul>
-<div class="a-completer">To be completed: priority segment (size, industry, region) justified by the interviews.</div>
+<p><strong>Priority segment, a choice of the team</strong> deduced from the product and the sources, not from a
+statistic of our own: French SMEs with published accounts and a positive EBITDA, whose owner prepares a sale, with a
+sale value around the €1.5M used as the average deal value of the financial model (section 4.4). They belong to the
+370,000 transferable companies and to the 40% of owners who intend to transfer within five years [1][3]; published
+accounts let the product give a first value from the SIREN alone.</p>
 <h3>4.2 Market</h3>
-<div class="a-completer">To be completed with cited sources: size of the addressable market (number of SME sales per
-year, number of SMEs by revenue band), current spending on sale advisory, existing solutions (advisory firms, matching
-platforms, online valuation tools) and their positioning. No figure without a dated reference.</div>
+<p>Volume: about <strong>74,000 transfers possible each year</strong>, of which 26,000 completed in 2024 [1].</p>
+<p><strong>Order of magnitude, an estimate by the team</strong>: 74,000 possible transfers a year × €850 excl. VAT
+(price of the Full Report) ≈ <strong>€62.9M a year</strong>. It is an upper bound for the Report alone (one Report per
+possible transfer, no commission). The 427 Reports of the Base scenario in 2029 represent about <strong>0.6%</strong>
+of these 74,000 (427 / 74,000 = 0.58%). No public source on the usual cost and length of a sale mandate was found and
+opened; the only time reference retained is the 12 to 18 months of preparation [1].</p>
 <h3>4.3 Competition and differentiation</h3>
-<p>Differences specific to the product, which can be checked: valuation by tested code and not by a language model;
-sourced assumptions shown to the owner; Excel datapack with live formulas; automatically checked teaser; first
-estimate without an account.</p>
-<div class="a-completer">To be completed: comparison table of real competitors, with sources.</div>
+<table>
+  <thead><tr><th>Solution</th><th>What it does</th><th>Public price</th><th>Difference with Passation</th><th>Source</th></tr></thead>
+  <tr><td>Fusacq</td><td>Online platform of company sale and acquisition listings</td><td>Listing: free; priority display €2 excl. VAT per day; introduction €45 to €60 excl. VAT</td><td>Finds a buyer, does not prepare the valuation or the documents</td><td>[6], 27/11/2026</td></tr>
+  <tr><td>Transentreprise (CCI and CMA network)</td><td>Listings of businesses for sale, through the seller's chamber of commerce or crafts advisor</td><td>Not public</td><td>Listing and advice by a person; no automatic valuation or documents</td><td>[7], 27/11/2026</td></tr>
+  <tr><td>Manageo</td><td>Company valuation report based on the last published balance sheet</td><td>€129 excl. VAT</td><td>Valuation from public accounts only; no owner's adjustments, no teaser or memorandum</td><td>[8], 27/11/2026</td></tr>
+  <tr><td>Nexco Expertise (chartered accountant firm)</td><td>Free online tool; valuation report; full valuation mission</td><td>Report €490 excl. VAT; mission €3,500 to €12,000 excl. VAT</td><td>A human expert, at a higher price; Passation prepares the file the expert can review</td><td>[9], 27/11/2026</td></tr>
+  <tr><td>Hayot Expertise (chartered accountant firm)</td><td>Short-form valuation opinion or full valuation report</td><td>Opinion from €800 excl. VAT; full report from €2,500 excl. VAT (revenue below €2M)</td><td>Same as above</td><td>[10], 27/11/2026</td></tr>
+  <tr><td>CCI Paris Île-de-France, « Accompagnement Premium Cession »</td><td>One-year support of the seller by the chamber of commerce</td><td>On quote (not public)</td><td>Human support; Passation is a tool for the owner and their advisor</td><td>[11], 27/11/2026</td></tr>
+</table>
+<p>Differences specific to the product, which can be checked in the repository: valuation by tested code and not by a
+language model; sourced assumptions shown to the owner; Excel datapack with live formulas; automatically checked
+teaser; the four documents produced from the same approved figures.</p>
 <h3>4.4 Business model</h3>
 <p>Cost structure known to date:</p>
 <table>
@@ -202,100 +247,150 @@ marketing cost, acquisition is profitable.</p>
   prices)" (Read Me). The full table of assumptions is in section 10.</li>
 </ul>
 
-<h2 class="saut">5. Organizational transformation (A3, LO5)</h2>
+<h3>4.5 Assumptions</h3>
+<p>The same assumptions are written in the README of the repository (« Assumptions »). Amounts are in euros (EUR).
+Only French companies, identified by their SIREN, are covered. A fiscal year is a closed accounting year; at most three
+fiscal years are used, the latest one complete, the earlier ones kept for their income statement. Industry multiples
+are dated and sourced [13]; an industry without a sourced multiple shows no figure. The valuation assumptions (risk-free
+rate, risk premium, cost of debt, betas, corporate income tax, perpetual growth) are sourced and dated [14]. The MVP
+does no online payment, no matchmaking with buyers, no legal or tax advice, and does not cover foreign companies. The
+assumptions of the financial model are in section 10.1.</p>
+
+<h2>5. Organizational transformation (A3, LO5)</h2>
 <h3>5.1 For the seller and their advisors</h3>
+<p><strong>Desirable future state.</strong> In an organization that adopts the tool (the owner's company and the
+accounting or advisory firm that supports it), the preparation of a sale changes in people, roles, controls and
+decisions, not only in speed:</p>
 <ul>
-  <li><strong>From a "paper" file to a living file</strong>: the approved figures feed the valuation, the datapack,
-  the teaser and the memorandum at once; a correction flows through everywhere.</li>
-  <li><strong>New division of roles</strong>: Passation prepares (reading, calculation, first draft); the owner
-  approves line by line; the accountant or advisor checks the formulas and sets the assumptions (size premium,
-  discounts) with their written justification.</li>
-  <li><strong>Traceability</strong>: each assumption has its source and date; each amount, its origin (public
-  accounts, tax return, manual entry); each changed setting is tracked.</li>
-  <li><strong>Confidentiality</strong>: first estimate without an account; teaser anonymized before any contact.</li>
+  <li><strong>The owner</strong> starts the file early and confidentially (account verified by email, teaser
+  anonymized before any contact), answers questions in their own words and <strong>approves every amount and every
+  fact</strong> before it reaches a document. They decide on the knowledge of a reasoned range, not of a single
+  figure.</li>
+  <li><strong>The chartered accountant</strong> moves from re-keying the accounts to <strong>reviewing</strong>: they
+  check the datapack formulas, the adjustments (owner's pay, rent, one-off items) and the conventions, and set the
+  assumptions that have no public source (size premium, discounts) with a written justification.</li>
+  <li><strong>The M&amp;A advisor or the bank</strong> receives a file in the expected format, with every assumption
+  sourced and dated and every amount traced to its origin (public accounts, tax return, manual entry), and spends
+  their time on the buyers and the negotiation.</li>
+  <li><strong>Controls</strong>: the calculation is deterministic and tested; AI never sets a value; a change in the
+  figures sets the valuation back to « to approve again ». The approved figures feed the four documents at once, so
+  a correction flows through everywhere.</li>
 </ul>
-<div class="a-completer">To be completed: conditions for adoption (training, trust, the advisor's liability),
-expected resistance and how to overcome it, success indicators for a pilot.</div>
+<p><strong>Conditions for adoption.</strong> Trust: the method and its sources are visible, and the datapack can be
+recalculated in Excel. Responsibility: the documents say they are indicative and non-binding; the chartered
+accountant keeps the responsibility for the figures they validate, so the tool must leave them the last word.
+Mentions: every document carries its disclaimer and the date of the data. Training: a short session for the partner
+firm on the method, the conventions (docs/decisions-methode.md) and the review of the datapack.</p>
+<p><strong>Expected resistance and answers.</strong> « A tool cannot value my company »: the tool does not decide, it
+prepares a reasoned range that the owner and their advisor adjust. « My accountant does this already »: the tool is
+offered to the accountant as a preparation aid, and keeps their review. « My data will leak »: no amount without a
+session, anonymity check on the teaser, one-click deletion of the file. « AI makes mistakes »: AI reads and drafts
+only; every amount and fact is approved, and the numbers are checked by tests (section 8).</p>
+<p><strong>Success indicators for a pilot</strong> (to be measured with the partner firms, section 9):</p>
+<ul>
+  <li>time to prepare a file before and after (hours declared by the firm for a comparable file, against the time
+  between the creation of the file and the generation of the documents);</li>
+  <li>share of the amounts read by AI that the owner corrects before approval;</li>
+  <li>share of files reviewed by a chartered accountant before being sent to a buyer.</li>
+</ul>
 <h3>5.2 Within the project team: working with a coding assistant</h3>
-<ul>
-  <li>Written rules for the assistant (CLAUDE.md), step-by-step plan with demonstration and approval (PLAN.md).</li>
-  <li>Code calculates, AI drafts; regression tests and separate reference calculations.</li>
-  <li>Audit, then fixes through a Pull Request reviewed by another team member.</li>
-</ul>
-<div class="a-completer">To be completed by the team: actual division of the work, what AI changed in the way you
-work, the errors you detected yourselves (see AI-USAGE.md).</div>
+<p>Contributions visible in the repository (merged pull requests, reviews; details per pull request in the « Team »
+section of the README). <strong>Eros Fragliola</strong>: repository owner and deployment, home page, memorandum
+finishing after testing the site (PR #41), financial model file (PR #42), 23 reviews. <strong>Maxime
+Parrinello</strong>: guided flow, bilingual site (PR #27), business model section of this plan (PR #42).
+<strong>Victoire Jacob</strong>: audit fixes, teaser, datapack layout, security headers and legal pages (PR #28), 20
+reviews. <strong>Ethan Barris</strong>: memorandum, file page, lighter owner's path (PR #43). <strong>Mohamed Reda
+Aboualam</strong>: flow v2 with a secure account and English translation (PR #39), sign-in by code only (PR #40).</p>
+<p>Way of working with Claude Code: written rules for the assistant (CLAUDE.md: no invented data, code calculates and
+AI drafts, secrets never in the repository); a dated plan and log (PLAN.md); each member works in their own session
+and opens pull requests under their own account; every pull request is reviewed and approved by another member before
+merging (47 reviews on the 42 pull requests merged as of 27/11/2026); tests run on every push.</p>
 
 <h2>6. Systemic view, risks and SDG 9 (A4, LO6)</h2>
 <h3>6.1 Stakeholders</h3>
 <table>
   <tr><th>Stakeholder</th><th>Stake</th><th>What Passation does</th></tr>
-  <tr><td>Selling owner</td><td>Value, confidentiality, time</td><td>Estimate without an account, ready documents, one-click deletion of the file</td></tr>
+  <tr><td>Selling owner</td><td>Value, confidentiality, time</td><td>Account verified by a code sent by email, no amount without a session, ready documents, one-click deletion of the file</td></tr>
   <tr><td>Buyers</td><td>Reliable, comparable information</td><td>Approved figures, sourced assumptions, checkable datapack</td></tr>
-  <tr><td>Employees, customers, local area</td><td>Continuity of the company</td><td>To be completed: expected effect of a better-prepared handover (source required)</td></tr>
+  <tr><td>Employees, customers, local area</td><td>Continuity of the company</td><td>A better-prepared sale; for scale, 770,000 employees were concerned by the sale of an SME or mid-sized company in France in 2016 (BPCE L'Observatoire 2019, as reported by [1])</td></tr>
   <tr><td>Accountants, advisors</td><td>Liability, role</td><td>Preparation tool, not a substitute for advice (disclaimers on every document)</td></tr>
   <tr><td>Technical suppliers</td><td>Availability, cost</td><td>Cache, retries, quotas, calculation works without AI</td></tr>
 </table>
 <h3>6.2 Risks and controls</h3>
 <table>
-  <tr><th>Risk</th><th>Control in place</th><th>Remaining limitation</th></tr>
-  <tr><td>Wrong value (method or entry error)</td><td>Tested code, two reference cases, checks on the accounts, incomplete fiscal years left out, bounded settings</td><td>Conventions to be decided (discounts, lease financing): docs/decisions-methode.md</td></tr>
-  <tr><td>AI hallucination</td><td>AI does not calculate; amounts and facts to be approved; market sources checked; "To be completed"</td><td>Human review is still necessary</td></tr>
+  <thead><tr><th>Risk</th><th>Control in place</th><th>Remaining limitation</th></tr></thead>
+  <tr><td>Wrong value (method or entry error)</td><td>Tested code, reference cases, reconciliation with the published accounts, checks on the accounts, incomplete fiscal years left out, bounded settings</td><td>Conventions to be decided (discounts, lease financing): docs/decisions-methode.md</td></tr>
+  <tr><td>AI hallucination</td><td>AI does not calculate; amounts and facts to be approved; market sources checked; missing data flagged, never filled in</td><td>Human review is still necessary</td></tr>
   <tr><td>Data leak, anonymity</td><td>Hashed codes, tested access rights, anonymity check, file deletion</td><td>Account deletion not available; legal pages in draft</td></tr>
   <tr><td>API cost</td><td>Quotas per user, cap on the number of files</td><td>Spending cap to be set at Anthropic</td></tr>
   <tr><td>Dependence on public APIs</td><td>24-hour cache, retries, outage reported</td><td>Possible unavailability during a demonstration</td></tr>
   <tr><td>Liability (financial advice)</td><td>"Indicative, non-binding" disclaimer on every document</td><td>Legal framework to be validated by a professional</td></tr>
   <tr><td>Dependence on completed sales (business model)</td><td>49.8% of year-3 revenue in Base comes from commissions, paid only when a sale is signed; the model applies a closing rate (30% in Base) and a 9-month lag, and Reports bring revenue from month 1</td><td>In the Conservative scenario no sale closes in 2029; a longer lag or a lower closing rate pushes commissions out of the 3-year horizon</td></tr>
   <tr><td>Conversion to the paid Report</td><td>Rate tested in three scenarios: 1.5%, 2.5% and 3.5% of free estimates</td><td>No measured rate yet: the online version is free during the test phase; year-3 revenue ranges from €48,450 to €3,005,900 across scenarios</td></tr>
-  <tr><td>Legal framework of the finder's mandate</td><td>Law no. 70-9 of 2 January 1970 ("Hoguet law"), art. 1 (in force since 27/03/2014), covers anyone who habitually takes part, even as a sideline, in the sale of a business (<em>fonds de commerce</em>, 2°) or of non-tradable shares of a company owning a building or a business (5°). Légifrance, accessed 26/11/2026</td><td>To be completed: whether Passation's mandate falls within this law and which status it requires, to be confirmed by a lawyer before any mandate is signed</td></tr>
+  <tr><td>Legal framework of the finder's mandate</td><td>Law no. 70-9 of 2 January 1970 ("Hoguet law"), art. 1 (in force since 27/03/2014), covers anyone who habitually takes part, even as a sideline, in the sale of a business (<em>fonds de commerce</em>, 2°) or of non-tradable shares of a company owning a building or a business (5°) [12]</td><td>The qualification of Passation's mandate must be validated by a lawyer before any launch; until then, the online version offers neither mandate nor payment</td></tr>
 </table>
 <h3>6.3 Contribution to SDG 9</h3>
-<p>Target 9.3 of the United Nations Sustainable Development Goals aims to increase the access of small-scale industrial
-and other enterprises, in particular in developing countries, to financial services and their integration into value
-chains and markets. Passation's link to it is <strong>indirect</strong>, and it must be presented as such. The tool
-gives a French SME access to a sale preparation that today only companies able to pay an advisor obtain: a free first
-valuation and documents in the format expected by buyers and banks. It thus contributes to the continuity of
-companies, including industrial ones.</p>
-<div class="a-completer">To be completed: measurable indicators (files prepared, sales completed, jobs kept), method
-of measurement, and link with target 9.3 checked in the official United Nations text (cite the source and the date
-accessed).</div>
+<p>Target 9.3 of the United Nations Sustainable Development Goals: « Increase the access of small-scale industrial and
+other enterprises, in particular in developing countries, to financial services, including affordable credit, and
+their integration into value chains and markets » [5]. Passation's link to it is <strong>indirect and modest</strong>:
+France is not a developing country, and the tool does not provide credit. It gives a French SME a sale preparation
+that otherwise means paying an expert (from €490 to €12,000 excl. VAT at the firms of section 4.3), and documents in
+the format expected by buyers and banks, which can help a sale, and its financing, go through. Three measurable indicators:</p>
+<table>
+  <tr><th>Indicator</th><th>Method of measurement</th></tr>
+  <tr><td>Files prepared</td><td>Number of files whose valuation was approved by the owner, counted in the application's database each quarter</td></tr>
+  <tr><td>Sales completed</td><td>Number of files whose sale was signed, declared by the owner or the partner firm in a follow-up questionnaire 12 months after the file is created</td></tr>
+  <tr><td>Jobs in the companies transferred</td><td>Headcount band of each company whose sale was completed, read in the public business directory (the same source as the public card), summed per year</td></tr>
+</table>
 
-<h2 class="saut">7. Product and data (B1, B2)</h2>
+<h2>7. Product and data (B1, B2)</h2>
 <ul>
   <li><strong>Free data</strong>: Company search API, ratios_inpi_bce dataset (data.economie.gouv.fr), BODACC; ECB,
-  Banque de France, Damodaran and service-public.fr assumptions; multiples from a cross-check of four free
-  publications (src/data/multiples-sources.json).</li>
+  Banque de France, Damodaran and service-public.fr assumptions [14]; multiples from a cross-check of four free
+  publications [13]. Calls identify the application (User-Agent), are cached for 24 hours and are retried with spaced
+  attempts on a 429 response.</li>
   <li><strong>Processing</strong>: normalization based on recorded real responses (test/fixtures); confidential fiscal
   years, duplicate fiscal years and outages handled explicitly.</li>
-  <li><strong>Point to be confirmed with the professor</strong>: the Claude API is paid; the value calculation and the
-  datapack work without it.</li>
+  <li><strong>Paid service</strong>: the data is free and public. The Claude API is paid per use and serves only to
+  read and draft. The valuation and the datapack work without it, and a simulated Claude runs the whole flow without
+  any key.</li>
 </ul>
 
 <h2>8. Tests and checking of the calculations (B3)</h2>
 <ul>
-  <li>356 automated tests: three methods, EV → equity bridge, edge cases (negative EBITDA, missing accounts, incomplete
-  fiscal year, net cash, WACC ≤ g, out-of-range settings), datapack, access rights, API outages, quotas.</li>
-  <li>Two reference cases calculated separately in Python. Limitation: they follow the same conventions as the engine.</li>
-  <li>The new tests were checked against the old code: they failed before the fix.</li>
+  <li><strong>695 automated tests</strong>: three methods, EV → equity bridge, edge cases (negative EBITDA, missing
+  accounts, incomplete fiscal year, net cash, WACC ≤ g, out-of-range settings), datapack, access rights, API outages,
+  quotas.</li>
+  <li><strong>Reconciliation with the published accounts</strong> (test/rapprochement-sources.test.js): on six real
+  responses of the public API, the revenue, EBITDA and net income retained by the application are exactly the published
+  ones, same year, in euros; the quick estimate multiplies the latest published EBITDA.</li>
+  <li><strong>Step-by-step recalculation</strong> (docs/verification-calcul.md): the three values of the demonstration
+  (€1,381,818 / €1,941,818 / €2,431,818) recalculated from the tax return to the value of the shares, with a €0
+  difference; reference cases calculated separately in Python. Limitation: they follow the conventions of the engine.</li>
+  <li><strong>Human checks proven in the repository</strong>: 47 reviews by another member on the 42 merged pull
+  requests; corrections requested by Eros Fragliola after reading the memorandum generated by the site (PR #41: earlier
+  fiscal years left out, « Oui, corriger » that did not apply); the balance-sheet check row of the financial model is
+  zero in all three years (PR #42).</li>
 </ul>
-<div class="a-completer">To be completed: checks done by hand or in Excel by the team (to be described honestly).</div>
 
 <h2>9. Roadmap and limitations</h2>
 <table>
-  <tr><th>Horizon</th><th>Item</th></tr>
-  <tr><td>Before submission</td><td>Decide the discount and lease financing conventions; complete the legal pages; review the sources</td></tr>
-  <tr><td>Afterwards</td><td>Account deletion, Word export of the memorandum, security headers, resource library and chat (not developed)</td></tr>
-  <tr><td>Business model</td><td>The online version is free during the test phase. Payment of the Full Report and the finder's mandate (contract, collection of the commission) are planned and not developed today; the legal framework of the mandate must be checked first (section 6.2)</td></tr>
+  <tr><th>Order</th><th>Item</th><th>When</th></tr>
+  <tr><td>1</td><td>Lawyer's opinion on the qualification of the finder's mandate (section 6.2)</td><td>Before month 1 of the model (January 2027)</td></tr>
+  <tr><td>2</td><td>Online payment of the Full Report</td><td>Before month 1 of the model (January 2027)</td></tr>
+  <tr><td>3</td><td>Pilot with partner chartered accountants and first structured interviews (section 2.2), with the indicators of section 5.1</td><td>From month 1 of the model</td></tr>
+  <tr><td>4</td><td>Account deletion and Word export of the memorandum (not developed today)</td><td>After the pilot</td></tr>
 </table>
-<div class="a-completer">To be completed: milestones, resources, pilot indicators.</div>
+<p>Current state: the site is online; the online version is free during the test phase; payment of the Full Report and
+the finder's mandate are planned and not developed. Remaining limitations: valuation conventions to be decided, legal
+pages in draft, DCF only with a size premium set by the owner.</p>
 
-<h2>10. Appendices</h2>
+<h2 class="saut">10. Appendices</h2>
 <ul>
-  <li>README.md (installation, architecture), docs/DEMO.md (scenario), docs/decisions-methode.md, AI-USAGE.md.</li>
+  <li>README.md (installation, architecture, assumptions, number checks), docs/DEMO.md (scenario),
+  docs/verification-calcul.md, docs/decisions-methode.md, AI-USAGE.md.</li>
   <li>Financial model: <code>docs/livrables/business-plan-model.xlsx</code> (36 months, three scenarios, active scenario
   chosen in the Assumptions tab, cell B8; saved with the Base scenario).</li>
-  <li>Légifrance, law no. 70-9 of 2 January 1970, article 1 (version in force since 27 March 2014), accessed 26/11/2026:
-  https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000028806892</li>
-  <li class="a-completer">To be completed: cited sources (numbered list, with dates accessed).</li>
 </ul>
 <h3>10.1 Assumptions of the financial model</h3>
 <p class="petit">Copied from the Assumptions tab of business-plan-model.xlsx; the comments are those of the model.</p>
@@ -354,5 +449,47 @@ accessed).</div>
 <tr><td>Salaried headcount (FTE)</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td>Founders unpaid in year 1</td></tr>
 <tr><td>Average gross monthly salary per FTE (€)</td><td class="n">0</td><td class="n">0</td><td class="n">0</td><td></td></tr>
 </tbody></table>
+<h3>10.2 Sources</h3>
+<ol class="sources">
+  <li>Bpifrance Création, « Quel est le marché de la reprise d'entreprise ? » (reports the study by Bpifrance Le Lab
+  with CCI France, CMA France and the C.R.A, « Transmission et reprise d'entreprise : perspectives de marché et
+  facteurs clés de succès », November 2025). https://bpifrance-creation.fr/moment-de-vie/quel-est-marche-reprise-dentreprise-aujourdhui,
+  accessed 27/11/2026.</li>
+  <li>Bpifrance Création, « Transmission d'entreprise : perspectives de marché et facteurs clés de succès »
+  (bibliography entry, Bpifrance Le Lab, 27/11/2025). https://bpifrance-creation.fr/observatoire/bibliographie/transmission-dentreprise-perspectives-marche-facteurs-cles-succes,
+  accessed 27/11/2026.</li>
+  <li>Bpifrance Création, « Un marché de 370 000 entreprises à reprendre d'ici 2030 », 27/11/2025.
+  https://bpifrance-creation.fr/entrepreneur/actualites/marche-370-000-entreprises-a-reprendre-dici-2030, accessed
+  27/11/2026.</li>
+  <li>Financial model of the team, docs/livrables/business-plan-model.xlsx (Summary, Assumptions, Drivers and Balance
+  Sheet tabs), Base scenario unless stated otherwise.</li>
+  <li>United Nations, Sustainable Development Goals, Goal 9, target 9.3. https://sdgs.un.org/goals/goal9, accessed
+  27/11/2026.</li>
+  <li>Fusacq, prices. https://www.fusacq.com/tarifs/tarifs.php_fr_, accessed 27/11/2026.</li>
+  <li>Transentreprise (CCI and CMA network). https://www.transentreprise.com/, accessed 27/11/2026.</li>
+  <li>Manageo, company valuation. https://www.manageo.fr/savoir/evaluations-_pid58.html, accessed 27/11/2026.</li>
+  <li>Nexco Expertise, company valuation (page updated April 2026). https://www.nexco-expertise.com/valorisation-entreprise,
+  accessed 27/11/2026.</li>
+  <li>Hayot Expertise, « Avis de valeur d'entreprise » (updated 28/09/2026). https://hayot-expertise.fr/blog/avis-de-valeur-entreprise,
+  accessed 27/11/2026.</li>
+  <li>CCI Paris Île-de-France, « Accompagnement Premium Cession ». https://www.entreprises.cci-paris-idf.fr/web/transmission/pack-premium-cedants,
+  accessed 27/11/2026.</li>
+  <li>Légifrance, law no. 70-9 of 2 January 1970, article 1 (version in force since 27 March 2014).
+  https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000028806892, accessed 26/11/2026.</li>
+  <li>Industry EBITDA multiples (src/data/multiples.json, src/data/multiples-sources.json), all accessed 10/11/2026:
+  Argos Index mid-market Q2 2026 (Argos Wityu / Epsilon Research), https://argos.fund/wp-content/uploads/2026/09/ARGOS-INDEX-Q2-2026_FR.pdf;
+  Dealsuite, Fusac France reports of February and August 2026, as reported by Capital Stack,
+  https://www.capitalstack.fr/blog/valoriser-pme-multiple-ebe-methode; Captain, « Multiples de valorisation par
+  secteur : le barème complet 2026 » (28/05/2026), https://captain.fr/blog/comptabilite/multiples-de-valorisation-par-secteur-bareme-2026;
+  A. Damodaran (NYU Stern), EV multiples by industry, Europe (05/01/2026),
+  https://pages.stern.nyu.edu/~adamodar/pc/datasets/vebitdaEurope.xls.</li>
+  <li>Valuation assumptions (src/data/hypotheses.json): ECB, euro area yield curves, 10-year AAA spot rate (09/11/2026),
+  https://data.ecb.europa.eu/data/datasets/YC/YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y; A. Damodaran, country risk premiums
+  (05/01/2026), https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/ctryprem.html; Banque de France, company
+  financing, August 2026, https://www.banque-france.fr/fr/statistiques/credit/financement-des-entreprises-2026-08;
+  service-public.gouv.fr, corporate income tax, https://entreprendre.service-public.gouv.fr/vosdroits/F23575;
+  ECB, monetary policy strategy statement (2025), https://www.ecb.europa.eu/mopo/strategy/strategy-review/ecb.strategyreview202506_strategy_statement.en.html;
+  A. Damodaran, betas by sector, Western Europe (05/01/2026), https://pages.stern.nyu.edu/~adamodar/pc/datasets/betaEurope.xls.</li>
+</ol>
 </body>
 </html>
