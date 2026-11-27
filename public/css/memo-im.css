@@ -262,7 +262,6 @@
 .im-couv-titre h2 { font-variant: small-caps; font-weight: 700; font-size: 4.6cqw; line-height: 1; letter-spacing: .01em; margin: 0; color: #fff; }
 .im-couv-titre p { font-variant: small-caps; font-weight: 700; font-size: 2.1cqw; margin: .7cqw 0 0; }
 .im-couv-titre .im-couv-sous { font-variant: normal; font-weight: 400; font-size: 1.2cqw; color: #BFCDD9; margin-top: 1cqw; }
-.im-couv-bas > :last-child { justify-self: end; }
 .im-couverture .dp-logo-passation { font-family: var(--im-police); font-size: 1.25cqw; color: #fff; }
 
 /* Pages d'ouverture de partie */

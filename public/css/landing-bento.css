@@ -22,7 +22,7 @@
 /* Sources, sous le hero (registres, pas de logos de presse) */
 
 /* ---------- Sections ---------- */
-.landing .dossier h2, .landing .comment h2, .landing .confid h2 { font-size: clamp(2.6rem, 5.2vw, 4.4rem); color: var(--vert); max-width: 18ch; }
+.landing .dossier h2, .landing .comment h2 { font-size: clamp(2.6rem, 5.2vw, 4.4rem); color: var(--vert); max-width: 18ch; }
 .landing .dossier .chapo { margin-top: 16px; color: var(--pierre-texte); }
 
 /* Le dossier : trois blocs */
@@ -77,7 +77,7 @@
 /* Polices réduites */
 .landing { font-size: 17px; }
 .landing .chapo { font-size: clamp(1.05rem, 1.25vw, 1.2rem); }
-.landing .dossier h2, .landing .comment h2, .landing .confid h2, .landing #questions h2.affiche { font-size: clamp(2.1rem, 3.8vw, 3.2rem); }
+.landing .dossier h2, .landing .comment h2, .landing #questions h2.affiche { font-size: clamp(2.1rem, 3.8vw, 3.2rem); }
 .landing .bento-panneau h3 { font-size: clamp(1.6rem, 2.4vw, 2.1rem); }
 .landing .bento-chiffre { font-size: 80px; }
 .landing .bento-methodes h3 { font-size: 24px; }
@@ -135,7 +135,7 @@
 .hero-bulle.sombre { border-color: transparent; }
 .bulle-hg { top: 36px; left: -32px; }
 @media (max-width: 900px) {
-  .bulle-hg, .bulle-bd { transform: none; width: auto; }
+  .bulle-hg { transform: none; width: auto; }
 }
 
 /* Police unique sur tout le site (18/11/2026) : titres en capitales étroites, tout le reste en Geist ; plus de
@@ -198,7 +198,7 @@
 .landing .hero-v5 .hero-bas { top: 18px; right: 18px; }
 @media (max-width: 1180px) {
   .landing .hero-v5 .hero-contenu { padding: 40px 240px; }
-  .hero-v5 .bulle-hg, .hero-v5 .bulle-g, .hero-v5 .bulle-d1 { width: 210px; } .hero-v5 .bulle-d1 { right: -20px; }
+  .hero-v5 .bulle-hg, .hero-v5 .bulle-d1 { width: 210px; } .hero-v5 .bulle-d1 { right: -20px; }
 }
 @media (max-width: 900px) {
   .hero-v5 .hero-bulle { display: none; }
@@ -211,7 +211,7 @@
    avec une ombre, dépassant un peu ; le texte remonte pour ne jamais passer sous la bulle du bas à droite */
 .landing .hero.hero-v5 { max-width: 1560px; }
 .hero-scene { margin: 0 clamp(8px, 1.6vw, 28px) 30px; }
-.hero-v5 .bulle-hg, .hero-v5 .bulle-g { box-shadow: 0 26px 50px -18px rgba(20, 16, 12, .55), 0 2px 6px rgba(20, 16, 12, .12); }
+.hero-v5 .bulle-hg { box-shadow: 0 26px 50px -18px rgba(20, 16, 12, .55), 0 2px 6px rgba(20, 16, 12, .12); }
 .hero-v5 .bulle-hg { top: -20px; left: -24px; }
 .landing .hero-v5 .hero-contenu { padding: 40px 320px 200px; }
 @media (max-width: 1180px) {
@@ -377,7 +377,7 @@
 }
 @media (max-width: 520px) { .fiche-action .btn { width: 100%; justify-content: center; } .landing .fiche-profil-eti { padding-right: 112px; } }
 
-/* Fin de page : deux options (classe .fin-a ou .fin-b sur <html>), pied de page commun */
+/* End of page (class .fin-a on <html>), shared footer */
 
 .pied-grille { margin-top: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 32px 40px; }
 .pied-col { min-width: 0; font-size: 16px; }
@@ -395,9 +395,6 @@
 /* Option A : la carte claire (champ, garanties en une ligne), puis le pied vert structuré */
 
 /* Option B : un seul bloc vert ; la relance à gauche, les trois documents à droite, puis garanties, liens, mentions */
-.fin-b .landing .pied { margin-top: 0; border-radius: 0; }
-.fin-b .pied-interieur { padding-top: 16px; }
-.fin-b .pied-documents { display: none; }
 
 .landing .pied .pied-titre { text-transform: none; letter-spacing: 0; font-family: "Geist", system-ui, sans-serif; }
 .pied-documents li { min-height: var(--cible, 44px); display: flex; align-items: center; }
