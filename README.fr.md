@@ -230,7 +230,7 @@ et #46 en commentaires, et #47 applique ses remarques), avant que `main` soit pr
 | Code | ce dépôt (`src/`, `public/`, `migrations/`) |
 | Business plan | [docs/livrables/business-plan.pdf](docs/livrables/business-plan.pdf) (source : `business-plan.html`) |
 | Modèle financier | [docs/livrables/business-plan-model.xlsx](docs/livrables/business-plan-model.xlsx) |
-| Présentation (8 minutes, 20 diapositives, notes de l'orateur dans le .pptx) | [docs/livrables/presentation.pptx](docs/livrables/presentation.pptx) et [presentation.pdf](docs/livrables/presentation.pdf) |
+| Présentation (8 minutes, 14 diapositives et 7 de secours, notes de l'orateur dans le .pptx) | [docs/livrables/presentation.pptx](docs/livrables/presentation.pptx) et [presentation.pdf](docs/livrables/presentation.pdf) |
 | Usage de l'IA | [AI-USAGE.md](AI-USAGE.md) |
 | Tests et contrôle des chiffres | [Tests](#tests) et [Contrôle des chiffres](#contrôle-des-chiffres) ci-dessus ; `npm test` |
 | Variables d'environnement sans secret | [.env.example](.env.example) (mêmes noms que `.dev.vars.example`) |
