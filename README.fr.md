@@ -211,7 +211,7 @@ sur ces 42 pull requests, au 27/11/2026). Avant le 18/11/2026, pendant que le pr
 la première version, 47 commits ont été poussés directement sur `main` ; depuis, chaque changement passe par une pull
 request, et `main` est protégée (pull request et approbation obligatoires, force-push bloqué). Aucun force-push n'a
 jamais été fait (journal d'activité GitHub). Parmi les dernières pull requests, #44 a été approuvée par un autre
-membre ; #45 à #49 ont été fusionnées par le propriétaire sans revue d'approbation, #48 et #49 en passant outre la
+membre ; #45 à #51 ont été fusionnées par le propriétaire sans revue d'approbation, #48 à #51 en passant outre la
 protection de `main` activée le 28/11/2026 (Mohamed Reda Aboualam a relu #45 et #46 en commentaires, et #47 applique
 ses remarques).
 
