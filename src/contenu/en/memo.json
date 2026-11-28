@@ -23,28 +23,20 @@
       "faits": "Facts found ({n}/{total} approved): tick the ones that are accurate",
       "source": " source",
       "logo_enregistre": "Logo saved.",
-      "logo_retenu": "Logo selected: see the cover below. You can choose another one.",
-      "choisir_logo": "Choose the company’s logo (or upload it).",
       "candidat": "Candidate: {origine}",
       "deposer_logo": "Upload a logo (PNG, JPEG, WebP)",
       "lecture": "Reading the website… (about one minute)",
       "releves": "{n} facts found on {pages} pages. Tick the accurate ones: only those will be used."
     },
     "photos": {
-      "cochez": "First tick the statement: the photos must belong to the company.",
-      "ajoutee": "Photo added.",
-      "titre": "Memorandum photos ({n}/6): cover, business, team.",
-      "attestation": "I confirm that the photos added belong to the company or that I have the right to use them.",
       "photo_n": "Photo {n}",
       "ajouter_site": "Add this photo from the website",
       "candidate": "Website photo (candidate)",
-      "deposer": "Upload a photo (3 MB max)",
       "entreprise": "Company photo",
       "a_ajouter": "{quoi}: to be added",
       "ou": "Memorandum page, step 1 (company photos)",
       "cliquez": "Click the photos to use (tick the box above first):",
       "titre_max": "Memorandum photos ({n} of {max} max): placed by category (cover, business, past work, team).",
-      "limite": "{max} photos at most: remove one to add another.",
       "ecartees": "{n} website images left out automatically ({raisons}).",
       "raisons": {
         "format": "drawing or non-photo format",
@@ -461,27 +453,13 @@
       "compteur": "Page {n} of {total}",
       "page_n": "Page {n}"
     },
-    "recos": {
-      "non_redige": "This chapter hasn’t been drafted yet.",
-      "photo_activite": "Add a photo of the workshop, products or completed work: it brings the page to life.",
-      "ajouter_photos": "Add photos",
-      "photo_equipe": "Add a photo of the team or the site.",
-      "marche_aucun": "No sourced market figure: run the market research, then keep the figures that seem right to you.",
-      "voir_marche": "See the market research",
-      "marche_retenus": "{n} market figures kept, each with its source: check that they really match your market.",
-      "verifier": "Check the figures",
-      "long": "The text is long for one page: shorten it, or have it redrafted.",
-      "modifie": "You edited this chapter: a new draft would replace your changes."
-    },
     "etat": {
       "a_rediger": "To draft",
       "redige": "Drafted by Passation"
     },
     "panneau": {
       "chapitre": " · chapter {court}",
-      "recommandations": "Recommendations",
       "rien": "Nothing to flag: the page is complete.",
-      "automatique": "Page built automatically from your chapters and figures.",
       "actions": "Actions",
       "rediger_chapitre": "Draft this chapter",
       "modifier_texte": "Edit the text"

@@ -89,15 +89,6 @@
 .resultat-grille.carte-verte { background: var(--vert-carte); }
 .resultat-chargement { display: grid; justify-items: start; align-content: center; gap: 24px; min-height: 42vh; }
 .resultat-chargement-texte { font-size: var(--t-chapo); color: var(--creme); }
-.trousseau { position: relative; width: 220px; height: 130px; }
-.trousseau img { position: absolute; left: 90px; top: 0; width: 40px; height: auto; transform-origin: 50% 12%; filter: drop-shadow(2px 4px 4px rgba(0, 0, 0, .5));
-  animation: ranger 1.4s cubic-bezier(.45, 0, .2, 1) infinite alternate; }
-.trousseau img:nth-child(1) { --r: -38deg; --x: -84px; }
-.trousseau img:nth-child(2) { --r: 52deg; --x: -28px; animation-delay: .08s; }
-.trousseau img:nth-child(3) { --r: -112deg; --x: 28px; animation-delay: .16s; }
-.trousseau img:nth-child(4) { --r: 140deg; --x: 84px; animation-delay: .24s; }
-@keyframes ranger { from { transform: translateX(0) rotate(var(--r)); } to { transform: translateX(var(--x)) rotate(0deg); } }
-@media (prefers-reduced-motion: reduce) { .trousseau img { animation: none; transform: translateX(var(--x)); } }
 #titre-resultat { font-size: clamp(2.6rem, 5.2vw, 4.6rem); }
 .resultat-libelle { margin: 36px 0 2px; font-size: 17px; font-weight: 600; color: var(--ocre-nuit); }
 .resultat .estimation-valeur { margin: 0; font-size: clamp(2.6rem, 5vw, 4rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; color: var(--creme); }
@@ -136,14 +127,7 @@
 .dossier p { color: inherit; }
 .dossier { position: relative; container-type: inline-size; --u: calc(100cqw / 660); padding-bottom: calc(16 * var(--u)); color: #1E1A17; text-shadow: none; }
 .dossier > * { translate: 0 calc(var(--secousse, 0) * var(--u)); }
-.dossier-onglet:nth-child(even) { filter: brightness(.95); }
 .dossier-nom { position: absolute; left: 0; top: calc(4 * var(--u)); margin: 0; display: grid; justify-items: start; gap: calc(4 * var(--u)); font-weight: 700; font-size: calc(56 * var(--u) * var(--nom-echelle, 1)); line-height: 1.1; letter-spacing: -0.025em; white-space: nowrap; }
-.dossier-meta { position: relative; min-height: 1em; }
-.dossier-meta::after {
-  content: ""; position: absolute; left: calc(-6 * var(--u)); right: calc(-8 * var(--u)); top: 6%; bottom: 2%;
-  background: #15110F; border-radius: 2px; transform-origin: 0 50%; transform: scaleX(var(--bandeau, 0));
-}
-.dossier .dossier-meta { position: absolute; left: 0; top: calc(164 * var(--u)); margin: 0; font: 500 max(13px, calc(14 * var(--u))) var(--mono); letter-spacing: .12em; color: #6B6157; white-space: nowrap; }
 /* ---------- Socle des sections (brief « accueil ») : 120 px entre sections, contenu à 1 280 px ---------- */
 :root { --espace-section: 120px; --vert-carte: #1F3B2D; --carte-claire: #FFFDF8; --bord-carte: inset 0 0 0 1px rgb(30 26 23 / .08);
   /* Trois fonds seulement : crème, vert, noir. Plus de sable ni d'ocre (17/11/2026) : les panneaux derrière les
@@ -194,8 +178,6 @@
 .landing .carte-large.carte-verte h2 em { color: #D9B48F; }
 .landing .carte-large.carte-verte .surtitre { color: #CFE0D3; }
 .landing .carte-large.carte-verte .chapo { color: #E3ECE5; }
-.carte-large .btn-creme { min-height: 46px; padding: 0 22px; background: #F7F1EA; color: var(--encre); font-size: 16px; }
-.carte-large .btn-creme:hover { background: #EFE8DD; }
 
 /* ---------- Derrière Passation ---------- */
 .equipe-grille { display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }

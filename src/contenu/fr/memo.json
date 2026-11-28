@@ -23,28 +23,20 @@
       "faits": "Faits relevés ({n}/{total} validés) : cochez ceux qui sont exacts",
       "source": " source",
       "logo_enregistre": "Logo enregistré.",
-      "logo_retenu": "Logo retenu : voir la couverture ci-dessous. Vous pouvez en choisir un autre.",
-      "choisir_logo": "Choisissez le logo de l'entreprise (ou déposez-le).",
       "candidat": "Candidat : {origine}",
       "deposer_logo": "Déposer un logo (PNG, JPEG, WebP)",
       "lecture": "Lecture du site en cours… (une minute environ)",
       "releves": "{n} faits relevés sur {pages} pages. Cochez ceux qui sont exacts : seuls ceux-là seront utilisés."
     },
     "photos": {
-      "cochez": "Cochez d'abord l'attestation : les photos doivent appartenir à l'entreprise.",
-      "ajoutee": "Photo ajoutée.",
-      "titre": "Photos du mémorandum ({n}/6) : couverture, activité, équipe.",
-      "attestation": "J'atteste que les photos ajoutées appartiennent à l'entreprise ou que j'ai le droit de les utiliser.",
       "photo_n": "Photo {n}",
       "ajouter_site": "Ajouter cette photo du site",
       "candidate": "Photo du site (candidate)",
-      "deposer": "Déposer une photo (3 Mo au plus)",
       "entreprise": "Photo de l'entreprise",
       "a_ajouter": "{quoi} : à ajouter",
       "ou": "Page Mémorandum, étape 1 (photos de l'entreprise)",
       "cliquez": "Cliquez sur les photos à utiliser (la case ci-dessus d'abord) :",
       "titre_max": "Photos du mémorandum ({n} sur {max} au plus) : placées par catégorie (couverture, activité, réalisations, équipe).",
-      "limite": "{max} photos au plus : retirez-en une pour en ajouter une autre.",
       "ecartees": "{n} images du site écartées automatiquement ({raisons}).",
       "raisons": {
         "format": "dessin ou format non photo",
@@ -461,27 +453,13 @@
       "compteur": "Page {n} sur {total}",
       "page_n": "Page {n}"
     },
-    "recos": {
-      "non_redige": "Ce chapitre n'est pas encore rédigé.",
-      "photo_activite": "Ajoutez une photo de l'atelier, des produits ou des réalisations : c'est ce qui rend la page vivante.",
-      "ajouter_photos": "Ajouter des photos",
-      "photo_equipe": "Ajoutez une photo de l'équipe ou du site.",
-      "marche_aucun": "Aucun chiffre de marché sourcé : lancez l'étude de marché, puis gardez les chiffres qui vous paraissent justes.",
-      "voir_marche": "Voir l'étude de marché",
-      "marche_retenus": "{n} chiffres de marché retenus, chacun avec sa source : vérifiez qu'ils correspondent bien à votre marché.",
-      "verifier": "Vérifier les chiffres",
-      "long": "Le texte est long pour une page : raccourcissez-le, ou faites-le rédiger à nouveau.",
-      "modifie": "Vous avez modifié ce chapitre : une nouvelle rédaction remplacerait vos modifications."
-    },
     "etat": {
       "a_rediger": "À rédiger",
       "redige": "Rédigé par Passation"
     },
     "panneau": {
       "chapitre": " · chapitre {court}",
-      "recommandations": "Recommandations",
       "rien": "Rien à signaler : la page est complète.",
-      "automatique": "Page construite automatiquement à partir de vos chapitres et de vos chiffres.",
       "actions": "Actions",
       "rediger_chapitre": "Rédiger ce chapitre",
       "modifier_texte": "Modifier le texte"

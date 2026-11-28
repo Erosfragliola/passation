@@ -111,10 +111,8 @@
       "retenu_titre": "Ce que nous avons retenu de votre site",
       "retenu_aide": "{n} faits, classés par thème. Retirez ce qui est faux ou daté : seul ce qui reste sera utilisé.",
       "aucun_fait": "Nous n'avons trouvé sur ce site aucun fait utilisable pour le mémorandum. Ce n'est pas bloquant : vos réponses suffisent.",
-      "faits": "Faits relevés",
       "votre_logo": "Votre logo",
       "choix_logo": "Choix du logo",
-      "aucun_logo": "Aucun",
       "retirer": "Retirer",
       "remettre": "Remettre",
       "tranche": "{min} à {max} salariés",
@@ -148,13 +146,8 @@
       "une_par_une": "Répondre question par question"
     },
     "question": {
-      "preparee": "Réponse préparée par Passation",
-      "preparee_suite": " · {source}. Vérifiez, corrigez si besoin, puis validez.",
-      "indispensable": "Indispensable pour rédiger le mémorandum : {liste}.",
       "passer": "Passer",
       "il_manque": "Il manque {liste} : c'est indispensable pour rédiger le mémorandum.",
-      "exact_continuer": "C'est exact, continuer ",
-      "ou_va": "Où va votre réponse",
       "ajouter": "Ajouter",
       "choix_max": "{n} sur {max} au plus.",
       "choix_max_atteint": "{n} sur {max} : décochez un choix pour en changer.",
@@ -192,17 +185,6 @@
       "relecture": "Relecture critique du mémorandum"
     },
     "pret": {
-      "valo_titre": "Valorisation détaillée",
-      "valo_detail": "Multiples du secteur, hypothèses et sources",
-      "datapack_detail": "9 onglets, formules vivantes",
-      "teaser_detail": "Une page pour éveiller l'intérêt",
-      "memo_detail": "La présentation complète, en diapositives",
-      "affiner": "Pour affiner (décotes et primes, EBE retenu) : ",
-      "reglages": "réglages de la valorisation",
-      "photos": ". Pour ajouter des photos au mémorandum : ",
-      "page_memo": "page du mémorandum",
-      "modifier": ". Pour modifier une réponse : ",
-      "revoir": "revoir vos réponses",
       "types": {
         "pdf": "PDF",
         "xlsx": "XLSX",
@@ -238,35 +220,13 @@
     },
     "photos": {
       "titre": "Votre logo et vos photos",
-      "aide": "Un mémorandum illustré se lit mieux. Voici ce que nous avons trouvé sur votre site.",
-      "compte": {
-        "zero": "Aucune photo choisie, {max} au plus",
-        "one": "{n} photo choisie sur {max} au plus",
-        "other": "{n} photos choisies sur {max} au plus"
-      },
       "utiliser": {
         "one": "Utiliser cette photo",
         "other": "Utiliser ces {n} photos"
       },
       "sans_photo": "Continuer sans photo",
-      "photo_n": "Photo {n} de votre site",
-      "deposee": "Photo déposée",
-      "cochez_droits": "Cochez d'abord la case : ces photos appartiennent à l'entreprise, ou vous avez le droit de les utiliser.",
       "aucun_logo": "Aucun logo",
-      "logo_aide": "Il figurera sur la couverture et en pied de page du mémorandum.",
-      "logo_aucun_aide": "Aucun logo retenu : le mémorandum n'affichera que son titre.",
-      "changer": "Changer",
-      "enregistrement": "Enregistrement de vos choix…",
-      "echecs": {
-        "one": "Un élément n'a pas pu être récupéré depuis votre site : vous pouvez le déposer vous-même.",
-        "other": "{n} éléments n'ont pas pu être récupérés depuis votre site : vous pouvez les déposer vous-même."
-      },
-      "cliquez": "Cliquez sur les photos à utiliser",
       "usage": "{max} au plus. Elles sont placées selon leur catégorie : couverture, activité, réalisations, équipe.",
-      "aucune": "Nous n'avons pas trouvé de photo utilisable sur votre site (les icônes, bandeaux et petites images sont écartés).",
-      "droits": "Ces photos appartiennent à l'entreprise, ou j'ai le droit de les utiliser.",
-      "deposer": "Déposer mes propres photos",
-      "formats": "(PNG, JPEG ou WebP, 3 Mo au plus)",
       "aide_jugement": "Claude juge chaque photo ; rien n'est appliqué sans vous.",
       "vos_photos": "Vos photos ({n} sur {max} au plus)",
       "aucune_choisie": "Aucune photo pour l'instant.",

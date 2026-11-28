@@ -5,7 +5,7 @@
   "brouillon_faire_relire_par_professionnel": "Brouillon à faire relire par un professionnel. Les passages « À compléter » doivent être renseignés avant la mise en ligne publique.",
   "responsable_traitement": "Responsable du traitement",
   "responsable_identite": "{legal.raison_sociale}, {legal.adresse}. Contact pour vos données personnelles : {legal.contact}.",
-  "responsable_a_completer": "À compléter : raison sociale, adresse, contact pour les questions de données personnelles.",
+  "responsable_projet_etudiant": "L’équipe du projet Passation (Eros Fragliola, Maxime Parrinello, Victoire Jacob, Ethan Barris et Mohamed Reda Aboualam), projet étudiant de l’EDHEC Business School, et non une société immatriculée. Contact pour vos données personnelles : par le <a href=\"https://github.com/Erosfragliola/passation\">dépôt GitHub</a> ; le bouton « Supprimer mon dossier » de votre espace efface à tout moment votre dossier et ses documents.",
   "que_nous_stockons": "Ce que nous stockons",
   "votre_adresse_e_mail_pour": "Votre adresse e-mail, pour vous connecter avec un code à usage unique (le code n’est conservé que sous forme d’empreinte, avec la date de son utilisation).",
   "informations_publiques_votre_societe_annuaire": "Les informations publiques de votre société (annuaire des entreprises, comptes déposés, BODACC), réutilisées pendant 24 heures. Les copies plus anciennes ne servent plus, mais ne sont pas encore effacées automatiquement.",

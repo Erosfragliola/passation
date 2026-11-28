@@ -111,10 +111,8 @@
       "retenu_titre": "What we picked up from your website",
       "retenu_aide": "{n} facts, grouped by theme. Remove what’s wrong or outdated: only what remains will be used.",
       "aucun_fait": "We found nothing on this website that the memorandum can use. That's fine: your answers are enough.",
-      "faits": "Facts found",
       "votre_logo": "Your logo",
       "choix_logo": "Logo choice",
-      "aucun_logo": "None",
       "retirer": "Remove",
       "remettre": "Restore",
       "tranche": "{min} to {max} employees",
@@ -148,13 +146,8 @@
       "une_par_une": "Answer one question at a time"
     },
     "question": {
-      "preparee": "Answer prepared by Passation",
-      "preparee_suite": " · {source}. Check it, correct it if needed, then approve.",
-      "indispensable": "Required to draft the memorandum: {liste}.",
       "passer": "Skip",
       "il_manque": "{liste} is missing: it’s required to draft the memorandum.",
-      "exact_continuer": "That’s right, continue ",
-      "ou_va": "Where your answer goes",
       "ajouter": "Add",
       "choix_max": "{n} of {max} at most.",
       "choix_max_atteint": "{n} of {max}: untick one to change your choice.",
@@ -192,17 +185,6 @@
       "relecture": "Critical review of the memorandum"
     },
     "pret": {
-      "valo_titre": "Detailed valuation",
-      "valo_detail": "Industry multiples, assumptions and sources",
-      "datapack_detail": "9 tabs, live formulas",
-      "teaser_detail": "One page to spark interest",
-      "memo_detail": "The complete presentation, as slides",
-      "affiner": "To fine-tune (discounts and premiums, EBITDA used): ",
-      "reglages": "valuation settings",
-      "photos": ". To add photos to the memorandum: ",
-      "page_memo": "memorandum page",
-      "modifier": ". To change an answer: ",
-      "revoir": "review your answers",
       "types": {
         "pdf": "PDF",
         "xlsx": "XLSX",
@@ -238,35 +220,13 @@
     },
     "photos": {
       "titre": "Your logo and photos",
-      "aide": "An illustrated memorandum reads better. Here’s what we found on your website.",
-      "compte": {
-        "zero": "No photo selected, {max} at most",
-        "one": "{n} photo selected, {max} at most",
-        "other": "{n} photos selected, {max} at most"
-      },
       "utiliser": {
         "one": "Use this photo",
         "other": "Use these {n} photos"
       },
       "sans_photo": "Continue without photos",
-      "photo_n": "Photo {n} from your website",
-      "deposee": "Uploaded photo",
-      "cochez_droits": "First tick the box: these photos belong to the company, or you have the right to use them.",
       "aucun_logo": "No logo",
-      "logo_aide": "It will appear on the memorandum’s cover and in the footer.",
-      "logo_aucun_aide": "No logo selected: the memorandum will show only its title.",
-      "changer": "Change",
-      "enregistrement": "Saving your choices…",
-      "echecs": {
-        "one": "One item couldn’t be retrieved from your website: you can upload it yourself.",
-        "other": "{n} items couldn’t be retrieved from your website: you can upload them yourself."
-      },
-      "cliquez": "Click the photos to use",
       "usage": "{max} at most. They are placed by category: cover, business, past work, team.",
-      "aucune": "We didn’t find a usable photo on your website (icons, banners and small images are left out).",
-      "droits": "These photos belong to the company, or I have the right to use them.",
-      "deposer": "Upload my own photos",
-      "formats": "(PNG, JPEG or WebP, 3 MB at most)",
       "aide_jugement": "Claude reviews each photo; nothing is applied without you.",
       "vos_photos": "Your photos ({n} of {max} max)",
       "aucune_choisie": "No photos yet.",

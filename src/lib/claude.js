@@ -337,5 +337,3 @@ export function erreurClaudeConnue(e) {
   if (creditEpuise(e)) return { statut: 503, erreur: "credit_epuise", message: tr("serveur.claude.credit_epuise") };
   return null;
 }
-/** Message de la clé refusée, dans la langue de la requête (lu à chaque usage). */
-export const MESSAGE_CLE_REFUSEE = { toString: () => tr("serveur.claude.cle_refusee"), toJSON: () => tr("serveur.claude.cle_refusee") };

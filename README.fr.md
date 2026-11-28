@@ -166,7 +166,7 @@ lui-même (noms de fichiers, de dossiers, de fonctions et de variables) est en f
 npm test
 ```
 
-**695 tests Vitest** (50 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
+**696 tests Vitest** (50 fichiers), relancés par GitHub Actions (Node 22, Ubuntu 24.04) à chaque envoi. D1 est
 simulée par SQLite en mémoire avec les vraies migrations ; R2, Claude et les API publiques sont simulés.
 
 - **Valorisation** : trois méthodes, passage VE → titres, cas limites (EBE négatif, comptes absents, un seul
@@ -206,8 +206,11 @@ Chaque preuve que les chiffres clés sont justes, avec la commande pour la lance
 
 Rôles décrits par les contributions visibles (pull requests fusionnées, revues). Chaque membre a des commits et des
 pull requests sous son propre compte GitHub (`git shortlog -sne main` ; `gh pr list --state merged`). Les 42 pull
-requests fusionnées ont toutes été relues et approuvées par un autre membre avant la fusion (47 revues d'approbation sur ces 42 pull
-requests, au 27/11/2026).
+requests fusionnées ont toutes été relues et approuvées par un autre membre avant la fusion (47 revues d'approbation
+sur ces 42 pull requests, au 27/11/2026). Avant le 18/11/2026, pendant que le propriétaire du dépôt construisait seul
+la première version, 47 commits ont été poussés directement sur `main` ; depuis, chaque changement passe par une pull
+request, et `main` est protégée (pull request et approbation obligatoires, force-push bloqué). Aucun force-push n'a
+jamais été fait (journal d'activité GitHub).
 
 | Membre | GitHub | Contributions (PR fusionnées) | Revues (PR fusionnées) |
 |---|---|---|---|
@@ -260,8 +263,8 @@ Cloudflare Worker (src/)
 | `public/` | Pages, styles, scripts du navigateur, polices, images |
 | `migrations/` | Schéma de la base D1 |
 | `test/` | Tests automatisés et jeux de données enregistrés |
-| `scripts/` | Génération des images, polices, multiples, jeux de test ; calcul de référence Python |
-| `docs/` | Démonstration, décisions de méthode, calculs de référence, livrables, maquettes en attente de choix, captures des audits passés (interface française) |
+| `scripts/` | Calcul de référence Python, Claude simulé, dossier de démonstration, génération des multiples, des images et des jeux de test ([scripts/README.md](scripts/README.md)) |
+| `docs/` | Démonstration, décisions de méthode, calculs de référence, livrables, captures et maquettes montrées dans les pull requests ([docs/README.md](docs/README.md)) |
 
 ## Limites connues
 

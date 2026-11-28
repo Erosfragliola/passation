@@ -92,8 +92,6 @@ p { margin: 0; }
 .btn-noir:hover { background: var(--vert); }
 .btn-sable { background: var(--sable); color: var(--espresso); }
 .btn-sable:hover { background: #E1D3BA; }
-.btn-creme { background: var(--creme); color: var(--espresso); }
-.btn-creme:hover { background: var(--sable); }
 .btn-contour { background: transparent; color: var(--espresso); border-color: var(--trait-fort); }
 .btn-contour:hover { border-color: var(--espresso); }
 .btn .fleche { transition: transform .2s; }
@@ -295,16 +293,12 @@ section { padding: 88px 0; }
 .message-carte { margin-top: 20px; padding: 16px 20px; border-radius: 16px; background: var(--sable); }
 .message-carte.erreur { border-left: 4px solid var(--espresso); }
 .espace { padding-top: 0; }
-.dossier-meta { margin-top: 12px; color: var(--pierre-nuit); font-family: var(--mono); font-size: 13px; letter-spacing: .04em; }
 .jauge { height: 6px; border-radius: 3px; background: var(--trait-fort); overflow: hidden; }
 .nuit .jauge { background: var(--trait-nuit); }
 .jauge span { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--vert); transition: width .6s ease; }
 .nuit .jauge span { background: var(--cuivre-clair); }
 /* Tableau de bord : prochaine étape, puis l'état des 4 documents (prêt = lien ; à venir = grisé, pas un lien) */
 .titre-docs { font-size: 1.6rem; margin: 48px 0 16px; }
-.guide-doc.a-venir { background: transparent; border: 1px dashed var(--trait-fort); color: #696155; cursor: default; }
-.guide-doc.a-venir:hover { background: transparent; }
-.guide-doc.a-venir .fleche { display: none; }
 /* Gestion du dossier : repliée, ouverte à la demande */
 .gerer-dossier { margin-top: 56px; border-top: 1px solid var(--trait-fort); padding-top: 20px; }
 .gerer-dossier summary { cursor: pointer; display: flex; align-items: baseline; gap: 14px; list-style-position: outside; }
@@ -548,11 +542,7 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .puce:hover { border-color: var(--espresso); }
 .puce.choisie { background: var(--vert); color: var(--creme); border-color: var(--vert); }
 .puce:focus-visible { outline: 2px solid var(--vert); outline-offset: 2px; }
-.guide-curseur { display: flex; gap: 14px; align-items: center; }
-.guide-curseur input { flex: 1; }
-.guide-curseur output { min-width: 4ch; font-weight: 600; color: var(--vert); font-variant-numeric: tabular-nums; }
 .logo-choix:has(input:checked) { outline: 3px solid var(--vert); outline-offset: 2px; }
-.logo-aucun { display: grid; place-items: center; font-size: .9rem; color: #696155; }
 .guide-taches { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .guide-taches li { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-radius: 12px; background: var(--sable); color: #696155; }
 .guide-taches .etat { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--trait-fort); flex: 0 0 auto; }
@@ -563,11 +553,6 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 .guide-taches li.erreur { background: #F6DDD3; color: #8B2E1F; }
 @keyframes tourne { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .guide-taches li.en-cours .etat { animation: none; } }
-.guide-valeur .valeur-centrale { white-space: normal; }
-.guide-docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-.guide-doc { display: grid; gap: 4px; text-decoration: none; color: var(--espresso); position: relative; padding-right: 48px; }
-.guide-doc:hover { background: #E1D3BA; }
-.guide-doc .fleche { position: absolute; right: 22px; top: 50%; transform: translateY(-50%); font-size: 1.3rem; }
 .guide-todo h2 { font-size: 1.15rem; margin-bottom: 8px; }
 .guide-todo ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 .guide-titre { margin: 0; }
@@ -601,7 +586,6 @@ nav.etapes a[aria-current] .etape-etat { color: var(--vert); }
 /* Parcours guidé, 17/11/2026 : tâches en attente d'une réponse, chronomètre, réponses indispensables */
 .guide-taches li.attente { opacity: .55; }
 .guide-chrono { display: block; margin: -6px 0 10px; font-variant-numeric: tabular-nums; color: #696155; min-height: 1.2em; }
-.requis-note { color: #8B4A22; }
 .guide-todo .btn { margin-top: 10px; justify-content: space-between; text-align: left; }
 .guide-todo p.petit { margin: 4px 0 6px; }
 

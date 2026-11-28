@@ -32,6 +32,21 @@ describe("pages légales", () => {
       expect(d.hebergeur).toContain("101 Townsend Street, San Francisco, CA 94107");
     }
   });
+  it("sans identité dans cles.json : la mention « projet étudiant » remplace « à compléter », aucun gabarit {legal.…} affiché", () => {
+    // The identity line of the privacy page is removed while the legal fields are empty (it showed "{legal.adresse}" online)
+    expect(page("confidentialite.html")).toMatch(/data-t-html="responsable_identite" data-si="[^"]*legal\.raison_sociale/);
+    expect(page("mentions-legales.html")).toMatch(/data-t-html="editeur_projet_etudiant" data-sinon="legal\.raison_sociale"/);
+    expect(page("confidentialite.html")).toMatch(/data-t-html="responsable_projet_etudiant" data-sinon="legal\.raison_sociale"/);
+    for (const l of LANGUES) {
+      const ml = lireJson(`${l}/mentions_legales.json`), cf = lireJson(`${l}/confidentialite.json`);
+      for (const v of [ml.editeur_projet_etudiant, cf.responsable_projet_etudiant]) {
+        expect(v).toContain("EDHEC Business School");
+        for (const nom of ["Eros Fragliola", "Maxime Parrinello", "Victoire Jacob", "Ethan Barris", "Mohamed Reda Aboualam"]) expect(v).toContain(nom);
+        expect(v).toContain("https://github.com/Erosfragliola/passation");
+        expect(v).not.toMatch(/compléter|to be completed|\{legal\./i);
+      }
+    }
+  });
   it("aucun « À compléter » restant pour l'hébergeur, les limites d'usage, les tarifs et le droit applicable", () => {
     for (const l of LANGUES) {
       const ml = lireJson(`${l}/mentions_legales.json`), cg = lireJson(`${l}/cgu.json`);

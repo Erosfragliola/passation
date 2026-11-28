@@ -164,7 +164,7 @@ folder, function and variable names) is in French, as written by the team (for e
 npm test
 ```
 
-**695 Vitest tests** (50 files), run again by GitHub Actions (Node 22, Ubuntu 24.04) on every push. D1 is simulated
+**696 Vitest tests** (50 files), run again by GitHub Actions (Node 22, Ubuntu 24.04) on every push. D1 is simulated
 with in-memory SQLite and the real migrations; R2, Claude and the public APIs are simulated.
 
 - **Valuation**: three methods, EV-to-equity bridge, edge cases (negative EBITDA, missing accounts, a single fiscal
@@ -205,7 +205,9 @@ Each proof that the key numbers are right, with the command to run it:
 Roles described by visible contributions (merged pull requests, reviews). Every member has commits and pull requests
 under their own GitHub account (`git shortlog -sne main`; `gh pr list --state merged`). All 42 merged pull requests
 were reviewed and approved by another member before merging (47 approving reviews on these 42 pull requests, as of
-27/11/2026).
+27/11/2026). Before 18/11/2026, while the repository owner built the first version alone, 47 commits were pushed
+directly to `main`; since then every change has gone through a pull request, and `main` is protected (pull request and
+approval required, force-push blocked). No force-push was ever made (GitHub activity log).
 
 | Member | GitHub | Contributions (merged PRs) | Reviews (merged PRs) |
 |---|---|---|---|
@@ -258,8 +260,8 @@ Cloudflare Worker (src/)
 | `public/` | Pages, styles, browser scripts, fonts, images |
 | `migrations/` | D1 database schema |
 | `test/` | Automated tests and recorded datasets |
-| `scripts/` | Generation of images, fonts, multiples and test datasets; Python reference calculation |
-| `docs/` | Demonstration, method decisions, reference calculations, deliverables, mockups awaiting a decision, screenshots of past audits (French interface) |
+| `scripts/` | Python reference calculation, simulated Claude, demonstration file, generation of multiples, images and test datasets ([scripts/README.md](scripts/README.md)) |
+| `docs/` | Demonstration, method decisions, reference calculations, deliverables, screenshots and mockups shown in the pull requests ([docs/README.md](docs/README.md)) |
 
 ## Known limitations
 
