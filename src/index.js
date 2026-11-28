@@ -1,4 +1,4 @@
-// En premier : dictionnaires installés avant que les autres modules ne lisent un texte.
+// First: dictionaries installed before the other modules read a text.
 import { avecLangue, langueDeRequete } from "./i18n.js";
 import { json } from "./http.js";
 import { routeMaquette } from "./routes/maquette.js";
@@ -13,9 +13,10 @@ import { routePage, routeRobots, routeSitemap } from "./routes/pages.js";
 import { t as tr } from "../public/js/i18n.js";
 
 /**
- * Point d'entrée du Worker.
- * Tout arrive ici sauf les ressources statiques (css, js, img, fonts, video : run_worker_first) : l'API, et les pages,
- * remplies dans leur langue (src/routes/pages.js).
+ * Entry point of the Worker.
+ * Everything arrives here except static resources (css, js, img, fonts, video: run_worker_first): the API, and the
+ * pages,
+ * filled in their language (src/routes/pages.js).
  */
 const LOCAL = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
@@ -25,16 +26,16 @@ export default {
     try {
       reponse = await avecLangue(langueDeRequete(request), () => router(request, env));
     } catch (e) {
-      // Aucune information interne dans la réponse ; le détail reste dans les journaux du Worker.
+      // No internal information in the response; the detail stays in the Worker's logs.
       console.error("erreur non gérée :", e?.stack || e);
       reponse = json({ erreur: "erreur_interne", message: tr("serveur.index.erreur_survenue_reessayez_dans") }, 500);
     }
-    // En-têtes de sécurité sur toutes les réponses du Worker (audit SEC-04)
+    // Security headers on every response of the Worker (audit SEC-04)
     return avecEntetes(reponse, new URL(request.url));
   },
-  /** Tâche planifiée quotidienne : rappel unique des dossiers interrompus depuis 3 jours. */
+  /** Daily scheduled task: a single reminder for files interrupted for 3 days. */
   async scheduled(event, env, ctx) {
-    // Sans page d'origine, la langue de l'utilisateur n'est pas connue : rappels en français (la langue des données).
+    // Without an origin page, the user's language is unknown: reminders in French (the language of the data).
     ctx.waitUntil(avecLangue("fr", () => relancer(env)).then((n) => console.log(`Rappels envoyés : ${n}`)));
   },
 };
@@ -48,14 +49,14 @@ async function router(request, env) {
   if (p === "/sitemap.xml") return routeSitemap(request);
   if (p === "/api/health") return json({ ok: true, app: env.APP_NAME ?? "Passation" });
 
-  // Sans secret serveur, codes de connexion et empreintes d'IP seraient hachés sans sel secret : hors développement
-  // local, l'API refuse de fonctionner plutôt que de dégrader la sécurité en silence.
+  // Without a server secret, sign-in codes and IP fingerprints would be hashed without a secret salt: outside local
+  // development, the API refuses to run rather than silently weaken security.
   if (p.startsWith("/api/") && !env.SESSION_SECRET && !LOCAL.has(url.hostname)) {
     console.error("SESSION_SECRET absent : API désactivée (npx wrangler secret put SESSION_SECRET)");
     return json({ erreur: "configuration_incomplete", message: tr("serveur.index.service_momentanement_indisponible") }, 503);
   }
 
-  // Toute requête qui modifie des données doit venir du site lui-même (protection CSRF).
+  // Any request that changes data must come from the site itself (CSRF protection).
   if (p.startsWith("/api/") && !origineAutorisee(request)) {
     return json({ erreur: "origine_refusee", message: tr("serveur.index.requete_refusee") }, 403);
   }

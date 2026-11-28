@@ -1,5 +1,5 @@
-// Parcours de valorisation par l'API : droits d'accès, chiffres pré-remplis puis validés, liasse (Claude simulé),
-// questionnaire, calcul. Le calcul complet reprend le cas d'essai de approfondie.test.js (valeurs de référence).
+// Valuation flow through the API: access rights, figures prefilled then approved, tax return (simulated Claude),
+// questionnaire, calculation. The full calculation takes the test case of approfondie.test.js (reference values).
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 
@@ -77,9 +77,9 @@ describe("chiffres", () => {
     const v = await (await appel(`/api/dossiers/${id}/financials`, { methode: "PUT", cookie, corps: { annee: 2025, valeurs: { stocks: 200000 }, valider: true } })).json();
     expect(v.exercices["2025"].stocks).toEqual({ valeur: 200000, source: "dirigeant", valide: true });
   });
-  // Audit du 19/11/2026 : l'INPI publiait 2019, 2021 et 2024 ; la page valorisation réclamait 2019 et 2021
+  // Audit of 19/11/2026: the INPI published 2019, 2021 and 2024; the valuation page asked for 2019 and 2021
   it("comptes publics non consécutifs : seul le dernier est repris ; dernier exercice indispensable, deux précédents facultatifs", async () => {
-    // Montants fictifs : seules les années comptent ici
+    // Fictitious amounts: only the years matter here
     const d = JSON.parse(env.DB.sqlite.prepare("SELECT payload_json FROM api_cache").get().payload_json);
     d.ca = [{ annee: 2019, valeur: 900_000 }, { annee: 2021, valeur: 1_000_000 }, { annee: 2024, valeur: 1_200_000 }];
     d.ebe = [{ annee: 2019, valeur: 90_000 }, { annee: 2021, valeur: 100_000 }, { annee: 2024, valeur: 120_000 }];
@@ -89,8 +89,8 @@ describe("chiffres", () => {
     expect(Object.keys(v.exercices)).toEqual(["2024"]);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
     expect(detail.parcours.exercices).toEqual({ dernier: 2024, dernier_complet: false, recommandes: [2023, 2022], recommandes_manquants: [2023, 2022], anciens: [] });
-    // Les questions du mémorandum (7) et celle du site : 8, aucune faite (24/11/2026 : les questions qui changent la
-    // valeur sont dans le premier temps, « Votre valorisation »)
+    // The memorandum's questions (7) and the website's: 8, none done (24/11/2026: the questions that change the value
+    // are in the first stage, « Your valuation »)
     expect(detail.parcours.questions).toMatchObject({ faits: 0, total: 8, pct: 0 });
     expect(detail.parcours.etapes).toEqual({ exercices_passes: false, retraitements: false, dette: false, validation: null, photos: false, equipe: false });
     // 15 (dossier) + 10 (estimation express) = 25
@@ -101,7 +101,7 @@ describe("chiffres", () => {
     await appel(`/api/dossiers/${id}/answers/site`, { methode: "PUT", cookie, corps: { data: { aucun: true } } });
     expect((await appel(`/api/dossiers/${id}/answers/parcours`, { methode: "PUT", cookie, corps: { data: { vues: ["distinctions", "histoire"] } } })).status).toBe(200);
     const detail = await (await appel(`/api/dossiers/${id}`, { cookie })).json();
-    // site + 2 écrans passés = 3 sur 8 ; 3 / 8 = 37,5 → 38 %
+    // website + 2 screens skipped = 3 out of 8; 3 / 8 = 37.5 → 38%
     expect(detail.parcours.questions).toMatchObject({ faits: 3, total: 8, pct: 38 });
   });
   it("refuse une année absurde", async () => {
@@ -170,7 +170,7 @@ describe("questionnaire et calcul", () => {
   it("calcul complet par l'API : multiples identiques à la référence (2 001 585,45), DCF calculé, avancement à jour", async () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     await appel(`/api/dossiers/${id}/financials`, { cookie });
-    for (const a of [2020, 2021, 2022, 2023, 2024]) await appel(`/api/dossiers/${id}/financials/${a}`, { methode: "DELETE", cookie }); // on retire les comptes publics
+    for (const a of [2020, 2021, 2022, 2023, 2024]) await appel(`/api/dossiers/${id}/financials/${a}`, { methode: "DELETE", cookie }); // the public accounts are removed
     const ex = {
       2023: { chiffre_affaires: 2000000, autres_produits: 0, achats_consommes: 800000, charges_externes: 300000, impots_taxes: 40000, charges_personnel: 600000, dotations_amortissements: 60000, stocks: 160000, creances_clients: 340000, dettes_fournisseurs: 210000, dettes_fiscales_sociales: 130000, tresorerie: 180000, emprunts: 380000, capitaux_propres: 700000 },
       2024: { chiffre_affaires: 2200000, autres_produits: 0, achats_consommes: 880000, charges_externes: 320000, impots_taxes: 40000, charges_personnel: 640000, dotations_amortissements: 66000, stocks: 180000, creances_clients: 370000, dettes_fournisseurs: 230000, dettes_fiscales_sociales: 140000, tresorerie: 210000, emprunts: 340000, capitaux_propres: 800000 },
@@ -185,8 +185,9 @@ describe("questionnaire et calcul", () => {
       reglages: { prime_taille: 0.03, decotes: [{ cle: "dependance_dirigeant", pct: -0.1, justification: "Seul commercial" }, { cle: "recurrence", pct: 0.05, justification: "Contrats annuels" }] },
     };
     for (const [etape, data] of Object.entries(etapes)) expect((await appel(`/api/dossiers/${id}/answers/${etape}`, { methode: "PUT", cookie, corps: { data } })).status).toBe(200);
-    // Le DCF du cas d'essai prend amortissements 3 % et BFR 30 jours : ici, issus de l'historique validé
-    // (moyenne dotations / CA = 3 % exactement ; BFR normatif 29,83 j), d'où un DCF légèrement différent.
+    // The DCF of the test case takes depreciation at 3% and working capital at 30 days: here, they come from the
+    // approved history (average depreciation / revenue = exactly 3%; normalized working capital 29.83 days), hence a
+    // slightly different DCF.
     const v = await (await appel(`/api/dossiers/${id}/valuation`, { methode: "POST", cookie })).json();
     expect(v.resultat.multiples.titres.central).toBeCloseTo(2_001_585.45, 1);
     expect(v.resultat.dcf.statut).toBe("ok");
@@ -243,7 +244,7 @@ describe("teaser anonymisé", () => {
     expect(d.teaser.sections.map((x) => x.cle)).toEqual(["accroche", "activite", "chiffres", "atouts", "operation"]);
     const faits = JSON.stringify(redigerTeaser.mock.calls[0][1]);
     expect(faits).not.toMatch(/FRAISERAIE|319252813/i);
-    expect(faits).toContain("Industries alimentaires"); // division NAF 10, libellé unique du secteur (audit, point 9)
+    expect(faits).toContain("Industries alimentaires"); // NAF division 10, single label of the industry (audit, point 9)
     expect((await (await appel(`/api/dossiers/${id}/documents/teaser`, { cookie })).json()).teaser.version).toBe(1);
   });
   it("première version identifiante → seconde tentative avec consigne ; si encore identifiante → 422, rien d'enregistré", async () => {
@@ -358,7 +359,7 @@ describe("photos du mémorandum", () => {
     const { cookie, id } = await seConnecter("a@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(false) })).status).toBe(400);
     const m = await (await appel(`/api/dossiers/${id}/documents/memo/photos`, { methode: "POST", cookie, brut: photo(true) })).json();
-    expect(m.photos).toMatchObject([{ n: 0, legende: "L'atelier", origine: null, analyse: null, decision: null }]); // déposée : pas d'adresse d'origine
+    expect(m.photos).toMatchObject([{ n: 0, legende: "L'atelier", origine: null, analyse: null, decision: null }]); // uploaded: no original address
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie })).headers.get("content-type")).toBe("image/jpeg");
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/photos/0`, { cookie: b.cookie })).status).toBe(404);
@@ -377,7 +378,7 @@ describe("validation d'un exercice en bloc", () => {
     expect(avant.controles["2030"].some((c) => c.code === "negatif")).toBe(true);
     const v = await (await appel(`/api/dossiers/${id}/financials/2030/valider`, { methode: "POST", cookie })).json();
     expect(v.exercices["2030"].chiffre_affaires.valide).toBe(true);
-    expect(v.exercices["2030"].stocks.valide).toBe(false); // en alerte : à valider à part
+    expect(v.exercices["2030"].stocks.valide).toBe(false); // with an alert: to approve separately
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/financials/2030/valider`, { methode: "POST", cookie: b.cookie })).status).toBe(404);
   });
@@ -403,7 +404,7 @@ describe("suivi : dossier prêt et rappel unique", () => {
   });
   it("rappel : seulement les dossiers inactifs depuis 3 jours et incomplets, une seule fois", async () => {
     const a = await seConnecter("a@exemple.fr");
-    expect(await dossiersARelancer(env)).toHaveLength(0); // actif à l'instant
+    expect(await dossiersARelancer(env)).toHaveLength(0); // active just now
     env.DB.sqlite.exec(`UPDATE dossiers SET updated_at = ${Math.floor(Date.now() / 1000) - DELAI_RAPPEL - 60}`);
     expect((await dossiersARelancer(env)).map((d) => d.id)).toEqual([a.id]);
     const espion = vi.spyOn(console, "log").mockImplementation(() => {});
@@ -494,7 +495,7 @@ describe("quotas des traitements par Claude (SEC-01)", () => {
     expect(refus.status).toBe(429);
     expect((await refus.json()).erreur).toBe("quota_atteint");
     expect(redigerSectionMemo).toHaveBeenCalledTimes(max);
-    // le quota suit l'utilisateur, pas le dossier : le teaser du même compte est refusé aussi
+    // the quota follows the user, not the file: the teaser of the same account is refused too
     expect((await appel(`/api/dossiers/${a.id}/documents/teaser`, { methode: "POST", cookie: a.cookie })).status).toBe(429);
     const b = await seConnecter("b@exemple.fr");
     await preparer(b.cookie, b.id);
@@ -523,7 +524,7 @@ describe("quotas des traitements par Claude (SEC-01)", () => {
     const r = await appel("/api/dossiers", { methode: "POST", cookie: a.cookie, corps: { siren: "552100554" } });
     expect(r.status).toBe(429);
     expect((await r.json()).erreur).toBe("limite_dossiers");
-    // le dossier déjà ouvert pour ce SIREN reste accessible
+    // the file already open for this SIREN stays accessible
     expect((await appel("/api/dossiers", { methode: "POST", cookie: a.cookie, corps: { siren: SIREN } })).status).toBe(201);
   });
 });

@@ -1,23 +1,24 @@
-// Questions du parcours guidé : une par écran, réponses rapides (choix) quand c'est possible, questions sautées
-// quand elles ne s'appliquent pas. Chaque réponse est rangée dans l'étape du questionnaire complet correspondante.
+// Questions of the guided flow: one per screen, quick answers (choices) when possible, questions skipped when they
+// do not apply. Each answer is stored in the matching step of the full questionnaire.
 import { ETAPES } from "./questionnaire.js";
 import { T, avecTextes } from "./i18n.js";
-// Textes des questions (titre, aide, chapitre, pourquoi, libellés) : src/contenu/<langue>/parcours.json (marqueur T).
-// Les options des questions à choix sont les valeurs enregistrées (en français) ; libellés : libelleOption().
-/** Périmètre de l'opération : réponses possibles (reprises telles quelles dans le schéma du mémorandum). */
+// Texts of the questions (title, help, chapter, why, labels): src/contenu/<language>/parcours.json (marker T).
+// The options of the choice questions are the saved values (in French); labels: libelleOption().
+/** Scope of the deal: possible answers (taken as they are in the memorandum's schema). */
 export const DETENTION = { direct: "En direct, à titre personnel", holding: "Par une société holding", associes: "Avec d'autres associés" };
 export const MURS = { societe: "À l'entreprise elle-même", dirigeant: "À vous ou à votre famille (souvent une SCI)", tiers: "À un propriétaire extérieur", aucun: "Pas de locaux en propre" };
 export const MURS_CESSION = { inclus: "Oui, avec l'entreprise", bail: "Non, un bail sera proposé au repreneur", ouvert: "À discuter" };
 
-// Chaque question : `chapitre` (où va la réponse dans le mémorandum) et `pourquoi` (ce qu'un repreneur y cherche).
-// 20/11/2026 (PR « Parcours d'analyse : plus guidé, plus précis ») : 9 questions + le site = 10 écrans au lieu de 14.
-// Dates clés et équipe d'abord : la lecture du site (une minute environ) se termine pendant ces deux écrans ; ses
-// faits, son logo et ses photos sont validés juste après, puis l'activité est demandée avec les métiers lus.
-// Chaque réponse gardée nourrit une section précise du mémorandum ; les champs retirés restent dans le questionnaire
-// complet (« Pour aller plus loin »). Types : etiquettes (puces à cocher, liste enrichie par Passation et le
-// dirigeant), phrase (texte proposé à partir des choix), multi (choix à icône, `max` réponses au plus), choix,
-// montant / pourcentage (champ formaté + curseur), dates (lignes date / événement / précision), regions, top_clients,
-// exceptionnels. `replie` : bloc facultatif replié sous un lien.
+// Each question: `chapitre` (where the answer goes in the memorandum) and `pourquoi` (what a buyer looks for in it).
+// 20/11/2026 (PR « Parcours d'analyse : plus guidé, plus précis »): 9 questions + the website = 10 screens instead of
+// 14.
+// Key dates and team first: the reading of the website (about one minute) finishes during these two screens; its
+// facts, its logo and its photos are approved right after, then the business is asked with the trades read.
+// Each answer kept feeds a precise section of the memorandum; the fields removed stay in the full questionnaire
+// (« To go further »). Types: etiquettes (chips to tick, list enriched by Passation and the owner), phrase (text
+// proposed from the choices), multi (choices with an icon, `max` answers at most), choix, montant / pourcentage
+// (formatted field + slider), dates (rows date / event / detail), regions, top_clients, exceptionnels.
+// `replie`: optional block folded under a link.
 export const QUESTIONS = [
   { id: "histoire", titre: T, aide: T,
     chapitre: T, pourquoi: T,
@@ -118,24 +119,24 @@ export function etatValorisation(r = {}, vues = vuesDe(r)) {
     validation: Number.isFinite(r.validation?.le) ? { le: r.validation.le } : null,
   };
 }
-/** Réponses indispensables au mémorandum encore vides sur cet écran (libellés), quel que soit le passage du dirigeant. */
+/** Answers essential to the memorandum still empty on this screen (labels), whatever the owner's visits. */
 export const requisManquants = (q, r) => q.champs.filter((c) => c.requis && !rempli(r[c.etape]?.[c.cle])).map((c) => c.requis);
 /**
- * Une question est-elle répondue ? Les réponses facultatives laissées vides comptent comme répondues si l'écran a été
- * vu ; les réponses indispensables au mémorandum (« requis ») doivent toujours être remplies.
+ * Is a question answered? Optional answers left empty count as answered if the screen was seen; answers essential
+ * to the memorandum (« requis ») must always be filled in.
  */
 export function questionRepondue(q, r, vues = []) {
   if (requisManquants(q, r).length) return false;
   if (vues.includes(q.id)) return true;
   return q.champs.filter((c) => !c.facultatif).every((c) => rempli(r[c.etape]?.[c.cle]));
 }
-/** Questions dont une réponse indispensable manque (l'ordre du parcours). */
+/** Questions missing an essential answer (in the order of the flow). */
 export const questionsIncompletes = (r) => QUESTIONS.filter((q) => requisManquants(q, r).length);
 
-// ---------------------------------------------------------------- Une seule notion de « questions »
-// Les questions du dirigeant sont celles du parcours guidé, plus celle du site internet (posée en premier, dans
-// l'étape « Vos réponses »). Le total est le même partout : parcours guidé, page du dossier, serveur.
-/** Le site a-t-il une réponse (adresse donnée, ou « pas de site ») ? */
+// ---------------------------------------------------------------- A single notion of « questions »
+// The owner's questions are those of the guided flow, plus the one about the website (asked first, in the « Your
+// answers » step). The total is the same everywhere: guided flow, file page, server.
+/** Does the website have an answer (address given, or « no website »)? */
 const siteRepondu = (r = {}) => Boolean(r.site?.url || r.site?.aucun);
 export const NB_QUESTIONS = QUESTIONS.length + 1;
 /**
@@ -147,32 +148,34 @@ export function positionQuestion(cle) {
   const i = cle === "site" ? 0 : QUESTIONS.findIndex((q) => q.id === cle) + 1;
   return i >= 0 && (cle === "site" || i > 0) ? { n: i + 1, total: NB_QUESTIONS } : null;
 }
-/** Écrans vus (« Passer » compte comme une réponse), enregistrés dans l'étape « parcours » des réponses. */
+/** Screens seen (« Passer » counts as an answer), saved in the « parcours » step of the answers. */
 export const vuesDe = (r = {}) => (Array.isArray(r.parcours?.vues) ? r.parcours.vues.filter((x) => typeof x === "string") : []);
-/** Questions répondues sur le total, et leur pourcentage (pour l'avancement global). */
+/** Questions answered out of the total, and their percentage (for the overall progress). */
 export function avancementQuestions(r = {}, vues = vuesDe(r)) {
   const faits = QUESTIONS.filter((q) => questionRepondue(q, r, vues)).length + (siteRepondu(r) ? 1 : 0);
   // restantes: identifiers of the questions still without an answer, so that every screen can name them
   return { faits, total: NB_QUESTIONS, pct: Math.round((100 * faits) / NB_QUESTIONS), restantes: questionsAPoser(r, vues) };
 }
 /**
- * Questions qui restent à montrer, dans l'ordre du parcours : « site » d'abord s'il n'a pas de réponse, puis les
- * identifiants des questions sans réponse. Le compteur « Question N sur M » du parcours guidé compte cette liste :
- * les questions déjà répondues, pré-remplies et validées, ou passées n'y sont pas.
+ * Questions still to show, in the order of the flow: « site » first if it has no answer, then the identifiers of
+ * the unanswered questions. The guided flow's counter « Question N of M » counts this list: questions already
+ * answered, prefilled and approved, or skipped are not in it.
  */
 export function questionsAPoser(r = {}, vues = vuesDe(r)) {
   return [...(siteRepondu(r) ? [] : ["site"]), ...QUESTIONS.filter((q) => !questionRepondue(q, r, vues)).map((q) => q.id)];
 }
 
-/** Adresse de site proposée à partir d'une adresse e-mail professionnelle (jamais pour une messagerie grand public). */
+/** Website address proposed from a business email address (never for a consumer email service). */
 const MESSAGERIES = new Set(["gmail.com", "googlemail.com", "outlook.com", "outlook.fr", "hotmail.com", "hotmail.fr", "live.com", "live.fr", "msn.com", "yahoo.com", "yahoo.fr", "icloud.com", "me.com", "orange.fr", "wanadoo.fr", "free.fr", "sfr.fr", "neuf.fr", "laposte.net", "aol.com", "protonmail.com", "proton.me", "gmx.fr", "gmx.com", "bbox.fr", "numericable.fr", "club-internet.fr", "exemple.fr"]);
-/** Questions du questionnaire complet absentes du parcours guidé : facultatives (« Pour aller plus loin »), hors du
- *  pourcentage et de « À faire maintenant ». Celles qui ne servaient qu'aux flux actualisés (méthode écartée, rien
- *  ne les affiche) ne sont plus posées. */
+/**
+ * Questions of the full questionnaire absent from the guided flow: optional (« To go further »), outside the
+ * percentage and « What to do now ». Those used only for the discounted cash flows (method set aside, nothing shows
+ * them) are no longer asked.
+ */
 // The restatements and the net-debt items are asked in the first stage only (a single place since 24/11/2026)
 const CLES_DU_PARCOURS = new Set([...QUESTIONS.flatMap((q) => [...q.champs, ...(q.suite?.champs || [])]), ...Object.values(VALORISATION).flat()].map((c) => `${c.etape}.${c.cle}`));
 const SANS_USAGE = new Set(["perspectives.investissements_pct", "bilan.capital_personnes_physiques"]);
-// Copie des étapes avec leurs accesseurs (les textes restent lus dans la langue courante, pas figés au chargement).
+// Copy of the steps with their accessors (texts stay read in the current language, not frozen at loading).
 export const POUR_ALLER_PLUS_LOIN = ETAPES
   .map((e) => Object.defineProperties({}, { ...Object.getOwnPropertyDescriptors(e),
     questions: { value: e.questions.filter((q) => !CLES_DU_PARCOURS.has(`${e.cle}.${q.cle}`) && !SANS_USAGE.has(`${e.cle}.${q.cle}`)), enumerable: true } }))

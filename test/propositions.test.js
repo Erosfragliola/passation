@@ -1,4 +1,4 @@
-// Réponses proposées dans le parcours guidé : chaque proposition a une source, rien n'est inventé.
+// Answers proposed in the guided flow: each proposal has a source, nothing is invented.
 import { describe, it, expect } from "vitest";
 import { propositions, croissanceProposee, clienteleDuSecteur, datesCles, SOURCES_PROPOSITION } from "../src/documents/propositions.js";
 import { QUESTIONS } from "../public/js/parcours.js";
@@ -10,8 +10,8 @@ describe("réponses proposées", () => {
   it("croissance (curseur) : la croissance passée arrondie au point, bornée à −20 % / +30 % ; rien sans comptes", () => {
     expect(croissanceProposee(0.067)).toBe(0.07);  // 6,7 % → 7 %
     expect(croissanceProposee(0.081)).toBe(0.08);
-    expect(croissanceProposee(-0.25)).toBe(-0.2);  // borne basse du curseur
-    expect(croissanceProposee(0.5)).toBe(0.3);     // borne haute du curseur
+    expect(croissanceProposee(-0.25)).toBe(-0.2);  // lower bound of the slider
+    expect(croissanceProposee(0.5)).toBe(0.3);     // upper bound of the slider
     expect(croissanceProposee(null)).toBeNull();
   });
   it("clientèle d'après le secteur : commerce de détail → particuliers ; construction → entreprises", () => {
@@ -29,24 +29,24 @@ describe("réponses proposées", () => {
   });
   it("un dossier sans site : propositions sourcées, aucune distinction inventée, aucun choix multiple « fréquent »", () => {
     const p = propositions({ entreprise: menuiserie, tcam: 0.067, reponses: {} });
-    // Métier : l'intitulé INSEE de la sous-classe 43.32A (naf-sous-classes.json), pas celui de la division 43
+    // Trade: the INSEE label of subclass 43.32A (naf-sous-classes.json), not that of division 43
     expect(p.activite.valeurs).toEqual({ "activite.metiers": ["Travaux de menuiserie bois et PVC"], "clients.type_clientele": ["Entreprises"] });
     expect(p.activite.source).toBe(SOURCES_PROPOSITION.registres);
-    expect(p.activite.valeurs["activite.description"]).toBeUndefined();         // la phrase est rédigée à l'écran, depuis les choix
-    expect(p.distinctions).toBeUndefined();                                    // sans site, rien n'est deviné
-    expect(p.equipe.valeurs).toEqual({ "dirigeant.encadrement": "Oui, un ou plusieurs responsables" }); // tranche 12 : 20 à 49 salariés
+    expect(p.activite.valeurs["activite.description"]).toBeUndefined();         // the sentence is written on screen, from the choices
+    expect(p.distinctions).toBeUndefined();                                    // without a website, nothing is guessed
+    expect(p.equipe.valeurs).toEqual({ "dirigeant.encadrement": "Oui, un ou plusieurs responsables" }); // band 12: 20 to 49 employees
     expect(p.clients.valeurs).toEqual({ "activite.zone": "Régionale", "clients.regions": ["Pays de la Loire"] });
     expect(p.perspectives).toEqual({ valeurs: { "perspectives.croissance": 0.07 }, source: SOURCES_PROPOSITION.comptes });
-    expect(p.operation.source).toBe(SOURCES_PROPOSITION.frequent);            // choix fréquent : toujours « à confirmer »
-    expect(p.operation.valeurs["operation.repreneur"]).toBeUndefined();       // aucun choix multiple pré-coché sans source
+    expect(p.operation.source).toBe(SOURCES_PROPOSITION.frequent);            // frequent choice: always « to confirm »
+    expect(p.operation.valeurs["operation.repreneur"]).toBeUndefined();       // no multiple choice pre-ticked without a source
   });
   it("avec un site validé : métiers lus, distinctions et certifications tirées des faits gardés seulement", () => {
     const site = { metiers: ["Menuiseries sur mesure"], faits: [{ id: 1, fait: "Menuiseries sur mesure en bois.", categorie: "activite", valide: true }, { id: 2, fait: "Entreprise certifiée Qualibat.", categorie: "qualite", valide: true }, { id: 3, fait: "Livraison rapide.", categorie: "autre", valide: false }] };
     const p = propositions({ entreprise: menuiserie, reponses: { site } });
-    expect(p.activite.valeurs["activite.metiers"]).toEqual(["Menuiseries sur mesure"]);           // pré-coché : lu sur le site
-    expect(p.activite.autres).toEqual({ "activite.metiers": ["Travaux de menuiserie bois et PVC"] }); // proposé, décoché
+    expect(p.activite.valeurs["activite.metiers"]).toEqual(["Menuiseries sur mesure"]);           // pre-ticked: read on the website
+    expect(p.activite.autres).toEqual({ "activite.metiers": ["Travaux de menuiserie bois et PVC"] }); // proposed, unticked
     expect(p.activite.source).toBe(SOURCES_PROPOSITION.site);
-    expect(p.distinctions.valeurs["activite.distinctions"]).toEqual(["Sur mesure", "Certifications"]); // « rapide » : fait retiré, ignoré
+    expect(p.distinctions.valeurs["activite.distinctions"]).toEqual(["Sur mesure", "Certifications"]); // « rapide »: fact removed, ignored
     expect(p.distinctions.valeurs["activite.certifications"]).toEqual(["Qualibat"]);
     expect(p.perspectives).toBeUndefined();
   });

@@ -1,6 +1,7 @@
-// Livrables en une seule police, Geist (23/11/2026) : mémorandum, teaser, datapack et livrables du cours. Titres en
-// graisse 500, interlettrage -0.05em, interligne serré, réglages centralisés dans des variables CSS ; plus de Big
-// Shoulders ni d'Instrument Serif dans les livrables ; Instrument Serif retirée du dépôt (plus utilisée nulle part).
+// Deliverables in a single font, Geist (23/11/2026): memorandum, teaser, datapack and course deliverables. Titles in
+// weight 500, letter spacing -0.05em, tight line height, settings centralized in CSS variables; no more Big Shoulders
+// or
+// Instrument Serif in the deliverables; Instrument Serif removed from the repository (no longer used anywhere).
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -12,7 +13,7 @@ const racine = fileURLToPath(new URL("../", import.meta.url));
 const lire = (f) => readFileSync(join(racine, f), "utf8");
 const INTERDITES = /Big Shoulders|Instrument Serif|instrument-serif|big-shoulders/i;
 
-/** Règles CSS (sélecteur, déclarations) à plat, @media compris, sans les commentaires. */
+/** CSS rules (selector, declarations) flattened, @media included, without the comments. */
 function regles(css) {
   const sans = css.replace(/\/\*[\s\S]*?\*\//g, "");
   return [...sans.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({ selecteur: m[1].trim(), corps: m[2] }));
@@ -44,7 +45,7 @@ describe("mémorandum (memo-im.css, memo.js)", () => {
     expect(finale.corps).toMatch(/font-weight:\s*var\(--titre-graisse\)/);
     expect(finale.corps).toMatch(/letter-spacing:\s*var\(--titre-interlettrage\)/);
     expect(finale.corps).toMatch(/text-transform:\s*none/);
-    // la règle est la dernière à toucher ces titres : rien ne les remet en capitales après elle
+    // the rule is the last one to touch these titles: nothing puts them back in capitals after it
     const apres = css.slice(css.indexOf(finale.selecteur));
     expect(apres).not.toMatch(/uppercase/);
   });
@@ -122,7 +123,7 @@ describe("Instrument Serif retirée du dépôt", () => {
   });
 });
 
-// Le site entier en Geist (23/11/2026) : plus aucune police d'affiche dans les feuilles du site ni dans les pages
+// The whole site in Geist (23/11/2026): no display font left in the site's style sheets or in the pages
 describe("site : une seule police, Geist", () => {
   const feuilles = readdirSync(join(racine, "public/css")).filter((f) => f.endsWith(".css"));
   it("aucune feuille de public/css ne cite Big Shoulders ni Instrument Serif", () => {

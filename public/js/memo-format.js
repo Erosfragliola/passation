@@ -59,16 +59,16 @@ export function periodeExercices(annees = []) {
 }
 
 /**
- * Placement des photos du mémorandum (12 au plus) par leur catégorie et leur usage validés (« Utiliser comme proposé »),
- * l'ordre choisi par le dirigeant départageant à catégorie égale. Jamais deux fois la même photo ; en grand
- * (couverture, pages d'ouverture) seulement si sa largeur le permet ; une photo « à éviter » n'est jamais placée.
- *   couverture   : la mieux notée des locaux, de l'extérieur ou de l'atelier ;
- *   activite     : atelier et produits (deux au plus) ;
- *   realisations : les réalisations (page dédiée à partir de 3) ;
- *   equipe       : la photo d'équipe validée ;
- *   ouvertures   : les photos restantes assez grandes, pour les pages d'ouverture.
- * Une photo sans jugement validé (pas d'analyse, ou « Ignorer ») complète la couverture puis l'activité, dans l'ordre ;
- * elle n'est jamais prise pour l'équipe (on ne sait pas ce qu'elle montre).
+ * Placement of the memorandum's photos (12 at most) by their approved category and use (« Use as proposed »), the
+ * order chosen by the owner deciding for the same category. Never the same photo twice; large (cover, opening pages)
+ * only if its width allows it; a photo « to avoid » is never placed.
+ *   couverture   : the best rated of the premises, the outside or the workshop;
+ *   activite     : workshop and products (two at most);
+ *   realisations : completed work (dedicated page from 3 on);
+ *   equipe       : the approved team photo;
+ *   ouvertures   : the remaining photos that are large enough, for the opening pages.
+ * A photo without an approved assessment (no analysis, or « Ignore ») completes the cover then the business, in order;
+ * it is never used for the team (what it shows is unknown).
  * @param photos [{ n, decision, categorie, usage, analyse: { note }, largeur }]
  */
 export function placementPhotos(photos = [], { largeurPleinePage = 1200, realisationsMin = 3 } = {}) {

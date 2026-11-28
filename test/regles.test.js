@@ -5,7 +5,7 @@ import {
 } from "../public/js/regles.js";
 
 describe("étages (CA)", () => {
-  // Valeurs calculées à la main : 1 + round(2 × log10(CA / 100 000)), borné à [1, 8]
+  // Values calculated by hand: 1 + round(2 × log10(revenue / 100,000)), bounded to [1, 8]
   it.each([
     [50_000, 1], [100_000, 1], [1_000_000, 3], [10_000_000, 5], [100_000_000, 7], [200_000_000, 8], [5e9, 8],
   ])("CA %d € → %d étage(s)", (ca, n) => expect(etages(ca)).toBe(n));
@@ -78,12 +78,12 @@ describe("villes", () => {
   });
 });
 
-// La frise « Vous avez bâti » (redigerFrise, aVille, paliersCA) a été retirée le 23/11/2026 : seuls les tests
-// l'utilisaient depuis le retrait de l'ancienne page d'accueil (PR #27, « à relire par le propriétaire »).
+// The « You built » timeline (redigerFrise, aVille, paliersCA) was removed on 23/11/2026: only the tests had used it
+// since the old home page was removed (PR #27, « to be reviewed by the owner »).
 describe("effectif", () => {
   it("libellés d'effectif", () => {
     expect(libelleEffectif("01")).toBe("une ou deux personnes");
-    expect(libelleEffectif("53")).toMatch(/^plus de 10\s000 personnes$/); // espace fine insécable (typographie française)
+    expect(libelleEffectif("53")).toMatch(/^plus de 10\s000 personnes$/); // narrow no-break space (French typography)
     expect(libelleEffectif("00")).toBeNull();
   });
 });
@@ -106,14 +106,14 @@ describe("paramètres de maquette : cas limites", () => {
 });
 
 describe("personnages de maquette (effectif)", () => {
-  // Règle : 1 personnage par tranche entamée de 10 salariés, sur la borne basse de la tranche INSEE ;
-  // au moins 1 (le dirigeant), au plus 8 (4 sur mobile).
+  // Rule: 1 figure per started band of 10 employees, on the lower bound of the INSEE band;
+  // at least 1 (the owner), at most 8 (4 on mobile).
   it.each([
-    ["NN", 1], ["00", 1], ["01", 1], ["02", 1], ["03", 1], // 0 à 9 salariés → 1
-    ["11", 1],  // 10 à 19 : borne basse 10 → 10/10 = 1
-    ["12", 2],  // 20 à 49 : 20/10 = 2
-    ["21", 5],  // 50 à 99 : 50/10 = 5
-    ["22", 8],  // 100 à 199 : 10, plafonné à 8
+    ["NN", 1], ["00", 1], ["01", 1], ["02", 1], ["03", 1], // 0 to 9 employees → 1
+    ["11", 1],  // 10 to 19: lower bound 10 → 10/10 = 1
+    ["12", 2],  // 20 to 49: 20/10 = 2
+    ["21", 5],  // 50 to 99: 50/10 = 5
+    ["22", 8],  // 100 to 199: 10, capped at 8
     ["53", 8],
   ])("tranche %s → %i", (code, n) => expect(personnages(code)).toBe(n));
   it("tranche inconnue → 1 (le dirigeant)", () => expect(personnages(undefined)).toBe(1));

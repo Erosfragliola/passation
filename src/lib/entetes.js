@@ -1,13 +1,13 @@
-// En-têtes de sécurité ajoutés à toutes les réponses du Worker : pages, API, fichiers (audit SEC-04).
-// Les ressources statiques servies sans le Worker (css, js, img, fonts, video) reçoivent les leurs via public/_headers.
+// Security headers added to every response of the Worker: pages, API, files (audit SEC-04).
+// Static resources served without the Worker (css, js, img, fonts, video) get theirs through public/_headers.
 //
-// Politique de sécurité du contenu (CSP), établie d'après ce que le site charge réellement :
-// - scripts : uniquement les fichiers du site (aucun script en ligne, aucun gestionnaire onclick="…") ;
-// - styles : fichiers du site + attributs style="…" (présents dans les pages et posés par le JavaScript) ;
-// - images : le site, data:/blob:, et https: (logos et photos candidats lus sur le site de l'entreprise, affichés au
-//   dirigeant pour qu'il choisisse) ;
-// - polices, vidéos, appels réseau : le site seulement ; aucun cadre, aucun plug-in ; le site ne peut pas être
-//   affiché dans un cadre d'un autre site (frame-ancestors).
+// Content security policy (CSP), based on what the site actually loads:
+// - scripts: only the site's files (no inline script, no onclick="…" handler);
+// - styles: the site's files + style="…" attributes (present in the pages and set by the JavaScript);
+// - images: the site, data:/blob:, and https: (candidate logos and photos read on the company's website, shown to the
+//   owner so that they choose);
+// - fonts, videos, network calls: the site only; no frame, no plug-in; the site cannot be displayed in a frame of
+//   another site (frame-ancestors).
 export function politiqueContenu(https) {
   return [
     "default-src 'self'",
@@ -26,7 +26,7 @@ export function politiqueContenu(https) {
   ].join("; ");
 }
 
-/** En-têtes communs ; HSTS seulement en https (jamais en développement local, en http). */
+/** Common headers; HSTS only over https (never in local development, over http). */
 export function entetesSecurite(https) {
   return {
     "content-security-policy": politiqueContenu(https),
@@ -39,8 +39,10 @@ export function entetesSecurite(https) {
   };
 }
 
-/** Copie de la réponse avec les en-têtes de sécurité ; une réponse qui fixe déjà sa CSP (fichier servi avec
- *  « default-src 'none' ») garde la sienne, plus stricte. */
+/**
+ * Copy of the response with the security headers; a response that already sets its CSP (file served with
+ * « default-src 'none' ») keeps its own, stricter one.
+ */
 export function avecEntetes(reponse, url) {
   const r = new Response(reponse.body, reponse);
   for (const [k, v] of Object.entries(entetesSecurite(url.protocol === "https:"))) if (!r.headers.has(k)) r.headers.set(k, v);

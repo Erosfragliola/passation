@@ -1,5 +1,5 @@
-// Montants du parcours guidé : séparateurs de milliers de la langue, valeur enregistrée brute, bornes du curseur.
-// Valeurs attendues écrites à la main (espace fine insécable U+202F en français, comme Intl.NumberFormat fr-FR).
+// Amounts of the guided flow: the language's thousands separators, raw saved value, bounds of the slider.
+// Expected values written by hand (narrow no-break space U+202F in French, as Intl.NumberFormat fr-FR does).
 import { describe, it, expect } from "vitest";
 import { formaterSaisie, texteMontant, lireMontant, bornesCurseur } from "../public/js/montants.js";
 
@@ -46,15 +46,15 @@ describe("montants : curseur", () => {
     expect(bornesCurseur({ min: -20, max: 30 })).toEqual({ min: -20, max: 30, pas: 0.5 }); // 50 / 200 = 0,25 → 0,5
   });
   it("une valeur au-delà de la borne haute élargit le curseur (jamais tronquée)", () => {
-    expect(bornesCurseur({ min: 0, max: 250000, valeur: 410000 }).max).toBe(410000); // pas 5 000 : 410 000 est un multiple
+    expect(bornesCurseur({ min: 0, max: 250000, valeur: 410000 }).max).toBe(410000); // step 5,000: 410,000 is a multiple
   });
 });
 
 describe("curseur : bornes rondes des deux côtés (audit du 22/11/2026)", () => {
   it("une borne basse négative est arrondie au pas, jamais « −557 927 € »", () => {
-    // max 1 115 853 → pas = 10 000 (≈ 1/200 de l'écart arrondi au pas « rond ») ; min −278 963 → −280 000
+    // max 1,115,853 → step = 10,000 (≈ 1/200 of the range rounded to the « round » step); min −278,963 → −280,000
     const b = bornesCurseur({ min: -278_963, max: 1_115_853 });
-    expect(b).toEqual({ min: -280_000, max: 1_120_000, pas: 10_000 }); // calculé à la main
+    expect(b).toEqual({ min: -280_000, max: 1_120_000, pas: 10_000 }); // calculated by hand
     expect(b.min).toBeLessThanOrEqual(-278_963);
     expect(b.min).toBeGreaterThan(-278_963 - b.pas);
   });

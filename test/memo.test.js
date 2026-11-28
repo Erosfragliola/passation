@@ -1,4 +1,4 @@
-// Mémorandum « banque d'affaires » : chiffres calculés par le code. Valeurs attendues calculées à la main.
+// « Investment bank » memorandum: figures calculated by the code. Expected values calculated by hand.
 import { describe, it, expect } from "vitest";
 import { PARTIES_MEMO, compteResultat, tableauEbeRetraite, tableauEndettement, clientsPrincipaux, perimetre, sourcesChiffres, indicateurs, tcam, titreValide, SECTIONS_MEMO, profilMemo } from "../src/documents/memo.js";
 import { pontEbe, ebeNormatif, detteNette } from "../src/valuation/approfondie.js";
@@ -7,17 +7,17 @@ import { DETENTION, MURS, MURS_CESSION, QUESTIONS, champsVisibles } from "../pub
 
 const espaces = (s) => String(s).replace(/[  ]/g, " ");
 
-// Trois exercices détaillés. EBE = CA − achats − charges externes − impôts − personnel :
-// 2022 : 1 000 000 − 400 000 − 150 000 − 20 000 − 300 000 = 130 000
-// 2023 : 1 100 000 − 440 000 − 160 000 − 22 000 − 320 000 = 158 000
-// 2024 : 1 210 000 − 480 000 − 170 000 − 24 000 − 350 000 = 186 000
+// Three detailed fiscal years. EBITDA = revenue − purchases − external expenses − taxes − payroll:
+// 2022: 1,000,000 − 400,000 − 150,000 − 20,000 − 300,000 = 130,000
+// 2023: 1,100,000 − 440,000 − 160,000 − 22,000 − 320,000 = 158,000
+// 2024: 1,210,000 − 480,000 − 170,000 − 24,000 − 350,000 = 186,000
 const exercices = [
   { annee: 2022, chiffre_affaires: 1_000_000, achats_consommes: 400_000, charges_externes: 150_000, impots_taxes: 20_000, charges_personnel: 300_000, dotations_amortissements: 30_000, resultat_exploitation: 100_000, resultat_net: 70_000 },
   { annee: 2023, chiffre_affaires: 1_100_000, achats_consommes: 440_000, charges_externes: 160_000, impots_taxes: 22_000, charges_personnel: 320_000, dotations_amortissements: 32_000, resultat_exploitation: 126_000, resultat_net: 90_000 },
   { annee: 2024, chiffre_affaires: 1_210_000, achats_consommes: 480_000, charges_externes: 170_000, impots_taxes: 24_000, charges_personnel: 350_000, dotations_amortissements: 34_000, resultat_exploitation: 152_000, resultat_net: 110_000, emprunts: 300_000, tresorerie: 120_000 },
 ];
-// Retraitements : dirigeant 90 000 − 70 000 = +20 000 chaque année ; litige 2023 +15 000.
-// EBE retraité : 2022 150 000 ; 2023 158 000 + 20 000 + 15 000 = 193 000 ; 2024 206 000.
+// Adjustments: owner 90,000 − 70,000 = +20,000 each year; dispute 2023 +15,000.
+// Adjusted EBITDA: 2022 150,000; 2023 158,000 + 20,000 + 15,000 = 193,000; 2024 206,000.
 const pont = pontEbe(exercices, { remuneration_dirigeant_reelle: 90_000, remuneration_normative: 70_000, exceptionnels: [{ annee: 2023, libelle: "Litige prud'homal", montant: 15_000 }] });
 const resultat = {
   pont_ebe: pont,
@@ -153,8 +153,8 @@ describe("structure du mémorandum", () => {
     expect(titreValide("x".repeat(111))).toBeNull();
     expect(titreValide("")).toBeNull();
   });
-  // 24/11/2026 (partie C) : murs et loyer dans « Retraitements », détention et cession des murs dans « Dette nette et
-  // périmètre » (premier temps) ; cinq premiers clients repliés dans l'écran « Vos clients »
+  // 24/11/2026 (part C): premises and rent in « Adjustments », ownership and sale of the premises in « Net debt and
+  // scope » (first stage); top five customers folded in the « Your customers » screen
   it("parcours : détention des titres, murs (avec la cession s'ils appartiennent au dirigeant), cinq premiers clients", () => {
     const champs = (id) => QUESTIONS.find((q) => q.id === id).champs.map((c) => `${c.etape}.${c.cle}`);
     expect(champs("clients")).toContain("clients.principaux");

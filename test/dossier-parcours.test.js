@@ -7,15 +7,15 @@ import {
 import { NB_QUESTIONS, QUESTIONS } from "../public/js/parcours.js";
 import LANDING from "../src/contenu/fr/accueil.json";
 
-// Dossiers entièrement fictifs. Les valeurs attendues sont comptées à la main à partir de ces données, pas tirées du code.
-// 24/11/2026 (partie C) : deux temps, « Votre valorisation » (chiffres, retraitements, dette nette et périmètre, valeur)
-// puis « Votre mémorandum » (entreprise, photos et logo, équipe dirigeante, rédaction et relecture).
+// Entirely fictitious files. The expected values are counted by hand from these data, not taken from the code.
+// 24/11/2026 (part C): two stages, « Your valuation » (figures, adjustments, net debt and scope, value) then
+// « Your memorandum » (company, photos and logo, management team, drafting and review).
 const ID = "00000000-0000-4000-8000-000000000001";
-const sp = (t) => String(t).replace(/\s/g, " "); // espaces insécables → espaces
+const sp = (t) => String(t).replace(/\s/g, " "); // no-break spaces → spaces
 const titreQ = (id) => QUESTIONS.find((q) => q.id === id).titre;
 const exo = (x = {}) => ({ dernier: 2024, dernier_complet: false, recommandes: [2023, 2022], recommandes_manquants: [2023, 2022], anciens: [], ...x });
 const RIEN = { exercices_passes: false, retraitements: false, dette: false, validation: null, photos: false, equipe: false };
-// 18/11/2026 à 10:00 heure de Paris (UTC+1) = 09:00 UTC : 1 794 960 000 s à minuit UTC + 9 × 3 600 = 1 794 992 400 s
+// 18/11/2026 at 10:00 Paris time (UTC+1) = 09:00 UTC: 1,794,960,000 s at midnight UTC + 9 × 3,600 = 1,794,992,400 s
 const LE = 1_794_992_400;
 const VALIDE = { exercices_passes: false, retraitements: true, dette: true, validation: { le: LE } };
 const dossier = (x = {}) => ({
@@ -29,7 +29,7 @@ const section = (cle, court, x = {}) => ({ cle, court, titre: court, redigee: tr
 const CHECKLIST_COMPLETE = ["statuts", "kbis", "pv-ag", "capital", "liasses", "situation", "emprunts", "balances", "organigramme", "registre", "contrats-cles", "accords", "clients", "contrats", "cgv", "baux", "equipements", "marques", "assurances", "litiges", "autorisations"];
 const memoComplet = { photos: [{}, {}], sections: [section("synthese", "Synthèse"), section("organisation", "Équipe")] };
 const trois = exo({ dernier_complet: true, recommandes_manquants: [] });
-/** Premier temps fait (3 exercices, retraitements, dette, valeur validée), mémorandum pas commencé. */
+/** First stage done (3 fiscal years, adjustments, debt, approved value), memorandum not started. */
 const valorise = (x = {}) => dossier({ ...x, parcours: { exercices: trois, exercices_complets: 3, valorisation: valo, ...(x.parcours || {}), etapes: { ...VALIDE, ...(x.parcours?.etapes || {}) } } });
 const toutFait = (x = {}) => dossier({ documents: tousDocs, checklist: CHECKLIST_COMPLETE, ...x,
   parcours: { exercices: trois, exercices_complets: 3, questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100, restantes: [] }, valorisation: valo, ...(x.parcours || {}),
@@ -45,7 +45,7 @@ describe("constantes : deux temps, une seule liste d'étapes", () => {
   it("chaque écran du parcours guidé appartient à une étape de cette liste", () => {
     const cles = new Set(ETAPES_PARCOURS.map(([k]) => k));
     for (const e of Object.values(ETAPE_DE_L_ECRAN)) expect(cles.has(e)).toBe(true);
-    expect(ETAPE_DE_L_ECRAN.exercices).toBe("chiffres"); // les deux exercices précédents font partie de « Vos chiffres »
+    expect(ETAPE_DE_L_ECRAN.exercices).toBe("chiffres"); // the two earlier fiscal years belong to « Your figures »
     expect(ETAPE_DE_L_ECRAN.site).toBe("entreprise");
     expect(ETAPE_DE_L_ECRAN.questions).toBe("entreprise");
     expect([ETAPE_DE_L_ECRAN.retraitements, ETAPE_DE_L_ECRAN.dette, ETAPE_DE_L_ECRAN.valeur]).toEqual(["retraitements", "dette", "valeur"]);
@@ -59,7 +59,7 @@ describe("constantes : deux temps, une seule liste d'étapes", () => {
   });
   it("date en heure de Paris", () => {
     expect(dateCourte(LE)).toBe("18/11/2026");
-    // 18/11 à 23:30 UTC (1 794 960 000 + 23,5 × 3 600 = 1 795 044 600) : déjà le 19/11 à Paris (00:30)
+    // 18/11 at 23:30 UTC (1,794,960,000 + 23.5 × 3,600 = 1,795,044,600): already 19/11 in Paris (00:30)
     expect(dateCourte(1_795_044_600)).toBe("19/11/2026");
     expect(dateCourte(null)).toBeNull();
   });
@@ -145,19 +145,19 @@ describe("premier temps : retraitements, dette, valeur à valider", () => {
     // Audit of 25/11/2026: no « Vérifier et valider » link in the value card; the « Next step » card leads there
     expect(e.valeur.lien).toBeNull();
     expect(e.prochaine).toMatchObject({ cas: "reprendre", href: `/espace/demarrer/?dossier=${ID}&etape=valeur` });
-    expect(e.taches.some((t) => t.cle === "questions")).toBe(false); // le mémorandum attend la validation
-    // 1 + 3 étapes faites (chiffres, retraitements, dette) sur 9 = 44,4 → 44 %
+    expect(e.taches.some((t) => t.cle === "questions")).toBe(false); // the memorandum waits for the approval
+    // 1 + 3 steps done (figures, adjustments, debt) out of 9 = 44.4 → 44%
     expect(e.avancement).toBe(44);
   });
   it("le passage de l'estimation express à la valeur des titres est calculé (montré sur « Votre valeur » seulement)", () => {
     const e = etatParcours(valorise());
-    // 310 – 520 k€ → 420 – 560 k€ ; EBE identique (80 k€) ; trésorerie nette 110 k€
+    // €310K – €520K → €420K – €560K; same EBITDA (€80K); net cash €110K
     expect(sp(e.valeur.ecart)).toBe("Votre fourchette passe de 310 – 520 k€ à 420 – 560 k€ : comptes 2024 confirmés et trésorerie nette de 110 k€ ajoutée.");
   });
 });
 
-// 24/11/2026 : jamais de changement d'état silencieux. Un dossier rédigé avant les deux temps garde ses réponses et
-// reçoit un bandeau qui mène à l'écran concerné ; des chiffres modifiés après leur validation sont « à revalider ».
+// 24/11/2026: never a silent change of state. A file drafted before the two stages keeps its answers and gets a
+// banner that leads to the screen concerned; figures changed after their approval are « to approve again ».
 describe("bandeaux : nouvelle étape pour les anciens dossiers, chiffres modifiés depuis la validation", () => {
   it("dossier rédigé avant les deux temps (mémorandum et teaser, rien de validé) : bandeau « Nouvelle étape », vers le premier écran à faire", () => {
     const e = etatParcours(dossier({ documents: tousDocs, parcours: { exercices: trois, valorisation: valo, questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100, restantes: [] } } }), memoComplet);
@@ -207,7 +207,7 @@ describe("second temps : le mémorandum, après la validation des chiffres", () 
     const f = etatParcours(valorise({ parcours: { questions: { faits: NB_QUESTIONS, total: NB_QUESTIONS, pct: 100, restantes: [] } } }));
     expect(f.taches.map((t) => t.cle)).toEqual(["photos", "equipe", "redaction"]);
     expect(f.taches[0].href).toBe(`/espace/demarrer/?dossier=${ID}&etape=photos`);
-    // 1 + 5 étapes sur 9 = 66,7 → 67 %
+    // 1 + 5 steps out of 9 = 66.7 → 67%
     expect(f.avancement).toBe(67);
   });
   it("sous 40 % de réponses, la rédaction n'est pas proposée", () => {
@@ -235,7 +235,7 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
   });
   it("action principale : dossier prêt, tâches toutes facultatives → « Relire et envoyer votre dossier » (écran final)", () => {
     expect(e.action).toMatchObject({ texte: "Relire et envoyer votre dossier", bouton: "Relire et envoyer", href: `/espace/demarrer/?dossier=${ID}&etape=pret`, cle: "relecture" });
-    expect(e.secondaires.map((x) => x.titre)).toEqual(["Ajouter une photo de l'atelier ou des produits", "Compléter 2 points du mémorandum"]); // 2 au plus
+    expect(e.secondaires.map((x) => x.titre)).toEqual(["Ajouter une photo de l'atelier ou des produits", "Compléter 2 points du mémorandum"]); // 2 at most
   });
   it("mémorandum à relire, les trois autres prêts, avec leurs dates", () => {
     expect(e.documents.map((x) => x.etat)).toEqual(["pret", "pret", "pret", "a-relire"]);
@@ -259,7 +259,7 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
     const f = etatParcours(d, { photos: [{}], sections: [section("synthese", "Synthèse"), section("marche", "Marché", { redigee: false }), section("clients", "Clients", { redigee: false })] });
     expect(f.pret).toBe(false);
     expect(f.etapes[7].etat).toBe("actuelle");
-    // 1 + 7 étapes sur 9 = 88,9 → 89 %
+    // 1 + 7 steps out of 9 = 88.9 → 89%
     expect(f.avancement).toBe(89);
     expect(f.taches[0]).toMatchObject({ titre: "Rédiger 2 chapitres du mémorandum", detail: "Chapitres : Marché, Clients" });
     const final = ecranFinal(f);
@@ -273,12 +273,12 @@ describe("dossier rédigé, prêt, avec des recommandations facultatives", () =>
   });
 });
 
-// Défaut 9 du 24/11/2026 : « Votre dossier est rédigé », « 99 % du parcours » et « Répondre à la dernière question »
+// Defect 9 of 24/11/2026: « Your file is drafted », « 99% of the flow » and « Answer the last question »
 describe("un seul état pour le parcours guidé et la page du dossier ; l'écran final ne se contredit pas", () => {
   it("rédigé mais une question restante : ni prêt ni 100 %, la question nommée des deux côtés", () => {
     const e = etatParcours(toutFait({ parcours: { questions: { faits: NB_QUESTIONS - 1, total: NB_QUESTIONS, pct: 88, restantes: ["perspectives"] } } }), memoComplet);
     expect(e.pret).toBe(false);
-    // 1 + 7 étapes + 0,88 (questions au prorata) = 8,88 sur 9 = 98,7 → 99 % (jamais 100 tant que ce n'est pas prêt)
+    // 1 + 7 steps + 0.88 (questions pro rata) = 8.88 out of 9 = 98.7 → 99% (never 100 until it is ready)
     expect(e.avancement).toBe(99);
     const f = ecranFinal(e);
     const attendu = `Répondre à la question « ${titreQ("perspectives")} »`;
@@ -338,8 +338,8 @@ describe("explication de l'écart entre l'estimation express et la valorisation"
     expect(sp(explicationEcart(est, v))).toBe("Votre fourchette passe de 290 – 490 k€ à 550 – 750 k€ : comptes 2024 confirmés et trésorerie nette de 260 k€ ajoutée.");
   });
   it("EBE retraité, décotes, dettes et fonds de roulement : chaque cause nommée avec son montant", () => {
-    // Express : EBE 100 k€ × 4 à 6 = 400 – 600 k€. Approfondie : EBE normatif 120 k€ × 4 à 6 × 0,9 − 50 k€ − 20 k€
-    //   bas = 432 − 70 = 362 k€ → « 360 » ; haut = 648 − 70 = 578 k€ → « 580 »
+    // Quick: EBITDA €100K × 4 to 6 = €400K – €600K. Detailed: normalized EBITDA €120K × 4 to 6 × 0.9 − €50K − €20K
+    //   low = 432 − 70 = €362K → « 360 »; high = 648 − 70 = €578K → « 580 »
     const e2 = { ...est, agregat: 100_000, bas: 400_000, haut: 600_000 };
     const v = { bas: 362_000, haut: 578_000, annees: [2022, 2023, 2024], ebe_normatif: 120_000, dette_nette: 50_000, facteur_decotes: 0.9, ecart_bfr: -20_000, hors_exploitation: 0 };
     expect(sp(explicationEcart(e2, v))).toBe("Votre fourchette passe de 400 – 600 k€ à 360 – 580 k€ : comptes 2022 à 2024 confirmés, excédent brut d'exploitation (EBE) retenu de 120 k€ au lieu de 100 k€, décotes de 10 % appliquées, dettes nettes de 50 k€ déduites et besoin en fonds de roulement inférieur à la normale : −20 k€.");
@@ -349,7 +349,7 @@ describe("explication de l'écart entre l'estimation express et la valorisation"
     expect(sp(explicationEcart({ ...est, methode: "multiple_ca", agregat: 2_000_000 }, v))).toBe("Votre fourchette passe de 290 – 490 k€ à 550 – 750 k€ : comptes 2024 confirmés et calcul sur l'excédent brut d'exploitation (EBE) au lieu du chiffre d'affaires.");
   });
   it("même fourchette affichée, ou estimation express absente : pas de phrase", () => {
-    expect(explicationEcart(est, { bas: 291_000, haut: 488_000, annees: [2024] })).toBeNull(); // 290 – 490 k€ des deux côtés
+    expect(explicationEcart(est, { bas: 291_000, haut: 488_000, annees: [2024] })).toBeNull(); // €290K – €490K on both sides
     expect(explicationEcart({ statut: "comptes_absents" }, { bas: 1, haut: 2 })).toBeNull();
     expect(explicationEcart(est, null)).toBeNull();
   });
@@ -385,7 +385,7 @@ describe("lecture du mémorandum", () => {
   it("mémorandum absent → null", () => expect(lectureMemo(null)).toBeNull());
 });
 
-// PR #14 (audit, points 15 et 16) : un document vide n'est pas « prêt » ; un seul décompte des points à compléter.
+// PR #14 (audit, points 15 and 16): an empty document is not « ready »; a single count of the points to complete.
 describe("teaser et mémorandum vides ou incomplets", () => {
   const teaser = (...contenus) => ({ teaser: { sections: ["accroche", "activite", "chiffres", "atouts", "operation"].map((cle, i) => ({ cle, titre: cle, contenu: contenus[i] ?? "" })) } });
   const plein = teaser("Texte", "Texte", "Texte", "Texte", "Texte");
@@ -417,7 +417,7 @@ describe("teaser et mémorandum vides ou incomplets", () => {
 });
 
 describe("décompte unique des points à compléter", () => {
-  // 2 points dans « Équipe » + 1 dans « Marché » = 3, comptés une fois chacun
+  // 2 points in « Team » + 1 in « Market » = 3, each counted once
   const memo = { sections: [section("organisation", "Équipe", { a_completer: ["Nombre de salariés", "Date d'arrivée"] }), section("marche", "Marché", { a_completer: ["Taille du marché"] }), section("synthese", "Synthèse")] };
   it("liste « chapitre : point », dans l'ordre des chapitres", () => {
     expect(pointsACompleter(memo)).toEqual(["Équipe : Nombre de salariés", "Équipe : Date d'arrivée", "Marché : Taille du marché"]);

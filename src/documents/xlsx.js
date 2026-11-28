@@ -13,11 +13,11 @@ const xml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 export const S = { normal: 0, titre: 1, entete: 2, euros: 3, eurosGras: 4, pct: 5, saisieEuros: 6, saisiePct: 7, petit: 8, pct2: 9, nombre: 10, gras: 11, saisieNombre: 12, sousTitre: 13, eurosTotal: 14, saisieTexte: 15, confidentiel: 16, section: 17, lien: 18, titreCouverture: 19, unite: 20, sectionNumero: 21, enteteDroite: 22, controle: 23, note: 24 };
 export const COULEURS = { creme: "FBF6EC", espresso: "231E18", sable: "EADFCB", vert: "1E3A2E", cuivre: "A8653A", cuivreTexte: "8E5530", pierreTexte: "696155", vertPale: "E3EBE6" };
 const C = (h) => `FF${h}`;
-// Police du datapack (23/11/2026) : Excel n'embarque pas de police web, et un lecteur qui n'a pas Geist verrait la police
-// par défaut de son tableur. On garde donc Arial, présente partout ; « Geist » est une option d'une ligne (ici).
-// Tailles alignées sur l'échelle des titres des autres livrables (44 / 32 / 24 / 18 px), divisée par deux en points :
-// couverture 22, titre d'onglet 16, sous-titre 12, texte 10, notes 9. Excel ne connaît que le normal et le gras :
-// les titres (graisse 500 ailleurs) restent en gras, le texte courant en normal.
+// Font of the datapack (23/11/2026): Excel does not embed a web font, and a reader without Geist would see their
+// spreadsheet's default font. So Arial, available everywhere, is kept; « Geist » is a one-line option (here).
+// Sizes aligned on the title scale of the other deliverables (44 / 32 / 24 / 18 px), halved in points: cover 22, tab
+// title 16, subtitle 12, text 10, notes 9. Excel only knows regular and bold: titles (weight 500 elsewhere) stay bold,
+// running text regular.
 export const POLICE_DATAPACK = "Arial";
 export const TAILLES_DATAPACK = { couverture: 22, titre: 16, sousTitre: 12, texte: 10, note: 9 };
 const T = TAILLES_DATAPACK;

@@ -1,10 +1,10 @@
-// Règles de traduction des données d'une entreprise en maquette et en frise.
-// Module pur (aucun accès réseau ni DOM) : utilisé par le Worker, le navigateur et les tests.
+// Rules that turn a company's data into a model and a timeline.
+// Pure module (no network or DOM access): used by the Worker, the browser and the tests.
 import { t as tr, nombre } from "./i18n.js";
 
 /**
- * Tranches d'effectif salarié de la nomenclature INSEE (variable « tranche d'effectif salarié » du
- * répertoire Sirene, reprise par recherche-entreprises.api.gouv.fr). NN = unité non employeuse.
+ * Headcount bands of the INSEE classification (variable « tranche d'effectif salarié » of the Sirene directory, taken
+ * up by recherche-entreprises.api.gouv.fr). NN = non-employer unit.
  */
 export const TRANCHES = {
   NN: { min: 0, max: 0 },
@@ -25,7 +25,7 @@ export const TRANCHES = {
   "53": { min: 10000, max: null },
 };
 
-/** Libellé INSEE de la tranche d'effectif salarié : « 20 à 49 salariés », « non employeuse », « 0 salarié ». */
+/** INSEE label of the headcount band: « 20 à 49 salariés », « non employeuse », « 0 salarié ». */
 export function libelleSalaries(code) {
   if (code === "NN") return tr("regles.salaries.non_employeuse");
   const t = TRANCHES[code];
@@ -40,15 +40,15 @@ export function libelleSalaries(code) {
 const ETAGES_MAX = 8;
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
 
-/** Dernier exercice dont la valeur est connue ({annee, valeur} ou null). */
+/** Latest fiscal year whose value is known ({annee, valeur} or null). */
 export function dernier(serie) {
   const connus = (serie || []).filter((p) => Number.isFinite(p.valeur)).sort((a, b) => a.annee - b.annee);
   return connus.at(-1) ?? null;
 }
 
 /**
- * Nombre d'étages selon le chiffre d'affaires : 1 + round(2 × log10(CA / 100 000)), borné à [1, 8].
- * < 100 k€ → 1 ; 10 M€ → 5 ; 8 étages à partir d'environ 178 M€. CA inconnu → null (étages en pointillés).
+ * Number of floors from the revenue: 1 + round(2 × log10(revenue / 100,000)), bounded to [1, 8].
+ * < €100K → 1; €10M → 5; 8 floors from about €178M. Unknown revenue → null (floors in dotted lines).
  */
 export function etages(ca) {
   if (!Number.isFinite(ca)) return null;
@@ -57,8 +57,8 @@ export function etages(ca) {
 }
 
 /**
- * Fenêtres allumées : milieu de la tranche, 1 fenêtre par tranche de 5 salariés (arrondi supérieur),
- * au moins 1 (le bureau du dirigeant), plafonné au nombre de fenêtres du bâtiment.
+ * Lit windows: middle of the band, 1 window per band of 5 employees (rounded up), at least 1 (the owner's office),
+ * capped at the number of windows of the building.
  */
 export function fenetresAllumees(codeTranche, totalFenetres) {
   const t = TRANCHES[codeTranche];
@@ -67,7 +67,7 @@ export function fenetresAllumees(codeTranche, totalFenetres) {
   return clamp(Math.ceil(milieu / 5), 1, totalFenetres);
 }
 
-/** Arbres selon la marge d'EBE (EBE / CA). Marge négative ou inconnue : aucun arbre, sans autre signal. */
+/** Trees from the EBITDA margin (EBITDA / revenue). Negative or unknown margin: no tree, with no other signal. */
 export function arbres(ca, ebe) {
   if (!Number.isFinite(ca) || !Number.isFinite(ebe) || ca <= 0) return { nombre: 0, haie: false, marge: null };
   const marge = ebe / ca;
@@ -78,7 +78,7 @@ export function arbres(ca, ebe) {
   return { nombre: 4, haie: true, marge };
 }
 
-/** Archétype du bâtiment selon la section NAF. */
+/** Archetype of the building from the NAF section. */
 export function archetype(section) {
   const s = String(section || "").toUpperCase();
   if (s === "C") return "industrie";
@@ -93,8 +93,8 @@ export function archetype(section) {
 }
 
 /**
- * Croissance du CA ramenée à 3 ans : entre le dernier exercice et l'exercice connu le plus proche de 3 ans
- * plus tôt (écart de 2 à 4 ans). Null si impossible.
+ * Revenue growth brought to 3 years: between the latest fiscal year and the known fiscal year closest to 3 years
+ * earlier (gap of 2 to 4 years). Null if impossible.
  */
 export function croissance3ans(serie) {
   const connus = (serie || []).filter((p) => Number.isFinite(p.valeur) && p.valeur > 0);
@@ -111,7 +111,7 @@ export function croissance3ans(serie) {
 
 export const echafaudage = (serieCA) => (croissance3ans(serieCA) ?? 0) > 0.2;
 
-/** Paramètres complets de la maquette, calculés à partir des données normalisées. */
+/** Full parameters of the model, computed from the normalized data. */
 export function parametresMaquette(d, totalFenetres = 24) {
   const ca = dernier(d.ca)?.valeur ?? null;
   const ebeDernier = dernier(d.ebe);
@@ -130,13 +130,13 @@ export function parametresMaquette(d, totalFenetres = 24) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Frise « Vous avez bâti »
+// « You built » timeline
 // ---------------------------------------------------------------------------------------------
 
 const sansAccents = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 export const memeVille = (a, b) => sansAccents(a) === sansAccents(b);
 
-// i18n:ignorer-debut : mots de liaison des noms de villes (casseVille), jamais affichés tels quels.
+// i18n:ignorer-debut: linking words of the city names (casseVille), never displayed as they are.
 const PETITS_MOTS = new Set(["de", "du", "des", "la", "le", "les", "en", "sur", "sous", "et", "lès", "lez", "aux", "au"]);
 /** « SAINT-LEONARD » → « Saint-Leonard », « ERDRE-EN-ANJOU » → « Erdre-en-Anjou ». */
 export function casseVille(v) {
@@ -144,11 +144,11 @@ export function casseVille(v) {
   if (v !== v.toUpperCase()) return v.charAt(0).toUpperCase() + v.slice(1);
   return v.toLowerCase()
     .replace(/[^\s\-']+/g, (mot, i) => (i > 0 && PETITS_MOTS.has(mot) ? mot : mot.charAt(0).toUpperCase() + mot.slice(1)))
-    // L'INSEE écrit « VILLENEUVE D ASCQ » : on rétablit l'élision devant une voyelle.
+    // INSEE writes « VILLENEUVE D ASCQ »: the elision before a vowel is restored.
     .replace(/(^|[\s-])([DdLl])[\s-]+(?=[AEIOUYÉÈÂÎÔaeiouyéèâîô])/g, (_, avant, lettre) => `${avant}${avant ? lettre.toLowerCase() : lettre.toUpperCase()}'`);
 }
 
-/** Personnages de maquette : 1 par tranche entamée de 10 salariés (borne basse INSEE), entre 1 et max. */
+/** Model figures: 1 per started band of 10 employees (INSEE lower bound), between 1 and max. */
 export function personnages(code, max = 8) {
   const t = TRANCHES[code];
   return clamp(Math.ceil((t?.min ?? 0) / 10), 1, max);

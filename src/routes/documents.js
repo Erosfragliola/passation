@@ -1,12 +1,12 @@
-// Documents du dossier (le contrôle de propriété est fait par routeDossiers avant l'appel).
-//   GET  /api/dossiers/:id/documents/datapack              datapack Excel (copie versionnée dans R2)
-//   GET  /api/dossiers/:id/documents/teaser                dernier teaser (sections)
-//   POST /api/dossiers/:id/documents/teaser                rédaction par Claude + contrôle d'anonymat (2 essais)
-//   PUT  /api/dossiers/:id/documents/teaser/sections/:cle  modification par le dirigeant (contrôlée aussi)
-//   GET  /api/dossiers/:id/documents/memo                  mémorandum (sections, site, tableau financier)
-//   POST /api/dossiers/:id/documents/memo/site { url }     lecture du site → faits à valider, termes, logos
-//   POST|GET /api/dossiers/:id/documents/memo/logo         logo (adresse ou fichier PNG/JPEG/WebP ≤ 1 Mo) / affichage
-//   POST|PUT /api/dossiers/:id/documents/memo/sections/:cle  rédaction par Claude / modification
+// Documents of the file (the ownership check is done by routeDossiers before the call).
+//   GET  /api/dossiers/:id/documents/datapack              Excel datapack (versioned copy in R2)
+//   GET  /api/dossiers/:id/documents/teaser                latest teaser (sections)
+//   POST /api/dossiers/:id/documents/teaser                drafting by Claude + anonymity check (2 attempts)
+//   PUT  /api/dossiers/:id/documents/teaser/sections/:cle  edit by the owner (checked too)
+//   GET  /api/dossiers/:id/documents/memo                  memorandum (sections, website, financial table)
+//   POST /api/dossiers/:id/documents/memo/site { url }     reading of the website → facts to approve, terms, logos
+//   POST|GET /api/dossiers/:id/documents/memo/logo         logo (address or PNG/JPEG/WebP file ≤ 1 MB) / display
+//   POST|PUT /api/dossiers/:id/documents/memo/sections/:cle  drafting by Claude / edit
 import { projet } from "../documents/nom-de-code.js";
 import { json } from "../http.js";
 import { maintenant } from "../lib/auth.js";
@@ -29,7 +29,7 @@ import { normaliserEquipe, idValide, nomsEquipe } from "../../public/js/equipe.j
 import { t as tr, locale } from "../../public/js/i18n.js";
 
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-/** Erreur de Claude : clé refusée ou crédit épuisé (message commun), sinon la réponse propre à l'appel. */
+/** Claude error: key refused or credit exhausted (common message), otherwise the response specific to the call. */
 const erreurClaude = (e, autre) => { const c = erreurClaudeConnue(e); return c ? json({ erreur: c.erreur, message: c.message }, c.statut) : autre(); };
 const slug = (s) => String(s || "entreprise").toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "entreprise";
 const NOMS_DE_CODE = ["Cèdre", "Atlas", "Orme", "Saule", "Granit", "Boréal", "Héron", "Ancre", "Ivoire", "Rivage", "Mistral", "Sextant", "Tilleul", "Basalte", "Fanal", "Aubier"];
@@ -62,12 +62,12 @@ async function prochaineVersion(env, dossierId, kind) {
   return (p?.v ?? 0) + 1;
 }
 
-/** Contexte commun : entreprise, valorisation, réponses, interdits d'anonymat. */
+/** Common context: company, valuation, answers, anonymity exclusions. */
 async function contexte(env, row) {
   const entreprise = { ...JSON.parse(row.company_json || "{}"), siren: row.siren };
   const { resultat, entree } = await calculer(env, row);
   const reponses = await lireReponses(env, row.id);
-  // Noms des dirigeants (page équipe du mémorandum) : jamais dans le teaser
+  // Names of the managers (team page of the memorandum): never in the teaser
   const interdits = termesInterdits(entreprise, montantsSensibles({ entreprise, resultat, entree }), [...(reponses.site?.termes || []), ...nomsEquipe(reponses.equipe)]);
   return { entreprise, resultat, entree, reponses, interdits };
 }
@@ -115,7 +115,7 @@ async function genererTeaser(env, row) {
   }
   let code = row.code_name;
   if (!code) {
-    // Même nom de code que celui montré sur la page d'accueil (tiré du code NAF) ; au hasard sans code NAF
+    // Same code name as the one shown on the home page (drawn from the NAF code); random without a NAF code
     code = ctx.entreprise.naf ? projet(ctx.entreprise.naf) : `Projet ${NOMS_DE_CODE[crypto.getRandomValues(new Uint8Array(1))[0] % NOMS_DE_CODE.length]}`;
     await env.DB.prepare("UPDATE dossiers SET code_name = ? WHERE id = ?").bind(code, row.id).run();
   }
@@ -145,19 +145,19 @@ async function modifierSection(request, env, row, cle) {
   return json(await lireTeaser(env, row));
 }
 
-// ---------------------------------------------------------------- Mémorandum
+// ---------------------------------------------------------------- Memorandum
 
 async function enregistrerSite(env, row, site) {
   await env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, 'site', ?, ?)
     ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(row.id, JSON.stringify(site), maintenant()).run();
 }
 
-/** Réponses proposées au dirigeant (registres, comptes, site validé, choix fréquents), à valider dans le parcours. */
+/** Answers proposed to the owner (registries, accounts, approved website, frequent choices), to approve in the flow. */
 async function propositionsDossier(env, row) {
   const reponses = await lireReponses(env, row.id);
   const entreprise = JSON.parse(row.company_json || "{}");
   let tcam = null;
-  try { const { resultat, entree } = await calculer(env, row); tcam = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) }).cr.tcam?.ca ?? null; } catch { /* sans comptes : pas de croissance proposée */ }
+  try { const { resultat, entree } = await calculer(env, row); tcam = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres: await lireChiffres(env, row.id) }).cr.tcam?.ca ?? null; } catch { /* no accounts: no proposed growth */ }
   return propositions({ entreprise, tcam, reponses });
 }
 
@@ -193,11 +193,11 @@ async function lireMemo(env, row) {
     // Limits given to the browser (one definition, src/config.js): photos are reduced there before being sent
     photos_max: PHOTOS.max, photos_poids_max: PHOTOS.poidsMax, logo_poids_max: LOGO_POIDS_MAX, analyse_photos: claudeDisponible(env),
     site: site ? { ...site, photos: undefined } : null, logo: Boolean(site?.logo),
-    // Équipe dirigeante : réponses sans les chemins des photos (servies par leur route), parcours rédigés
+    // Management team: answers without the photo paths (served by their route), backgrounds drafted
     equipe: { personnes: (reponses.equipe?.personnes || []).map(({ photo, ...x }) => ({ ...x, a_photo: Boolean(photo) })) },
     relecture: remarquesProposables(reponses.relecture, lues),
     marche: reponses.marche ? { ...reponses.marche, essais_restants: Math.max(0, MARCHE.etudesMaxParDossier - (reponses.marche.essais || 0)) } : { essais_restants: MARCHE.etudesMaxParDossier },
-    // Chiffres calculés par le code : compte de résultat, EBE retraité, endettement, clients, périmètre, sources
+    // Figures calculated by the code: income statement, adjusted EBITDA, debt, customers, scope, sources
     chiffres: { compte_resultat: ch.cr, ebe_retraite: ch.ebeR, endettement: ch.endet, clients: ch.clients, perimetre: ch.perimetre, sources: ch.sources,
       exercices_exclus: (entree?.exercices_exclus || []).map((x) => x.annee) },
     memo: doc ? { id: doc.id, version: doc.version, cree_le: doc.created_at } : null,
@@ -220,7 +220,7 @@ export function remarquesProposables(relecture, sections) {
   }) };
 }
 
-/** Structure du secteur (annuaire public, cache 24 h) : jamais bloquante, null si indisponible. */
+/** Structure of the industry (public directory, 24-hour cache): never blocking, null if unavailable. */
 async function secteurDe(env, entreprise) {
   const region = regionDe(entreprise.code_postal), naf = entreprise.naf;
   if (!region || !naf) return null;
@@ -234,14 +234,17 @@ async function secteurDe(env, entreprise) {
   return structureSecteur(comptes, { naf, region, trancheEntreprise: entreprise.tranche_effectif?.code, date });
 }
 
-/** Étude de marché : structure du secteur (registres) + faits sourcés trouvés sur le web, à valider par le dirigeant. */
+/**
+ * Market research: structure of the industry (registries) + sourced facts found on the web, to be approved by the
+ * owner.
+ */
 async function etudeMarche(env, row) {
   if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: tr("serveur.documents.etude_marche_encore_activee") }, 503);
   const reponses = await lireReponses(env, row.id);
   const avant = reponses.marche || {};
   if ((avant.essais || 0) >= MARCHE.etudesMaxParDossier) return json({ erreur: "limite", message: tr("serveur.documents.marche_limite", { n: MARCHE.etudesMaxParDossier }) }, 429);
-  // Une étude déjà en cours (page rechargée, deuxième onglet) n'est pas relancée : on répond « en cours », avant le
-  // quota (qui décompte un traitement à chaque appel) pour qu'une demande en double ne consomme rien
+  // A study already running (page reloaded, second tab) is not started again: the answer is « running », before the
+  // quota (which counts one processing per call) so that a duplicate request uses nothing
   const t0 = maintenant();
   if (avant.en_cours && t0 - avant.en_cours < 180 && !(avant.date > avant.en_cours)) return json({ erreur: "en_cours", message: tr("serveur.documents.etude_marche_deja_cours") }, 409);
   const quota = await quotaClaude(env, row.user_id, CLAUDE_QUOTAS.traitementsParJourParUtilisateur);
@@ -257,7 +260,7 @@ async function etudeMarche(env, row) {
   try { r = await rechercherMarche(env, contexte); }
   catch (e) {
     console.log(`Étude de marché impossible : ${e.message}`);
-    // La structure du secteur (registres publics) est gardée même si la recherche web échoue ou dure trop
+    // The structure of the industry (public registries) is kept even if the web search fails or takes too long
     await ecrire({ ...avant, secteur: secteur ?? avant.secteur ?? null, en_cours: null, essais: (avant.essais || 0) + 1 });
     return erreurClaude(e, () => json({ erreur: "recherche_echouee", message: tr("serveur.documents.recherche_chiffres_marche_abouti") }, 502));
   }
@@ -328,8 +331,8 @@ async function servirLogo(env, row) {
   return site?.logo ? servirImage(env, row, site.logo.cle, site.logo.type) : json({ erreur: "introuvable" }, 404);
 }
 
-// Photos de l'entreprise : 12 au plus (PHOTOS.max, src/config.js), 3 Mo chacune, PNG/JPEG/WebP, avec attestation du
-// dirigeant. Dimensions et empreinte enregistrées : une même image n'est jamais ajoutée deux fois.
+// Photos of the company: 12 at most (PHOTOS.max, src/config.js), 3 MB each, PNG/JPEG/WebP, with the owner's
+// attestation. Dimensions and fingerprint saved: the same image is never added twice.
 async function ajouterPhoto(request, env, row) {
   let octets, attestation = false, legende = "", origine = null;
   if ((request.headers.get("content-type") || "").startsWith("multipart/form-data")) {
@@ -344,7 +347,7 @@ async function ajouterPhoto(request, env, row) {
     attestation = corps?.attestation === true; legende = String(corps?.legende || "").slice(0, 120);
     const u = adressePublique(corps?.url || "");
     if (!u) return json({ erreur: "adresse_invalide", message: tr("serveur.documents.adresse_image_invalide") }, 400);
-    origine = u.href; // photo choisie sur le site : son adresse, pour la retrouver dans la grille du parcours
+    origine = u.href; // photo chosen on the website: its address, to find it again in the flow's grid
     try {
       const r = await fetchPublic(u, { signal: AbortSignal.timeout(10_000) });
       octets = new Uint8Array(await r.arrayBuffer());
@@ -365,7 +368,7 @@ async function ajouterPhoto(request, env, row) {
   await enregistrerSite(env, row, site);
   return json(await lireMemo(env, row));
 }
-/** Un fichier du stockage n'est servi ou supprimé que s'il appartient au dossier (jamais un chemin venu d'ailleurs). */
+/** A stored file is served or deleted only if it belongs to the file (never a path coming from elsewhere). */
 const aCeDossier = (row, cle) => typeof cle === "string" && cle.startsWith(`dossiers/${row.id}/`) && !cle.includes("..");
 async function retirerPhoto(env, row, n) {
   const site = (await lireReponses(env, row.id)).site || {};
@@ -387,10 +390,10 @@ async function servirPhoto(env, row, n) {
 }
 
 /**
- * Jugement d'une photo par Claude (vision). Le navigateur envoie l'image réduite (plus grand côté ≤ 1 568 px) : le
- * serveur vérifie sa taille dans l'en-tête, puis l'envoie seule à Claude. Compté dans les quotas. Sans clé Claude :
- * 503, la photo reste utilisable sans analyse. Le jugement est enregistré à côté de la photo ; rien n'est appliqué
- * sans « Utiliser comme proposé ».
+ * Assessment of a photo by Claude (vision). The browser sends the reduced image (longest side ≤ 1,568 px): the
+ * server checks its size in the header, then sends it alone to Claude. Counted in the quotas. Without a Claude key:
+ * 503, the photo stays usable without analysis. The assessment is saved next to the photo; nothing is applied without
+ * « Use as proposed ».
  */
 async function analyserPhotoRoute(request, env, row, n) {
   if (!claudeDisponible(env)) return json({ erreur: "analyse_indisponible", message: tr("serveur.documents.analyse_photo_indisponible") }, 503);
@@ -407,7 +410,7 @@ async function analyserPhotoRoute(request, env, row, n) {
   let analyse;
   try { analyse = await analyserPhoto(env, enBase64(octets), MIME[ext]); }
   catch (e) { console.log(`Analyse de photo impossible : ${e.message}`); return erreurClaude(e, () => json({ erreur: "analyse_echouee", message: tr("serveur.documents.analyse_photo_echouee") }, 502)); }
-  // Relu après l'appel : une photo retirée ou réordonnée entre-temps n'est pas confondue avec une autre
+  // Read again after the call: a photo removed or reordered in the meantime is not mistaken for another
   const actuel = (await lireReponses(env, row.id)).site || {};
   const cible = actuel.photos?.find((p) => p.cle === site.photos[Number(n)].cle);
   if (!cible) return json({ erreur: "introuvable" }, 404);
@@ -418,7 +421,7 @@ async function analyserPhotoRoute(request, env, row, n) {
 }
 const enBase64 = (o) => { let s = ""; for (let i = 0; i < o.length; i += 0x8000) s += String.fromCharCode(...o.subarray(i, i + 0x8000)); return btoa(s); };
 
-/** « Utiliser comme proposé » (catégorie, usage et légende du jugement) ou « Ignorer » (rien n'est imposé). */
+/** « Use as proposed » (category, use and caption of the assessment) or « Ignore » (nothing is imposed). */
 async function deciderPhoto(request, env, row, n) {
   let corps; try { corps = await request.json(); } catch { corps = null; }
   const site = (await lireReponses(env, row.id)).site || {};
@@ -431,7 +434,9 @@ async function deciderPhoto(request, env, row, n) {
   await enregistrerSite(env, row, site);
   return json(await lireMemo(env, row));
 }
-/** Nouvel ordre des photos : une permutation complète des numéros actuels (à catégorie égale, l'ordre départage). */
+/**
+ * New order of the photos: a complete permutation of the current numbers (for the same category, the order decides).
+ */
 async function ordonnerPhotos(request, env, row) {
   let corps; try { corps = await request.json(); } catch { corps = null; }
   const site = (await lireReponses(env, row.id)).site || {};
@@ -443,7 +448,7 @@ async function ordonnerPhotos(request, env, row) {
   return json(await lireMemo(env, row));
 }
 
-// ---------------------------------------------------------------- Équipe dirigeante : photos (consentement obligatoire)
+// ---------------------------------------------------------------- Management team: photos (consent required)
 async function photoEquipe(request, env, row, pid) {
   if (!idValide(pid)) return json({ erreur: "introuvable" }, 404);
   const reponses = await lireReponses(env, row.id);
@@ -455,7 +460,7 @@ async function photoEquipe(request, env, row, pid) {
   if (m === "DELETE") { if (p.photo && aCeDossier(row, p.photo.cle)) await env.FILES.delete(p.photo.cle); delete p.photo; }
   else if (m === "POST") {
     let fd; try { fd = await request.formData(); } catch { fd = null; }
-    // RGPD : sans le consentement de la personne, la photo n'est ni enregistrée ni affichée
+    // GDPR: without the person's consent, the photo is neither saved nor displayed
     if (fd?.get("consentement") !== "oui") return json({ erreur: "consentement", message: tr("serveur.documents.consentement_photo") }, 400);
     const f = fd.get("fichier");
     if (!f || typeof f === "string") return json({ erreur: "fichier_absent", message: tr("serveur.documents.aucun_fichier_recu") }, 400);
@@ -475,7 +480,7 @@ async function photoEquipe(request, env, row, pid) {
 async function documentMemo(env, row) {
   const doc = await env.DB.prepare("SELECT id FROM documents WHERE dossier_id = ? AND kind = 'memo' ORDER BY version DESC LIMIT 1").bind(row.id).first();
   if (doc) return doc.id;
-  // Identifiant fixe par dossier + INSERT OR IGNORE : des rédactions lancées en parallèle partagent le même document
+  // Fixed identifier per file + INSERT OR IGNORE: drafts started in parallel share the same document
   const id = `memo-${row.id}`;
   await env.DB.prepare("INSERT OR IGNORE INTO documents (id, dossier_id, kind, version, r2_key, created_at) VALUES (?, ?, 'memo', 1, '', ?)").bind(id, row.id, maintenant()).run();
   return id;
@@ -508,7 +513,7 @@ async function modifierSectionMemo(request, env, row, cle) {
   if (!SECTIONS_MEMO.some((x) => x.cle === cle)) return json({ erreur: "section_inconnue" }, 404);
   let corps; try { corps = await request.json(); } catch { corps = null; }
   if (typeof corps?.contenu !== "string") return json({ erreur: "requete_invalide" }, 400);
-  // Le titre et l'accroche rédigés sont conservés, sauf si le dirigeant fournit un nouveau titre
+  // The drafted title and hook are kept, unless the owner provides a new title
   const docId = await documentMemo(env, row);
   const avant = await env.DB.prepare("SELECT content_md FROM document_sections WHERE document_id = ? AND section_key = ?").bind(docId, cle).first();
   let v = {}; try { v = avant ? JSON.parse(avant.content_md) : {}; } catch { v = {}; }
@@ -518,12 +523,14 @@ async function modifierSectionMemo(request, env, row, cle) {
   return json(await lireMemo(env, row));
 }
 
-// ---------------------------------------------------------------- Relecture critique (« l'œil du banquier »)
+// ---------------------------------------------------------------- Critical review (« the banker's eye »)
 const ecrireReponse = (env, row, etape, donnees) => env.DB.prepare(`INSERT INTO answers (dossier_id, step, data_json, updated_at) VALUES (?, ?, ?, ?)
   ON CONFLICT(dossier_id, step) DO UPDATE SET data_json = excluded.data_json, updated_at = excluded.updated_at`).bind(row.id, etape, JSON.stringify(donnees), maintenant()).run();
 
-/** Claude relit les chapitres rédigés comme un repreneur exigeant : 10 remarques au plus, enregistrées, à accepter
- *  (« Oui, corriger ») ou écarter une par une. Une remarque sur un chiffre n'a jamais de correction. */
+/**
+ * Claude reviews the drafted chapters like a demanding buyer: 10 remarks at most, saved, to accept
+ * (« Oui, corriger ») or dismiss one by one. A remark about a figure never has a correction.
+ */
 async function relectureRoute(env, row) {
   if (!claudeDisponible(env)) return json({ erreur: "redaction_indisponible", message: tr("serveur.documents.redaction_automatique_encore_activee") }, 503);
   const memo = await lireMemo(env, row);
@@ -544,8 +551,10 @@ async function relectureRoute(env, row) {
   return json(await lireMemo(env, row));
 }
 
-/** « Oui, corriger » : le passage est remplacé dans le chapitre, sans toucher à aucun chiffre, et la concision est
- *  recontrôlée ; « Non » : la remarque est écartée, rien ne change. */
+/**
+ * « Oui, corriger »: the passage is replaced in the chapter, without touching any figure, and the length is
+ * checked again; « Non »: the remark is dismissed, nothing changes.
+ */
 async function repondreRemarque(request, env, row, rid) {
   let corps; try { corps = await request.json(); } catch { corps = null; }
   const reponses = await lireReponses(env, row.id);

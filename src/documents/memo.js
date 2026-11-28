@@ -240,7 +240,7 @@ export function chiffresMemo({ entreprise = {}, entree, resultat, reponses = {},
 /** Data sent to Claude for a section (only what the section needs). */
 export function donneesSection(section, { entreprise, entree, resultat, reponses = {}, lignesChiffres = {} }) {
   const site = reponses.site || {};
-  // Faits validés, sauf ceux que les registres contredisent tant que le dirigeant n'a pas tranché
+  // Approved facts, except those the registries contradict as long as the owner has not decided
   const faitsValides = faitsUtilisables((site.faits || []).filter((f) => f.valide), entreprise);
   const ch = chiffresMemo({ entreprise, entree, resultat, reponses, lignesChiffres });
   const d = {};
@@ -272,7 +272,7 @@ export function donneesSection(section, { entreprise, entree, resultat, reponses
     else if (cle === "endettement") d.endettement = ch.endet ? { exercice: ch.endet.annee, composantes: ch.endet.lignes.map((l) => ({ libelle: l.libelle, montant: montant(l.montant) })), total: ch.endet.total < 0 ? `trésorerie nette de ${montant(-ch.endet.total)}` : `dette nette de ${montant(ch.endet.total)}`, bfr_jours_de_ca: ch.endet.bfr.map((b) => ({ annee: b.annee, jours: b.jours == null ? null : Math.round(b.jours) })) } : null;
     else if (cle.startsWith("faits:")) { const cats = cle.slice(6).split(","); d.faits_du_site_valides = faitsValides.filter((f) => cats.includes(f.categorie)).map((f) => ({ fait: f.fait, source: f.source })); }
   }
-  // Réponses du dirigeant aux demandes « à compléter » de ce chapitre (panneau d'amélioration)
+  // Owner's answers to the « to be completed » requests of this chapter (improvement panel)
   const complements = (reponses.complements?.[section.cle] || []).filter((c) => c?.demande && c?.reponse);
   if (complements.length) d.complements_du_dirigeant = complements.map((c) => ({ demande: String(c.demande).slice(0, 300), reponse: String(c.reponse).slice(0, 600) }));
   return d;

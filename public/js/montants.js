@@ -1,16 +1,16 @@
-// Montants et nombres du parcours guidé : champ formaté en direct (séparateurs de milliers de la langue) et curseur
-// synchronisé. La valeur enregistrée reste un nombre brut. Une valeur proposée (donnée publique, valeur neutre) est
-// affichée comme telle et n'est jamais enregistrée sans action du dirigeant.
-// Partie pure (formatage, lecture, bornes) testée dans test/montants.test.js ; partie DOM (champMontant) en bas.
+// Amounts and numbers of the guided flow: field formatted as the owner types (the language's thousands
+// separators) and a synchronized slider. The value saved stays a raw number. A proposed value (public data, neutral
+// value) is shown as such and is never saved without an action of the owner.
+// Pure part (formatting, reading, bounds) tested in test/montants.test.js; DOM part (champMontant) at the bottom.
 import { t, langue, locale, lireNombreSaisi } from "./i18n.js";
 
-/** Séparateur décimal de la langue (« , » en français, « . » en anglais). */
+/** Decimal separator of the language (« , » in French, « . » in English). */
 export const separateurDecimal = (l = langue()) => (l === "fr" ? "," : ".");
 
 /**
- * Texte saisi → texte reformaté avec séparateurs de milliers, sans changer ce qui a été tapé : chiffres, signe moins
- * en tête, une partie décimale (au plus `decimales` chiffres) si la langue la permet. « 1234567 » → « 1 234 567 » en
- * français (espace fine insécable, comme Intl), « 1,234,567 » en anglais.
+ * Text typed → text reformatted with thousands separators, without changing what was typed: digits, leading minus
+ * sign, a decimal part (at most `decimales` digits) if the language allows it. « 1234567 » → « 1 234 567 » in French
+ * (narrow no-break space, as Intl does), « 1,234,567 » in English.
  */
 export function formaterSaisie(texte, { decimales = 0, l = langue() } = {}) {
   const s = String(texte ?? "");
@@ -24,7 +24,7 @@ export function formaterSaisie(texte, { decimales = 0, l = langue() } = {}) {
   return `${negatif ? "-" : ""}${groupe}${apres != null ? dec + apres : ""}`;
 }
 
-/** Montant affiché, unité comprise : « 1 234 567 € » ; « €1,234,567 » ; « 12 % » ; « 12% ». */
+/** Amount shown, unit included: « 1 234 567 € »; « €1,234,567 »; « 12 % »; « 12% ». */
 export function texteMontant(n, unite = "€", l = langue()) {
   if (n == null || !Number.isFinite(n)) return "";
   const decimales = unite === "%" && !Number.isInteger(n) ? 1 : 0;
@@ -33,28 +33,28 @@ export function texteMontant(n, unite = "€", l = langue()) {
   return l === "fr" ? `${x} €` : `€${x}`;
 }
 
-/** Saisie → nombre (null si vide, NaN si illisible), selon les règles de la langue (i18n.lireNombreSaisi). */
+/** Entry → number (null if empty, NaN if unreadable), following the language's rules (i18n.lireNombreSaisi). */
 export const lireMontant = (texte, l = langue()) => lireNombreSaisi(String(texte ?? "").replace(/−/g, "-"), l);
 
-/** Bornes et pas du curseur : un pas « rond » d'environ 1/200 de l'écart, la valeur toujours incluse. */
+/** Bounds and step of the slider: a « round » step of about 1/200 of the range, the value always included. */
 export function bornesCurseur({ min = 0, max, valeur = null }) {
   let haut = Number.isFinite(max) && max > min ? max : min + 100;
   if (Number.isFinite(valeur) && valeur > haut) haut = valeur;
   const brut = (haut - min) / 200;
   const puissance = 10 ** Math.floor(Math.log10(Math.max(brut, 1e-9)));
   const pas = [1, 2, 5, 10].map((k) => k * puissance).find((p) => p >= brut) || puissance;
-  // Bornes « rondes » des deux côtés (une borne basse négative comme −557 927 € troublait le dirigeant)
+  // « Round » bounds on both sides (a negative lower bound such as −557,927 € confused the owner)
   const bas = min < 0 ? Math.floor(min / pas) * pas : min;
   return { min: bas, max: Math.ceil(haut / pas) * pas, pas: pas >= 1 ? Math.round(pas) : pas };
 }
 
 // ------------------------------------------------------------------ Composant (navigateur)
 /**
- * Champ formaté + curseur synchronisés.
- * @param o.id identifiant du champ ; o.libelle libellé du curseur (lecteurs d'écran) ; o.unite « € » ou « % »
- * @param o.valeur valeur enregistrée (ou null) ; o.proposition valeur proposée, montrée mais non enregistrée
- * @param o.min, o.max bornes du curseur ; o.decimales chiffres après la virgule autorisés
- * @returns élément racine ; .lire() → { valeur, confirmee } (valeur null si rien saisi ni confirmé)
+ * Formatted field + synchronized slider.
+ * @param o.id identifier of the field; o.libelle label of the slider (screen readers); o.unite « € » or « % »
+ * @param o.valeur saved value (or null); o.proposition proposed value, shown but not saved
+ * @param o.min, o.max bounds of the slider; o.decimales digits allowed after the decimal point
+ * @returns root element; .lire() → { valeur, confirmee } (valeur null if nothing typed or confirmed)
  */
 export function champMontant(o) {
   const unite = o.unite || "€", decimales = o.decimales ?? (unite === "%" ? 1 : 0);
@@ -75,8 +75,8 @@ export function champMontant(o) {
   if (unite === "€" && langue() === "en") boite.append(u, champ); else boite.append(champ, u);
   const curseur = document.createElement("input");
   Object.assign(curseur, { type: "range", min: String(b.min), max: String(b.max), step: String(b.pas) });
-  // Rien de saisi ni de proposé : le curseur se pose sur 0 (ou la borne la plus proche) et reste estompé, pour ne pas
-  // faire croire à une valeur ; il s'active dès que le dirigeant tape ou fait glisser
+  // Nothing typed or proposed: the slider sits on 0 (or the nearest bound) and stays faded, so as not to suggest a
+  // value; it becomes active as soon as the owner types or drags
   curseur.value = String(depart ?? Math.min(Math.max(0, b.min), b.max));
   if (depart == null) racine.classList.add("vide");
   curseur.setAttribute("aria-label", o.libelle || "");
@@ -101,7 +101,7 @@ export function champMontant(o) {
     const fin = champ.value.length - (champ.selectionStart ?? champ.value.length);
     champ.value = formaterSaisie(champ.value, { decimales });
     const pos = Math.max(0, champ.value.length - fin);
-    try { champ.setSelectionRange(pos, pos); } catch { /* champ masqué */ }
+    try { champ.setSelectionRange(pos, pos); } catch { /* hidden field */ }
     const n = lireMontant(champ.value);
     if (n != null && !Number.isNaN(n)) curseur.value = String(Math.min(Math.max(n, b.min), b.max));
     confirmer(); peindre();
@@ -112,7 +112,7 @@ export function champMontant(o) {
   });
   peindre();
   racine.confirmer = () => { confirmer(); peindre(); };
-  /** Nouvelle proposition (par exemple : suit un autre montant de l'écran), tant que rien n'est confirmé. */
+  /** New proposal (for example: follows another amount of the screen), as long as nothing is confirmed. */
   racine.proposer = (v) => {
     if (confirmee) return false;
     proposee = v != null && Number.isFinite(v);

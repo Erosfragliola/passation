@@ -1,15 +1,17 @@
-// Pages du mémorandum : remplissage mesuré à la surface, fusion des pages presque vides, numérotation et sommaire.
-// Fonctions pures (rectangles et listes en entrée), testées dans test/memo-pages.test.js ; la page du mémorandum
-// (memo.js) leur passe les mesures du navigateur.
+// Pages of the memorandum: filling measured by area, merging of almost empty pages, numbering and contents.
+// Pure functions (rectangles and lists as input), tested in test/memo-pages.test.js; the memorandum page (memo.js)
+// passes them the browser's measurements.
 
-/** Seuil de fusion : une page qui couvre moins de 16 % de sa zone de contenu (un tiers d'une page pleine, qui couvre
- *  45 à 55 %) est fusionnée avec sa voisine de la même partie. Choix du propriétaire, 24/11/2026. */
+/**
+ * Merge threshold: a page that covers less than 16% of its content area (a third of a full page, which covers 45 to
+ * 55%) is merged with its neighbour of the same part. Owner's choice, 24/11/2026.
+ */
 export const SEUIL_PAGE_VIDE = 0.16;
 
 /**
- * Part de la zone de contenu couverte par du texte, des tableaux, des graphiques ou des photos : une grille de nx × ny
- * points posée sur la zone ; un point compte s'il tombe dans au moins un rectangle (lignes de texte, images).
- * @param zone { left, top, width, height } ; @param rects [{ left, top, right, bottom }] ; @returns 0 à 1
+ * Share of the content area covered by text, tables, charts or photos: a grid of nx × ny points laid on the area;
+ * a point counts if it falls in at least one rectangle (text lines, images).
+ * @param zone { left, top, width, height }; @param rects [{ left, top, right, bottom }]; @returns 0 to 1
  */
 export function surfaceCouverte(zone, rects, nx = 64, ny = 36) {
   if (!zone || !(zone.width > 0) || !(zone.height > 0)) return 0;
@@ -26,10 +28,10 @@ export function surfaceCouverte(zone, rects, nx = 64, ny = 36) {
 }
 
 /**
- * Fusions à tenter, dans l'ordre : chaque page sous le seuil est rapprochée de la page suivante de la même partie
- * (à défaut, de la précédente). Une page n'entre que dans une fusion ; les pages non fusionnables (couverture,
- * ouvertures, sommaire, glossaire, avertissement, « Éléments à compléter ») ne sont jamais touchées.
- * @param pages [{ partie, couverture, fusionnable }] dans l'ordre du document ; @returns [[receveuse, donneuse]] (index)
+ * Merges to try, in order: each page under the threshold is brought next to the following page of the same part
+ * (otherwise, the previous one). A page takes part in one merge only; pages that cannot be merged (cover, openings,
+ * contents, glossary, disclaimer, « Éléments à compléter ») are never touched.
+ * @param pages [{ partie, couverture, fusionnable }] in document order; @returns [[receiving, giving]] (indexes)
  */
 export function planFusion(pages, seuil = SEUIL_PAGE_VIDE) {
   const pris = new Set(), plan = [];
@@ -45,11 +47,13 @@ export function planFusion(pages, seuil = SEUIL_PAGE_VIDE) {
 }
 
 /**
- * Numéros « partie.page » et pages du sommaire, recalculés après fusion : une page d'ouverture fixe la partie ; une
- * suite garde le numéro de sa page ; chaque chapitre renvoie à la première page qui le porte (une page fusionnée en
- * porte plusieurs).
- * @param pages [{ type: "ouverture"|"page"|"hors", partie, sections: [cle], suite, fusion: [cle des chapitres rapprochés] }]
- * @returns { numeros: [string|null], pageDe: { cle: n° de page (1…) }, numeroDe: { cle: "2.3" }, ouvertures: { partie: n° } }
+ * Numbers « part.page » and pages of the contents, computed again after merging: an opening page sets the part; a
+ * continuation keeps the number of its page; each chapter points to the first page that carries it (a merged page
+ * carries several).
+ * @param pages [{ type: "ouverture"|"page"|"hors", partie, sections: [cle], suite, fusion: [keys of the chapters
+ * brought together] }]
+ * @returns { numeros: [string|null], pageDe: { cle: page number (1…) }, numeroDe: { cle: "2.3" }, ouvertures: { partie:
+ * n° } }
  */
 export function numeroter(pages) {
   const numeros = [], pageDe = {}, numeroDe = {}, ouvertures = {};
@@ -61,8 +65,8 @@ export function numeroter(pages) {
     const num = `${partie}.${Math.max(1, n)}`;
     numeros.push(num);
     for (const cle of p.sections || []) { if (!(cle in pageDe) && !(p.fusion || []).includes(cle)) { pageDe[cle] = k + 1; numeroDe[cle] = num; } }
-    // Chapitre rapproché sur la page d'un autre (fusion) : son propre numéro, à la suite, pour que le sommaire ne
-    // répète jamais un numéro ; la page suivante continue après lui
+    // Chapter brought onto another one's page (merge): its own number, next in line, so that the contents never repeat
+    // a number; the following page continues after it
     for (const cle of p.fusion || []) { if (!(cle in pageDe)) { n++; pageDe[cle] = k + 1; numeroDe[cle] = `${partie}.${n}`; } }
   });
   return { numeros, pageDe, numeroDe, ouvertures };

@@ -1,14 +1,14 @@
-// Plan B de la soutenance : vidéo du parcours complet, enregistrée en local, sans Brevo ni clé Claude, avec une
-// entreprise et des chiffres entièrement fictifs (« Menuiserie Exemple », SIREN 000000018, chiffres de docs/DEMO.md).
+// Plan B for the oral: video of the full flow, recorded locally, without Brevo or a Claude key, with a company and
+// figures that are entirely fictitious (« Menuiserie Exemple », SIREN 000000018, figures of docs/DEMO.md).
 //
-// Usage : npm run demo:video -- [--langue fr|en] [--sortie chemin.webm] [--chrome chemin]
-// Une fois par machine : npx playwright-core install ffmpeg (encodeur vidéo de Playwright, 1,4 Mo, dans son cache).
-// Le script :
-//   1. place l'entreprise fictive dans le cache de la base locale (aucun appel aux API publiques pour elle) ;
-//   2. lance son propre « wrangler dev » (port 8798) et lit le code de connexion dans son terminal ;
-//   3. filme en 1440 × 900 : accueil, recherche, connexion, dossier, valorisation, mémorandum, teaser ;
-//   4. arrête le serveur et écrit la vidéo (.webm, lisible dans Chrome, VLC, QuickTime récent).
-// Rien n'est envoyé en production ; le dossier créé reste dans la base locale (.wrangler/).
+// Usage: npm run demo:video -- [--langue fr|en] [--sortie path.webm] [--chrome path]
+// Once per machine: npx playwright-core install ffmpeg (Playwright's video encoder, 1.4 MB, in its cache).
+// The script:
+//   1. puts the fictitious company in the cache of the local database (no call to the public APIs for it);
+//   2. starts its own « wrangler dev » (port 8798) and reads the sign-in code in its terminal;
+//   3. films at 1440 × 900: home page, search, sign-in, file, valuation, memorandum, teaser;
+//   4. stops the server and writes the video (.webm, playable in Chrome, VLC, recent QuickTime).
+// Nothing is sent to production; the file created stays in the local database (.wrangler/).
 import { spawn, execFileSync } from "node:child_process";
 import { mkdtempSync, readdirSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -23,21 +23,21 @@ const CHROME = arg("chrome", "/Applications/Google Chrome.app/Contents/MacOS/Goo
 const PORT = 8798, B = `http://127.0.0.1:${PORT}`, P = LANGUE === "fr" ? "/fr" : "";
 const EMAIL = `demo-${Date.now()}@exemple.fr`;
 
-// 1. Entreprise fictive dans le cache local (date lointaine : jamais périmée)
+// 1. Fictitious company in the local cache (date far in the future: never expires)
 const sql = `INSERT OR REPLACE INTO api_cache (key, payload_json, fetched_at) VALUES ('maquette:v2:000000018', '${JSON.stringify(FICTIVE).replace(/'/g, "''")}', 4102444800)`;
 execFileSync("npx", ["wrangler", "d1", "migrations", "apply", "passation", "--local"], { stdio: "ignore" });
 execFileSync("npx", ["wrangler", "d1", "execute", "passation", "--local", "--command", sql], { stdio: "ignore" });
 // Local rate limits reset (10 code requests per hour and per IP: repeated recordings would hit them)
 execFileSync("npx", ["wrangler", "d1", "execute", "passation", "--local", "--command", "DELETE FROM rate_limits"], { stdio: "ignore" });
 
-// 2. Serveur local ; le code de connexion s'affiche dans sa sortie (src/lib/email.js, mode développement)
+// 2. Local server; the sign-in code appears in its output (src/lib/email.js, development mode)
 let journal = "";
 const serveur = spawn("npx", ["wrangler", "dev", "--port", String(PORT), "--ip", "127.0.0.1"], { stdio: ["ignore", "pipe", "pipe"], detached: true });
 serveur.stdout.on("data", (d) => { journal += d; });
 serveur.stderr.on("data", (d) => { journal += d; });
-const arreter = () => { try { process.kill(-serveur.pid); } catch { /* déjà arrêté */ } };
+const arreter = () => { try { process.kill(-serveur.pid); } catch { /* already stopped */ } };
 process.on("exit", arreter);
-for (let i = 0; i < 60; i++) { try { if ((await fetch(B + "/api/health")).ok) break; } catch { /* démarrage */ } await new Promise((r) => setTimeout(r, 1000)); }
+for (let i = 0; i < 60; i++) { try { if ((await fetch(B + "/api/health")).ok) break; } catch { /* starting */ } await new Promise((r) => setTimeout(r, 1000)); }
 
 const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
 async function code() {
@@ -62,7 +62,7 @@ const navigateur = await chromium.launch({ executablePath: CHROME });
 const ctx = await navigateur.newContext({ viewport: { width: 1440, height: 900 }, recordVideo: { dir: dossierVideo, size: { width: 1440, height: 900 } } });
 const page = await ctx.newPage();
 try {
-  // Accueil et estimation express
+  // Home page and quick estimate
   await page.goto(`${B}${P}/`, { waitUntil: "networkidle" });
   await attendre(3500); // animation d'ouverture
   await defiler(page, 600, 500);
@@ -106,7 +106,7 @@ try {
     await defiler(page, 450, 650);
   }
 } finally {
-  await ctx.close(); // écrit la vidéo
+  await ctx.close(); // writes the video
   await navigateur.close();
   arreter();
 }

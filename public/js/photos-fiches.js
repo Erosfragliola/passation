@@ -1,7 +1,7 @@
-// Liste des photos choisies, partagée par le parcours guidé (« Votre logo et vos photos ») et la page du mémorandum :
-// une fiche de jugement sous chaque photo (catégorie, note, description, usage et légende proposés, « Pas pour le
-// teaser »), « Utiliser comme proposé » et « Ignorer », ordre modifiable (flèches au clavier, glisser à la souris).
-// Rien n'est appliqué sans un clic du dirigeant. Les analyses manquantes sont lancées une par une, en arrière-plan.
+// List of the photos chosen, shared by the guided flow (« Your logo and your photos ») and the memorandum page:
+// an assessment card under each photo (category, rating, description, proposed use and caption, « Not for the
+// teaser »), « Use as proposed » and « Ignore », order that can be changed (arrows with the keyboard, drag with the
+// mouse). Nothing is applied without a click of the owner. Missing analyses are started one by one, in the background.
 import { t } from "./i18n.js";
 import { analyserPhoto } from "./photo-analyse.js";
 import { endroitPhoto } from "./depot-photos.js";
@@ -12,9 +12,9 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
-const enCours = new Set(); // analyses demandées
-let file = Promise.resolve(); // une analyse à la fois : chacune réécrit les photos du dossier
-const echouees = new Map(); // photo (adresse) → message d'indisponibilité
+const enCours = new Set(); // analyses requested
+let file = Promise.resolve(); // one analysis at a time: each one rewrites the file's photos
+const echouees = new Map(); // photo (address) → unavailability message
 
 async function appel(url, options = {}) {
   const enJson = options.body && !(options.body instanceof FormData);
@@ -25,9 +25,9 @@ async function appel(url, options = {}) {
 }
 
 /**
- * @param memo réponse de l'API du mémorandum (photos, photos_max, analyse_photos)
- * @param baseMemo « /api/dossiers/:id/documents/memo » ; @param maj(memo) redessine après un changement
- * @param message(texte, erreur) zone de message de la page ; @param focus identifiant d'élément à refocaliser
+ * @param memo response of the memorandum API (photos, photos_max, analyse_photos)
+ * @param baseMemo « /api/dossiers/:id/documents/memo »; @param maj(memo) redraws after a change
+ * @param message(texte, erreur) message area of the page; @param focus identifier of the element to focus again
  */
 export function listePhotos({ memo, baseMemo, maj, message, version = Date.now(), focus = null }) {
   const photos = memo?.photos || [];
@@ -75,7 +75,7 @@ export function listePhotos({ memo, baseMemo, maj, message, version = Date.now()
         el("button", { type: "button", class: "lien-simple", onclick: () => changer(appel(`${baseMemo}/photos/${p.n}`, { method: "DELETE" })) }, t("espace.js.retirer"))),
       el("div", { class: "ph-texte" }, fiche, ou));
     liste.append(li);
-    // Analyse manquante : lancée en arrière-plan, une photo à la fois
+    // Missing analysis: started in the background, one photo at a time
     if (!a && memo.analyse_photos && !enCours.has(cle) && !echouees.has(cle)) {
       enCours.add(cle);
       file = file.then(() => analyserPhoto(baseMemo, p.n, version)

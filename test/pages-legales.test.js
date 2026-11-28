@@ -1,5 +1,5 @@
-// Pages légales : identité de l'éditeur lue dans src/contenu/cles.json (rubrique « legal »), lignes vides retirées,
-// bandeau « Brouillon » tant que la relecture n'est pas datée, limites d'usage = constantes de src/config.js.
+// Legal pages: publisher's identity read in src/contenu/cles.json (« legal » section), empty lines removed, « Draft »
+// banner as long as the review is not dated, usage limits = constants of src/config.js.
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { texte, condition } from "../src/contenu/rendu.js";

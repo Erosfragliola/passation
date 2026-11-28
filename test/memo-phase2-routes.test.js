@@ -1,7 +1,7 @@
-// Mémorandum, phase 2 (24/11/2026) : routes. Photos (12 au plus, doublon refusé, analyse par Claude simulée,
-// « Utiliser comme proposé », ordre, chemin de fichier jamais pris du navigateur), équipe dirigeante (consentement
-// obligatoire, suppression avec le dossier, jamais dans le teaser), relecture critique (« Oui, corriger » sans chiffre
-// touché, « Non » sans effet), message « crédit épuisé » pour toutes les rédactions. Claude est simulé : aucun appel.
+// Memorandum, phase 2 (24/11/2026): routes. Photos (12 at most, duplicate refused, analysis by a simulated Claude,
+// « Use as proposed », order, file path never taken from the browser), management team (consent required, deleted with
+// the file, never in the teaser), critical review (« Oui, corriger » with no figure touched, « Non » with no effect),
+// « credit exhausted » message for every drafting. Claude is simulated: no call.
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { readFileSync } from "node:fs";
 
@@ -10,7 +10,7 @@ vi.mock("../src/lib/claude.js", async (original) => ({
   claudeDisponible: (env) => Boolean(env.ANTHROPIC_API_KEY),
   redigerTeaser: vi.fn(), redigerSectionMemo: vi.fn(), analyserPhoto: vi.fn(), relireMemo: vi.fn(), extraireSite: vi.fn(), rechercherMarche: vi.fn(), lireLiasse: vi.fn(),
 }));
-// Annuaire public simulé (aucun appel réseau pendant les tests)
+// Simulated public directory (no network call during the tests)
 vi.mock("../src/sources/secteur.js", async (original) => ({ ...(await original()), compterSecteur: async () => { throw new Error("annuaire hors ligne (test)"); } }));
 import { redigerTeaser, redigerSectionMemo, analyserPhoto, relireMemo, extraireSite, rechercherMarche, lireLiasse } from "../src/lib/claude.js";
 import worker from "../src/index.js";
@@ -35,7 +35,7 @@ async function seConnecter(email) {
   const { cookie, id } = await creerCompte(appel, email, { siren: SIREN });
   return { cookie, id };
 }
-// Images fictives : en-tête JPEG avec dimensions ; un octet varie pour que chaque photo soit différente
+// Fictitious images: JPEG header with dimensions; one byte varies so that each photo is different
 const jpg = (l, h, k = 0) => new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 0, 1, k, 0, 0xff, 0xc0, 0, 17, 8, h >> 8, h & 255, l >> 8, l & 255, 3, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1]);
 const formPhoto = (octets) => { const f = new FormData(); f.append("fichier", new File([octets], "photo.jpg", { type: "image/jpeg" })); f.append("attestation", "oui"); return f; };
 const formImage = (octets) => { const f = new FormData(); f.append("image", new File([octets], "reduite.jpg", { type: "image/jpeg" })); return f; };
@@ -133,17 +133,17 @@ describe("équipe dirigeante", () => {
     expect((await r.json()).erreur).toBe("consentement");
     const m = await (await appel(`/api/dossiers/${id}/documents/memo/equipe/abc12345/photo`, { methode: "POST", cookie, brut: formPortrait(true) })).json();
     expect(m.equipe.personnes.map((p) => [p.nom, p.a_photo])).toEqual([["Bernard Exemple", true], ["Nadia Exemple", false]]);
-    expect(JSON.stringify(m.equipe)).not.toMatch(/dossiers\//); // aucun chemin de fichier envoyé au navigateur
+    expect(JSON.stringify(m.equipe)).not.toMatch(/dossiers\//); // no file path sent to the browser
     expect((await appel(`/api/dossiers/${id}/documents/memo/equipe/abc12345/photo`, { cookie })).status).toBe(200);
     const b = await seConnecter("b@exemple.fr");
     expect((await appel(`/api/dossiers/${id}/documents/memo/equipe/abc12345/photo`, { cookie: b.cookie })).status).toBe(404);
-    // Personne retirée : sa photo est effacée du stockage
+    // Person removed: their photo is erased from storage
     await appel(`/api/dossiers/${id}/answers/equipe`, { methode: "PUT", cookie, corps: { data: { personnes: [{ ...personne, id: "def67890", nom: "Nadia Exemple" }] } } });
     expect([...env.FILES.objets.keys()].some((k) => k.includes("/equipe/"))).toBe(false);
     await appel(`/api/dossiers/${id}/answers/equipe`, { methode: "PUT", cookie, corps: { data: { personnes: [personne] } } });
     await appel(`/api/dossiers/${id}/documents/memo/equipe/abc12345/photo`, { methode: "POST", cookie, brut: formPortrait(true) });
     expect([...env.FILES.objets.keys()].some((k) => k.includes("/equipe/"))).toBe(true);
-    // Suppression du dossier en un clic : photos et parcours effacés
+    // Deletion of the file in one click: photos and backgrounds erased
     await appel(`/api/dossiers/${id}`, { methode: "DELETE", cookie });
     expect([...env.FILES.objets.keys()].some((k) => k.includes(id))).toBe(false);
     expect(env.DB.sqlite.prepare("SELECT COUNT(*) AS n FROM answers WHERE dossier_id = ?").get(id).n).toBe(0);
@@ -241,7 +241,7 @@ describe("crédit Anthropic épuisé : même message clair pour toutes les réda
     const r = await appel(`/api/dossiers/${id}/documents/memo/marche`, { methode: "POST", cookie });
     vi.unstubAllGlobals();
     expect((await r.json()).message).toBe(MESSAGE_CREDIT);
-    // Anglais : la même chose dans la langue de la page
+    // English: the same thing in the page's language
     const en = await appel(`/api/dossiers/${id}/documents/memo/sections/histoire`, { methode: "POST", cookie, referer: `${BASE}/espace/documents/memo/` });
     expect((await en.json()).message).toBe("Drafting is temporarily unavailable. Your answers have been saved.");
   });
