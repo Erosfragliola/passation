@@ -28,6 +28,9 @@ Members did not report other AI tools.
 - **One session per member** (from 18/11/2026): each member worked in their own Claude Code session, often from
   instructions written in Eros Fragliola's session, and opened their pull requests under their own GitHub account
   (42 merged pull requests by the five members: see the « Team » section of the [README](README.md#team)).
+- **Direct pushes**: before 18/11/2026, while Eros Fragliola built the first version alone, 47 commits were pushed
+  directly to `main`; since then every change has gone through a pull request, and `main` is protected (pull request
+  and approval required, force-push blocked). No force-push was ever made.
 - **Reviews between members**: every merged pull request was reviewed and approved by another member before merging:
   47 reviews on the 42 pull requests merged as of 27/11/2026, 11 of them with a written comment (counted with `gh api
   repos/Erosfragliola/passation/pulls/<n>/reviews`). Decisions on the product were taken by the members and recorded
@@ -37,7 +40,7 @@ Members did not report other AI tools.
 
 - **Code**: Cloudflare Worker (`src/`), front end without a framework (`public/`), D1 schema (`migrations/`), written
   with Claude Code (co-author mention in the commits).
-- **Tests**: 695 Vitest tests as of 27/11/2026, written with Claude Code. The expected valuation values are not copied
+- **Tests**: 696 Vitest tests as of 28/11/2026, written with Claude Code. The expected valuation values are not copied
   from the code: they come from two reference calculations written separately in Python
   ([scripts/reference-valorisation.py](scripts/reference-valorisation.py),
   [docs/valorisation-calculs.md](docs/valorisation-calculs.md), [docs/DEMO.md](docs/DEMO.md)). **Limitation**: these
