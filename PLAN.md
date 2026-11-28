@@ -767,3 +767,13 @@ model to be defined later by the user (business plan in progress).
   - Transparency: README, README.fr and AI-USAGE state that 47 commits were pushed directly to `main` before
     18/11/2026, while the first version was built alone; since then every change goes through a pull request and
     `main` is protected. Business plan § 2.2: evidence from the Bpifrance study only (no interviews were conducted).
+- **28/11/2026, PRs #46 and #47, then branch `corrections-audit`** (audit of the repository against the EDHEC brief):
+  - #46 and #47: presentation with a live demo on the site (slide 4), product screens as backup, and the three
+    remarks of Mohamed Reda Aboualam's review applied. `main` protected the same day (pull request with one approval,
+    `tests` check required, force-push and deletion blocked); the 60 merged or obsolete branches deleted.
+  - Simulated Claude (`scripts/claude-simule.mjs`): its texts said « Exemple simulé », and « exemple » belongs to the
+    name of the demonstration company, so the anonymity check refused the teaser in local mode. Texts reworded; the
+    teaser is accepted again (checked through the API).
+  - Business plan § 2.1: how the problem is solved today and what it costs (sourced valuation prices, 12 to 18 months
+    of preparation), as the brief asks. AI-USAGE.md: agents, skills and review loops, three more errors caught.
+    README: Known limitations and Team section brought up to date.

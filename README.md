@@ -207,15 +207,17 @@ under their own GitHub account (`git shortlog -sne main`; `gh pr list --state me
 were reviewed and approved by another member before merging (47 approving reviews on these 42 pull requests, as of
 27/11/2026). Before 18/11/2026, while the repository owner built the first version alone, 47 commits were pushed
 directly to `main`; since then every change has gone through a pull request, and `main` is protected (pull request and
-approval required, force-push blocked). No force-push was ever made (GitHub activity log).
+approval required, force-push blocked). No force-push was ever made (GitHub activity log). Of the final pull requests,
+#44 was approved by another member; #45 to #47 were merged by the owner without an approving review (Mohamed Reda
+Aboualam reviewed #45 and #46 in comments, and #47 applies his remarks), before `main` was protected on 28/11/2026.
 
 | Member | GitHub | Contributions (merged PRs) | Reviews (merged PRs) |
 |---|---|---|---|
-| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Repository owner and deployment; home page (#2, #4, #9, #11); single font on the site (#34); flow consistency fixes (#36); memorandum finishing after testing the site (#38, #41); 36-month financial model file (commit 8fd50bb, in #42) | 23 |
+| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Repository owner and deployment; home page (#2, #4, #9, #11); single font on the site (#34); flow consistency fixes (#36); memorandum finishing after testing the site (#38, #41); 36-month financial model file (commit 8fd50bb, in #42); final cleanup, legal pages and presentation (#45, #46, #47) | 23 |
 | Maxime Parrinello | [@maximeparrinello-creator](https://github.com/maximeparrinello-creator) | Guided flow with one value and one list of steps (#15); dead code clean-up (#17, #26); bilingual site, English by default (#27); business model section and 3-year projections of the business plan (#42) | 1 |
 | Victoire Jacob | [@Victoirejacob](https://github.com/Victoirejacob) | Audit fixes and EDHEC preparation (#1); anonymous teaser (#12); owner's space design (#13, #20); repairs of main after merges (#16, #24); datapack layout (#25); security headers and legal pages (#28); guided analysis flow (#29, #30); bilingual site follow-up (#31) | 20 |
-| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Memorandum (#5, #35, #37); home page illustrated steps (#7); file page and its 5-step flow (#8, #10); code names and audit fixes (#14); repairs of main (#19, #23); upload of supporting documents (#21); single font in the deliverables (#33); lighter owner's path (#43) | 3 |
-| Mohamed Reda Aboualam | [@raboualam22](https://github.com/raboualam22) | Flow v2: secure account, valuation first, guided photos, English translation (#39); sign-in by code only (#40) | 0 |
+| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Memorandum (#5, #35, #37); home page illustrated steps (#7); file page and its 5-step flow (#8, #10); code names and audit fixes (#14); repairs of main (#19, #23); upload of supporting documents (#21); single font in the deliverables (#33); lighter owner's path (#43); final submission documents: README, number checks, business plan, AI-USAGE.md (#44) | 3 |
+| Mohamed Reda Aboualam | [@raboualam22](https://github.com/raboualam22) | Flow v2: secure account, valuation first, guided photos, English translation (#39); sign-in by code only (#40); written reviews of #45 and #46, applied in #47 | 0 |
 
 ## Deliverables (where to find them)
 
@@ -269,7 +271,8 @@ Cloudflare Worker (src/)
 - Conventions to be decided: discounts applied to enterprise value, lease financing counted in net debt without an
   EBITDA adjustment ([docs/decisions-methode.md](docs/decisions-methode.md)).
 - The datapack is checked by an internal formula evaluator, not by Excel.
-- Legal pages are drafts (publisher, contact and hosting details not filled in yet); account deletion is not available.
+- Legal pages are drafts, to be reviewed by a lawyer; the publisher is the student team (no registered company yet);
+  account deletion is not available.
 
 ## Deployment (owner of the Cloudflare account)
 
