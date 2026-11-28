@@ -47,10 +47,12 @@ describe("pages légales", () => {
       }
     }
   });
-  it("aucun « À compléter » restant pour l'hébergeur, les limites d'usage, les tarifs et le droit applicable", () => {
+  it("aucun « À compléter » restant pour l'hébergeur, les limites d'usage, les tarifs, le droit applicable et la page de confidentialité", () => {
     for (const l of LANGUES) {
-      const ml = lireJson(`${l}/mentions_legales.json`), cg = lireJson(`${l}/cgu.json`);
+      const ml = lireJson(`${l}/mentions_legales.json`), cg = lireJson(`${l}/cgu.json`), cf = lireJson(`${l}/confidentialite.json`);
       for (const v of [ml.hebergeur, cg.limites_usage_appliquent_pour_garantir, cg.tarifs, cg.droit_applicable]) expect(v).not.toMatch(/compléter|to be completed/i);
+      // The privacy page names no address that does not exist: the contact is the one of « Data controller »
+      for (const v of Object.values(cf).filter((x) => typeof x === "string")) expect(v).not.toMatch(/compléter|to be completed|adresse indiquée|address given/i);
     }
   });
   it("les limites d'usage et durées affichées sont celles de src/config.js", () => {
