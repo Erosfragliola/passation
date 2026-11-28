@@ -25,8 +25,8 @@ const LIASSE = {
 };
 
 const TEXTES = {
-  fr: { court: "Exemple simulé", phrase: "Texte fictif produit par le simulateur local, pour vérifier la mise en page.", titre: "Une activité établie, texte fictif du simulateur", demande: "Exemple de demande fictive (simulateur)" },
-  en: { court: "Simulated example", phrase: "Fictitious text produced by the local simulator, to check the layout.", titre: "An established business, fictitious simulator text", demande: "Example of a fictitious request (simulator)" },
+  fr: { court: "Texte simulé", phrase: "Texte fictif produit par le simulateur local, pour vérifier la mise en page.", titre: "Une activité établie, texte fictif du simulateur", demande: "Demande fictive (simulateur)" },
+  en: { court: "Simulated text", phrase: "Fictitious text produced by the local simulator, to check the layout.", titre: "An established business, fictitious simulator text", demande: "Fictitious request (simulator)" },
 };
 
 /** Value following a JSON schema: first enum value, minimum, at least one item (four "points"), texts by key name. */
@@ -51,7 +51,7 @@ function exemple(s, cle, T, contexte) {
   if (type === "integer" || type === "number") return Number.isFinite(s.minimum) ? Math.max(s.minimum, 3) : 3;
   if (type === "boolean") return true;
   if (type === "string") {
-    if (/url|source/i.test(cle || "")) return "https://exemple.invalid/simulateur";
+    if (/url|source/i.test(cle || "")) return "https://simulateur.invalid/texte-fictif";
     if (cle === "titre") return T.titre;
     if (["accroche", "legende", "metiers"].includes(cle)) return T.court;
     if (cle === "a_completer") return T.demande;
@@ -80,7 +80,7 @@ function reponse(corps) {
     return { ...base, content: [{ type: "text", text: JSON.stringify(valeur) }] };
   }
   if ((corps.tools || []).some((t) => t.name === "web_search")) {
-    const url = "https://exemple.invalid/etude-de-marche-fictive";
+    const url = "https://simulateur.invalid/etude-de-marche-fictive";
     const faits = [
       { theme: "taille", fait: `${T.phrase} (1)`, chiffre: null, annee: null, source: "Simulateur (fictif)", url },
       { theme: "tendance", fait: `${T.phrase} (2)`, chiffre: null, annee: null, source: "Simulateur (fictif)", url },

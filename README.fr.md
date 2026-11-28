@@ -210,15 +210,17 @@ requests fusionnées ont toutes été relues et approuvées par un autre membre 
 sur ces 42 pull requests, au 27/11/2026). Avant le 18/11/2026, pendant que le propriétaire du dépôt construisait seul
 la première version, 47 commits ont été poussés directement sur `main` ; depuis, chaque changement passe par une pull
 request, et `main` est protégée (pull request et approbation obligatoires, force-push bloqué). Aucun force-push n'a
-jamais été fait (journal d'activité GitHub).
+jamais été fait (journal d'activité GitHub). Parmi les dernières pull requests, #44 a été approuvée par un autre
+membre ; #45 à #47 ont été fusionnées par le propriétaire sans revue d'approbation (Mohamed Reda Aboualam a relu #45
+et #46 en commentaires, et #47 applique ses remarques), avant que `main` soit protégée le 28/11/2026.
 
 | Membre | GitHub | Contributions (PR fusionnées) | Revues (PR fusionnées) |
 |---|---|---|---|
-| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Propriétaire du dépôt et mise en ligne ; page d'accueil (#2, #4, #9, #11) ; une seule police sur le site (#34) ; corrections de cohérence du parcours (#36) ; finitions du mémorandum après avoir testé le site (#38, #41) ; fichier du modèle financier sur 36 mois (commit 8fd50bb, dans #42) | 23 |
+| Eros Fragliola | [@Erosfragliola](https://github.com/Erosfragliola) | Propriétaire du dépôt et mise en ligne ; page d'accueil (#2, #4, #9, #11) ; une seule police sur le site (#34) ; corrections de cohérence du parcours (#36) ; finitions du mémorandum après avoir testé le site (#38, #41) ; fichier du modèle financier sur 36 mois (commit 8fd50bb, dans #42) ; nettoyage final, pages légales et présentation (#45, #46, #47) | 23 |
 | Maxime Parrinello | [@maximeparrinello-creator](https://github.com/maximeparrinello-creator) | Parcours avec une seule valeur et une seule liste d'étapes (#15) ; nettoyage du code mort (#17, #26) ; site bilingue, anglais par défaut (#27) ; partie modèle économique et prévisions à 3 ans du business plan (#42) | 1 |
 | Victoire Jacob | [@Victoirejacob](https://github.com/Victoirejacob) | Correctifs d'audit et préparation du rendu EDHEC (#1) ; teaser anonyme (#12) ; direction artistique de l'espace (#13, #20) ; réparations de main après des fusions (#16, #24) ; mise en page du datapack (#25) ; en-têtes de sécurité et pages légales (#28) ; parcours d'analyse guidé (#29, #30) ; suite du site bilingue (#31) | 20 |
-| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Mémorandum (#5, #35, #37) ; étapes illustrées de l'accueil (#7) ; page du dossier et parcours en 5 étapes (#8, #10) ; noms de code et correctifs d'audit (#14) ; réparations de main (#19, #23) ; dépôt des pièces (#21) ; une seule police dans les livrables (#33) ; parcours allégé (#43) | 3 |
-| Mohamed Reda Aboualam | [@raboualam22](https://github.com/raboualam22) | Parcours v2 : compte sécurisé, valorisation d'abord, photos guidées, traduction anglaise (#39) ; connexion par code seul (#40) | 0 |
+| Ethan Barris | [@eltigre13om](https://github.com/eltigre13om) | Mémorandum (#5, #35, #37) ; étapes illustrées de l'accueil (#7) ; page du dossier et parcours en 5 étapes (#8, #10) ; noms de code et correctifs d'audit (#14) ; réparations de main (#19, #23) ; dépôt des pièces (#21) ; une seule police dans les livrables (#33) ; parcours allégé (#43) ; documents de la remise finale : README, contrôle des chiffres, business plan, AI-USAGE.md (#44) | 3 |
+| Mohamed Reda Aboualam | [@raboualam22](https://github.com/raboualam22) | Parcours v2 : compte sécurisé, valorisation d'abord, photos guidées, traduction anglaise (#39) ; connexion par code seul (#40) ; revues écrites de #45 et #46, appliquées dans #47 | 0 |
 
 ## Livrables (où les trouver)
 
@@ -272,7 +274,8 @@ Cloudflare Worker (src/)
 - Conventions à arbitrer : décotes appliquées à la valeur d'entreprise, crédit-bail compté dans la dette nette sans
   retraitement de l'EBE ([docs/decisions-methode.md](docs/decisions-methode.md)).
 - Le datapack est vérifié par un évaluateur de formules interne, pas par Excel.
-- Pages légales en brouillon (éditeur, contact et hébergement pas encore renseignés) ; suppression du compte non disponible.
+- Pages légales en brouillon, à faire relire par un juriste ; l'éditeur est l'équipe étudiante (pas encore de société
+  immatriculée) ; suppression du compte non disponible.
 
 ## Mise en ligne (propriétaire du compte Cloudflare)
 
