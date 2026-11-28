@@ -11,7 +11,7 @@
   "editeur_rcs": "RCS et SIREN : {legal.rcs}",
   "editeur_directeur": "Directeur de la publication : {legal.directeur_publication}",
   "editeur_contact": "Contact : {legal.contact}",
-  "editeur_a_completer": "Identité de l’éditeur : à compléter.",
+  "editeur_projet_etudiant": "Passation est un projet étudiant de l’EDHEC Business School (cours « Programming and AI for Corporate Finance », 2026), et non une société immatriculée. Éditeur : l’équipe du projet, Eros Fragliola, Maxime Parrinello, Victoire Jacob, Ethan Barris et Mohamed Reda Aboualam. Contact : par le <a href=\"https://github.com/Erosfragliola/passation\">dépôt GitHub</a>.",
   "hebergement": "Hébergement",
   "hebergeur": "Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis (cloudflare.com).",
   "avertissement": "Avertissement",

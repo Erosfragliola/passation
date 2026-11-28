@@ -760,3 +760,10 @@ model to be defined later by the user (business plan in progress).
     0.03% of pixels).
   - Indexes added: `scripts/README.md`, `docs/README.md`. Kept on purpose: `docs/captures/` and `docs/maquettes/`,
     shown in the descriptions of 16 pull requests.
+  - Legal pages: the privacy page showed the raw template « {legal.raison_sociale}, {legal.adresse} » online, and the
+    legal notice showed « Publisher details: to be completed ». The identity line is now removed while the legal fields
+    are empty, and both pages state that Passation is a student project of EDHEC Business School, published by the
+    project team, contact through the GitHub repository (test added in `test/pages-legales.test.js`; 696 tests).
+  - Transparency: README, README.fr and AI-USAGE state that 47 commits were pushed directly to `main` before
+    18/11/2026, while the first version was built alone; since then every change goes through a pull request and
+    `main` is protected. Business plan § 2.2: evidence from the Bpifrance study only (no interviews were conducted).

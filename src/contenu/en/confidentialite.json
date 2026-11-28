@@ -5,7 +5,7 @@
   "brouillon_faire_relire_par_professionnel": "Draft, to be reviewed by a professional. The “To be completed” passages must be filled in before the public launch.",
   "responsable_traitement": "Data controller",
   "responsable_identite": "{legal.raison_sociale}, {legal.adresse}. Contact for personal data questions: {legal.contact}.",
-  "responsable_a_completer": "To be completed: company name, address, contact for personal data questions.",
+  "responsable_projet_etudiant": "The Passation project team (Eros Fragliola, Maxime Parrinello, Victoire Jacob, Ethan Barris and Mohamed Reda Aboualam), a student project of EDHEC Business School, not a registered company. Contact for personal data questions: through the <a href=\"https://github.com/Erosfragliola/passation\">GitHub repository</a>; the “Delete my file” button in your space deletes your file and its documents at any time.",
   "que_nous_stockons": "What we store",
   "votre_adresse_e_mail_pour": "Your email address, to sign in with a single-use code (the code is kept only as a hash, with the date it was used).",
   "informations_publiques_votre_societe_annuaire": "Your company’s public information (business directory, filed accounts, BODACC), reused for 24 hours. Older copies are no longer used, but are not yet deleted automatically.",
