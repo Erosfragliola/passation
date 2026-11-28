@@ -35,9 +35,10 @@ Members did not report other AI tools.
   47 reviews on the 42 pull requests merged as of 27/11/2026, 11 of them with a written comment (counted with `gh api
   repos/Erosfragliola/passation/pulls/<n>/reviews`). Decisions on the product were taken by the members and recorded
   in the pull request descriptions (for example, removing the password: « Décision d'Eros du 25/11/2026 », PR #40).
-- **Pull requests #44 to #47** (27-28/11/2026): #44 was approved by Eros Fragliola; #45 to #47 were merged by the owner
-  without an approving review. Mohamed Reda Aboualam wrote a review of #45 and #46 as comments, and #47 applies his
-  three remarks. Since 28/11/2026, `main` requires an approval before any merge.
+- **Pull requests #44 to #49** (27-28/11/2026): #44 was approved by Eros Fragliola; #45 to #49 were merged by the
+  repository owner without an approving review, #48 and #49 with the administrator's bypass after `main` was protected.
+  Mohamed Reda Aboualam wrote a review of #45 and #46 as comments, and #47 applies his three remarks. `main` has been
+  protected since 28/11/2026 (pull request with one approval, `tests` check, no force-push).
 - **Agents, skills and review loops**:
   - audits of the whole repository against the EDHEC brief by Claude Code sessions (18/11, 25/11, 27/11 and
     28/11/2026), each followed by a pull request;

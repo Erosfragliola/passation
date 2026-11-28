@@ -777,3 +777,9 @@ model to be defined later by the user (business plan in progress).
   - Business plan § 2.1: how the problem is solved today and what it costs (sourced valuation prices, 12 to 18 months
     of preparation), as the brief asks. AI-USAGE.md: agents, skills and review loops, three more errors caught.
     README: Known limitations and Team section brought up to date.
+- **28/11/2026, PRs #48 and #49, then branch `coherence-finale`**: #48 (audit corrections) and #49 (presentation in
+  the structure suggested by the brief) were merged with the administrator's bypass, without an approving review; the
+  README and AI-USAGE.md now say so. Privacy page: no « To be completed » left (transfer safeguards « to be reviewed
+  by a lawyer »), and the rights are exercised through the contact of « Data controller », which is the GitHub
+  repository (there is no postal or email address); test extended. `docs/DEMO.md`: the demonstration uses the
+  fictitious company 000000018, available on the live site since 28/11/2026.

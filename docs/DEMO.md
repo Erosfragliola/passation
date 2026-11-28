@@ -13,8 +13,12 @@ were calculated independently (Python script that does not import the site's cod
    datapack work; tax-return reading and drafting are unavailable (503).
 4. **Prepare a backup file** that is already filled in (session open in a second browser) and screenshots: the public
    APIs can be slow or reject requests (HTTP 429).
-5. Pick an active manufacturing company (NAF section C) for the quick estimate. The file attached to it will contain
-   fictitious figures: do not share its documents and **delete the file after the demonstration** (My file → Delete).
+5. Use the fictitious company « Menuiserie Exemple » (SIREN 000000018, code name « Projet Chêne »), so that the whole
+   demonstration runs on synthetic data: its public card was added to the cache of the production database on
+   28/11/2026 (`npx wrangler d1 execute passation --remote`, with the data of `scripts/dossier-exemple.mjs`), as the
+   public APIs do not know this SIREN. Prepare its file the day before with the amounts below (or the fictitious tax
+   return) and **delete the file after the demonstration** (My file → Delete). Any real SIREN still works with real
+   public data; its file would then mix real public data with fictitious figures, so it must not be shared.
 
 ## Plan B: a video of the flow (if the network, Brevo or Claude fail)
 
@@ -32,7 +36,7 @@ The script (`scripts/video-demo.mjs`) starts its own local server, reads the sig
 at 1440 × 900: home page, quick estimate, sign-in, file, figures, valuation, memorandum, teaser. Nothing is sent to
 production. Record it again the day before if the interface has changed.
 
-## Running order (about 5 minutes)
+## Running order (about 5 minutes; a 3-minute version for the oral keeps steps 1, 5, 7 and 8)
 
 | Step | Action | What we show |
 |---|---|---|
