@@ -783,3 +783,8 @@ model to be defined later by the user (business plan in progress).
   by a lawyer »), and the rights are exercised through the contact of « Data controller », which is the GitHub
   repository (there is no postal or email address); test extended. `docs/DEMO.md`: the demonstration uses the
   fictitious company 000000018, available on the live site since 28/11/2026.
+- **28/11/2026, PR #51, then branch `historique-pr`**: #51 translated every code comment into English, as CLAUDE.md
+  asks (about 830 blocks in 58 files; each file, minified without its comments, identical before and after). #50 and
+  #51 were merged with the administrator's bypass, without an approving review; README and AI-USAGE.md now list #45
+  to #51. GitHub settings of the same day: secret scanning with push protection, Dependabot alerts, English
+  description and topics of the repository.
