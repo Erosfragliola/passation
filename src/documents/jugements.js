@@ -1,25 +1,25 @@
-// Réponses structurées de Claude (photo, relecture, parcours des dirigeants) : schémas JSON envoyés à l'API et
-// validation par le code de ce qui revient. Les sorties structurées n'acceptent ni maxLength ni maxItems : les longueurs
-// et les nombres d'éléments sont garantis ici. Règle commune : Claude ne produit jamais un chiffre (chiffresNouveaux).
+// Structured answers of Claude (photo, review, management backgrounds): JSON schemas sent to the API and
+// validation by the code of what comes back. Structured outputs accept neither maxLength nor maxItems: lengths and
+// numbers of elements are guaranteed here. Common rule: Claude never produces a figure (chiffresNouveaux).
 
-// ---------------------------------------------------------------- Chiffres
-/** Nombres écrits dans un texte, normalisés (« 1 200 » = « 1200 », « 15,8 » = « 15.8 »). */
+// ---------------------------------------------------------------- Figures
+/** Numbers written in a text, normalized (« 1 200 » = « 1200 », « 15,8 » = « 15.8 »). */
 export function nombres(texte) {
   return [...String(texte ?? "").matchAll(/\d+(?:[\s  ]\d{3})*(?:[.,]\d+)?/g)].map((m) => m[0].replace(/[\s  ]/g, "").replace(",", "."));
 }
-/** Chiffres d'un texte absents des textes de référence (ce que Claude aurait inventé ou modifié). */
+/** Figures of a text missing from the reference texts (what Claude would have invented or changed). */
 export function chiffresNouveaux(texte, ...references) {
   const connus = new Set(references.flatMap((r) => nombres(typeof r === "string" ? r : JSON.stringify(r ?? ""))));
   return nombres(texte).filter((n) => !connus.has(n));
 }
-/** Même ensemble de chiffres dans deux textes (une correction ne doit en ajouter, retirer ni modifier aucun). */
+/** Same set of figures in two texts (a correction must add, remove or change none). */
 export function memesChiffres(avant, apres) {
   const a = nombres(avant).sort(), b = nombres(apres).sort();
   return a.length === b.length && a.every((x, i) => x === b[i]);
 }
 
 const texte = (v, max) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, max);
-/** Au plus n mots (titres courts, légendes). */
+/** At most n words (short titles, captions). */
 export const motsAuPlus = (t, n) => texte(t, 400).split(" ").filter(Boolean).slice(0, n).join(" ").replace(/[,;:.]+$/, "");
 
 // ---------------------------------------------------------------- Photo
@@ -40,7 +40,7 @@ export const SCHEMA_PHOTO = {
       description: "dessin : dessin, schéma ou pictogramme ; publicite : visuel publicitaire ou bandeau de texte ; floue ; trop_petite : résolution insuffisante pour une page entière ; identifiante : enseigne, logo, nom sur un véhicule, plaque, adresse ou personne reconnaissable (interdit dans le teaser)" },
   },
 };
-/** Jugement validé et borné, ou null s'il est inutilisable (champ manquant, valeur hors liste). */
+/** Assessment validated and bounded, or null if it is unusable (missing field, value outside the list). */
 export function validerAnalysePhoto(o) {
   if (!o || typeof o !== "object") return null;
   const note = Number(o.note);
@@ -48,7 +48,7 @@ export function validerAnalysePhoto(o) {
   const description = texte(o.description, 200);
   if (!description) return null;
   const signalements = [...new Set((Array.isArray(o.signalements) ? o.signalements : []).filter((s) => SIGNALEMENTS_PHOTO.includes(s)))];
-  // Un dessin ou un visuel publicitaire n'est jamais proposé comme photo à utiliser
+  // A drawing or an advertising visual is never proposed as a photo to use
   const usage = signalements.includes("dessin") || signalements.includes("publicite") ? "eviter" : o.usage;
   return { description, categorie: o.categorie, note, raison: texte(o.raison, 160), usage, legende: motsAuPlus(o.legende, 8), signalements, teaser: !signalements.includes("identifiante") && !signalements.includes("dessin") && !signalements.includes("publicite") };
 }
@@ -74,9 +74,9 @@ export const SCHEMA_RELECTURE = {
   },
 };
 /**
- * Remarques gardées : chapitre connu, type connu, titre de 6 mots au plus, 10 au plus, indispensables d'abord. Une
- * correction qui changerait un chiffre est retirée (la remarque reste, sans correction : le dirigeant est renvoyé
- * vers ses comptes ou la valorisation). Une remarque de type « chiffre » n'a jamais de correction.
+ * Remarks kept: known chapter, known type, title of 6 words at most, 10 at most, essential ones first. A
+ * correction that would change a figure is removed (the remark stays, without a correction: the owner is sent back to
+ * their accounts or to the valuation). A remark of type « chiffre » never has a correction.
  */
 export function validerRelecture(o, sections, max = 10) {
   const parCle = Object.fromEntries((sections || []).map((s) => [s.cle, s]));
@@ -94,8 +94,8 @@ export function validerRelecture(o, sections, max = 10) {
     .map((r, k) => ({ id: `r${k + 1}`, ...r, statut: null }));
 }
 /**
- * Applique une correction acceptée au texte d'un chapitre (« Oui, corriger ») : remplacement exact du passage, sans
- * toucher à un chiffre. @returns le nouveau texte, ou null si le passage a changé ou si un chiffre serait touché.
+ * Applies an accepted correction to a chapter's text (« Oui, corriger »): exact replacement of the passage,
+ * without touching a figure. @returns the new text, or null if the passage has changed or a figure would be touched.
  */
 export function appliquerCorrection(contenu, correction) {
   if (!correction?.texte_actuel || typeof correction.texte_propose !== "string") return null;
@@ -105,13 +105,13 @@ export function appliquerCorrection(contenu, correction) {
   return memesChiffres(c, nouveau) ? nouveau : null;
 }
 
-// ---------------------------------------------------------------- Parcours des dirigeants (page équipe)
-/** Propriété du schéma de section ajoutée pour le chapitre « Organisation » quand l'équipe est décrite. */
+// ---------------------------------------------------------------- Management backgrounds (team page)
+/** Property of the section schema added for the « Organisation » chapter when the team is described. */
 export const PROPRIETE_PARCOURS = {
   type: "array", description: "Pour chaque personne de « equipe_dirigeante », son parcours en une ou deux phrases (35 mots au plus), écrit uniquement à partir de ses réponses",
   items: { type: "object", additionalProperties: false, required: ["id", "texte"], properties: { id: { type: "string" }, texte: { type: "string" } } },
 };
-/** Parcours gardés : personne connue, 300 caractères au plus, aucun chiffre absent de ses réponses. */
+/** Backgrounds kept: known person, 300 characters at most, no figure missing from their answers. */
 export function validerParcours(liste, personnes) {
   const parId = Object.fromEntries((personnes || []).map((p) => [p.id, p]));
   const res = {};

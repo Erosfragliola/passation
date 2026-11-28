@@ -1,4 +1,4 @@
-// En-têtes de sécurité (audit SEC-04) et lecture des adresses fournies par l'utilisateur (audit SEC-05).
+// Security headers (audit SEC-04) and reading of the addresses given by the user (audit SEC-05).
 import { describe, it, expect, vi } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";

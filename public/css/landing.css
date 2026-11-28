@@ -1,13 +1,13 @@
-/* Page d'accueil (refonte) : polices, échelle typographique et sections. Chargée après styles.css, sur cette
-   page seulement ; l'Espace dirigeant garde styles.css seul.
-   Règles : aucun texte sous 14 px, texte courant à 18 px (17 px sur téléphone), pas de capitales espacées sous
-   13 px, chiffres tabulaires pour les montants. Police unique Geist (serif italique retiré le 23/11/2026 : plus utilisé). */
+/* Home page (redesign): fonts, type scale and sections. Loaded after styles.css, on this page only; the owner's
+   space keeps styles.css alone.
+   Rules: no text under 14 px, running text at 18 px (17 px on a phone), no spaced capitals under 13 px, tabular figures
+   for amounts. Single font Geist (italic serif removed on 23/11/2026: no longer used). */
 
 :root {
   --tampon: #B23A28;          /* tampon « Projet … » */
-  --ocre: #A8653A;            /* = cuivre : mots-clés en grand seulement (4,2:1 sur crème) */
-  --ocre-texte: #8E5530;      /* petits textes ocre sur crème (5,6:1) et sur sable (4,6:1) */
-  --ocre-nuit: #E9C9A4;       /* ocre sur fond sombre (10,5:1) */
+  --ocre: #A8653A;            /* = copper: keywords in large size only (4.2:1 on cream) */
+  --ocre-texte: #8E5530;      /* small ochre texts on cream (5.6:1) and on sand (4.6:1) */
+  --ocre-nuit: #E9C9A4;       /* ochre on a dark background (10.5:1) */
   --mot-cle: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
   --t-texte: 18px;
   --t-petit: 16px;
@@ -46,8 +46,8 @@
 }
 
 /* ---------- Hero ---------- */
-/* La carte du hero ne masque rien : la liste de suggestions peut en sortir. Le masquage, les coins et le liseré
-   sont sur le calque qui ne contient que la vidéo et ses voiles (.hero-fond). */
+/* The hero card hides nothing: the list of suggestions can go out of it. The masking, the corners and the border
+   are on the layer that holds only the video and its veils (.hero-fond). */
 .landing .hero {
   z-index: 3; overflow: visible; background: transparent; justify-content: flex-start;
   margin: var(--haut-entete) var(--marge-carte) 0; padding: 0;
@@ -64,14 +64,14 @@
 .landing .hero-contenu { flex: 1; justify-content: center; padding-top: clamp(40px, 7vh, 88px); padding-bottom: 28px; }
 .landing .hero .recherche { z-index: 5; }
 
-/* Ligne de preuves (les éléments sans contenu sont retirés par le Worker) */
+/* Line of proofs (elements without content are removed by the Worker) */
 .hero-preuves { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px; font-size: 16px; color: rgba(251, 246, 236, .9); }
 .hero-preuves li { white-space: nowrap; }
 .hero-preuves em { font-style: normal; font-weight: 600; color: var(--creme); }
 .etoiles { display: inline-block; vertical-align: -2px; margin-right: 4px; color: #E9C9A4; }
 .etoiles svg { display: block; }
 
-/* Rangée de tuiles en bas de la carte */
+/* Row of tiles at the bottom of the card */
 .hero-bas { position: relative; padding: 0 clamp(12px, 2vw, 28px) 18px; }
 .landing .hero h1 { max-width: 13ch; }
 .landing .hero .chapo { max-width: 40rem; }
@@ -82,7 +82,7 @@
 }
 .landing .sugg-info { font-family: var(--sans); font-size: 15px; }
 
-/* ---------- Écran de résultat : carte verte sous le hero ---------- */
+/* ---------- Result screen: green card under the hero ---------- */
 .landing .resultat { padding: var(--marge-carte) var(--marge-carte) 0; background: transparent; }
 .resultat-grille { display: grid; gap: 48px; align-items: start; }
 @media (min-width: 960px) { .resultat-grille { grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; } }
@@ -110,28 +110,28 @@
   background: rgba(251, 246, 236, .08); border: 1px solid rgba(251, 246, 236, .18); transition: background-color .2s;
 }
 .suite:hover { background: rgba(251, 246, 236, .15); }
-/* Sur le vert : la première suite en pastille claire, texte encre */
+/* On the green: the first next step as a light badge, ink text */
 .suite strong { font-size: 18px; font-weight: 600; }
 .suite span { font-size: 16px; color: rgba(251, 246, 236, .8); }
-/* ---------- Polices de l'histoire et du tampon (chargées seulement quand elles servent) ---------- */
+/* ---------- Fonts of the story and of the stamp (loaded only when they are used) ---------- */
 
-/* ---------- Histoire des clés ---------- */
+/* ---------- Story of the keys ---------- */
 .landing .histoire { padding: 44px 0 0; background: transparent; color: var(--encre); }
 .histoire .surtitre { color: var(--sur-titre); }
 .landing .histoire h2, .landing .histoire .titre-section { color: var(--encre); }
 .landing .histoire h2 em, .landing .histoire .titre-section em { color: var(--ocre-clair); }
-/* Ordinateur : scène collante, textes dans une colonne à gauche */
-/* Vignettage très léger, au-dessus du fond et sous les objets */
+/* Desktop: sticky scene, texts in a column on the left */
+/* Very light vignette, above the background and under the objects */
 .piece { position: absolute; left: 0; top: 0; }
-/* ---------- Dossier de présentation (histoire, démo, résultat) : unités de sa propre largeur (--u) ---------- */
+/* ---------- Presentation folder (story, demo, result): units of its own width (--u) ---------- */
 .dossier p { color: inherit; }
 .dossier { position: relative; container-type: inline-size; --u: calc(100cqw / 660); padding-bottom: calc(16 * var(--u)); color: #1E1A17; text-shadow: none; }
 .dossier > * { translate: 0 calc(var(--secousse, 0) * var(--u)); }
 .dossier-nom { position: absolute; left: 0; top: calc(4 * var(--u)); margin: 0; display: grid; justify-items: start; gap: calc(4 * var(--u)); font-weight: 700; font-size: calc(56 * var(--u) * var(--nom-echelle, 1)); line-height: 1.1; letter-spacing: -0.025em; white-space: nowrap; }
-/* ---------- Socle des sections (brief « accueil ») : 120 px entre sections, contenu à 1 280 px ---------- */
+/* ---------- Base of the sections (« home page » brief): 120 px between sections, content at 1,280 px ---------- */
 :root { --espace-section: 120px; --vert-carte: #1F3B2D; --carte-claire: #FFFDF8; --bord-carte: inset 0 0 0 1px rgb(30 26 23 / .08);
-  /* Trois fonds seulement : crème, vert, noir. Plus de sable ni d'ocre (17/11/2026) : les panneaux derrière les
-     illustrations et la scène de l'histoire sont des crèmes à peine soutenus */
+  /* Three backgrounds only: cream, green, black. No more sand or ochre (17/11/2026): the panels behind the
+     illustrations and the scene of the story are barely deeper creams */
   --fond-panneau: #F5F0E7;
   --fond-scene: radial-gradient(95% 110% at 30% 18%, #FFFDF8 0%, #F8F3EA 55%, #F1EBE1 100%); }
 @media (max-width: 767px) { :root { --espace-section: 72px; } }
@@ -141,24 +141,24 @@
 .landing .bloc h2 em, .landing .bloc-carte h2 em { color: var(--ocre-clair); }
 .landing .bloc .surtitre, .landing .bloc-carte .surtitre { margin: 0 0 14px; font-size: 16px; color: #7A5C42; }
 .landing .bloc .chapo, .landing .bloc-carte .chapo { margin: 18px 0 0; font-size: 19px; line-height: 1.6; color: var(--encre-2); max-width: 620px; }
-/* ---------- Comment ça marche : frise des trois étapes, toutes visibles (plus d'onglets) ---------- */
-/* Ordinateur : trois colonnes reliées par un filet à hauteur des numéros ; téléphone : les étapes se suivent */
+/* ---------- How it works: timeline of the three steps, all visible (no more tabs) ---------- */
+/* Desktop: three columns linked by a line at the height of the numbers; phone: the steps follow one another */
 .landing .etape-description { margin-top: 10px; font-size: 17px; line-height: 1.6; color: var(--encre-2); }
 .pastilles { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .pastilles:empty { display: none; }
 .pastilles li { padding: 6px 14px; border-radius: var(--r-pilule); border: 1px solid rgb(30 26 23 / .22); font-size: 14px; line-height: 1.3; color: var(--encre); }
 
-/* Visuels des étapes : exemples fictifs, signalés comme tels */
+/* Visuals of the steps: fictitious examples, labelled as such */
 .methode { margin-top: 14px; }
 .landing .methode p { margin: 0 0 6px; font-size: 15px; color: var(--encre-2); }
 .methode span { display: block; height: 14px; border-radius: 7px; background: #E2D8CA; }
 .methode i { display: block; height: 100%; margin-left: var(--debut); width: var(--largeur); border-radius: inherit; background: var(--ocre-clair); }
-/* ---------- Pourquoi Passation : la confidentialité (carte verte), puis trois cartes de même structure ---------- */
+/* ---------- Why Passation: confidentiality (green card), then three cards with the same structure ---------- */
 .carte-claire { background: var(--carte-claire); box-shadow: var(--bord-carte); }
 .carte-verte { background: var(--vert-carte); color: #F7F1EA; }
 .landing .carte-verte p { color: #E3ECE5; }
 .carte-verte :focus-visible { outline-color: #E9C9A4; }
-/* Le visuel de chaque carte : même place (en bas), même format */
+/* The visual of each card: same place (at the bottom), same format */
 .hypotheses { display: flex; flex-direction: column; gap: 12px; padding: 18px 20px; }
 .hypotheses ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .hypotheses li { display: grid; grid-template-columns: minmax(0, 1fr) 72px; column-gap: 12px; align-items: center; font-size: 15px; color: var(--encre); }
@@ -170,7 +170,7 @@
 .landing .fichier { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 10px 12px; border-radius: 8px; background: var(--carte-claire); box-shadow: 0 6px 14px rgb(70 48 28 / .10); font: 500 13.5px var(--mono); color: var(--encre); }
 .fichier span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fichier b { flex: none; padding: 5px 6px; border-radius: 4px; font: 600 11px var(--mono); letter-spacing: .06em; color: #fff; }
-/* ---------- Grandes cartes (confidentialité, appel final, résultat) : 1 360 px, marges du hero ---------- */
+/* ---------- Large cards (confidentiality, final call, result): 1,360 px, margins of the hero ---------- */
 .landing .bloc-carte { padding: var(--espace-section) var(--marge-carte) 0; background: transparent; }
 .carte-large { max-width: 1360px; margin: 0 auto; border-radius: 10px; padding: clamp(32px, 5vw, 80px); }
 .carte-large.carte-verte { color: #F7F1EA; }
@@ -179,7 +179,7 @@
 .landing .carte-large.carte-verte .surtitre { color: #CFE0D3; }
 .landing .carte-large.carte-verte .chapo { color: #E3ECE5; }
 
-/* ---------- Derrière Passation ---------- */
+/* ---------- Behind Passation ---------- */
 .equipe-grille { display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
 .equipe-texte { flex: 1 1 440px; min-width: 0; }
 .equipe-citation { margin: 28px 0 0; padding: 0; }
@@ -193,8 +193,8 @@
 .btn-secondaire:hover { background: #E5DCCE; }
 .equipe-photo { flex: 1 1 420px; min-width: 0; width: 100%; max-width: 560px; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
 
-/* ---------- Ils l'ont fait : carte sable ---------- */
-.carte-large.carte-sable { /* nom historique : fond crème désormais */ padding: clamp(28px, 4.5vw, 72px); background: var(--fond-scene); box-shadow: inset 0 0 0 1px rgb(30 26 23 / .07); }
+/* ---------- They did it: sand card ---------- */
+.carte-large.carte-sable { /* historical name: cream background now */ padding: clamp(28px, 4.5vw, 72px); background: var(--fond-scene); box-shadow: inset 0 0 0 1px rgb(30 26 23 / .07); }
 .preuves-chiffres { margin: 36px 0 0; display: flex; flex-wrap: wrap; gap: 28px 40px; }
 .preuves-chiffres > div { flex: 1 1 200px; display: flex; flex-direction: column-reverse; justify-content: flex-end; }
 .preuves-chiffres dd { margin: 0; font-size: clamp(40px, 4.5vw, 60px); font-weight: 600; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; color: var(--encre); }
@@ -215,7 +215,7 @@
 .guide-titre { font-size: 21px; font-weight: 600; line-height: 1.3; }
 .carte-guide:hover .guide-titre { text-decoration: underline; text-underline-offset: 4px; }
 
-/* ---------- Questions : titre sur un tiers, liste sur deux ---------- */
+/* ---------- Questions: title on one third, list on two ---------- */
 .landing .faq-grille { display: grid; gap: 40px; }
 @media (min-width: 900px) { .landing .faq-grille { grid-template-columns: 1fr 2fr; } }
 .landing .faq { border-top: 1px solid rgb(30 26 23 / .12); }
@@ -228,9 +228,9 @@
 .landing .faq .reponse { padding: 0 48px 22px 0; font-size: 18px; line-height: 1.6; color: var(--encre-2); }
 @media (max-width: 559px) { .landing .faq .reponse { padding-right: 0; } }
 
-/* ---------- Appel final : carte verte (plus d'ocre) ---------- */
+/* ---------- Final call: green card (no more ochre) ---------- */
 
-/* ---------- Pied de page : grand logo ---------- */
+/* ---------- Footer: large logo ---------- */
 .landing .pied { margin-top: var(--espace-section); padding: 0; border: 0; background: var(--encre); color: #F7F1EA; overflow: hidden; }
 .pied-interieur { max-width: 1360px; margin: 0 auto; padding: 72px clamp(16px, 3vw, 40px) 40px; }
 .pied-colonnes { margin-top: 56px; display: flex; flex-wrap: wrap; gap: 32px 56px; }
@@ -245,14 +245,14 @@
 .landing .pied-contact p { margin: 0; }
 .landing .pied-copyright { margin: 48px 0 0; padding-top: 22px; border-top: 1px solid rgb(247 241 234 / .14); font-size: 14px; color: #B8AD9F; }
 
-/* ---------- Début clair : couleurs, en-tête plat, champ de l'en-tête ---------- */
+/* ---------- Light start: colours, flat header, field of the header ---------- */
 :root {
-  --page: #FBF8F2;            /* fond de page */
-  --encre: #1E1A17;           /* titres sur fond clair */
-  --encre-2: #5E554B;         /* texte courant sur fond clair */
-  --ocre-clair: #A8774A;      /* mot en italique sur fond clair (grands titres seulement) */
-  --sur-titre: #765840;       /* sur-titres sur fond clair (#7A5C42 du brief, foncé : 4,5:1 jusque dans les coins du sable) */
-  --lisere: #171613;          /* liseré en haut des cartes vidéo */
+  --page: #FBF8F2;            /* page background */
+  --encre: #1E1A17;           /* titles on a light background */
+  --encre-2: #5E554B;         /* running text on a light background */
+  --ocre-clair: #A8774A;      /* italic word on a light background (large titles only) */
+  --sur-titre: #765840;       /* overlines on a light background (#7A5C42 of the brief, dark: 4.5:1 even in the corners of the sand) */
+  --lisere: #171613;          /* border at the top of the video cards */
   --ombre-brun: 70 48 28;     /* ombres brun chaud : rgb(var(--ombre-brun) / .30) */
   --haut-entete: 84px;
   --marge-entete: 48px;
@@ -265,7 +265,7 @@
 body.landing { background: var(--page); }
 
 .landing .nav-zone { top: 0; padding: 0; z-index: 60; background: var(--page); transition: opacity .5s ease; }
-/* L'en-tête apparaît en fondu à la fin de l'intro (filet de sécurité si le script ne s'exécute pas) */
+/* The header fades in at the end of the intro (safety net if the script does not run) */
 html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s forwards; }
 @keyframes entete-secours { to { opacity: 1; } }
 .landing .nav {
@@ -275,7 +275,7 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
 .landing .nav .logo { color: var(--encre); min-height: var(--cible); display: inline-flex; align-items: center; }
 .landing .nav-centre { flex: 1; min-width: 0; }
 .landing .nav-liens { position: static; height: auto; margin-left: 12px; align-items: center; gap: 6px 26px; }
-/* Liens à la suite du logo (maquette) ; jusqu'à cinq liens (Tarifs, Guides : conditionnels) + téléphone : menu sous 1 024 px */
+/* Links after the logo (mockup); up to five links (Pricing, Guides: conditional) + phone: menu under 1,024 px */
 @media (max-width: 1279px) { .landing .nav-liens { gap: 6px 18px; } }
 @media (min-width: 920px) and (max-width: 1023px) {
   .landing .nav-liens { display: none; }
@@ -288,7 +288,7 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
 .landing .nav .btn-espace:hover { background: #E5DCCE; }
 .nav-telephone { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; min-width: 44px; justify-content: center; padding: 0 8px; border-radius: var(--r-pilule); font-size: 15px; font-weight: 500; color: #2A241F; text-decoration: none; }
 .nav-telephone:hover { background: #EFE8DD; }
-/* Numéro en toutes lettres à partir de 1 100 px, et tant que le champ n'occupe pas le centre de l'en-tête */
+/* Number in full from 1,100 px, and as long as the field does not take the centre of the header */
 @media (max-width: 1099px) { .nav-telephone span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
 .champ-en-haut .nav-telephone span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 @media (max-width: 767px) {
@@ -296,38 +296,38 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
   .landing .nav { gap: 8px; }
   .landing .nav .btn-espace { padding: 0 14px; }
 }
-/* Moins de 375 px : le téléphone reste dans le pied de page, l'en-tête ne déborde pas */
+/* Under 375 px: the phone number stays in the footer, the header does not overflow */
 @media (max-width: 374px) { .nav-telephone { display: none; } }
 .nav-liens, .nav-champ { transition: opacity .2s ease, visibility .2s; }
 .recherche-mini { position: relative; }
-.recherche-mini input { font: 400 16px var(--sans); color: var(--espresso); }   /* 16 px : pas de zoom iOS */
+.recherche-mini input { font: 400 16px var(--sans); color: var(--espresso); }   /* 16 px: no iOS zoom */
 .recherche-mini input::placeholder { color: var(--pierre-texte); }
 .recherche-mini input:focus { outline: none; }
-/* Champ de l'en-tête : centré dans la barre, 560 × 44 ; sur téléphone, seconde ligne pleine largeur */
+/* Field of the header: centred in the bar, 560 × 44; on a phone, second line full width */
 .nav-champ {
   position: absolute; left: 50%; top: calc((var(--haut-entete) - 44px) / 2); z-index: 2; width: min(560px, calc(100% - 2 * (var(--marge-entete) + var(--droite-entete))));
   height: 44px; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 2px 2px 2px 18px;
   border-radius: var(--r-pilule); background: #fff; border: 1px solid #E2D8CA; opacity: 0; visibility: hidden;
 }
-/* Largeur de la partie droite (Espace dirigeant, sélecteur de langue, + icône téléphone) : le champ centré ne la recouvre pas */
+/* Width of the right-hand part (owner's space, language selector, + phone icon): the centred field does not cover it */
 .landing .nav { --droite-entete: 275px; }
 .landing .nav:has(.nav-telephone) { --droite-entete: 335px; }
 .nav-champ:focus-within { box-shadow: 0 0 0 3px var(--cuivre-clair); }
 .nav-champ input { flex: 1; min-width: 0; height: 38px; border: 0; background: transparent; }
 .nav-champ .btn { position: relative; min-height: 38px; padding: 0 16px; font-size: 15px; }
-/* Zone cliquable de 44 px : toute la hauteur du champ (le bouton visible fait 38 px) */
+/* Clickable area of 44 px: the whole height of the field (the visible button is 38 px) */
 .nav-champ .btn::before { content: ""; position: absolute; inset: -3px -3px; }
 .nav-champ .suggestions { top: calc(100% + 6px); left: -1px; right: -1px; }
 .nav-champ .recherche-message { position: absolute; top: calc(100% + 8px); left: 0; right: 0; box-shadow: var(--ombre); }
 .champ-en-haut .nav-liens { opacity: 0; visibility: hidden; }
 .champ-en-haut .nav-champ { opacity: 1; visibility: visible; }
-/* Sous 1 024 px, le champ centré toucherait le logo et les boutons : seconde ligne pleine largeur */
+/* Under 1,024 px, the centred field would touch the logo and the buttons: second line full width */
 @media (max-width: 1023px) {
   .nav-champ { top: calc(var(--haut-entete) + 2px); left: var(--marge-entete); right: var(--marge-entete); width: auto; transform: none; }
   html.champ-en-haut .nav-zone { padding-bottom: 56px; }
 }
 
-/* ---------- Vidéo du hero : bouton pause, métier ---------- */
+/* ---------- Hero video: pause button, trade ---------- */
 .hero-pause {
   position: absolute; right: 24px; bottom: 24px; z-index: 2; width: var(--cible); height: var(--cible);
   display: grid; place-items: center; border-radius: 50%; cursor: pointer;
@@ -337,11 +337,11 @@ html.avec-intro .nav-zone { opacity: 0; animation: entete-secours .4s ease 3s fo
 .hero-pause .icone-lecture, .hero-pause.en-pause .icone-pause { display: none; }
 .hero-pause.en-pause .icone-lecture { display: block; }
 .hero-metier { position: absolute; left: 24px; bottom: 34px; z-index: 2; margin: 0; font-size: 15px; color: rgba(251, 246, 236, 0.86); }
-/* ---------- Intro (première visite) ---------- */
+/* ---------- Intro (first visit) ---------- */
 #intro { display: none; }
 html.avec-intro #intro {
   display: block; position: fixed; inset: 0; z-index: 200;
-  animation: intro-secours .3s ease 3s forwards;   /* filet de sécurité si le script ne s'exécute pas */
+  animation: intro-secours .3s ease 3s forwards;   /* safety net if the script does not run */
 }
 @keyframes intro-secours { to { opacity: 0; visibility: hidden; } }
 .intro-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -362,19 +362,19 @@ html.avec-intro #intro {
   .nav-liens, .nav-champ, .landing .nav-zone { transition: none; }
 }
 
-/* ---------- Tampons et annotations (décoratifs, aria-hidden) ---------- */
-/* ---------- Apparitions au défilement (public/js/landing/apparitions.js) ---------- */
+/* ---------- Stamps and annotations (decorative, aria-hidden) ---------- */
+/* ---------- Appearing on scroll (public/js/landing/apparitions.js) ---------- */
 .a-apparaitre { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--retard, 0ms); }
 .a-apparaitre.apparu { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .a-apparaitre { opacity: 1; transform: none; transition: none; } }
 
-/* ---------- Landing v3 (17/11/2026) : annotation dans la frise, livrables, étiquettes kraft, hero, trousseau ---------- */
-/* Ce que vous recevez : trois aperçus de même hauteur, puis le texte ; décor en HTML, exemple fictif */
+/* ---------- Landing v3 (17/11/2026): annotation in the timeline, deliverables, kraft tags, hero, key ring ---------- */
+/* What you receive: three previews of the same height, then the text; decoration in HTML, fictitious example */
 .feuille { position: relative; width: 100%; max-width: 220px; aspect-ratio: 210 / 297; display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 3px;
   background: var(--carte-claire); box-shadow: 0 18px 36px rgb(70 48 28 / .18), 0 0 0 1px rgb(30 26 23 / .06); color: var(--encre); font-size: 10px; line-height: 1.3; rotate: -1.5deg; }
 .landing .feuille p, .feuille dl, .feuille ol { margin: 0; }
-/* Étiquettes kraft : chaque sur-titre de section écrit à la main sur une étiquette, comme celles des clés.
-   « rotate » (et non « transform ») : l'apparition au défilement peut animer le transform sans redresser l'étiquette */
+/* Kraft tags: each section overline handwritten on a tag, like those of the keys.
+   « rotate » (and not « transform »): appearing on scroll can animate the transform without straightening the tag */
 .landing .surtitre.etiquette-kraft, .landing .carte-large .surtitre.etiquette-kraft {
   position: relative; display: inline-block; margin: 0 0 20px 4px; padding: 6px 18px 5px 36px;
   font-weight: 400; font-size: 21px; line-height: 1.25; letter-spacing: 0; color: #2E1F12;
@@ -383,7 +383,7 @@ html.avec-intro #intro {
 }
 .etiquette-kraft::before { content: ""; position: absolute; left: 14px; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--trou, var(--creme)); box-shadow: 0 0 0 2.5px #E6D3AE; }
 
-/* Hero : la carte tient dans le premier écran, tuiles comprises ; une seule ligne de preuve sous le champ */
+/* Hero: the card fits in the first screen, tiles included; a single line of proof under the field */
 .landing .hero { min-height: calc(100svh - var(--haut-entete) - 16px); }
 .landing .hero-contenu { padding-top: clamp(28px, 5vh, 64px); padding-bottom: 20px; }
 

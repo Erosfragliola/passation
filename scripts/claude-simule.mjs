@@ -72,7 +72,7 @@ function reponse(corps) {
   const message = corps.messages?.at(-1)?.content;
   const texteUtilisateur = typeof message === "string" ? message : (Array.isArray(message) ? message.filter((b) => b.type === "text").map((b) => b.text).join("\n") : "");
   let contexte = {};
-  try { contexte = { equipe: JSON.parse(texteUtilisateur.slice(texteUtilisateur.indexOf("{"))).equipe_dirigeante || [] }; } catch { /* pas de JSON */ }
+  try { contexte = { equipe: JSON.parse(texteUtilisateur.slice(texteUtilisateur.indexOf("{"))).equipe_dirigeante || [] }; } catch { /* no JSON */ }
   const base = { id: `msg_simule_${++n}`, type: "message", role: "assistant", model: corps.model, stop_reason: "end_turn", stop_sequence: null, usage: { input_tokens: 100, output_tokens: 100 } };
   const schema = corps.output_config?.format?.schema;
   if (schema) {

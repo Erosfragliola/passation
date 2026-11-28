@@ -1,7 +1,7 @@
-// Équipe dirigeante (mémorandum uniquement, jamais dans le teaser) : listes de choix, nettoyage des réponses, données
-// transmises à Claude, phrase de transition écrite par le code. Partagé par le parcours guidé, la page du mémorandum
-// et le serveur ; testé (test/equipe.test.js). Les valeurs enregistrées sont des codes ; leurs libellés sont lus
-// dans src/contenu/<langue>/memo.json (« equipe »).
+// Management team (memorandum only, never in the teaser): lists of choices, cleaning of the answers, data sent to
+// Claude, transition sentence written by the code. Shared by the guided flow, the memorandum page and the server;
+// tested (test/equipe.test.js). The values saved are codes; their labels are read in src/contenu/<language>/memo.json
+// (« equipe »).
 import { t } from "./i18n.js";
 
 export const ROLES = ["fondateur", "cogerant", "commercial", "production", "raf", "autre"];
@@ -14,13 +14,13 @@ export const BORNES = { anciennete: [0, 50], experience: [0, 60], mois: [1, 36] 
 const court = (v, max) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, max);
 const entier = (v, [min, max]) => { const n = Math.round(Number(v)); return v === "" || v == null || !Number.isFinite(n) ? null : Math.min(max, Math.max(min, n)); };
 export const idValide = (id) => /^[a-z0-9]{6,16}$/.test(String(id ?? ""));
-/** Identifiant d'une nouvelle personne (lettres et chiffres, sans donnée personnelle). */
+/** Identifier of a new person (letters and digits, no personal data). */
 export const nouvelId = () => Math.random().toString(36).slice(2, 10).padEnd(8, "0");
 
 /**
- * Réponses nettoyées : 4 personnes au plus, champs connus seulement, listes fermées, 3 expériences au plus. La photo
- * n'est jamais prise dans ce que le navigateur envoie : elle est reprise de `ancien` (enregistrée par sa propre
- * route, avec le consentement). Une personne sans nom est ignorée.
+ * Cleaned answers: 4 people at most, known fields only, closed lists, 3 experiences at most. The photo is never
+ * taken from what the browser sends: it is taken from `ancien` (saved by its own route, with consent). A person
+ * without a name is ignored.
  */
 export function normaliserEquipe(data, ancien = null) {
   const photos = Object.fromEntries((ancien?.personnes || []).filter((p) => p?.photo && idValide(p.id)).map((p) => [p.id, p.photo]));
@@ -45,7 +45,7 @@ export function normaliserEquipe(data, ancien = null) {
   return { personnes };
 }
 
-/** Identifiants des personnes retirées qui avaient une photo (la photo est alors supprimée du stockage). */
+/** Identifiers of the people removed who had a photo (the photo is then deleted from storage). */
 export const photosOrphelines = (avant, apres) => {
   const gardes = new Set((apres?.personnes || []).map((p) => p.id));
   return (avant?.personnes || []).filter((p) => p?.photo && !gardes.has(p.id)).map((p) => p.photo);
@@ -54,13 +54,13 @@ export const photosOrphelines = (avant, apres) => {
 export const libelleRole = (p) => (p.role === "autre" && p.role_autre ? p.role_autre : p.role ? t(`memo.equipe.roles.${p.role}`) : "");
 export const libelleFormation = (f) => (f ? t(`memo.equipe.formations.${f}`) : "");
 export const libelleExperience = (ty) => (ty ? t(`memo.equipe.experiences.${ty}`) : "");
-/** « Reste après la cession », « Accompagne le repreneur 6 mois », « Part après la cession ». */
+/** « Stays after the sale », « Supports the buyer for 6 months », « Leaves after the sale ». */
 export const libelleApres = (p) => (p.apres === "accompagne" ? (p.mois ? t("memo.equipe.apres_libelle.accompagne_mois", { n: p.mois }) : t("memo.equipe.apres_libelle.accompagne")) : p.apres ? t(`memo.equipe.apres_libelle.${p.apres}`) : "");
 export const initiales = (nom) => String(nom || "").split(/[\s-]+/).filter(Boolean).slice(0, 2).map((m) => m[0].toUpperCase()).join("") || "?";
-/** Personne complète : nom, rôle, ancienneté, formation, une expérience, place après la cession. */
+/** Complete person: name, role, seniority, education, one experience, place after the sale. */
 export const personneComplete = (p) => Boolean(p.nom && p.role && p.anciennete != null && p.formation && p.experiences?.length && p.apres);
 
-/** Ce que Claude reçoit pour rédiger les parcours : réponses seulement, jamais de photo ni de consentement. */
+/** What Claude receives to draft the backgrounds: answers only, never a photo or a consent. */
 export function equipePourClaude(equipe) {
   return (equipe?.personnes || []).map((p) => ({
     id: p.id, role: libelleRole(p),
@@ -71,10 +71,10 @@ export function equipePourClaude(equipe) {
   }));
 }
 
-/** Parcours écrit par le code quand Claude n'en a pas rédigé (formation et expériences, telles que saisies). */
+/** Background written by the code when Claude has not drafted one (education and experiences, as entered). */
 export const parcoursDeSecours = (p) => [libelleFormation(p.formation), ...(p.experiences || []).map((e) => [libelleExperience(e.type), e.precision].filter(Boolean).join(" : "))].filter(Boolean).join(" · ");
 
-/** Phrase de transition, écrite par le code : « 2 des 3 dirigeants restent ; 1 accompagne la transition (6 mois) ». */
+/** Transition sentence, written by the code: « 2 of the 3 managers stay; 1 supports the transition (6 months) ». */
 export function transitionEquipe(equipe) {
   const l = equipe?.personnes || [];
   if (!l.length) return null;
@@ -87,7 +87,7 @@ export function transitionEquipe(equipe) {
   return morceaux.join(t("memo.equipe.transition.separateur")) || null;
 }
 
-/** Noms et prénoms des personnes (mots de 3 lettres et plus) : interdits dans le teaser. */
+/** First and last names of the people (words of 3 letters or more): forbidden in the teaser. */
 export function nomsEquipe(equipe) {
   const mots = new Set();
   for (const p of equipe?.personnes || []) {

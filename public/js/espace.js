@@ -1,9 +1,9 @@
-// Page d'un dossier : fil du parcours, action principale, « À faire maintenant », en-tête (valeur et sa base),
-// documents, pièces (dépôt type Drive, replié sauf quand c'est l'étape en cours), gestion du dossier.
-// Les règles (états, tâches, textes) sont dans le module pur dossier-parcours.js, testé.
+// Page of a file: steps of the flow, main action, « What to do now », header (value and its basis), documents,
+// supporting documents (Drive-like upload, folded except when it is the current step), management of the file.
+// The rules (states, tasks, texts) are in the pure module dossier-parcours.js, tested.
 import { CHECKLIST } from "/js/dossier-regles.js";
 import { etatParcours } from "/js/dossier-parcours.js";
-import { fourchette } from "/js/landing/estimation.js"; // même arrondi que l'écran de résultat de la landing
+import { fourchette } from "/js/landing/estimation.js"; // same rounding as the landing's result screen
 import { lien, t, nombre } from "/js/i18n.js";
 
 const $ = (s) => document.querySelector(s);
@@ -27,7 +27,7 @@ const el = (tag, attrs = {}, ...enfants) => {
   e.append(...enfants.flat().filter((x) => x != null && x !== false));
   return e;
 };
-/** Remplace le contenu d'un nœud en ignorant null, undefined et false (sinon le navigateur écrit « null »). */
+/** Replaces a node's content, ignoring null, undefined and false (otherwise the browser writes « null »). */
 const remplacer = (noeud, ...enfants) => noeud.replaceChildren(...enfants.flat().filter((x) => x != null && x !== false));
 const libelleEtat = (etat) => t(`espace.js.etats.${etat}`);
 
@@ -53,8 +53,8 @@ function afficher({ checklist = true } = {}) {
   document.title = t("espace.js.titre_page", { nom: e.nom || t("espace.js.votre_dossier") });
   $("#lien-dossier").href = lien(`/espace/?dossier=${id}`);
 
-  // Fil du parcours en deux temps (24/11/2026) : « 1. Votre valorisation », puis « 2. Votre mémorandum » ; léger,
-  // libellés jamais tronqués, étapes faites cliquables
+  // Steps of the flow in two stages (24/11/2026): « 1. Your valuation », then « 2. Your memorandum »; light, labels
+  // never cut off, steps done are clickable
   let n = 0;
   const etape = (x) => {
     n += 1;
@@ -67,7 +67,7 @@ function afficher({ checklist = true } = {}) {
     el("span", { class: "fil-temps-titre", text: `${i + 1}. ${tp.titre}` }),
     el("ol", { class: "fil-etapes" }, ...tp.etapes.map(etape)))));
 
-  // En-tête vert : nom de code, nom, fourchette, une seule ligne d'explication (le détail derrière « Voir le détail »)
+  // Green header: code name, name, range, a single line of explanation (the detail behind « See the details »)
   $("#nom-code").textContent = dossier.nom_de_code || "";
   $("#dossier-nom").textContent = e.nom || t("espace.js.votre_entreprise");
   const v = etat.valeur;
@@ -92,7 +92,7 @@ function afficher({ checklist = true } = {}) {
     ? el("button", { type: "button", class: "lien-simple", onclick: () => ouvrirPieces(true) }, x.texte)
     : el("a", { href: x.href }, x.texte))));
 
-  // Documents : une rangée légère, la nature de chaque document et son état
+  // Documents: a light row, the nature of each document and its state
   remplacer($("#docs"), ...etat.documents.map((x) => {
     const principal = x.actions.find((y) => y.principal);
     const autres = x.actions.filter((y) => !y.principal);
@@ -100,11 +100,11 @@ function afficher({ checklist = true } = {}) {
       el("h3", { id: `doc-titre-${x.cle}` }, principal ? el("a", { href: principal.href, download: principal.telecharger ? "" : null, text: x.titre }) : x.titre),
       el("p", { class: "doc-nature", text: t(`espace.js.natures.${x.cle}`) }),
       el("span", { class: `etat etat-${x.etat}`, text: x.badge || libelleEtat(x.etat) }),
-      // Toutes les actions sous chaque carte, la principale en premier (« Ouvrir », « Rédiger »…) : même schéma pour les quatre documents
+      // All the actions under each card, the main one first (« Open », « Draft »…): same layout for the four documents
       [principal, ...autres].filter(Boolean).length ? el("p", { class: "doc-liens" }, ...[principal, ...autres].filter(Boolean).map((y, k) => [k ? " · " : null, el("a", { href: y.href, download: y.telecharger ? "" : null, "aria-label": t("espace.js.action_de", { action: y.libelle, objet: x.titre }) }, y.libelle)])) : null);
   }));
 
-  // Pièces : résumé, et dépôt replié sauf quand c'est l'étape en cours (ou ouvert par le dirigeant)
+  // Supporting documents: summary, and upload folded except when it is the current step (or opened by the owner)
   const { fournies, total } = etat.pieces;
   $("#checklist-compte").textContent = t("dossier.taches.pieces.detail", { n: fournies, total });
   $("#jauge-pieces").style.width = `${Math.round((100 * fournies) / total)}%`;
@@ -122,9 +122,9 @@ function ouvrirPieces(ouvert, defiler = true) {
 }
 $("#pieces-bouton").addEventListener("click", () => ouvrirPieces(!piecesOuvert, false));
 
-// ------------------------------------------------------------------ Pièces : dépôt type Drive
-// Un dossier par thème ; dans chaque thème, une ligne par pièce attendue, où l'on glisse ses fichiers (ou on clique).
-// Une pièce sans fichier peut aussi être cochée « je l'ai » (elle sera transmise autrement).
+// ------------------------------------------------------------------ Supporting documents: Drive-like upload
+// One folder per theme; in each theme, one row per expected document, where the owner drops their files (or clicks).
+// A document without a file can also be ticked « I have it » (it will be sent another way).
 let pieces = [], theme = 0;
 const taille = (o) => (o >= 1048576 ? t("espace.js.mo", { n: nombre(o / 1048576, { maximumFractionDigits: 1 }) }) : t("espace.js.ko", { n: Math.max(1, Math.round(o / 1024)) }));
 const EXT = (n) => (/\.([a-z0-9]{2,5})$/i.exec(n)?.[1] || "").toUpperCase().slice(0, 4);
@@ -150,8 +150,10 @@ async function envoyer(fichiers, item) {
   }
   await rafraichir();
 }
-/** Zone de dépôt : glisser-déposer, clic sur la zone, ou bouton « Ajouter » (accessible au clavier, sans
- *  imbriquer de contrôles dans un faux bouton). */
+/**
+ * Drop zone: drag and drop, click on the zone, or « Add » button (keyboard accessible, without nesting controls
+ * in a fake button).
+ */
 function zoneDepot(item, contenu, classe, libelle) {
   const input = el("input", { type: "file", multiple: true, class: "visuellement-cache", tabindex: "-1", "aria-hidden": "true" });
   input.addEventListener("change", () => { if (input.files.length) envoyer([...input.files], item); });

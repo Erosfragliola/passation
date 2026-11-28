@@ -10,7 +10,7 @@ describe("squelette", () => {
   });
 
   it("renvoie 404 JSON sur une route API inconnue", async () => {
-    const res = await worker.fetch(new Request("http://x/api/nimporte"), { SESSION_SECRET: "secret-de-test" }); // hôte non local : secret requis (SEC-07)
+    const res = await worker.fetch(new Request("http://x/api/nimporte"), { SESSION_SECRET: "secret-de-test" }); // non-local host: secret required (SEC-07)
     expect(res.status).toBe(404);
   });
 

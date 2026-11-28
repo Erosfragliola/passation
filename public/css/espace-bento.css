@@ -1,13 +1,13 @@
-/* Espace dirigeant et parcours guidé, direction « bento » (18/11/2026) : crème, vert, cuivre, tuiles arrondies,
-   titres en capitales étroites. Chargée après styles.css sur les pages de l'espace. */
+/* Owner's space and guided flow, « bento » direction (18/11/2026): cream, green, copper, rounded tiles,
+   titles in narrow capitals. Loaded after styles.css on the pages of the space. */
 :root { --b-affiche: var(--titre-police); --b-serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; --b-cuivre-pale: #F5E7D6; --b-vif: #2E8A62; }
 .affiche { font-family: var(--titre-police); font-weight: var(--titre-graisse); text-transform: none; letter-spacing: var(--titre-interlettrage); line-height: var(--titre-interligne); }
 
-/* ---------- Parcours guidé (20/11/2026, PR « Parcours d'analyse : plus guidé, plus précis ») ----------
-   Plus doux et plus aéré : pas de carte autour de l'écran, une colonne de lecture de 720 px, fil des étapes en points
-   à gauche, progression fine en haut, un seul bouton principal, « Où va votre réponse » sur une ligne. Traits fins,
-   icônes de 18 px au trait de 1,4. Petits textes cuivrés en #8E5530 (contraste AA). */
-/* Focus jamais masqué par la barre collante du bas (téléphone) ni par l'en-tête */
+/* ---------- Guided flow (20/11/2026, PR « Parcours d'analyse : plus guidé, plus précis ») ----------
+   Softer and airier: no card around the screen, a reading column of 720 px, steps as dots on the left, thin progress
+   bar at the top, a single main button, « Where your answer goes » on one line. Thin lines, 18 px icons with a 1.4
+   stroke. Small copper texts in #8E5530 (AA contrast). */
+/* Focus never hidden by the sticky bottom bar (phone) or by the header */
 html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .page-guidee { --g-papier: #FFFDF8; --g-trait: rgba(35, 30, 24, .1); --g-trait-moyen: rgba(35, 30, 24, .16); --g-vert-pale: #E6EEE8; --g-cuivre-texte: #8E5530; --g-cuivre-pale: #F6E9DC; --g-sable-doux: #F3EBDD; background: var(--creme); }
 .page-guidee .guide { padding: 112px 0 80px; }
@@ -51,7 +51,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .puce.choisie::after { content: none; }
 .puce[data-propose="1"]:not(.choisie) { border-color: var(--cuivre); }
 
-/* Puces à cocher (métiers, certifications) */
+/* Chips to tick (trades, certifications) */
 .etiquettes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .puce-case { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 7px 14px; border: 1px solid var(--g-trait-moyen); border-radius: 999px; background: var(--g-papier); font-size: 14.5px; cursor: pointer; }
 .puce-case input { position: absolute; opacity: 0; pointer-events: none; }
@@ -61,7 +61,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .puce-ajout-zone { display: inline-flex; gap: 6px; align-items: center; }
 .guide-champ .puce-ajout, .puce-ajout { min-height: 40px; width: 210px; border-radius: 999px; border: 1px dashed var(--trait-fort); background: transparent; padding: 0 14px; font: inherit; font-size: 14.5px; }
 
-/* Choix à icône : grille resserrée, icône fine, coche ronde à droite */
+/* Choices with an icon: tight grid, thin icon, round tick on the right */
 .tuiles-choix { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .tuile-choix { position: relative; display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px 40px 12px 14px; border-radius: 14px; border: 1px solid var(--g-trait-moyen); background: var(--g-papier); font: inherit; color: var(--espresso); cursor: pointer; min-height: 0; }
 .tuile-txt { display: grid; gap: 1px; min-width: 0; }
@@ -76,7 +76,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .picto { width: 18px; height: 18px; flex: none; fill: none; stroke: var(--pierre-texte); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .tuile-choix[aria-pressed="true"] .picto { stroke: var(--vert); }
 
-/* Montants : champ formaté + curseur */
+/* Amounts: formatted field + slider */
 .montant { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 20px; align-items: center; }
 .champ-montant { display: flex; align-items: center; gap: 6px; border: 1px solid var(--trait-fort); border-radius: 12px; background: var(--g-papier); padding: 0 14px; }
 .guide-champ .champ-montant input[type="text"] { border: 0; min-height: 0; border-radius: 0; background: transparent; padding: 11px 0; }
@@ -98,11 +98,11 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .bornes-curseur { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--pierre-texte); font-variant-numeric: tabular-nums; }
 .guide-repere { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13.5px; color: var(--g-cuivre-texte); }
 
-/* Phrase d'activité */
+/* Business sentence */
 .guide-phrase textarea { border-left: 2px solid var(--cuivre); border-radius: 0 12px 12px 0; background: var(--g-papier); font-size: 15.5px; line-height: 1.5; }
 .page-guidee textarea { border: 1px solid var(--g-trait-moyen); padding: 12px 14px; font: inherit; width: 100%; }
 
-/* Dates clés */
+/* Key dates */
 .dates-tete, .dates-liste li { display: grid; grid-template-columns: 112px 210px minmax(0, 1fr) 30px; gap: 10px; align-items: center; }
 .dates-tete { font-size: 12.5px; color: var(--pierre-texte); }
 .dates-liste { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--g-trait); }
@@ -114,14 +114,14 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .dates-liste .guide-source { grid-column: 2 / 4; margin-top: -2px; }
 .dates-cles > .btn { justify-self: start; }
 
-/* Blocs repliés */
+/* Folded blocks */
 .guide-replie { border-top: 1px solid var(--g-trait); padding-top: 12px; }
 .guide-replie > summary { cursor: pointer; font-size: 14.5px; font-weight: 500; color: var(--espresso); list-style: none; }
 .guide-replie > summary::before { content: "+"; display: inline-block; width: 18px; color: var(--g-cuivre-texte); }
 .guide-replie[open] > summary::before { content: "−"; }
 .guide-replie[open] > summary { margin-bottom: 14px; }
 
-/* Faits du site */
+/* Website facts */
 .faits-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .faits-liste li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; background: var(--g-papier); border: 1px solid var(--g-trait); border-radius: 12px; font-size: 15px; }
 .faits-essentiels li { border-left: 2px solid var(--vert); }
@@ -141,7 +141,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .conflit-choix input { margin-top: 4px; accent-color: var(--vert); }
 .conflit-choix strong { display: block; font-size: 18px; font-weight: 600; }
 
-/* Logo et photos */
+/* Logo and photos */
 .logo-apercu { width: 132px; height: 64px; border-radius: 10px; border: 1px solid var(--g-trait); background: #fff; display: grid; place-items: center; overflow: hidden; flex: none; }
 .logo-apercu img { max-width: 120px; max-height: 54px; object-fit: contain; }
 .logo-texte { flex: 1 1 220px; display: grid; gap: 2px; font-size: 14.5px; }
@@ -156,7 +156,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .photo-propre { cursor: default; border-color: var(--vert); }
 .photo-propre .lien-simple { position: absolute; left: 8px; bottom: 8px; background: rgba(255, 253, 248, .92); padding: 2px 8px; border-radius: 999px; font-size: 13px; }
 
-/* Accueil de l'analyse approfondie */
+/* Welcome screen of the detailed analysis */
 .accueil-sur { color: var(--g-cuivre-texte); font-weight: 500; }
 .page-guidee .accueil-titre { font-size: clamp(30px, 3.4vw, 40px); line-height: 1.1; }
 .accueil-etapes { list-style: none; margin: 8px 0; padding: 0; counter-reset: e; }
@@ -192,10 +192,10 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 }
 @media (max-width: 420px) { .tuiles-choix { grid-template-columns: minmax(0, 1fr); } }
 
-/* ---------- Page d'un dossier (19/11/2026, maquette validée) ----------
-   Bande collante : fil du parcours en 5 étapes + action principale (en bas sur téléphone). Puis peu de tuiles,
-   grandes : en-tête vert et « À faire maintenant », quatre documents, dépôt des pièces replié.
-   Petits textes cuivrés en #8E5530 (contraste AA) ; --cuivre reste réservé aux aplats et aux contours. */
+/* ---------- Page of a file (19/11/2026, mockup approved) ----------
+   Sticky band: steps of the flow in 5 steps + main action (at the bottom on a phone). Then few tiles, large ones:
+   green header and « What to do now », four documents, upload of supporting documents folded.
+   Small copper texts in #8E5530 (AA contrast); --cuivre stays reserved for solid fills and outlines. */
 .page-dossier { --d-papier: #FFFDF8; --d-cuivre-texte: #8E5530; --d-vert-pale: #E3ECE6; --d-sable: #EFE5D3; }
 .espace-bento.dossier-parcours { background: var(--creme); padding: 84px 0 64px; }
 .dossier-parcours section { padding: 0; }
@@ -222,7 +222,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .dossier-parcours .tuile { border-radius: 26px; padding: 26px; min-width: 0; background: var(--d-papier); border: 1px solid var(--trait); color: var(--espresso); }
 .dossier-parcours .affiche { margin: 0; text-wrap: balance; }
 
-/* En-tête du dossier */
+/* Header of the file */
 .dossier-parcours .tuile-dossier { grid-column: span 7; background: var(--vert); border-color: transparent; color: #F6F1E6; display: grid; gap: 22px; align-content: space-between; }
 .dossier-parcours .nom-code { margin: 0; font-family: "Geist", system-ui, sans-serif; font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: clamp(26px, 2.6vw, 32px); line-height: 1.1; color: #E9C9A4; }
 .dossier-parcours .tuile-dossier h1 { font-size: clamp(40px, 4.6vw, 64px); color: #F6F1E6; margin-top: 6px; overflow-wrap: anywhere; }
@@ -240,7 +240,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .valeur-base { margin: 0; max-width: 52ch; font-size: 15px; color: #DCE5DF; }
 .valeur-lien { justify-self: start; font-size: 15px; font-weight: 600; color: #F6F1E6; text-underline-offset: 3px; }
 
-/* À faire maintenant */
+/* What to do now */
 .taches { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .tache { display: flex; align-items: center; gap: 14px; padding: 14px 14px 14px 16px; border-radius: 18px; background: var(--creme); border: 1px solid var(--trait); }
 .tache .btn { flex: none; }
@@ -261,7 +261,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .etat-a-venir { background: var(--d-sable); color: var(--pierre-texte); }
 .doc-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
-/* Pièces : résumé, puis dépôt type Drive (inchangé) quand il est ouvert */
+/* Supporting documents: summary, then Drive-like upload (unchanged) when it is open */
 .dossier-parcours .pieces-zone { grid-column: 1 / -1; margin-top: 22px; background: var(--d-sable); border-color: transparent; display: grid; gap: 16px; }
 .pieces-resume { display: flex; align-items: center; gap: 12px 24px; flex-wrap: wrap; }
 .pieces-resume h2 { font-size: 34px; color: var(--vert); }
@@ -278,8 +278,8 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .drive-dossiers button[aria-selected="true"] { background: var(--vert); color: #fff; }
 .drive-dossiers svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; }
 .drive-dossiers small { font-size: 12.5px; font-weight: 500; }
-/* Partie droite du dépôt : la zone de dépôt en bandeau, puis la liste des pièces (une seule colonne de contenu).
-   Conteneur de requêtes : la mise en page suit la place réellement disponible, pas la largeur de l'écran. */
+/* Right-hand part of the upload: the drop zone as a band, then the list of documents (a single content column).
+   Container queries: the layout follows the space actually available, not the screen width. */
 .drive-contenu { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; min-width: 0; margin: 0; container: depot / inline-size; }
 .depot-zone { border: 2px dashed rgba(168, 101, 58, .55); border-radius: 20px; background: #F5E7D6; padding: 14px 18px; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: "ico titre ajout" "ico aide ajout"; align-items: center; column-gap: 14px; row-gap: 2px; text-align: left; cursor: pointer; }
 .depot-zone .depot-ico { grid-area: ico; }
@@ -291,7 +291,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .depot-zone strong { font-size: 17px; }
 .depot-zone .petit { margin: 0; }
 .depot-choisir { font-weight: 600; color: var(--vert); min-height: 32px; white-space: nowrap; }
-/* Liste des pièces : une colonne, deux dès que la place le permet ; chaque pièce est elle-même un conteneur */
+/* List of documents: one column, two as soon as there is room; each document is a container itself */
 .drive-pieces { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 @container depot (min-width: 640px) { .drive-pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .drive-pieces > .piece { min-width: 0; container: piece / inline-size; }
@@ -314,7 +314,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .piece-etat.bouton { min-height: 36px; background: transparent; border: 1px solid var(--trait-fort); color: var(--espresso); font: inherit; font-size: 13px; cursor: pointer; }
 .piece-etat.bouton[aria-pressed="true"] { background: var(--d-vert-pale); color: var(--vert); border-color: transparent; font-weight: 600; }
 
-/* Gérer mon dossier : discret, en bas */
+/* Manage my file: discreet, at the bottom */
 .dossier-parcours .gerer-dossier { margin-top: 40px; border-top: 1px solid var(--trait); padding-top: 14px; }
 .dossier-parcours .gerer-dossier summary { font-size: 14px; color: var(--pierre-texte); font-weight: 500; }
 .dossier-parcours .gerer-dossier summary::after { font-size: 1.1rem; color: var(--pierre-texte); }
@@ -347,9 +347,9 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 }
 @media (prefers-reduced-motion: reduce) { .anneau .val, .jauge-pieces span { transition: none; } }
 
-/* ---------- Mémorandum en mode présentation (18/11/2026) ---------- */
-/* Petits textes cuivrés en #8E5530 (« ocre texte » de l'accueil) : --cuivre n'atteint pas 4,5:1 (« jamais pour du texte ») */
-.memo-studio { background: var(--creme); padding: 120px 0 60px; } /* comme .document-zone : la barre flottante ne recouvre plus le fil d'Ariane */
+/* ---------- Memorandum in presentation mode (18/11/2026) ---------- */
+/* Small copper texts in #8E5530 (« ocre texte » of the home page): --cuivre does not reach 4.5:1 (« never for text ») */
+.memo-studio { background: var(--creme); padding: 120px 0 60px; } /* like .document-zone: the floating bar no longer covers the breadcrumb */
 .studio-conteneur { max-width: 1380px; }
 .studio-tete { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
 .studio-tete h1 { margin: 0; font-size: clamp(30px, 3.4vw, 42px); }
@@ -392,7 +392,7 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 @media (max-width: 1100px) { .studio { grid-template-columns: 1fr; } .studio-panneau { position: static; max-height: none; } }
 @media print { .studio { display: block; } .memo-studio { padding: 0; } .studio-conteneur { max-width: none; } }
 
-/* Récapitulatif des réponses préparées */
+/* Summary of the prepared answers */
 .recap-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .recap-carte { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 16px; border-radius: 18px; border: 1.5px solid var(--vert); background: color-mix(in srgb, var(--vert) 5%, var(--creme)); cursor: pointer; }
 .recap-carte input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--vert); }
@@ -403,16 +403,17 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .recap-texte small { font-size: 12.5px; color: #8E5530; }
 .recap-liste li.decoche .recap-carte { border-color: var(--trait-fort); background: var(--creme); opacity: .7; }
 
-/* Police unique (18/11/2026) : plus de serif italique ni de chasse fixe dans l'espace */
+/* Single font (18/11/2026): no more italic serif or monospace in the space */
 :root { --b-serif: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; }
 .nom-code { font-style: normal; font-weight: 600; letter-spacing: -.03em; }
 .nom-code { font-size: clamp(36px, 4.4vw, 54px); }
-/* Nom de code au-dessus du nom réel (audit, point 8) : même ordre et même hiérarchie que la page du dossier */
+/* Code name above the real name (audit, point 8): same order and same hierarchy as the file page */
 .studio-tete h1 em { font-style: normal; }
 
-/* ---------- Une seule direction dans tout l'espace (19/11/2026, PR « Espace : une seule direction artistique ») ----------
-   Chargée par toutes les pages de public/espace/ et par public/connexion.html (test/espace-styles.test.js).
-   Petits titres : phrases en minuscules, petit gras ; capitales réservées aux pastilles d'état (option B). */
+/* ---------- A single direction in the whole space (19/11/2026, PR « Espace : une seule direction artistique »)
+   ----------
+   Loaded by every page of public/espace/ and by public/connexion.html (test/espace-styles.test.js).
+   Small titles: sentences in lower case, small bold; capitals reserved for the status badges (option B). */
 .page-espace .etiquette, .page-espace .saisie-groupe legend, .page-espace .valeur-etiquette, .page-espace .panneau-bloc h3 {
   font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; }
 .page-espace .valeur-etiquette { color: #E9C9A4; font-size: 15px; }
@@ -421,11 +422,11 @@ html:has(.page-guidee) { scroll-padding: 110px 0 140px; }
 .page-espace :where(h1.affiche, h2.affiche) { color: var(--vert); letter-spacing: var(--titre-interlettrage); }
 .page-espace .pied { padding: 18px 0; }
 
-/* Connexion (page et fenêtre de l'accueil) */
+/* Sign-in (page and window of the home page) */
 .page-connexion .page-texte { padding-top: 120px; }
 .page-connexion h1.affiche { font-size: clamp(44px, 6vw, 68px); margin: 0 0 12px; }
 
-/* En-tête clair des pages du dossier (valorisation) : titre d'affiche et onglets, sous la barre du site */
+/* Light header of the file's pages (valuation): poster title and tabs, under the site's bar */
 .espace-tete { padding: 92px 0 0; background: var(--creme); }
 .espace-tete .ariane { margin-bottom: 4px; }
 .espace-tete h1.affiche { font-size: clamp(34px, 4vw, 50px); margin: 0; overflow-wrap: anywhere; }
@@ -436,11 +437,11 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
 .page-espace .espace.parcours .panneau { padding: 16px 0 24px; }
 .page-espace .espace.parcours .panneau > .conteneur > h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* Documents (teaser, mémorandum) : titre d'affiche */
+/* Documents (teaser, memorandum): poster title */
 .page-document .document-outils h1.affiche { font-size: clamp(38px, 4.6vw, 56px); margin: 0 0 8px; }
 .studio-tete h1.affiche { font-size: clamp(32px, 3.6vw, 46px); }
 
-/* Valorisation, « Vos chiffres » : un exercice à la fois, obligatoires sur deux colonnes, facultatives repliées */
+/* Valuation, « Your figures »: one fiscal year at a time, mandatory ones on two columns, optional ones folded */
 .chiffres-barre { display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap; margin-bottom: 12px; }
 .choix-annee, .chiffres-outils { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .choix-annee .annee { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--trait-fort); background: #FFFDF8; font: inherit; font-weight: 600; cursor: pointer; }
@@ -468,7 +469,7 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
 .chiffres-pied .petit { margin: 0; }
 .page-espace .espace.parcours .suite { margin-top: 12px; }
 
-/* Aide « ? » (EBE) : au survol, au clavier et au toucher (le bouton prend le focus) */
+/* « ? » help (EBITDA): on hover, with the keyboard and on touch (the button takes the focus) */
 .aide-bulle { position: relative; display: inline-flex; vertical-align: middle; }
 .aide-rond { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--trait-fort); background: #FFFDF8; font: 600 12px/1 var(--sans); color: var(--espresso); cursor: help; padding: 0; }
 .aide-bulle [role="tooltip"] { position: absolute; z-index: 30; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); width: min(280px, 80vw); padding: 10px 12px; border-radius: 12px;
@@ -483,7 +484,7 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
   .aide-bulle [role="tooltip"] { left: auto; right: -8px; transform: none; }
 }
 
-/* Page du dossier sur un écran (option A : plan de la PR #10 resserré, sans pictogrammes) */
+/* File page on one screen (option A: plan of PR #10 tightened, without pictograms) */
 .page-dossier .espace-bento.dossier-parcours { padding: 78px 0 12px; }
 .page-dossier .bento-espace { gap: 10px; }
 .page-dossier .dossier-parcours .tuile { padding: 18px 20px; border-radius: 22px; }
@@ -515,7 +516,7 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
   .page-dossier .valeur-base { font-size: 14px; }
 }
 
-/* Valorisation, « Votre valorisation » : résumé sur un écran, détail et réglages repliés */
+/* Valuation, « Your valuation »: summary on one screen, detail and settings folded */
 .page-espace .resultat-tete { gap: 12px; }
 .page-espace .synthese-valeur { padding: 20px 22px; }
 .page-espace .synthese-valeur .valeur-centrale { font: 500 clamp(44px, 4.6vw, 64px)/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); margin: 6px 0; }
@@ -529,7 +530,7 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
 .page-espace .reglages { margin-top: 0; }
 @media (max-width: 760px) { .resultat-deplis { grid-template-columns: 1fr; } }
 
-/* Parcours guidé : chaque écran tient sans défiler (« L'essentiel de vos comptes » en deux écrans, deux colonnes) */
+/* Guided flow: each screen fits without scrolling (« The essentials of your accounts » on two screens, two columns) */
 .page-guidee .guide { padding: 84px 0 16px; }
 .page-guidee .guide-ecran { gap: 12px; padding: clamp(18px, 2.4vw, 28px); }
 .page-guidee .saisie-deux { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; padding: 14px 18px 16px; }
@@ -544,7 +545,7 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
   .page-guidee .q-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--creme); border-top: 1px solid var(--trait); }
 }
 
-/* Valorisation : pied de l'onglet « Vos chiffres », questionnaire « Votre entreprise » sur un écran (thèmes à gauche) */
+/* Valuation: footer of the « Your figures » tab, « Your company » questionnaire on one screen (themes on the left) */
 .chiffres-actions-pied { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .page-espace #entreprise .conteneur-moyen { max-width: var(--largeur); display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 4px 16px; align-items: start; }
 .page-espace #entreprise .chapo-petit { grid-column: 1 / -1; margin: 0 0 6px; }
@@ -565,7 +566,7 @@ nav.etapes.onglets .etape-etat { color: var(--pierre-texte); font-size: 13px; }
   .page-espace #entreprise .questionnaire, .page-espace #entreprise .enregistre { grid-column: 1; grid-template-columns: 1fr; }
 }
 
-/* Resserrage pour 1280 × 800 (mesures du 19/11/2026) */
+/* Tightening for 1280 × 800 (measurements of 19/11/2026) */
 .page-espace .pied { padding: 10px 0; }
 .page-espace .pied .pied-bas { font-size: 13px; }
 .espace-tete { padding-top: 80px; }
@@ -600,7 +601,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .page-espace #entreprise .questionnaire textarea { min-height: 54px; height: 54px; }
   .page-espace #entreprise .sous-etapes .lien-simple { padding: 5px 10px; }
 }
-/* Téléphone : l'action principale reste visible sans défiler (pied collé en bas de l'écran) */
+/* Phone: the main action stays visible without scrolling (footer stuck to the bottom of the screen) */
 @media (max-width: 760px) {
   .page-espace .chiffres-pied, .page-espace #entreprise .questionnaire > .q-nav { position: sticky; bottom: 0; z-index: 20; margin: 8px -16px 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background: var(--creme); border-top: 1px solid var(--trait); }
   .page-espace #entreprise .questionnaire > .q-nav { margin: 8px -22px -18px; border-radius: 0 0 22px 22px; }
@@ -609,8 +610,8 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .page-dossier .tache .btn { margin-left: 0; }
 }
 
-/* Après intégration de parcours-coherence (19/11/2026) : récapitulatif des réponses préparées sur un écran,
-   explication d'écart de la fourchette sur la page du dossier */
+/* After merging parcours-coherence (19/11/2026): summary of the prepared answers on one screen, explanation of the
+   range's change on the file page */
 @media (min-width: 761px) {
   .page-guidee .recap-liste { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .page-guidee .recap-carte { padding: 10px 12px; gap: 10px; }
@@ -661,7 +662,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .chiffre-ligne .champ-montant { gap: 3px; }
   .chiffres-bloc { padding: 10px 12px; }
 }
-/* Après #14 : « Télécharger l'Excel » plus long ; boutons des documents compacts, sur une ligne quand c'est possible */
+/* After #14: « Download the Excel » is longer; compact document buttons, on one line when possible */
 .page-dossier .doc-actions { gap: 6px; }
 .page-dossier .doc-actions .btn { min-height: 36px; padding: 0 12px; font-size: 14px; }
 @media (min-width: 761px) and (max-height: 820px) {
@@ -677,9 +678,10 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .depot-zone > .depot-choisir { justify-self: start; }
 }
 
-/* ---------- Page du dossier allégée (20/11/2026, option G1) ----------
-   Fil léger sans bouton (libellés jamais tronqués), bloc vert réduit à l'essentiel, une carte d'action dont le bouton
-   n'est jamais une tâche facultative, deux tâches au plus, documents en une rangée. */
+/* ---------- Lighter file page (20/11/2026, option G1) ----------
+   Light steps without a button (labels never cut off), green block reduced to the essentials, an action card whose
+   button
+   is never an optional task, two tasks at most, documents in one row. */
 .dossier-leger { max-width: 1040px; display: grid; gap: 22px; }
 .fil-leger { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; row-gap: 8px; font-size: 14px; color: var(--pierre-texte); }
 .fil-leger li { display: flex; align-items: center; white-space: nowrap; }
@@ -725,11 +727,11 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .fil-leger li:not(.actuelle) .lib { display: none; }
   .fil-leger li + li::before { width: 14px; margin: 0 6px; }
   .dossier-leger .tuile-dossier { padding: 22px; }
-  .dossier-leger .action-principale .btn { display: none; } /* bouton collant en bas (.cta-tel) */
+  .dossier-leger .action-principale .btn { display: none; } /* sticky button at the bottom (.cta-tel) */
 }
 
-/* ---------- Écran final du parcours (20/11/2026, option H1) : le mémorandum en vedette, les autres documents par
-   nature, le facultatif à part */
+/* ---------- Final screen of the flow (20/11/2026, option H1): the memorandum in the spotlight, the other documents
+   by nature, the optional part apart */
 .fin-valeur { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0; font-size: 15px; color: var(--pierre-texte); }
 .fin-valeur strong { font: 500 32px/1 var(--titre-police); letter-spacing: var(--titre-interlettrage); color: var(--vert); }
 .fin-valeur a { font-size: 13.5px; }
@@ -764,7 +766,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .fin-doc { grid-template-columns: 42px minmax(0, 1fr) auto; }
   .fin-doc .etat { grid-column: 2; grid-row: 2; justify-self: start; }
 }
-/* Corrections d'héritage (règles de l'ancienne page du dossier) */
+/* Fixes of inherited rules (rules of the old file page) */
 .dossier-leger .dossier-tete > .tuile-dossier { grid-column: auto; }
 .dossier-leger .fil-leger li > a, .dossier-leger .fil-leger li > .etape { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; min-height: 0; padding: 0; background: none; border-radius: 0; color: inherit; font-size: 14px; overflow: visible; }
 .dossier-leger .fil-leger .actuelle > .etape { color: var(--vert); font-weight: 600; background: none; }
@@ -780,8 +782,8 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .fin-doc .etat-a-relire, .fin-doc .etat-incomplet, .fin-memo .etat-a-relire, .fin-memo .etat-incomplet { background: #F6E9DC; color: #8E5530; }
 .fin-doc .etat-a-venir, .fin-memo .etat-a-venir { background: #F3EBDD; color: var(--pierre-texte); }
 
-/* ====================================================== Mémorandum, phase 2 (24/11/2026) */
-/* Photos : fiche de jugement sous chaque photo, ordre modifiable (flèches, glisser) */
+/* ====================================================== Memorandum, phase 2 (24/11/2026) */
+/* Photos: assessment card under each photo, order that can be changed (arrows, drag) */
 .ph-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .ph { display: grid; grid-template-columns: 36px 150px minmax(0, 1fr); gap: 14px; align-items: start; padding: 12px; border: 1px solid var(--trait); border-radius: 18px; background: #FFFDF8; }
 .ph.ignoree { opacity: .7; }
@@ -809,7 +811,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
   .ph-jugement { grid-column: 1 / -1; }
 }
 
-/* Panneau d'amélioration : titres repliés, réponse dépliée sur place */
+/* Improvement panel: folded titles, answer unfolded in place */
 .amel-resume { margin: 0; }
 .amel-relire { justify-self: start; }
 .amel-filtre { display: inline-flex; gap: 4px; padding: 3px; border-radius: 999px; background: #F3EBDD; justify-self: start; max-width: 100%; }
@@ -840,7 +842,7 @@ nav.etapes.onglets a { padding: 8px 14px; }
 .amel.amel-faite .amel-page { color: var(--vert); font-weight: 600; }
 .amel-legende { margin: 0; display: flex; gap: 6px; align-items: center; }
 
-/* Parcours guidé : l'équipe dirigeante, une carte repliable par personne */
+/* Guided flow: the management team, one folding card per person */
 .eq-personnes { display: grid; gap: 10px; }
 .eq-personne { border: 1px solid var(--trait); border-radius: 18px; background: #FFFDF8; }
 .eq-personne > summary { list-style: none; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 16px; cursor: pointer; }

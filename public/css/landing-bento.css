@@ -1,6 +1,6 @@
-/* Accueil, direction « bento » (18/11/2026, maquette validée par le dirigeant) : la vidéo en haut, découpée d'une
-   encoche où se loge un exemple d'estimation ; titres en grandes capitales étroites ; peu de blocs, grands.
-   Chargée après landing.css ; couleurs Passation (crème, vert, cuivre). */
+/* Home page, « bento » direction (18/11/2026, mockup approved by the owner): the video at the top, cut by a
+   notch that holds an example of estimate; titles in large narrow capitals; few blocks, large ones.
+   Loaded after landing.css; Passation colours (cream, green, copper). */
 
 .landing .affiche {
   font-family: var(--titre-police); font-weight: var(--titre-graisse);
@@ -19,13 +19,13 @@
 .landing .hero-bas { position: absolute; left: 0; bottom: 0; padding: 0 0 18px 18px; z-index: 4; }
 .landing .hero-bas .hero-pause { position: static; }
 
-/* Sources, sous le hero (registres, pas de logos de presse) */
+/* Sources, under the hero (registries, no press logos) */
 
 /* ---------- Sections ---------- */
 .landing .dossier h2, .landing .comment h2 { font-size: clamp(2.6rem, 5.2vw, 4.4rem); color: var(--vert); max-width: 18ch; }
 .landing .dossier .chapo { margin-top: 16px; color: var(--pierre-texte); }
 
-/* Le dossier : trois blocs */
+/* The file: three blocks */
 .bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
 .bento-bloc { border-radius: 32px; overflow: hidden; min-width: 0; position: relative; }
 .bento-documents { grid-column: span 7; grid-row: span 2; display: grid; grid-template-rows: minmax(260px, 1fr) auto; background: var(--vert); color: #F6F1E6; }
@@ -40,12 +40,12 @@
 .landing .bento-methodes h3 { font-size: 30px; color: var(--vert); font-weight: 600; letter-spacing: -.02em; }
 .bento-methodes p { margin: 0; color: var(--pierre-texte); }
 
-/* Confidentialité : un seul bloc vert */
+/* Confidentiality: a single green block */
 @keyframes masquer-nom { 0%, 15% { transform: scaleX(0); } 35%, 100% { transform: scaleX(1); } }
 
 /* Appel final */
 
-/* Tablette et téléphone */
+/* Tablet and phone */
 @media (max-width: 900px) {
   .bento > * { grid-column: 1 / -1; grid-row: auto; }
   .landing .hero-contenu { padding-bottom: 120px; }
@@ -58,7 +58,7 @@
 .landing #questions h2.affiche { font-size: clamp(2.6rem, 4.6vw, 4rem); color: var(--vert); }
 @media (max-width: 600px) { .landing .hero .recherche-champ { border-radius: 28px; } }
 
-/* Résultat de l'estimation (18/11/2026) : analyse en étapes, puis tuiles */
+/* Result of the estimate (18/11/2026): analysis in steps, then tiles */
 .analyse-etapes { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; width: min(460px, 100%); }
 .analyse-etapes li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 16px; border-radius: 16px; background: rgba(255, 255, 255, .06); color: #F6F1E6; font-size: 17px; opacity: .35; transition: opacity .3s, background .3s; }
 .analyse-etapes li.en-cours { opacity: 1; background: rgba(233, 201, 164, .16); }
@@ -74,7 +74,7 @@
 .landing .floute { filter: blur(5px); user-select: none; -webkit-user-select: none; display: inline-block; padding: 0 2px; }
 
 /* =================================================================== Accueil v4 (18/11/2026) */
-/* Polices réduites */
+/* Smaller fonts */
 .landing { font-size: 17px; }
 .landing .chapo { font-size: clamp(1.05rem, 1.25vw, 1.2rem); }
 .landing .dossier h2, .landing .comment h2, .landing #questions h2.affiche { font-size: clamp(2.1rem, 3.8vw, 3.2rem); }
@@ -82,7 +82,7 @@
 .landing .bento-chiffre { font-size: 80px; }
 .landing .bento-methodes h3 { font-size: 24px; }
 
-/* Hero : texte en haut, vidéo plus petite avec quatre bulles */
+/* Hero: text at the top, smaller video with four bubbles */
 .hero-bulle { position: absolute; z-index: 3; width: 238px; display: grid; gap: 4px; padding: 16px 18px; border-radius: 22px; background: #FFFDF8; color: var(--espresso); box-shadow: 0 18px 40px -24px rgba(35, 30, 24, .45); }
 .hero-bulle.sombre { background: var(--vert); color: #F6F1E6; }
 .hero-bulle strong.affiche { font-size: 34px; line-height: 1; color: var(--vert); }
@@ -95,7 +95,7 @@
 .bulle-code { font-family: var(--mot-cle); font-style: normal; font-weight: 600; letter-spacing: -.02em; font-size: 26px; line-height: 1.1; color: var(--ocre); }
 .bulle-valeur { font-size: 28px !important; }
 
-/* Résultat de l'estimation : compact, une seule suite */
+/* Result of the estimate: compact, a single next step */
 .landing .resultat .resultat-grille { max-width: 1040px; margin: 0 auto; padding: clamp(22px, 3vw, 36px); gap: 28px; border-radius: 28px; }
 @media (min-width: 960px) { .landing .resultat .resultat-grille { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 36px; } }
 .landing #titre-resultat { font-size: clamp(1.9rem, 3.4vw, 2.8rem); }
@@ -105,15 +105,15 @@
 .landing .resultat .resultat-note { font-size: 13.5px; }
 .resultat-chargement { min-height: 260px; }
 .analyse-etapes li { font-size: 15px; padding: 10px 14px; }
-/* Confidentialité : garanties en tuiles */
+/* Confidentiality: guarantees as tiles */
 
-/* Appel final à la manière d'une carte claire, puis grand pied de page vert */
+/* Final call as a light card, then a large green footer */
 .landing .pied { background: var(--vert); border-radius: 44px 44px 0 0; margin-top: 72px; }
 .landing .pied a:hover { color: #E9C9A4; }
 .pied-legal, .landing .pied-copyright { color: #BCCBC0; }
 .landing .pied-marque { margin: 18px 0 -0.14em; font: 500 19vw/0.8 var(--titre-police); text-transform: none; text-align: center; letter-spacing: var(--titre-interlettrage); color: #F6F1E6; white-space: nowrap; overflow: hidden; }
 
-/* Téléphone et tablette */
+/* Phone and tablet */
 @media (max-width: 900px) {
   .hero-bulle { position: static; width: auto; }
   }
@@ -130,7 +130,7 @@
   .hero-bulle > span { font-size: 12.5px; }
 }
 
-/* Accueil v4 : trois bulles à cheval sur les bords de la vidéo (plus d'encoches) */
+/* Home page v4: three bubbles straddling the edges of the video (no more notches) */
 .hero-bulle { box-shadow: 0 22px 50px -20px rgba(35, 30, 24, .45); border: 1px solid var(--trait); }
 .hero-bulle.sombre { border-color: transparent; }
 .bulle-hg { top: 36px; left: -32px; }
@@ -138,15 +138,15 @@
   .bulle-hg { transform: none; width: auto; }
 }
 
-/* Police unique sur tout le site (18/11/2026) : titres en capitales étroites, tout le reste en Geist ; plus de
-   serif italique, de chasse fixe ni d'écriture manuscrite */
+/* Single font on the whole site (18/11/2026): titles in narrow capitals, everything else in Geist; no more italic
+   serif, monospace or handwriting */
 .landing { --mot-cle: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif; }
 .landing em, .landing h1 em, .landing h2 em, .landing .titre-section em, .landing .resultat .resultat-code, .hero-bulle > .bulle-code, .bulle-code, .landing .equipe-citation p { font-style: normal; }
 .hero-bulle > .bulle-code, .landing .resultat .resultat-code { font-weight: 600; letter-spacing: -.025em; }
 .hero-bulle > .bulle-code { font-size: 22px; }
 .landing .surtitre.etiquette-kraft, .landing .carte-large .surtitre.etiquette-kraft { font-family: var(--sans); font-size: 15px; font-weight: 600; }
 
-/* =================================================================== Accueil v5 : grande forme, texte à l'intérieur */
+/* =================================================================== Home page v5: large shape, text inside */
 .landing .hero.hero-v5 { min-height: auto; height: auto; max-width: 1320px; margin: 0 auto; padding: calc(var(--haut-entete, 80px) + 12px) var(--gouttiere) 0; display: block; }
 .landing .hero-v5::before, .landing .hero-v5::after { content: none; }
 .hero-scene { position: relative; height: clamp(600px, 86vh, 780px); margin: 0 clamp(0px, 2.4vw, 34px) 66px; }
@@ -158,14 +158,14 @@
 .landing .hero-v5 h1 em { color: #fff; }
 .landing .hero-v5 .chapo { color: rgba(255, 255, 255, .9); margin: 0 auto; max-width: 40rem; }
 .landing .hero-v5 .hero-preuves { color: rgba(255, 255, 255, .85); }
-/* Le champ dans l'encoche, en bas au centre ; les coches dessous, sous la forme */
+/* The field in the notch, at the bottom in the centre; the ticks below, under the shape */
 .landing .hero-v5 .recherche { position: absolute; left: 50%; transform: translateX(-50%); top: calc(100% - var(--encoche-p, 0px) + 14px); width: min(620px, calc(100% - 48px)); z-index: 4; }
 .landing .hero-v5 .recherche-champ { border: 1px solid var(--trait); box-shadow: 0 16px 40px -18px rgba(35, 30, 24, .35); }
 .landing .hero-v5 .recherche-note { margin-top: 12px; }
 .landing .hero-v5 .hero-coches { color: var(--pierre-texte); font-size: 14.5px; }
 .landing .hero-v5 .hero-coches li::before { background: var(--vert); color: #fff; }
 .landing .hero-v5 .hero-bas { position: absolute; top: 18px; right: 132px; left: auto; bottom: auto; transform: none; padding: 0; z-index: 4; }
-/* Bulles à cheval sur les bords */
+/* Bubbles straddling the edges */
 .hero-v5 .hero-bulle { position: absolute; z-index: 3; }
 .hero-v5 .bulle-hg { top: 30%; left: -34px; transform: none; }
 @media (max-width: 1100px) { .hero-v5 .bulle-hg { left: -14px; } .hero-v5 .hero-bulle { width: 210px; } }
@@ -181,7 +181,7 @@
   .landing .hero-v5 .hero-coches li::before { background: #E9C9A4; color: var(--vert); }
 }
 
-/* Accueil v5 (suite) : bulles logées dans la forme, comme des pièces de puzzle ; champ dans le texte */
+/* Home page v5 (continued): bubbles fitted into the shape, like puzzle pieces; field in the text */
 .hero-scene { height: clamp(620px, 84vh, 760px); margin: 0 clamp(0px, 3vw, 44px) 30px; }
 .landing .hero-v5 .hero-contenu { padding: 40px 300px; }
 .landing .hero-v5 h1 { font-size: clamp(2.6rem, 4.8vw, 4.8rem); }
@@ -207,8 +207,8 @@
 @media (max-width: 700px) { .landing .hero-v5 .hero-contenu { padding: 64px 18px 24px; } .landing .hero-v5 .recherche { margin-top: auto; } }
 .hero-v5 .hero-bulle strong.affiche { font-size: 38px; white-space: nowrap; }
 
-/* Accueil v5, retouches du 18/11/2026 : vidéo élargie ; bulles de gauche posées par-dessus (la forme ne change pas),
-   avec une ombre, dépassant un peu ; le texte remonte pour ne jamais passer sous la bulle du bas à droite */
+/* Home page v5, touch-ups of 18/11/2026: wider video; left bubbles laid on top (the shape does not change), with a
+   shadow, sticking out a little; the text moves up so that it never goes under the bottom right bubble */
 .landing .hero.hero-v5 { max-width: 1560px; }
 .hero-scene { margin: 0 clamp(8px, 1.6vw, 28px) 30px; }
 .hero-v5 .bulle-hg { box-shadow: 0 26px 50px -18px rgba(20, 16, 12, .55), 0 2px 6px rgba(20, 16, 12, .12); }
@@ -229,7 +229,7 @@
 @media (max-width: 1180px) and (min-width: 901px) { .landing .hero-v5 .hero-contenu { padding: 40px 150px 150px; } }
 @media (min-width: 901px) { .landing .hero-v5 .hero-contenu { padding: 40px clamp(130px, 18vw, 320px) 150px; } }
 
-/* Téléphone et tablette : deux bulles posées par-dessus la vidéo, avec une ombre, qui dépassent un peu */
+/* Phone and tablet: two bubbles laid on top of the video, with a shadow, sticking out a little */
 @media (max-width: 900px) {
   .hero-scene { margin-bottom: 44px; }
   .hero-v5 .bulle-hg, .hero-v5 .bulle-d1 { display: grid; gap: 2px; padding: 12px 14px; border-radius: 18px; box-shadow: 0 20px 40px -14px rgba(20, 16, 12, .55), 0 2px 6px rgba(20, 16, 12, .12); }
@@ -245,11 +245,11 @@
 @media (max-width: 700px) { .landing .hero-v5 .hero-contenu { padding: 100px 18px 96px; } .hero-scene { height: clamp(620px, 96svh, 740px); } }
 
 /* =================================================================== Lot 1 (18/11/2026) */
-/* Le dossier : titre sur deux lignes en 1440 et 1280 px (le texte ne change pas) */
+/* The file: title on two lines at 1440 and 1280 px (the text does not change) */
 .landing .dossier h2 { max-width: 30ch; text-wrap: balance; }
 
-/* Comment ça marche : trois étapes reliées par un trait de progression, une scène par étape (scenes.js).
-   Les styles par défaut décrivent l'état final ; .scene-attente l'état de départ ; .scene-joue l'animation. */
+/* How it works: three steps linked by a progress line, one scene per step (scenes.js).
+   The default styles describe the final state; .scene-attente the starting state; .scene-joue the animation. */
 .etapes-parcours { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
 .parcours-etape { position: relative; display: flex; flex-direction: column; gap: 12px; padding-top: 60px; min-width: 0; }
 .parcours-noeud { position: absolute; top: 0; left: 0; z-index: 1; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center;
@@ -292,7 +292,7 @@
 .s-frappe { transform-origin: left center; }
 .s-repere { transform-origin: center; }
 
-/* État de départ, puis animation (une fois, à l'entrée dans l'écran) */
+/* Starting state, then animation (once, when it enters the screen) */
 .scene-attente.parcours-etape::after { transform: scaleX(0); }
 .scene-attente .s-frappe { transform: scaleX(0); }
 .scene-attente .s-resultat, .scene-attente .s-ligne, .scene-attente .s-synthese, .scene-attente .s-doc { opacity: 0; }
@@ -326,15 +326,15 @@
 }
 @keyframes parcours-trait-v { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
-/* Confidentialité : le nom barré, puis le tampon « Projet Chêne » (rouge --tampon, encre : masque grunge.webp).
-   Chute reprise de la démo du nom de code (échelle 1,9 → 1 en 0,35 s, puis petit choc amorti de la fiche). */
+/* Confidentiality: the name crossed out, then the « Projet Chêne » stamp (red --tampon, ink: grunge.webp mask).
+   Fall taken from the code name demo (scale 1.9 → 1 in 0.35 s, then a small damped shock of the card). */
 @keyframes confid-brouille { from { filter: none; opacity: 1; } to { filter: blur(2.5px); opacity: .55; } }
 @keyframes confid-barre { from { transform: rotate(-2deg) scaleX(0); } to { transform: rotate(-2deg) scaleX(1); } }
 @keyframes confid-tampon { 0% { opacity: 0; scale: 1.9; } 30% { opacity: 1; } 100% { opacity: 1; scale: 1; } }
 @keyframes confid-choc { 0% { transform: none; } 15% { transform: translateY(5px); } 35% { transform: translateY(-2.5px); } 55% { transform: translateY(1.2px); } 75% { transform: translateY(-.5px); } 100% { transform: none; } }
 
-/* Résultat : fiche « repreneur » (19/11/2026). L'analyse en quatre étapes reste sur la carte verte ; la fiche montre
-   à gauche le profil anonyme (bloc vert, nom de code, tampon), à droite la fourchette réservée au dirigeant. */
+/* Result: « buyer » card (19/11/2026). The analysis in four steps stays on the green card; the card shows on the
+   left the anonymous profile (green block, code name, stamp), on the right the range reserved for the owner. */
 .landing .resultat-pret .resultat-grille { display: block; max-width: 980px; padding: 0; overflow: hidden; background: #FFFDF8; color: var(--espresso);
   border: 1px solid var(--trait); border-radius: 26px; box-shadow: 0 30px 70px -44px rgba(35, 30, 24, .45); }
 .fiche-repreneur { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); }
@@ -367,7 +367,7 @@
 .landing .fiche-sources { margin: 0; font-size: 13.5px; color: var(--pierre-texte); }
 .fiche-action { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
 .landing .fiche-action p { margin: 0; font-size: 14px; color: var(--pierre-texte); }
-/* Le tampon s'abat quand la fiche apparaît */
+/* The stamp comes down when the card appears */
 .resultat-pret .fiche-tampon { animation: fiche-tampon .38s cubic-bezier(.55, 0, .9, .45) .25s both; }
 @keyframes fiche-tampon { 0% { opacity: 0; transform: rotate(-8deg) scale(2.2); } 70% { opacity: 1; } 100% { opacity: 1; transform: rotate(-8deg) scale(1); } }
 @media (prefers-reduced-motion: reduce) { .resultat-pret .fiche-tampon { animation: none; } }
@@ -392,17 +392,18 @@
 .landing .pied-bas .pied-legal { font-size: 14px; }
 @media (max-width: 900px) { .pied-bas { grid-template-columns: 1fr; } .landing .pied-bas .pied-copyright { padding: 0; } }
 
-/* Option A : la carte claire (champ, garanties en une ligne), puis le pied vert structuré */
+/* Option A: the light card (field, guarantees on one line), then the structured green footer */
 
-/* Option B : un seul bloc vert ; la relance à gauche, les trois documents à droite, puis garanties, liens, mentions */
+/* Option B: a single green block; the call to action on the left, the three documents on the right, then
+   guarantees, links, notices */
 
 .landing .pied .pied-titre { text-transform: none; letter-spacing: 0; font-family: "Geist", system-ui, sans-serif; }
 .pied-documents li { min-height: var(--cible, 44px); display: flex; align-items: center; }
 .pied-documents ul { gap: 0; }
 .landing .fiche .resultat-methodes li { padding-left: 0; }
 
-/* ---------- Retouches du 19/11/2026 : en-tête du dossier, étapes enchaînées et dépliables ---------- */
-/* Dossier : moins d'air sous la bande des sources ; titre à gauche, chapô à droite, alignés sur la dernière ligne */
+/* ---------- Touch-ups of 19/11/2026: header of the file, chained and folding steps ---------- */
+/* File: less space under the sources band; title on the left, standfirst on the right, aligned on the last line */
 .landing #livrables { padding-top: clamp(40px, 5vw, 72px); }
 .livrables-tete { display: grid; gap: 16px; }
 @media (min-width: 1024px) {
@@ -411,9 +412,9 @@
   .landing .dossier .livrables-tete .chapo { margin: 0 0 .45em; padding-left: 24px; border-left: 2px solid var(--ocre); max-width: 46ch; }
 }
 
-/* Étapes : le chiffre clé au-dessus de la bulle */
+/* Steps: the key figure above the bubble */
 .landing .parcours-chiffre { margin: 0 0 2px; line-height: 1; }
-/* Les nœuds s'allument l'un après l'autre (scenes.js enchaîne les étapes voisines) */
+/* The nodes light up one after the other (scenes.js chains the neighbouring steps) */
 .parcours-noeud { transition: background-color .35s ease, color .35s ease, box-shadow .35s ease; }
 .scene-attente .parcours-noeud { background: var(--sable); color: var(--vert); }
 .scene-joue .parcours-noeud { animation: noeud-actif .6s cubic-bezier(.3, 1.5, .5, 1) both; }
@@ -423,7 +424,7 @@
 .parcours-scene { cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
 .parcours-scene:hover { transform: translateY(-3px); box-shadow: 0 18px 36px -26px rgba(35, 30, 24, .45); }
 
-/* Titre de l'étape = bouton qui déplie l'argumentaire */
+/* Title of the step = button that unfolds the explanation */
 .parcours-ouvrir { all: unset; box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 14px; cursor: pointer;
   padding: 4px 0; color: inherit; font: inherit; border-radius: 8px; }
 .parcours-ouvrir:focus-visible { outline: 2px solid var(--ocre); outline-offset: 4px; }

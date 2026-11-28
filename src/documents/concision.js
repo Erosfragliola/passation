@@ -29,9 +29,9 @@ export function contenuConcis({ introduction = "", points = [] } = {}) {
 }
 
 /**
- * Un texte de chapitre respecte-t-il encore les longueurs après une correction (« Oui, corriger ») ? Introduction de
- * deux phrases et 320 caractères au plus, 6 points au plus de deux phrases et 240 caractères chacun ; un texte libre
- * (modifié à la main par le dirigeant) ne doit pas s'allonger de plus d'un cinquième.
+ * Does a chapter's text still respect the lengths after a correction (« Oui, corriger »)? Introduction of two
+ * sentences and 320 characters at most, 6 points at most of two sentences and 240 characters each; a free text
+ * (edited by hand by the owner) must not grow by more than a fifth.
  */
 export function contenuRespecteConcision(contenu, avant = null) {
   const blocs = String(contenu ?? "").split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);

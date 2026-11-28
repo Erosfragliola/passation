@@ -1,5 +1,5 @@
-// Faits du site (thèmes, essentiels, contradictions avec les registres), limite de choix, dates clés, phrase
-// d'activité. Données entièrement fictives (dépôt public).
+// Website facts (themes, essentials, contradictions with the registries), limit of choices, key dates, business
+// sentence. Entirely fictitious data (public repository).
 import { describe, it, expect } from "vitest";
 import { faitsParTheme, faitsEssentiels, contradictions, faitsUtilisables, limiterChoix, lireDate, lignesDates, phraseActivite, nomLisible } from "../public/js/faits-site.js";
 import { QUESTIONS } from "../public/js/parcours.js";
@@ -7,7 +7,7 @@ import { candidatsPhotos, cleImage } from "../src/documents/site.js";
 import { activiteFine } from "../src/documents/naf.js";
 
 const F = (id, categorie, fait, extra = {}) => ({ id, categorie, fait, valide: true, ...extra });
-const entreprise = { date_creation: "1998-03-01", tranche_effectif: { code: "12" } }; // 20 à 49 salariés
+const entreprise = { date_creation: "1998-03-01", tranche_effectif: { code: "12" } }; // 20 to 49 employees
 
 describe("limite « une à trois réponses »", () => {
   it("limiterChoix garde les trois premières, sans doublon", () => {
@@ -30,7 +30,7 @@ describe("faits du site", () => {
   });
   it("4 faits essentiels : le premier de chaque thème principal d'abord", () => {
     expect(faitsEssentiels(faits, 4).map((f) => f.id)).toEqual([1, 2, 3, 4]);
-    expect(faitsEssentiels(faits, 5).map((f) => f.id)).toEqual([1, 2, 3, 4, 5]); // puis le suivant du premier thème
+    expect(faitsEssentiels(faits, 5).map((f) => f.id)).toEqual([1, 2, 3, 4, 5]); // then the next one of the first theme
   });
 });
 
@@ -110,8 +110,8 @@ describe("photos du site : filtre à la lecture", () => {
   it("écarte logo, pictogramme SVG, bandeau (1 900 × 400), petite image (240 px), data:, icône ; doublons fusionnés", () => {
     const c = candidatsPhotos(html, base);
     expect(c).toEqual([
-      "https://menuiserie-exemple.fr/uploads/notre-atelier.jpg",            // « atelier » : vraie photo, en premier
-      "https://menuiserie-exemple.fr/img/escalier-chene-1200x800.jpg",      // srcset : la plus grande ; « escalier-chene.jpg » est le même fichier
+      "https://menuiserie-exemple.fr/uploads/notre-atelier.jpg",            // « atelier »: real photo, first
+      "https://menuiserie-exemple.fr/img/escalier-chene-1200x800.jpg",      // srcset: the largest; « escalier-chene.jpg » is the same file
       "https://menuiserie-exemple.fr/img/photo-divers.jpg",
     ]);
   });
@@ -123,4 +123,5 @@ describe("photos du site : filtre à la lecture", () => {
   });
 });
 
-// Placement des photos du mémorandum : par catégorie validée, sans doublon (test/photos.test.js, placementPhotos).
+// Placement of the memorandum's photos: by approved category, without duplicates (test/photos.test.js,
+// placementPhotos).

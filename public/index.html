@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <!-- Textes : src/contenu/<langue>/accueil.json, posés par le Worker (src/routes/pages.js). -->
+  <!-- Texts: src/contenu/<language>/accueil.json, set by the Worker (src/routes/pages.js). -->
   <title data-t="meta.titre">Passation</title>
   <meta name="description" data-t-attr="content=meta.description">
   <meta property="og:type" content="website">
@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="/css/landing-bento.css">
 </head>
 <body class="landing">
-<!-- Intro (première visite) : le seuil du logo se dessine, la porte s'allume, on entre. public/js/landing/intro.js -->
+<!-- Intro (first visit): the logo's threshold draws itself, the door lights up, we go in. public/js/landing/intro.js -->
 <div class="intro" id="intro">
   <svg class="intro-svg" aria-hidden="true" focusable="false">
     <defs>
@@ -92,18 +92,17 @@
 
   <!-- 1. Hero : agir -->
   <section id="accueil" class="hero hero-v5" aria-labelledby="titre-hero">
-    <!-- Accueil v5 (18/11/2026) : la vidéo dans une grande forme non rectangulaire (angles asymétriques, encoche en bas
-         découpée autour des deux bulles de droite ; les deux bulles de gauche sont posées par-dessus, avec une ombre),
-         le texte à l'intérieur
+    <!-- Home page v5 (18/11/2026): the video in a large non-rectangular shape (asymmetric corners, notch at the bottom
+         cut around the two right bubbles; the two left bubbles are laid on top, with a shadow), the text inside
          (public/js/landing/forme-hero.js) -->
     <div class="hero-scene" id="hero-scene">
       <div class="hero-fond">
       <img src="/img/photos/hero-poster-1600.webp"
            srcset="/img/photos/hero-poster-800.webp 800w, /img/photos/hero-poster-1600.webp 1600w, /img/photos/hero-poster-2400.webp 2400w"
            sizes="100vw" alt="" width="2400" height="1266" fetchpriority="high">
-      <!-- Vidéo (public/js/landing/video.js) : 1080p, 2160p seulement à partir de 1 600 px de large ; clips des métiers
-           en alternance si la liste est fournie (second lecteur créé à ce moment) ; jamais avec « réduire les
-           animations » ni en économie de données (l'image reste) -->
+      <!-- Video (public/js/landing/video.js): 1080p, 2160p only from 1,600 px wide; clips of the trades in turn if the list
+           is provided (second player created at that time); never with « reduce motion » nor in data saving mode (the image
+           stays) -->
       <div class="hero-videos" data-sources-hd='[["/video/hero-1080.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'
            data-sources-uhd='[["/video/hero-2160.webm","video/webm"],["/video/hero-1080.mp4","video/mp4"]]'>
         <video class="hero-video" muted playsinline preload="metadata" aria-hidden="true" hidden></video>
@@ -150,8 +149,8 @@
   </section>
 
 
-  <!-- Résultat de l'estimation (public/js/landing/resultat.js) : l'analyse en quatre étapes (inchangée), puis une fiche
-       de synthèse (lot 1) : nom de code, fourchette et barre bas / central / haut, sources datées, une seule action.
+  <!-- Result of the estimate (public/js/landing/resultat.js): the analysis in four steps (unchanged), then a summary card
+       (batch 1): code name, range and low / central / high bar, dated sources, a single action.
        Since 24/11/2026 the range is shown only to a signed-in owner: before that, the public card and "Create my access". -->
   <section id="resultat" class="resultat" aria-labelledby="titre-resultat" hidden>
     <div class="carte-large carte-verte nuit resultat-grille">
@@ -166,8 +165,8 @@
           <p class="resultat-chargement-texte" data-t="js.chargement"></p>
         </div>
         <div class="resultat-contenu fiche fiche-repreneur" hidden>
-          <!-- Fiche « repreneur » (19/11/2026) : à gauche le profil anonyme tel qu'il circulera, sous nom de code et tampon ;
-               à droite la fourchette, visible du seul dirigeant ; en bas les sources et une seule action. -->
+          <!-- « Buyer » card (19/11/2026): on the left the anonymous profile as it will circulate, under a code name and a
+               stamp; on the right the range, visible to the owner only; at the bottom the sources and a single action. -->
           <div class="fiche-profil">
             <span class="fiche-tampon" aria-hidden="true" data-t="js.resultat.tampon"></span>
             <p class="fiche-profil-eti" data-t="js.resultat.code_intro"></p>
@@ -215,7 +214,7 @@
     </div>
   </section>
 
-  <!-- 2. Le dossier, en trois blocs (bento du 18/11/2026) -->
+  <!-- 2. The file, in 3 blocks (bento of 18/11/2026) -->
   <section id="livrables" class="bloc dossier" aria-labelledby="titre-dossier">
     <div class="conteneur">
       <div class="livrables-tete">
@@ -240,9 +239,9 @@
     </div>
   </section>
 
-  <!-- 3. Comment ça marche (lot 1, 18/11/2026) : trois étapes reliées par un trait de progression ; chacune montre ce
-       qui se passe (petite scène SVG jouée une fois à l'entrée dans l'écran, public/js/landing/scenes.js ; état final
-       sans animation), son chiffre clé et ce que l'on obtient. Exemples fictifs signalés. Liens #comment-1, -2, -3. -->
+  <!-- 3. How it works (batch 1, 18/11/2026): 3 steps linked by a progress line; each one shows what happens (small
+       SVG scene played once when it enters the screen, public/js/landing/scenes.js; final state without animation), its key
+       figure and what the owner gets. Fictitious examples labelled. Links #comment-1, -2, -3. -->
   <section id="comment" class="bloc comment" aria-labelledby="titre-comment">
     <div class="conteneur">
       <h2 id="titre-comment" class="affiche" data-t="comment.titre"></h2>
@@ -337,7 +336,7 @@
 
 
 
-  <!-- 6. Derrière Passation : retirée tant que le nom et le texte du fondateur manquent -->
+  <!-- 6. Behind Passation: removed as long as the founder's name and text are missing -->
   <section id="equipe" class="bloc equipe" aria-labelledby="titre-equipe" data-si="fondateur_nom fondateur_texte">
     <div class="conteneur equipe-grille">
       <div class="equipe-texte">
@@ -355,7 +354,7 @@
     </div>
   </section>
 
-  <!-- 7. Ils l'ont fait : retirée tant que deux témoignages au moins ne sont pas fournis -->
+  <!-- 7. They did it: removed as long as at least two testimonials are not provided -->
   <section id="preuves" class="bloc-carte" aria-labelledby="titre-preuves" data-si="temoignages:2">
     <div class="carte-large carte-sable">
       <p class="surtitre etiquette-kraft" data-t="preuves.surtitre"></p>
@@ -379,7 +378,7 @@
     </div>
   </section>
 
-  <!-- 8. Guides : retirée (avec le lien de l'en-tête) tant que trois guides ne sont pas fournis -->
+  <!-- 8. Guides: removed (with the header's link) as long as 3 guides are not provided -->
   <section id="guides" class="bloc guides" aria-labelledby="titre-guides" data-si="guides:3">
     <div class="conteneur">
       <p class="surtitre etiquette-kraft" data-t="guides.surtitre"></p>
@@ -404,7 +403,7 @@
     </div>
   </section>
 
-  <!-- 9. Questions : natives (details, summary) ; une question sans réponse fournie est retirée -->
+  <!-- 9. Questions: native (details, summary); a question without a provided answer is removed -->
   <section id="questions" class="bloc" aria-labelledby="titre-faq">
     <div class="conteneur faq-grille">
       <div>

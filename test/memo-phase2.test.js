@@ -1,6 +1,7 @@
-// Mémorandum, phase 2 (24/11/2026) : fonctions pures. Photos (dimensions, filtre du site, placement par catégorie
-// sans doublon, limite de 12), jugements de Claude (schémas photo et relecture, aucun chiffre touché), équipe
-// dirigeante, remplissage et fusion des pages avec le sommaire recalculé, panneau d'amélioration. Données fictives.
+// Memorandum, phase 2 (24/11/2026): pure functions. Photos (dimensions, website filter, placement by category
+// without duplicates, limit of 12), Claude's assessments (photo and review schemas, no figure touched), management
+// team,
+// filling and merging of the pages with the contents computed again, improvement panel. Fictitious data.
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -17,7 +18,7 @@ import { ameliorations, reponsePour, titreCourt, ETAPES_MODIFIABLES } from "../p
 import { termesInterdits, verifierAnonymat } from "../src/documents/anonymat.js";
 import { faitsTeaser } from "../src/documents/teaser.js";
 
-// ---------------------------------------------------------------- Images fictives (en-têtes seulement)
+// ---------------------------------------------------------------- Fictitious images (headers only)
 const png = (l, h) => { const o = new Uint8Array(33); o.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52]); new DataView(o.buffer).setUint32(16, l); new DataView(o.buffer).setUint32(20, h); return o; };
 const jpg = (l, h) => new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 16, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0xff, 0xc0, 0, 17, 8, h >> 8, h & 255, l >> 8, l & 255, 3, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1]);
 const webp = (l, h) => { const o = new Uint8Array(30); o.set([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50, 0x56, 0x50, 0x38, 0x58]); const a = l - 1, b = h - 1; o.set([a & 255, (a >> 8) & 255, a >> 16, b & 255, (b >> 8) & 255, b >> 16], 24); return o; };
@@ -197,7 +198,7 @@ describe("remplissage mesuré à la surface, fusion des pages, sommaire recalcul
     expect(surfaceCouverte(zone, [])).toBe(0);
     expect(surfaceCouverte(zone, [{ left: 0, top: 0, right: 640, bottom: 360 }])).toBe(1);
     expect(surfaceCouverte(zone, [{ left: 0, top: 0, right: 320, bottom: 360 }])).toBeCloseTo(0.5, 2);
-    // Une page centrée verticalement (texte au milieu, rien au-dessus ni au-dessous) n'est pas « pleine »
+    // A vertically centred page (text in the middle, nothing above or below) is not « full »
     expect(surfaceCouverte(zone, [{ left: 0, top: 160, right: 640, bottom: 200 }])).toBeLessThan(SEUIL_PAGE_VIDE);
   });
   it("une page sous 16 % est fusionnée avec la suivante de la même partie (sinon la précédente), une seule fois", () => {
@@ -214,7 +215,7 @@ describe("remplissage mesuré à la surface, fusion des pages, sommaire recalcul
     const r1 = numeroter(avant);
     expect(r1.numeros).toEqual([null, null, null, "4.1", "4.2", "4.3", null, "5.1", "5.1", "5.2"]);
     expect(r1.pageDe).toEqual({ finances: 4, perspectives: 8, operation: 10 });
-    // Fusion : 4.2 + 4.3, et la suite de 5.1 revient sur sa page ; le chapitre « operation » remonte d'autant
+    // Merge: 4.2 + 4.3, and the continuation of 5.1 comes back to its page; the « operation » chapter moves up as much
     const apres = [avant[0], avant[1], avant[2], avant[3], { type: "page", sections: ["finances"] }, avant[6], { type: "page", sections: ["perspectives"] }, avant[9]];
     const r2 = numeroter(apres);
     expect(r2.numeros).toEqual([null, null, null, "4.1", "4.2", null, "5.1", "5.2"]);
@@ -243,7 +244,7 @@ describe("panneau d'amélioration", () => {
     expect(liste[0].importance).toBe("indispensable");
     expect(liste.some((x) => x.remarque?.id === "r2")).toBe(false);
     expect(liste.filter((x) => x.genre === "proposition")).toHaveLength(1);
-    expect(liste.find((x) => x.id === "encadrement")).toBeUndefined(); // déjà répondu
+    expect(liste.find((x) => x.id === "encadrement")).toBeUndefined(); // already answered
     expect(liste.find((x) => x.id === "accompagnement")).toMatchObject({ genre: "qcm", options: ["3 mois", "6 mois", "12 mois", "Plus de 12 mois"] });
   });
   it("« Ignorer » : l'amélioration écartée n'apparaît plus, rien d'autre ne change", () => {

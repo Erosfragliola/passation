@@ -1,6 +1,6 @@
-// Appels à l'API Claude (SDK officiel). Clé : secret ANTHROPIC_API_KEY (wrangler secret put), jamais dans le code.
-// Lecture de liasse : le PDF est envoyé tel quel (bloc « document » base64) ; la réponse est un JSON contraint par
-// un schéma. Claude ne calcule rien : il recopie des chiffres, que le dirigeant valide ligne par ligne.
+// Calls to the Claude API (official SDK). Key: secret ANTHROPIC_API_KEY (wrangler secret put), never in the code.
+// Tax-return reading: the PDF is sent as it is (base64 « document » block); the answer is a JSON constrained by a
+// schema. Claude calculates nothing: it copies figures, which the owner approves line by line.
 import Anthropic from "@anthropic-ai/sdk";
 import { contenuConcis } from "../documents/concision.js";
 import { MODELS, RELECTURE } from "../config.js";
@@ -8,14 +8,16 @@ import { SCHEMA_PHOTO, validerAnalysePhoto, SCHEMA_RELECTURE, validerRelecture, 
 import { CHAMPS } from "../../public/js/champs-financiers.js";
 import { t as tr, langue } from "../../public/js/i18n.js";
 
-/** Langue du texte produit : les consignes et les données restent en français ; en anglais, une instruction finale
- *  demande un texte rédigé en anglais (la langue de l'interface au moment de la génération). */
+/**
+ * Language of the text produced: instructions and data stay in French; in English, a final instruction asks for
+ * a text written in English (the interface language at the time of generation).
+ */
 const langueDeSortie = () => (langue() === "en"
   ? "\n\nLANGUE DE SORTIE : rédige tout le texte que tu produis en anglais américain, sobre et professionnel, même si ces consignes et les données sont en français. Ne traduis pas les noms propres, les noms de code ni les marques ; « EBE » s'écrit « EBITDA »."
   : "");
 
 export const claudeDisponible = (env) => Boolean(env.ANTHROPIC_API_KEY);
-// ANTHROPIC_BASE_URL : réglage de développement uniquement (serveur simulé pour les essais locaux), absent en production.
+// ANTHROPIC_BASE_URL: development setting only (simulated server for local checks), absent in production.
 const client = (env) => new Anthropic({ apiKey: env.ANTHROPIC_API_KEY, maxRetries: 2, ...(env.ANTHROPIC_BASE_URL ? { baseURL: env.ANTHROPIC_BASE_URL } : {}) });
 
 const SCHEMA_LIASSE = {
@@ -53,7 +55,7 @@ const SCHEMA_LIASSE = {
   },
 };
 
-// Construite à l'appel (dictionnaires installés), toujours en français : la liasse est un document français.
+// Built at call time (dictionaries installed), always in French: the tax return is a French document.
 const consigneLiasse = () => `Tu lis une liasse fiscale française (formulaires 2033 du régime simplifié ou 2050 à 2059 du régime normal), ou des comptes annuels.
 Recopie les montants demandés, pour chaque exercice présent dans le document (exercice N et, s'il figure, exercice N-1).
 Règles :
@@ -86,7 +88,7 @@ export async function lireLiasse(env, pdfBase64) {
   return { ...donnees, usage: { entree: reponse.usage.input_tokens, sortie: reponse.usage.output_tokens } };
 }
 
-// ---------------------------------------------------------------- Teaser anonymisé
+// ---------------------------------------------------------------- Anonymized teaser
 const SCHEMA_TEASER = {
   type: "object", additionalProperties: false,
   required: ["accroche", "activite", "chiffres", "atouts", "operation"],
@@ -106,7 +108,7 @@ Règles absolues :
 - Chiffres : uniquement les fourchettes fournies, recopiées telles quelles. Jamais de montant précis.
 - 250 à 350 mots au total.`;
 
-/** @param faits objet de faits anonymes ; @param corrections termes à retirer (seconde tentative) */
+/** @param faits object of anonymous facts; @param corrections terms to remove (second attempt) */
 export async function redigerTeaser(env, faits, corrections = []) {
   const consigne = corrections.length
     ? `${CONSIGNE_TEASER}\nUne première version contenait des éléments identifiants à supprimer absolument : ${corrections.join(", ")}.`
@@ -126,7 +128,7 @@ export async function redigerTeaser(env, faits, corrections = []) {
   return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
 }
 
-// ---------------------------------------------------------------- Site internet → faits sourcés
+// ---------------------------------------------------------------- Website → sourced facts
 const SCHEMA_SITE = {
   type: "object", additionalProperties: false, required: ["faits", "metiers", "termes_identifiants"],
   properties: {
@@ -164,10 +166,10 @@ export async function extraireSite(env, pages) {
   return JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join(""));
 }
 
-// ---------------------------------------------------------------- Mémorandum : une section
-// Le titre affirme la conclusion du chapitre (convention des banques d'affaires) ; l'accroche le résume en une phrase
-// pour la liste des points forts de la synthèse. Longueurs contrôlées par le code (src/documents/memo.js, titreValide) :
-// les sorties structurées n'acceptent pas maxLength.
+// ---------------------------------------------------------------- Memorandum: one chapter
+// The title states the chapter's conclusion (investment bank convention); the hook sums it up in one sentence for the
+// list of strengths in the summary. Lengths checked by the code (src/documents/memo.js, titreValide): structured
+// outputs do not accept maxLength.
 const SCHEMA_SECTION = {
   type: "object", additionalProperties: false, required: ["titre", "accroche", "introduction", "points", "a_completer"],
   properties: {
@@ -198,8 +200,8 @@ Règles absolues
 - Mieux vaut quatre points nets que six points délayés : si les faits manquent, le chapitre est plus court et a_completer dit ce qu'il faut apporter.
 - « complements_du_dirigeant » : ses réponses à des demandes précédentes ; utilise-les comme ses autres réponses et ne repose pas une demande à laquelle il a répondu.`;
 
-// Chapitre « Organisation » avec l'équipe dirigeante décrite : un parcours par personne, rédigé à partir de ses seules
-// réponses (formation, expériences, ancienneté), vérifié par le code (aucun chiffre absent de ses réponses).
+// « Organisation » chapter with the management team described: one background per person, written from their
+// own answers only (education, experience, seniority), checked by the code (no figure missing from their answers).
 const SCHEMA_SECTION_EQUIPE = { ...SCHEMA_SECTION, required: [...SCHEMA_SECTION.required, "parcours_equipe"], properties: { ...SCHEMA_SECTION.properties, parcours_equipe: PROPRIETE_PARCOURS } };
 const CONSIGNE_PARCOURS = `
 Parcours des dirigeants (« parcours_equipe ») : pour chaque personne de « equipe_dirigeante », une ou deux phrases à la troisième personne sur sa formation et ses expériences, uniquement à partir de ses réponses. Ne cite ni son nom ni son rôle (affichés à part), aucun chiffre qui ne figure pas dans ses réponses, aucun employeur ni diplôme non fourni.`;
@@ -219,12 +221,12 @@ export async function redigerSectionMemo(env, { titre, consigne }, donnees) {
   return { titre: r.titre, accroche: r.accroche, contenu: contenuConcis(r), a_completer: r.a_completer || [], ...(equipe ? { parcours: validerParcours(r.parcours_equipe, equipe) } : {}) };
 }
 
-// ---------------------------------------------------------------- Mémorandum : jugement d'une photo (vision)
+// ---------------------------------------------------------------- Memorandum: assessment of a photo (vision)
 const CONSIGNE_PHOTO = `Tu es directeur artistique dans une banque d'affaires. Tu juges une photo qu'un dirigeant de PME propose pour le mémorandum de cession de son entreprise (remis aux repreneurs après un accord de confidentialité) et pour son teaser (anonyme, diffusé avant tout accord).
 Décris ce que montre la photo en une phrase factuelle, sans rien supposer. Choisis sa catégorie. Note sa qualité de 1 à 5 (netteté, lumière, cadrage, résolution suffisante pour une page entière) et donne la raison en une phrase. Conseille son usage dans le mémorandum (couverture, activité, réalisations, équipe, ou à éviter) et propose une légende de 8 mots au plus, sans nom de personne.
 Signale : un dessin, un schéma ou un pictogramme plutôt qu'une photo ; un visuel publicitaire ou un bandeau de texte ; une photo floue ; une résolution insuffisante pour une page entière ; tout élément qui identifie l'entreprise ou une personne (enseigne, logo, nom sur un véhicule, plaque, adresse, visage reconnaissable).`;
 
-/** @param base64 image déjà réduite (plus grand côté ≤ 1 568 px) ; @returns jugement validé (jugements.js) */
+/** @param base64 image already reduced (longest side ≤ 1,568 px); @returns validated assessment (jugements.js) */
 export async function analyserPhoto(env, base64, mediaType) {
   const reponse = await client(env).messages.create({
     model: MODELS.photos, max_tokens: 2000, system: CONSIGNE_PHOTO + langueDeSortie(),
@@ -241,13 +243,13 @@ export async function analyserPhoto(env, base64, mediaType) {
   return j;
 }
 
-// ---------------------------------------------------------------- Mémorandum : relecture critique
+// ---------------------------------------------------------------- Memorandum: critical review
 const CONSIGNE_RELECTURE = `Tu es un repreneur exigeant, conseillé par une banque d'affaires. Tu relis le mémorandum de cession d'une PME française, chapitre par chapitre, avant qu'il ne soit envoyé.
 Relève au plus 10 remarques, les plus importantes d'abord : affirmation non sourcée, contradiction entre deux chapitres, répétition, ton promotionnel, photo mal choisie, page trop vide, incohérence avec les registres publics fournis, chiffre douteux.
 Pour chaque remarque : le chapitre (sa clé), le type, un titre de 6 mots au plus à l'infinitif, le constat en une phrase simple, et si elle se corrige dans le texte, le passage exact à remplacer (recopié tel quel) et le passage corrigé.
 Règles absolues : tu ne modifies, n'ajoutes ni ne retires jamais un chiffre. Une remarque sur un chiffre est de type « chiffre », sans correction : le dirigeant le vérifiera dans ses comptes ou sa valorisation. Pas de remarque de style sans enjeu pour un repreneur. Français simple.`;
 
-/** @param sections [{ cle, titre, contenu }] ; @param contexte données publiques et pages (photos, pages vides) */
+/** @param sections [{ cle, titre, contenu }]; @param contexte public data and pages (photos, empty pages) */
 export async function relireMemo(env, sections, contexte = {}) {
   const reponse = await client(env).beta.messages.create({
     model: MODELS.relecture, max_tokens: 16000, system: CONSIGNE_RELECTURE + langueDeSortie(),
@@ -260,10 +262,10 @@ export async function relireMemo(env, sections, contexte = {}) {
   return validerRelecture(JSON.parse(reponse.content.filter((b) => b.type === "text").map((b) => b.text).join("")), sections, RELECTURE.remarquesMax);
 }
 
-// ---------------------------------------------------------------- Mémorandum : étude de marché (recherche web)
-// Claude cherche sur le web des faits de marché sourcés (taille, tendances, réglementation, demande, concurrence) pour
-// le secteur et la région de l'entreprise. Garde-fou : un fait n'est retenu que si son adresse figure parmi les pages
-// réellement renvoyées par la recherche (faitsSourcesVerifies) ; le dirigeant valide ensuite chaque fait.
+// ---------------------------------------------------------------- Memorandum: market research (web search)
+// Claude searches the web for sourced market facts (size, trends, regulation, demand, competition) for the company's
+// industry and region. Safeguard: a fact is kept only if its address is among the pages actually returned by the
+// search (faitsSourcesVerifies); the owner then approves each fact.
 const THEMES_MARCHE = ["taille", "tendance", "demande", "reglementation", "concurrence"];
 const CONSIGNE_MARCHE = `Tu es analyste dans une banque d'affaires française. Tu prépares la partie « Marché » du mémorandum de cession d'une PME.
 Cherche sur le web des faits récents (moins de 4 ans) et chiffrés sur le marché de l'entreprise, en France et dans sa région : taille du marché ou de l'activité (chiffre d'affaires, volumes, nombre d'entreprises), évolution, tendances et moteurs de la demande, réglementation qui s'impose au secteur, structure concurrentielle.
@@ -275,7 +277,7 @@ Règles absolues :
 - 4 à 8 faits, en français, une phrase chacun.
 Réponds en terminant par un bloc \`\`\`json contenant exactement : {"faits":[{"theme":"taille|tendance|demande|reglementation|concurrence","fait":"phrase","chiffre":"le chiffre clé tel qu'écrit, ou null","annee":"année du chiffre, ou null","source":"nom de l'organisme","url":"adresse exacte"}]}`;
 
-/** Garde-fou : ne garde que les faits bien formés dont l'adresse a réellement été renvoyée par la recherche. */
+/** Safeguard: keeps only well-formed facts whose address was actually returned by the search. */
 export function faitsSourcesVerifies(faits, urlsConsultees) {
   const norm = (u) => String(u || "").trim().replace(/#.*$/, "").replace(/\/$/, "").toLowerCase();
   const connues = new Set([...urlsConsultees].map(norm));
@@ -286,7 +288,7 @@ export function faitsSourcesVerifies(faits, urlsConsultees) {
       annee: f.annee == null ? null : String(f.annee).slice(0, 9), source: String(f.source || "").trim().slice(0, 120) || null, url: String(f.url).trim() }));
 }
 
-/** Dernier objet JSON d'un texte (bloc \`\`\`json ou accolades finales). */
+/** Last JSON object of a text (\`\`\`json block or final braces). */
 export function dernierJson(texte) {
   const blocs = [...String(texte).matchAll(/\`\`\`json\s*([\s\S]*?)\`\`\`/g)].map((m) => m[1]);
   const candidats = blocs.length ? blocs.reverse() : [String(texte).slice(String(texte).indexOf("{"))];
@@ -294,14 +296,14 @@ export function dernierJson(texte) {
   return null;
 }
 
-/** @param contexte { secteur, activite_naf, region, description } (aucun nom d'entreprise) ; @returns { faits, urls, usage } */
+/** @param contexte { secteur, activite_naf, region, description } (no company name); @returns { faits, urls, usage } */
 export const MARCHE_DUREE_MAX_MS = 110000;
 export async function rechercherMarche(env, contexte) {
   const messages = [{ role: "user", content: `Entreprise à présenter (anonyme) :\n${JSON.stringify(contexte, null, 2)}` }];
   const urls = new Set();
   let texte = "", reponse;
-  // Budget : 4 recherches par tour, 2 tours au plus, 75 s par appel et 110 s en tout (l'étude ne doit pas faire
-  // attendre le dirigeant plus de deux minutes ; au-delà, le chapitre Marché s'appuie sur les registres publics)
+  // Budget: 4 searches per round, 2 rounds at most, 75 s per call and 110 s in all (the research must not keep the
+  // owner waiting more than two minutes; beyond that, the Market chapter relies on the public registries)
   const fin = Date.now() + MARCHE_DUREE_MAX_MS;
   for (let tour = 0; tour < 2; tour++) {
     const reste = fin - Date.now();
@@ -324,13 +326,13 @@ export async function rechercherMarche(env, contexte) {
   return { faits: faitsSourcesVerifies(brut?.faits, urls), urls: [...urls] };
 }
 
-/** Erreur d'authentification de l'API Claude (clé absente, mal copiée ou d'un autre type) : message explicite. */
+/** Authentication error of the Claude API (key missing, badly copied or of another type): explicit message. */
 export const cleRefusee = (e) => e?.status === 401 || e?.status === 403;
-/** Crédit Anthropic épuisé (erreur 400 « Your credit balance is too low… ») : ce n'est pas une panne passagère. */
+/** Anthropic credit exhausted (error 400 « Your credit balance is too low… »): this is not a temporary outage. */
 export const creditEpuise = (e) => e?.status === 400 && /credit balance is too low/i.test(`${e?.message || ""} ${JSON.stringify(e?.error ?? "")}`);
 /**
- * Réponse à une erreur de Claude, commune à toutes les rédactions et analyses : clé refusée, crédit épuisé (« La
- * rédaction est momentanément indisponible. Vos réponses sont enregistrées. »), sinon null (message propre à l'appel).
+ * Response to a Claude error, shared by every drafting and analysis: key refused, credit exhausted (« Drafting is
+ * temporarily unavailable. Your answers are saved. »), otherwise null (message specific to the call).
  */
 export function erreurClaudeConnue(e) {
   if (cleRefusee(e)) return { statut: 503, erreur: "cle_refusee", message: tr("serveur.claude.cle_refusee") };

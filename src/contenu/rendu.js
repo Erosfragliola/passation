@@ -1,20 +1,22 @@
-// Textes des pages (src/contenu/<langue>/*.json) : fonctions pures, sans DOM ni Worker (testées dans
-// test/contenu.test.js). Le Worker les applique aux pages avec HTMLRewriter (src/routes/pages.js).
-// contenu.langue (« fr » par défaut) choisit la typographie ; contenu.typo === false la désactive (textes déjà
-// typographiés, recopiés tels quels des pages).
+// Texts of the pages (src/contenu/<language>/*.json): pure functions, without DOM or Worker (tested in
+// test/contenu.test.js). The Worker applies them to the pages with HTMLRewriter (src/routes/pages.js).
+// contenu.langue (« fr » by default) chooses the typography; contenu.typo === false turns it off (texts already
+// typeset, copied as they are from the pages).
 //
-// Conventions du fichier de contenu :
-//   *mot*      mot-clé mis en avant (balise <em>, en Geist) ;
-//   {cle}      valeur de « cles » (prix, téléphone…) ;
-//   valeur vide (ou {cle} vide) : l'élément est retiré de la page ;
-//   liste de textes : un paragraphe par élément.
-// La typographie est appliquée ici : on peut écrire le fichier avec des espaces et apostrophes simples.
+// Conventions of the content file:
+//   *word*     highlighted keyword (<em> tag, in Geist);
+//   {key}      value of « cles » (price, phone…);
+//   empty value (or empty {key}): the element is removed from the page;
+//   list of texts: one paragraph per element.
+// Typography is applied here: the file can be written with plain spaces and apostrophes.
 
-const FINE = " ";   // espace fine insécable
+const FINE = " ";   // narrow no-break space
 const INSECABLE = " ";
 
-/** Espaces fines avant ; : ! ? et dans « », apostrophe typographique, espace insécable avant les unités, points
- *  de suspension. N'ajoute jamais d'espace là où il n'y en a pas avant ; : ! ? (heures, adresses). */
+/**
+ * Narrow spaces before ; : ! ? and inside « », typographic apostrophe, no-break space before units, ellipsis.
+ * Never adds a space where there is none before ; : ! ? (times, addresses).
+ */
 export function typographier(s, langue = "fr") {
   if (langue === false) return String(s);
   if (langue !== "fr") return String(s).replace(/\.\.\./g, "…").replace(/'/g, "’");
@@ -28,18 +30,18 @@ export function typographier(s, langue = "fr") {
     .replace(/ ((?:[kM])?€|%)/g, INSECABLE + "$1");
 }
 
-/** Échappement HTML (texte et attributs). */
+/** HTML escaping (text and attributes). */
 export const echapper = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-/** Typographie d'un contenu : sa langue, ou false (aucune). */
+/** Typography of a content: its language, or false (none). */
 const typo = (contenu) => (contenu?.typo === false ? false : contenu?.langue || "fr");
 
-/** Valeur à un chemin « a.b.0.c ». */
+/** Value at a path « a.b.0.c ». */
 export function lire(contenu, chemin) {
   return String(chemin).split(".").reduce((v, k) => (v == null ? undefined : v[k]), contenu);
 }
 
-/** Vide : absente, chaîne blanche, faux (booléen), liste vide, objet dont toutes les valeurs sont vides. */
+/** Empty: missing, blank string, false (boolean), empty list, object whose values are all empty. */
 export function estVide(v) {
   if (v == null || v === false) return true;
   if (typeof v === "string") return v.trim() === "";
@@ -49,8 +51,8 @@ export function estVide(v) {
 }
 
 /**
- * Condition d'affichage sur une clé de « cles » : « telephone », « legal.rcs » (chemin), « guides:3 » (liste d'au
- * moins 3 entrées non vides). Vrai si l'élément doit rester.
+ * Display condition on a key of « cles »: « telephone », « legal.rcs » (path), « guides:3 » (list of at least 3
+ * non-empty entries). True if the element must stay.
  */
 export function condition(cles, jeton) {
   const [chemin, min] = String(jeton).split(":");
@@ -59,8 +61,10 @@ export function condition(cles, jeton) {
   return !estVide(v);
 }
 
-/** Remplace {cle} par la valeur de contenu.cles ; renvoie null si une clé utilisée est vide. Les {repères}
- *  inconnus de « cles » (ex. {exercice}) sont laissés tels quels pour le JavaScript de la page. */
+/**
+ * Replaces {key} with the value of contenu.cles; returns null if a key used is empty. {Markers} unknown to « cles »
+ * (e.g. {exercice}) are left as they are for the page's JavaScript.
+ */
 export function interpoler(s, cles = {}) {
   let manque = false;
   const r = String(s).replace(/\{([a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)*)\}/g, (m, k) => {
@@ -72,14 +76,14 @@ export function interpoler(s, cles = {}) {
   return manque ? null : r;
 }
 
-/** Texte en ligne : échappé, typographié, *mot* → <em>mot</em>. */
+/** Inline text: escaped, typeset, *word* → <em>word</em>. */
 export function enLigne(s, langue = "fr") {
   return echapper(typographier(s, langue)).replace(/\*([^*]+)\*/g, "<em>$1</em>");
 }
 
 /**
- * HTML d'une valeur du contenu, ou null si elle est vide (l'élément doit alors disparaître).
- * Chaîne : texte en ligne ; liste de chaînes : un paragraphe par élément.
+ * HTML of a content value, or null if it is empty (the element must then disappear).
+ * String: inline text; list of strings: one paragraph per element.
  */
 export function html(contenu, chemin) {
   const v = lire(contenu, chemin);
@@ -93,7 +97,7 @@ export function html(contenu, chemin) {
   return un(v);
 }
 
-/** Texte brut (attributs : alt, aria-label, content…), ou null si vide. Les *mots* perdent leurs astérisques. */
+/** Plain text (attributes: alt, aria-label, content…), or null if empty. *Words* lose their asterisks. */
 export function texte(contenu, chemin) {
   const v = lire(contenu, chemin);
   if (typeof v !== "string" || estVide(v)) return null;
@@ -104,14 +108,16 @@ export function texte(contenu, chemin) {
 /** « attr=chemin; attr2=chemin2 » → [[attr, chemin], …] */
 export const lireAttributs = (spec) => String(spec).split(";").map((x) => x.trim()).filter(Boolean).map((x) => x.split("=").map((y) => y.trim()));
 
-/** Valeur d'attribut finale : guillemets droits neutralisés ; « tel:01 23 45 67 89 » → « tel:0123456789 » (aucune espace,
- * insécable comprise, dans le lien). */
+/**
+ * Final attribute value: straight quotes neutralized; « tel:01 23 45 67 89 » → « tel:0123456789 » (no space,
+ * no-break space included, in the link).
+ */
 export function valeurAttribut(attr, t) {
   const v = attr === "href" && t.startsWith("tel:") ? `tel:${t.slice(4).replace(/[^\d+]/g, "")}` : t;
   return v.replace(/"/g, "”");
 }
 
-/** Sous-arbre destiné au JavaScript de la page : chaînes typographiées et interpolées (vides conservés). */
+/** Subtree for the page's JavaScript: strings typeset and interpolated (empty values kept). */
 export function pourJs(contenu, chemin) {
   const v = lire(contenu, chemin);
   const parcourir = (x) => {
@@ -123,10 +129,10 @@ export function pourJs(contenu, chemin) {
   return parcourir(v);
 }
 
-/** JSON sûr dans une balise <script> (pas de « </script> » possible). */
+/** Safe JSON inside a <script> tag (no « </script> » possible). */
 export const jsonDansScript = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
 
-/** Clés de contenu.cles encore vides (avertissement en développement, liste « À me fournir »). */
+/** Keys of contenu.cles still empty (warning in development, « to provide » list). */
 export function clesVides(contenu) {
   const vides = [];
   const parcourir = (objet, prefixe) => {
@@ -140,8 +146,10 @@ export function clesVides(contenu) {
   return vides;
 }
 
-/** Identité légale du pied de page : « Raison sociale, forme au capital de X, RCS Y, adresse. » (en anglais : « with
- * share capital of X »). Les morceaux vides disparaissent ; rien du tout si tout est vide. */
+/**
+ * Legal identity of the footer: « Company name, legal form with share capital of X, RCS Y, address. » Empty parts
+ * disappear; nothing at all if everything is empty.
+ */
 export function identiteLegale(legal = {}, langue = "fr") {
   const v = (k) => (typeof legal?.[k] === "string" ? legal[k].trim() : "");
   const capital = langue === "fr" ? `au capital de ${v("capital")}` : `with share capital of ${v("capital")}`;
@@ -150,12 +158,14 @@ export function identiteLegale(legal = {}, langue = "fr") {
   return parties.length ? `${parties.join(", ")}.` : "";
 }
 
-/** Légende d'un témoignage : « prénom, métier, ville », les morceaux vides retirés. */
+/** Caption of a testimonial: « first name, trade, city », empty parts removed. */
 export const legendeTemoignage = (t = {}) =>
   ["prenom", "metier", "ville"].map((k) => (typeof t?.[k] === "string" ? t[k].trim() : "")).filter(Boolean).join(", ");
 
-/** Contenu servi : le fichier, plus les valeurs calculées (pied.identite d'après cles.legal ; preuves.legendes d'après
- * cles.temoignages). */
+/**
+ * Content served: the file, plus the calculated values (pied.identite from cles.legal; preuves.legendes from
+ * cles.temoignages).
+ */
 export function completer(contenu) {
   const temoignages = Array.isArray(contenu.cles?.temoignages) ? contenu.cles.temoignages : [];
   return {

@@ -7,7 +7,7 @@
 import { valeur, T, avecTextes } from "./i18n.js";
 /** Displayed label of a choice answer (the saved value stays the French value). */
 export const libelleOption = (cle, v) => valeur(`questionnaire.options.${cle}`)?.[v] ?? v;
-/** Detail displayed under a multiple-choice answer ("finitions, matériaux"), or null. */
+/** Detail displayed under a multiple-choice answer (« finitions, matériaux »), or null. */
 export const detailOption = (cle, v) => valeur(`questionnaire.details.${cle}`)?.[v] ?? null;
 
 export const ETAPES = [
@@ -47,7 +47,7 @@ export const ETAPES = [
       { cle: "remuneration_dirigeant_reelle", type: "euros", libelle: T, aide: T },
       { cle: "remuneration_normative", type: "euros", libelle: T, aide: T },
       { cle: "role_dirigeant", type: "texte", libelle: T, aide: T },
-      // Retirée du parcours guidé le 20/11/2026 (moins de questions) : facultative, dans « Pour aller plus loin »
+      // Removed from the guided flow on 20/11/2026 (fewer questions): optional, in « To go further »
       { cle: "anciennete_equipe", type: "choix", libelle: T, options: ["Moins de 3 ans", "3 à 10 ans", "Plus de 10 ans"] },
     ],
   },

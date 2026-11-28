@@ -1,7 +1,7 @@
 // Converts the simplified outlines of the 13 metropolitan regions (GeoJSON) into light SVG paths:
 // public/js/carte-france.js. Source: IGN Admin Express, Etalab Open License, via
 // https://github.com/gregoiredavid/france-geojson (regions-version-simplifiee.geojson).
-// Usage: node scripts/carte-france.mjs <chemin/regions-version-simplifiee.geojson>
+// Usage: node scripts/carte-france.mjs <path/regions-version-simplifiee.geojson>
 import { readFileSync, writeFileSync } from "node:fs";
 
 const geo = JSON.parse(readFileSync(process.argv[2], "utf8"));

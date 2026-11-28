@@ -1,6 +1,6 @@
-// Réponses proposées au dirigeant pour le parcours guidé (« Passation prépare, le dirigeant valide »).
-// Chaque proposition dit d'où elle vient : registres publics, comptes, site validé, ou « choix le plus fréquent »
-// (alors à confirmer). Rien n'est enregistré tant que le dirigeant n'a pas validé l'écran. Module pur, testé.
+// Answers proposed to the owner for the guided flow (« Passation prepares, the owner approves »).
+// Each proposal says where it comes from: public registries, accounts, approved website, or « most frequent choice »
+// (then to be confirmed). Nothing is saved until the owner has approved the screen. Pure module, tested.
 import { regionDe } from "./anonymat.js";
 import { activiteFine } from "./naf.js";
 import { faitsUtilisables } from "../../public/js/faits-site.js";
@@ -12,13 +12,13 @@ for (const k of Object.keys(SOURCES_PROPOSITION)) Object.defineProperty(SOURCES_
 const ok = (v) => typeof v === "number" && Number.isFinite(v);
 const annee = (d) => (d ? Number(String(d).slice(0, 4)) || null : null);
 
-/** Croissance proposée (curseur) : la croissance annuelle moyenne passée, arrondie au point, bornée à −20 % / +30 %. */
+/** Proposed growth (slider): the past average annual growth, rounded to the point, bounded to −20% / +30%. */
 export function croissanceProposee(tcam) {
   if (!ok(tcam)) return null;
   return Math.min(0.3, Math.max(-0.2, Math.round(tcam * 100) / 100));
 }
 
-/** Type de clientèle d'après la section NAF (commerce de détail, hébergement, services aux personnes : particuliers). */
+/** Type of customers from the NAF section (retail, accommodation, personal services: individuals). */
 export function clienteleDuSecteur(naf, section) {
   if (/^47/.test(naf || "") || ["I", "S", "P", "Q", "R"].includes(section)) return ["Particuliers"];
   if (["F", "C", "H", "M", "N", "J", "B", "D", "E"].includes(section)) return ["Entreprises"];
@@ -33,15 +33,17 @@ const DISTINCTIONS = [
 ];
 
 const CERTIFS = /\b(RGE|Qualibat|Qualifelec|Qualit['’]?EnR|QualiPAC|QualiBois|Qualisol|ISO\s?\d{4,5}|MASE|EPV|Entreprise du Patrimoine Vivant|Origine France Garantie|Ma[iî]tre artisan|Artisan d['’]art|Imprim['’]Vert|Ecocert|Label Rouge|NF\s?[A-Z]?\d{2,5})\b/gi;
-/** Certifications nommées dans les faits du site (« qualifiée RGE », « certifiée ISO 9001 ») : noms courts, sans doublon. */
+/** Certifications named in the website facts (« qualifiée RGE », « certifiée ISO 9001 »): short names, no duplicate. */
 export function certificationsCitees(faits = []) {
   const vus = new Map();
   for (const f of faits) for (const m of String(f.fait || "").matchAll(CERTIFS)) { const n = m[1].replace(/\s+/g, " ").replace(/^iso ?/i, "ISO "); if (!vus.has(n.toLowerCase())) vus.set(n.toLowerCase(), n); }
   return [...vus.values()];
 }
 
-/** Dates clés : création, puis événements publics (transferts, dénomination, reprise de fonds), en lignes
- *  { date, type, precision, source } ; la source est toujours « registres publics ». */
+/**
+ * Key dates: incorporation, then public events (moves, change of name, acquisition of a business), as rows
+ * { date, type, precision, source }; the source is always « public registries ».
+ */
 export function datesCles(entreprise) {
   const lignes = [];
   const source = SOURCES_PROPOSITION.registres;
@@ -70,26 +72,26 @@ export function propositions({ entreprise = {}, tcam = null, reponses = {} }) {
     if (Object.keys(v).length) p[id] = { ...(p[id] || {}), valeurs: { ...(p[id]?.valeurs || {}), ...v }, source: p[id]?.source || source };
   };
   const site = reponses.site || {};
-  // Faits du site : ceux que le dirigeant n'a pas retirés, sans contradiction non tranchée avec les registres
+  // Website facts: those the owner has not removed, without an unresolved contradiction with the registries
   const faits = faitsUtilisables(site.faits || [], entreprise);
   const texteSite = faits.map((f) => f.fait).join(" ");
   const codeEff = String(entreprise.tranche_effectif?.code || "NN");
 
-  // Activité : métiers lus sur le site, puis l'intitulé NAF le plus fin (sous-classe) ; type de clientèle d'après le
-  // secteur. La phrase du mémorandum est rédigée à l'écran à partir des choix du dirigeant (activite.description).
-  // Le libellé NAF n'est pré-coché que s'il n'y a pas de métier lu sur le site ; sinon il est proposé, décoché.
+  // Business: trades read on the website, then the finest NAF label (subclass); type of customers from the
+  // industry. The memorandum's sentence is written on screen from the owner's choices (activite.description).
+  // The NAF label is pre-ticked only if no trade was read on the website; otherwise it is proposed, unticked.
   const lus = (Array.isArray(site.metiers) ? site.metiers : []).slice(0, 8), naf = activiteFine(entreprise.naf);
   ajouter("activite", { "activite.metiers": lus.length ? lus : [naf] }, lus.length ? SOURCES_PROPOSITION.site : SOURCES_PROPOSITION.registres);
   if (lus.length && naf && p.activite && !lus.includes(naf)) p.activite.autres = { "activite.metiers": [naf] };
   ajouter("activite", { "clients.type_clientele": clienteleDuSecteur(entreprise.naf, entreprise.section_naf) }, SOURCES_PROPOSITION.secteur);
 
-  // Ce qui distingue l'entreprise : repéré dans les faits du site (trois au plus) ; certifications nommées
+  // What sets the company apart: spotted in the website facts (three at most); named certifications
   const distinctions = DISTINCTIONS.filter(([, re]) => re.test(texteSite)).map(([n]) => n).slice(0, 3);
   ajouter("distinctions", { "activite.distinctions": distinctions, "activite.certifications": certificationsCitees(faits) }, SOURCES_PROPOSITION.site);
 
   ajouter("histoire", { "activite.dates_cles": datesCles(entreprise) }, SOURCES_PROPOSITION.registres);
 
-  // Équipe : encadrement estimé d'après l'effectif (à confirmer). Aucun choix multiple pré-coché sans source.
+  // Team: management estimated from the headcount (to be confirmed). No multiple choice pre-ticked without a source.
   const encadrement = codeEff >= "11" && codeEff !== "NN" ? "Oui, un ou plusieurs responsables" : ["01", "02", "03"].includes(codeEff) ? "En partie" : null;
   ajouter("equipe", { "dirigeant.encadrement": encadrement }, tr("serveur.propositions.sources.effectif"));
 
